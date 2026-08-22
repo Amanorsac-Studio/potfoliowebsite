@@ -133,16 +133,15 @@ section{padding:clamp(64px,10vh,120px) 0}
   letter-spacing:.32em;text-transform:uppercase}
 .top .name img{width:20px;height:20px;border-radius:5px}
 
-/* ---------- hero ---------- */
-.hero{padding:clamp(56px,9vh,100px) 0 0}
-.hero .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+/* ---------- hero text (now overlaid on the video) ---------- */
+.hero-video .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
   text-transform:uppercase;color:var(--accent-bright);background:var(--accent-soft);
   border:1px solid color-mix(in srgb,var(--accent-bright) 30%,transparent);
   border-radius:999px;padding:6px 14px;margin:0 0 26px}
 h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;
   font-size:clamp(34px,5.6vw,64px);margin:0 0 22px;max-width:15ch;
   color:#EAFBFF;text-shadow:0 0 60px rgba(79,227,255,.18)}
-.hero .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:54ch;margin:0 0 30px}
+.hero-video .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:54ch;margin:0 0 30px}
 .cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
 .cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
   text-decoration:none;border-radius:999px;padding:14px 28px;
@@ -153,39 +152,51 @@ h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:
 .cta:active{transform:translateY(0) scale(.98)}
 .cta.ghost{background:transparent;color:var(--text);
   border:1px solid color-mix(in srgb,var(--accent-bright) 34%,transparent);box-shadow:none}
-.hero .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+.hero-video .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--dim);margin:0}
-.hero-shot{margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
-  border-radius:var(--r-lg);overflow:hidden;
-  box-shadow:0 24px 80px rgba(0,0,0,.55)}
+/* ---------- the video hero ----------
+   Waves builds a plugin's own page around its video the same way: not a
+   headline with a demo underneath, the demo filling the frame with the
+   headline standing on it. Full-bleed, and the first thing on the page
+   rather than the third.
 
-/* ---------- the promo video ----------
-   A plugin-page trick worth borrowing: the video is not a card among
-   cards, it is the room. Full width, true 16:9, a hairline edge lit by
-   the app's own colour rather than a drop shadow doing the work. */
-.promo{padding-top:0}
-.promo-frame{position:relative;aspect-ratio:16/9;border-radius:var(--r-lg);
-  overflow:hidden;background:#00040A;isolation:isolate;
-  border:1px solid color-mix(in srgb,var(--accent-bright) 30%,var(--line));
-  box-shadow:0 40px 120px -20px rgba(0,0,0,.7),
-             0 0 0 1px rgba(0,0,0,.4),
-             0 0 90px -20px color-mix(in srgb,var(--accent-bright) 40%,transparent)}
+   Click-to-play still holds - nothing from YouTube loads before the
+   button is pressed. The .top bar keeps its blur, so it stays legible
+   sitting over the video the same as it always sat over the starfield. */
+.hero-video{position:relative;isolation:isolate;overflow:hidden;
+  min-height:min(84vh,760px);display:flex;align-items:flex-end;
+  margin:0 calc(50% - 50vw);width:100vw}
 .promo-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:.82;transition:opacity var(--dur) var(--ease),transform 6s linear}
-.promo-frame:hover .promo-poster{transform:scale(1.02)}
+  object-position:center 38%}
 .promo-scrim{position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(0,4,10,.15),rgba(0,4,10,.55) 78%,rgba(0,4,10,.75))}
-.promo-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:clamp(64px,8vw,92px);height:clamp(64px,8vw,92px);border-radius:50%;
+  background:
+    linear-gradient(0deg,var(--bg) 2%,rgba(2,12,22,.72) 34%,rgba(2,12,22,.22) 62%,rgba(2,12,22,.55) 100%),
+    linear-gradient(90deg,rgba(2,12,22,.5) 0%,transparent 46%)}
+/* Centred on the frame would sit on top of the headline, which hugs
+   the bottom edge - so the button lives in the open sky above the
+   text instead, not dead centre of the viewport. */
+.promo-play{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
+  width:clamp(64px,7vw,88px);height:clamp(64px,7vw,88px);border-radius:50%;z-index:2;
   background:color-mix(in srgb,var(--accent-bright) 92%,#fff 8%);
   border:0;display:grid;place-items:center;cursor:pointer;
   box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,
              0 20px 50px -10px color-mix(in srgb,var(--accent-bright) 60%,transparent);
-  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+  transition:transform var(--dur) var(--ease)}
 .promo-play svg{width:38%;height:38%;fill:#00171E;margin-left:4%}
 .promo-play:hover,.promo-play:focus-visible{transform:translate(-50%,-50%) scale(1.08)}
-.promo-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-@media (prefers-reduced-motion:reduce){ .promo-poster{transition:none} }
+.hero-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
+.hero-video-body{position:relative;z-index:1;padding-top:14vh;padding-bottom:clamp(40px,7vh,72px)}
+@media (max-width:700px){
+  /* Three CTAs stack full-width on a phone and, with the headline and
+     sub-text, run to five hundred-odd pixels on their own - there is no
+     "clear sky" left for a play button inside a cropped 9:13 frame. A
+     full-height hero gives the button real room instead of fighting the
+     text for the same few pixels. */
+  .hero-video{min-height:100dvh;aspect-ratio:auto;align-items:flex-end}
+  .hero-video-body{padding-top:0}
+  .promo-play{top:19%}
+}
+@media (prefers-reduced-motion:reduce){ .promo-play{transition:none} }
 
 /* ---------- section headings ---------- */
 h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
@@ -328,40 +339,40 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   <span class="name"><img src="images/apps/nt-logo.webp" alt="">Nebula Tide</span>
 </div>
 
-<header class="hero wrap">
-  <span class="status">Windows and macOS</span>
-  <h1>An ocean of sound. In every key.</h1>
-  <p class="sub">Nebula Tide plays endless, seamless drone pads — real recordings in all twelve keys — inside an interface that’s alive. One click, infinite atmosphere.</p>
-  <div class="cta-row">
-    <a class="cta" data-dl="win" data-dl-size="279 MB" href="apps.html#access">Download for Windows</a>
-    <a class="cta ghost" data-dl="mac" data-dl-size="289 MB" href="apps.html#access">Download for Mac</a>
-    <a class="cta ghost" href="#features">See the instrument</a>
-  </div>
-  <p class="fine">Standalone and VST3 on Windows · iPad planned</p>
-  <div class="hero-shot rise">
-    <img src="images/apps/nt-idle.webp" alt="Nebula Tide at rest: the Deep Current preset on stage, twelve key planets on their orbit, and the volume, reverb and pan controls below" fetchpriority="high">
+<!-- The video is the hero, the way Waves builds a plugin's own page:
+     not a headline with a video underneath, but the video filling the
+     frame with the headline standing on top of it. Click-to-play still
+     holds - nothing from YouTube loads before the button is pressed -
+     it is just the first thing here instead of the third. -->
+<header class="hero-video" id="ntpromo" data-yt="yqWtnDpNC0g">
+  <img class="promo-poster" src="https://img.youtube.com/vi/yqWtnDpNC0g/maxresdefault.jpg"
+       alt="" fetchpriority="high" width="1280" height="720">
+  <div class="promo-scrim" aria-hidden="true"></div>
+  <button class="promo-play" type="button" aria-label="Play the Nebula Tide video">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <div class="hero-video-body wrap">
+    <span class="status">Windows and macOS</span>
+    <h1>An ocean of sound. In every key.</h1>
+    <p class="sub">Nebula Tide plays endless, seamless drone pads — real recordings in all twelve keys — inside an interface that’s alive. One click, infinite atmosphere.</p>
+    <div class="cta-row">
+      <a class="cta" data-dl="win" data-dl-size="279 MB" href="apps.html#access">Download for Windows</a>
+      <a class="cta ghost" data-dl="mac" data-dl-size="289 MB" href="apps.html#access">Download for Mac</a>
+      <a class="cta ghost" href="#features">See the instrument</a>
+    </div>
+    <p class="fine">Standalone and VST3 on Windows · iPad planned</p>
   </div>
 </header>
-
-<!-- The promo video. Click-to-play rather than an embedded iframe from
-     the first paint: nothing from YouTube loads - no cookies, no
-     tracking pixel, no script - until somebody actually presses play.
-     The poster is YouTube's own thumbnail for this exact video, not a
-     screenshot standing in for one. -->
-<section class="wrap promo">
-  <div class="promo-frame" id="ntpromo" data-yt="yqWtnDpNC0g">
-    <img class="promo-poster" src="https://img.youtube.com/vi/yqWtnDpNC0g/maxresdefault.jpg"
-         alt="" loading="lazy" width="1280" height="720">
-    <div class="promo-scrim" aria-hidden="true"></div>
-    <button class="promo-play" type="button" aria-label="Play the Nebula Tide video">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-    </button>
-  </div>
-</section>
 
 <section id="features" class="wrap">
   <h2>A pad in the right key, right now.</h2>
   <p class="lede">Synths want programming. Loop packs end and click. A YouTube video is in the wrong key with an ad in the middle of your set. All anyone actually needs is a beautiful bed of sound that starts when you press it and doesn’t stop until you say so.</p>
+
+  <div class="hero-shot rise">
+    <!-- the app at rest, formerly the hero's own screenshot before the
+         video took that spot; kept here rather than dropped -->
+    <img src="images/apps/nt-idle.webp" alt="Nebula Tide at rest: the Deep Current preset on stage, twelve key planets on their orbit, and the volume, reverb and pan controls below" loading="lazy">
+  </div>
 
   <div class="feat-wide rise" style="--k:var(--accent-bright)">
     <p class="kicker">Twelve keys</p>
@@ -527,8 +538,21 @@ if('IntersectionObserver' in window &&
     f.title = 'Nebula Tide';
     f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     f.allowFullscreen = true;
-    box.innerHTML = '';
+    /* Remove only the poster, the scrim and the button - the headline,
+       the download buttons and the fine print sit in the same header
+       and must stay. box.innerHTML = '' once cleared all of them along
+       with the poster. */
+    ['.promo-poster', '.promo-scrim', '.promo-play'].forEach(function(sel){
+      var el = box.querySelector(sel); if(el) el.remove();
+    });
     box.appendChild(f);
+    /* The video now paints over the text - same stacking order the
+       page already had, just with something opaque on top. Hiding the
+       text properly rather than leaving it invisible-but-tabbable is
+       the difference between a keyboard user reaching real buttons
+       later in the page and reaching a ghost of this row first. */
+    var body = box.querySelector('.hero-video-body');
+    if (body) { body.style.display = 'none'; }
   }, { once:true });
 })();
 </script>
