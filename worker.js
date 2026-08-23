@@ -179,7 +179,7 @@ const INSTALLERS = {
      first and this is only ever reached when it comes up empty. */
   'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
                          as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
-                         dropbox: '' }
+                         dropbox: 'https://www.dropbox.com/scl/fi/5ad1y3i315bqlvespji7j/NebulaTide-macOS.zip?rlkey=8bcexdmjpsrfubwn68d542oox&st=kvlq3du5&dl=0' }
 };
 
 /* Turn an ordinary Dropbox share link into one that hands over bytes
