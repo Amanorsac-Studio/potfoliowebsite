@@ -47,6 +47,20 @@
   .pill.gone{background:color-mix(in srgb,#B4552F 12%,transparent);color:#B4552F}
 
   .csv{margin:14px 0 0}
+
+  .rv-mod{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 12px}
+  .rv-mod-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+  .rv-mod-app{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);background:var(--surface-2);border-radius:999px;padding:3px 9px}
+  .rv-mod-stars{color:#D9A441;letter-spacing:1px;font-size:13px}
+  .rv-mod-who{font-size:12.5px;color:var(--muted)}
+  .rv-mod-body{margin:0 0 12px;font-size:14px;line-height:1.6;white-space:pre-wrap}
+  .rv-mod-btns{display:flex;gap:8px}
+  .rv-mod-btns button{font-family:var(--body);font-size:13px;font-weight:500;cursor:pointer;
+    border-radius:999px;padding:7px 15px;border:1px solid var(--line);background:none;color:var(--ink)}
+  .rv-mod-btns button.ok{border-color:#2E8B6E;color:#2E8B6E}
+  .rv-mod-btns button.no{border-color:#B4552F;color:#B4552F}
+  .rv-mod-btns button[disabled]{opacity:.5;cursor:default}
 </style>
 </head>
 <body>
@@ -87,6 +101,14 @@
       <p class="why" style="margin-top:8px">Consented, confirmed, and not
         unsubscribed. Nothing else belongs in a mailing tool.</p>
     </div>
+  </div>
+
+  <div class="card" id="rvcard">
+    <div class="card-head"><h2>Reviews awaiting approval</h2><span class="pill wait" id="rvcount"></span></div>
+    <p class="why">Nothing a visitor writes on an app's page is public until
+      one of these is approved. Rejecting one deletes it — there is
+      nowhere else it is kept.</p>
+    <div id="rvlist"></div>
   </div>
 </main>
 
@@ -183,6 +205,55 @@
     URL.revokeObjectURL(a.href);
     say(m, keep.length + ' address' + (keep.length===1?'':'es') + ' exported.', 'ok');
   });
+
+  // ---- app review moderation --------------------------------------------
+  async function loadReviews(){
+    const { data, error } = await sb.rpc('app_reviews_pending');
+    const list = $('#rvlist'), count = $('#rvcount');
+    if (error){
+      // the SQL file for this may not be run yet; say so rather than
+      // showing a card that looks broken for no visible reason
+      list.innerHTML = '<p class="empty">' + esc(error.message) +
+        ' — has supabase-app-reviews.sql been run?</p>';
+      count.textContent = ''; count.className = 'pill';
+      return;
+    }
+    const rows = data || [];
+    count.textContent = rows.length || 'none waiting';
+    count.className = 'pill ' + (rows.length ? 'wait' : 'ok');
+    list.innerHTML = rows.length ? '' : '<p class="empty">Nothing waiting. New ones land here as they come in.</p>';
+    rows.forEach(r => {
+      const div = document.createElement('div');
+      div.className = 'rv-mod';
+      div.innerHTML =
+        '<div class="rv-mod-head">' +
+          '<span class="rv-mod-app">' + esc(APPS[r.app] || r.app) + '</span>' +
+          '<span class="rv-mod-stars">' + '★'.repeat(r.rating) + '☆'.repeat(5-r.rating) + '</span>' +
+          '<span class="rv-mod-who">' + esc(r.name || 'No name given') + ' · ' + when(r.created_at) + '</span>' +
+        '</div>' +
+        '<p class="rv-mod-body"></p>' +
+        '<div class="rv-mod-btns">' +
+          '<button class="ok" data-act="approve">Approve — make it public</button>' +
+          '<button class="no" data-act="reject">Reject — delete it</button>' +
+        '</div>';
+      // the body is a stranger's text; textContent only, never innerHTML
+      div.querySelector('.rv-mod-body').textContent = r.body;
+      div.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          div.querySelectorAll('button').forEach(b => b.disabled = true);
+          const approve = btn.getAttribute('data-act') === 'approve';
+          const { error } = await sb.rpc('moderate_app_review', { p_id: r.id, p_approve: approve });
+          if (error){ say(m, error.message, 'err'); div.querySelectorAll('button').forEach(b => b.disabled = false); return; }
+          div.remove();
+          const left = $$('.rv-mod').length;
+          count.textContent = left || 'none waiting';
+          count.className = 'pill ' + (left ? 'wait' : 'ok');
+        });
+      });
+      list.appendChild(div);
+    });
+  }
+  loadReviews();
 })();
 </script>
 </body>

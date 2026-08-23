@@ -186,6 +186,55 @@ h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:
 .promo-play:hover,.promo-play:focus-visible{transform:translate(-50%,-50%) scale(1.08)}
 .hero-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
 .hero-video-body{position:relative;z-index:1;padding-top:14vh;padding-bottom:clamp(40px,7vh,72px)}
+.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent-bright);margin:14px 0 0}
+
+/* ---------- reviews ----------
+   Two states throughout: a real number once app-reviews.js has one, and
+   nothing at all until then. A visible zero is a worse first impression
+   than a section that simply waits. */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent-bright);margin:0 0 12px}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+.star{font-size:16px;line-height:1;color:var(--line)}
+.star.on{color:var(--accent-bright)}
+.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
+.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
+.rv-list{list-style:none;margin:0 0 40px;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+.rv-head .star{font-size:13px}
+.rv-who{font-size:12.5px;color:var(--dim)}
+.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
+.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
+.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px;color:#EAFBFF}
+.rv-pick{display:flex;gap:6px;margin:0 0 20px}
+.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
+.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
+.rv-pick .star.on{color:var(--accent-bright)}
+.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
+.rv-lbl span{text-transform:none;letter-spacing:0}
+.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
+  font-size:14.5px;resize:vertical;margin:0 0 16px}
+.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent-bright)}
+.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
+.rv-go[disabled]{opacity:.6;cursor:default}
+.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
+.rv-msg.bad{color:#FF9C8A}
+.rv-done{text-align:center;padding:6px 0 4px}
+.rv-done[hidden]{display:none}
+.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+  display:grid;place-items:center;font-size:20px;color:var(--accent-bright);
+  background:var(--accent-soft)}
+.rv-done h3{font-size:19px;margin:0 0 8px;color:#EAFBFF}
+.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
 @media (max-width:700px){
   /* Three CTAs stack full-width on a phone and, with the headline and
      sub-text, run to five hundred-odd pixels on their own - there is no
@@ -361,6 +410,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
       <a class="cta ghost" href="#features">See the instrument</a>
     </div>
     <p class="fine">Standalone and VST3 on Windows · iPad planned</p>
+    <!-- filled in by app-reviews.js; hidden until there is a real number -->
+    <p class="dl-count" hidden></p>
   </div>
 </header>
 
@@ -472,7 +523,6 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
       <p>Every pack available at release, plus the ones that land during the launch window.</p>
     </div>
   </div>
-  <p class="packnote">Beta testers hear the pricing first. Ask for the beta and you’ll be on that list.</p>
 </section>
 
 <section class="wrap">
@@ -482,20 +532,55 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   <details><summary>Will it click when it loops?</summary>
     <div>No. The loop is sample-accurate, and every transition — pad, key or preset — passes through a crossfade.</div></details>
   <details><summary>Does it work in my DAW?</summary>
-    <div>VST3 on Windows today. macOS AU and VST3 are planned from the same codebase.</div></details>
+    <div>VST3 on Windows today. The Mac app is out as well, standalone; plugin support there follows from the same codebase.</div></details>
   <details><summary>Can I add my own sounds?</summary>
     <div>Yes. Preset packs install by dropping a folder into the presets directory — no reinstall, no app update.</div></details>
   <details><summary>Mac or iPad?</summary>
-    <div>Planned next. One codebase covers desktop, plugin and tablet, so they follow rather than restart.</div></details>
+    <div>Mac is out — the download above covers it. iPad is what is still ahead, from the same codebase.</div></details>
   <details><summary>How big is it?</summary>
-    <div>The app is around ten megabytes. The sound library depends on which packs you have — the audio is FLAC, roughly half the size of the same material as WAV.</div></details>
+    <div>279 MB on Windows, 289 MB on Mac, Deep Current included. Further packs are FLAC, roughly half the size of the same material as WAV.</div></details>
   <details><summary>Do I need to be a musician?</summary>
     <div>No. Choose a preset, tap a key, press the square. If you can’t read the key off a setlist, C is a safe place to start.</div></details>
 </section>
 
+<!-- =====================================================================
+     Reviews. Empty until app-reviews.js fills them in from what people
+     actually submitted, and nothing anyone submits is public until the
+     studio has read it. See assets/app-reviews.js. ===================================================================== -->
+<section id="reviews" class="wrap">
+  <p class="eyebrow">From people who use it</p>
+  <h2>What people are hearing.</h2>
+  <div class="rv-stats" hidden></div>
+
+  <ul class="rv-list"></ul>
+  <p class="rv-empty" hidden>Be the first to leave one.</p>
+
+  <div class="rv-panel">
+    <form class="rv-form" novalidate>
+      <p class="rv-legend">Used it? Rate it.</p>
+      <div class="rv-pick" role="group" aria-label="Rating">
+        <span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span>
+        <span class="star">&#9733;</span><span class="star">&#9733;</span>
+      </div>
+      <label class="rv-lbl" for="rv-body">Your review</label>
+      <textarea class="rv-body-in" id="rv-body" rows="3"
+        placeholder="What did it hold down for you?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
+      <button class="cta rv-go" type="submit">Post review</button>
+      <p class="rv-msg" role="status"></p>
+    </form>
+    <div class="rv-done" hidden>
+      <p class="rv-tick" aria-hidden="true">&#10003;</p>
+      <h3>Thank you.</h3>
+      <p>It goes up once I've actually read it — usually within a day or two.</p>
+    </div>
+  </div>
+</section>
+
 <section class="wrap finale">
   <h2>The tide is waiting.</h2>
-  <p class="lede">Nebula Tide is in private testing on Windows. Tell us where you’d use it and we’ll send you a build.</p>
+  <p class="lede">Nebula Tide is out for Windows and Mac. Take it for a spin.</p>
   <div class="cta-row">
     <a class="cta" data-dl="win" data-dl-size="279 MB" href="apps.html#access">Download for Windows</a>
     <a class="cta ghost" data-dl="mac" data-dl-size="289 MB" href="apps.html#access">Download for Mac</a>
@@ -559,5 +644,6 @@ if('IntersectionObserver' in window &&
 <script src="assets/track.js" defer></script>
 <link rel="stylesheet" href="/assets/download-gate.css">
 <script src="/assets/download-gate.js?v=3" defer></script>
+<script src="assets/app-reviews.js" defer></script>
 </body>
 </html>

@@ -140,6 +140,54 @@ h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:
 .hero-shot{margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
   border-radius:var(--r-lg);overflow:hidden;
   box-shadow:0 40px 100px rgba(0,0,0,.55)}
+.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:14px 0 0}
+
+/* ---------- reviews ----------
+   Two states throughout: a real number once app-reviews.js has one, and
+   nothing at all until then. A visible zero under a fresh install is a
+   worse first impression than a section that simply waits. */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+.star{font-size:16px;line-height:1;color:var(--line)}
+.star.on{color:var(--accent)}
+.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
+.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
+.rv-list{list-style:none;margin:0 0 40px;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:20px 22px}
+.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+.rv-head .star{font-size:13px}
+.rv-who{font-size:12.5px;color:var(--dim)}
+.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
+.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
+.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px)}
+.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px}
+.rv-pick{display:flex;gap:6px;margin:0 0 20px}
+.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
+.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
+.rv-pick .star.on{color:var(--accent)}
+.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
+.rv-lbl span{text-transform:none;letter-spacing:0}
+.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
+  font-size:14.5px;resize:vertical;margin:0 0 16px}
+.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent)}
+.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
+.rv-go[disabled]{opacity:.6;cursor:default}
+.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
+.rv-msg.bad{color:#f25c7f}
+.rv-done{text-align:center;padding:6px 0 4px}
+.rv-done[hidden]{display:none}
+.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+  display:grid;place-items:center;font-size:20px;color:var(--accent);
+  background:var(--accent-soft)}
+.rv-done h3{font-size:19px;margin:0 0 8px}
+.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
 
 /* ---------- the walkthrough ----------
    Screen recordings, no sound. They start when they come into view and
@@ -307,6 +355,9 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
     <a class="cta ghost" data-dl-size="171 MB" data-dl="mac" href="apps.html#access">Download for Mac</a>
   </div>
   <p class="fine">78 MB for Windows, 171 MB for Mac · Works offline · No account, no ads</p>
+  <!-- filled in by app-reviews.js; hidden until there is a real number,
+       because "0 downloads" under a hero is worse than nothing there -->
+  <p class="dl-count" hidden></p>
   <div class="hero-shot rise">
     <img src="images/apps/S1-hero-delay-essentials.webp" alt="PulseRoom open on the Delay Calculator at 140 BPM, showing the eight essential note values" fetchpriority="high">
   </div>
@@ -459,6 +510,42 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
     <div>All of them. It doesn’t touch your session — it hands you numbers you type or paste wherever you like.</div></details>
 </section>
 
+<!-- =====================================================================
+     Reviews. Nothing here is faked - the count and the list are both
+     empty until app-reviews.js fills them in from what people actually
+     submitted, and nothing anyone submits is public until the studio
+     has read it. See assets/app-reviews.js. ===================================================================== -->
+<section id="reviews" class="wrap">
+  <p class="eyebrow">From people who use it</p>
+  <h2>What producers are saying.</h2>
+  <div class="rv-stats" hidden></div>
+
+  <ul class="rv-list"></ul>
+  <p class="rv-empty" hidden>Be the first to leave one.</p>
+
+  <div class="rv-panel">
+    <form class="rv-form" novalidate>
+      <p class="rv-legend">Used it? Rate it.</p>
+      <div class="rv-pick" role="group" aria-label="Rating">
+        <span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span>
+        <span class="star">&#9733;</span><span class="star">&#9733;</span>
+      </div>
+      <label class="rv-lbl" for="rv-body">Your review</label>
+      <textarea class="rv-body-in" id="rv-body" rows="3"
+        placeholder="What changed in your session once you had it?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
+      <button class="cta rv-go" type="submit">Post review</button>
+      <p class="rv-msg" role="status"></p>
+    </form>
+    <div class="rv-done" hidden>
+      <p class="rv-tick" aria-hidden="true">&#10003;</p>
+      <h3>Thank you.</h3>
+      <p>It goes up once I've actually read it — usually within a day or two.</p>
+    </div>
+  </div>
+</section>
+
 <section class="wrap finale">
   <h2>Your next session starts at your tempo.</h2>
   <p class="lede">Free, offline, no account. Close six browser tabs on the way in.</p>
@@ -552,6 +639,7 @@ var CONFIG = {
      changes in a way the server also changed for. -->
 <link rel="stylesheet" href="/assets/download-gate.css">
 <script src="/assets/download-gate.js?v=3" defer></script>
+<script src="assets/app-reviews.js" defer></script>
 <script src="assets/track.js" defer></script>
 </body>
 </html>

@@ -394,6 +394,10 @@ body[data-room="apps"] .wrap{max-width:1280px}
 
 .app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.6;
   text-align:center;margin:20px 0 0;padding:0 4px}
+.app-badge{text-align:center;margin:12px 0 0;font-family:var(--mono);
+  font-size:10.5px;letter-spacing:.06em;color:var(--k);min-height:1px}
+.app-badge:empty{margin:0}
+.app-dot{margin:0 7px;opacity:.5}
 .app-go{margin-top:auto;padding-top:16px;text-align:center;
   font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--k);opacity:.72;transition:opacity var(--dur) var(--ease-out)}
@@ -725,6 +729,10 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       </div>
       <div class="app-shot"><img src="images/apps/nt-idle.webp" alt="Nebula Tide: a glowing pad on stage with the twelve key planets in orbit below" loading="lazy"></div>
       <p class="app-note">Endless drone pads in all twelve keys, recorded rather than stretched, for producers and the stage.</p>
+      <!-- filled in by assets/app-reviews.js; empty until there is a
+           real number, so a brand-new app shows nothing rather than
+           a zero -->
+      <p class="app-badge" data-badge-app="nebulatide"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -747,6 +755,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       </div>
       <div class="app-shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="PulseRoom: the EQ cheat sheet, boost and cut zones painted across the spectrum" loading="lazy"></div>
       <p class="app-note">The producer’s reference desk. Drop a song in and it finds the tempo, then answers for delay, reverb, EQ and compression follow.</p>
+      <p class="app-badge" data-badge-app="pulseroom"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -1173,5 +1182,6 @@ var CONFIG = {
 
 </script>
 <script src="assets/track.js" defer></script>
+<script src="assets/app-reviews.js" defer></script>
 </body>
 </html>
