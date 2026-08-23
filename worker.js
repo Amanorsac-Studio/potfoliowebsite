@@ -170,9 +170,26 @@ const INSTALLERS = {
      before the name was agreed. */
   'nebulatide:windows':{ keys: ['nebulatide/NebulaTide-Windows.zip', 'NebulaTide-Windows.zip'],
                          as: 'NebulaTide-Windows.zip', title: 'Nebula Tide for Windows' },
+  /* dropbox is a bridge, not a home. R2 has no working copy of this
+     one yet - the file is over the Cloudflare dashboard's 300 MB
+     upload cap and getting a proper S3 tool talking to R2 is still in
+     progress - so this link stands in until it does. Delete this line
+     the day the real upload succeeds; nothing else in this file has to
+     change when that happens, because the R2 lookup above always runs
+     first and this is only ever reached when it comes up empty. */
   'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
-                         as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac' }
+                         as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
+                         dropbox: '' }
 };
+
+/* Turn an ordinary Dropbox share link into one that hands over bytes
+   instead of Dropbox's own preview page. dl=1 is the documented way to
+   ask for that; anything already asking for it is left alone. */
+function dropboxDirect(link) {
+  const u = new URL(link);
+  u.searchParams.set('dl', '1');
+  return u.toString();
+}
 
 const TICKET_MINUTES = 15;
 
@@ -398,11 +415,33 @@ async function serveInstaller(app, platform, url, env, request) {
     object = await env.DOWNLOADS.get(key, { range: request.headers, onlyIf: request.headers });
     if (object) break;
   }
-  /* The ticket was good and the file is not in the bucket. That is the
-     studio's mistake, not the visitor's, and answering it with the same
-     blank 404 that a forged ticket gets means nobody ever finds out
-     which of the two happened. */
+
   if (!object) {
+    /* R2 does not have it. Dropbox, if one is configured, is a bridge
+       until it does - fetched here, on the Worker's side, so the
+       visitor's browser only ever talks to amanorsac.studio. Nothing
+       about the gate changes: the ticket above already proved the
+       address was confirmed and fifteen minutes have not passed:
+       this only decides where the bytes come from once that is true. */
+    if (item.dropbox) {
+      let upstream;
+      try {
+        upstream = await fetch(dropboxDirect(item.dropbox));
+      } catch (e) { upstream = null; }
+      if (upstream && upstream.ok && upstream.body) {
+        const headers = new Headers();
+        headers.set('content-type', 'application/zip');
+        headers.set('content-disposition', 'attachment; filename="' + item.as + '"');
+        headers.set('cache-control', 'private, no-store');
+        const len = upstream.headers.get('content-length');
+        if (len) headers.set('content-length', len);
+        return new Response(upstream.body, { status: 200, headers });
+      }
+    }
+    /* Neither R2 nor a bridge had it. That is the studio's mistake, not
+       the visitor's, and answering it with the same blank 404 a forged
+       ticket gets means nobody ever finds out which of the two
+       happened. */
     return confirmPage('That file is not where it should be.',
       'The link was good - the installer is missing from storage. It should be at ' +
       item.keys[0] + ' in the amanorsac-downloads bucket. Try again shortly.', null, 503);
