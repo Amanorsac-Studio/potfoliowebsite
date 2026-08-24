@@ -235,6 +235,10 @@ h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:
   background:var(--accent-soft)}
 .rv-done h3{font-size:19px;margin:0 0 8px;color:#EAFBFF}
 .rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+.rv-locked{text-align:center;padding:6px 0 4px}
+.rv-locked[hidden]{display:none}
+.rv-locked h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 8px;color:#EAFBFF}
+.rv-locked p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
 @media (max-width:700px){
   /* Three CTAs stack full-width on a phone and, with the headline and
      sub-text, run to five hundred-odd pixels on their own - there is no
@@ -574,6 +578,15 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
       <p class="rv-tick" aria-hidden="true">&#10003;</p>
       <h3>Thank you.</h3>
       <p>It goes up once I've actually read it — usually within a day or two.</p>
+    </div>
+    <!-- Shown instead of the form until a signed link unlocks it - see
+         REVIEW_GATED in assets/app-reviews.js. Reviews here only come
+         from people who actually downloaded it: about a week after a
+         confirmed download, an email goes out with a link that opens
+         this. Nobody types an address to get one - it just arrives. -->
+    <div class="rv-locked" hidden>
+      <h3>Reviews come from people who've used it.</h3>
+      <p>Download Nebula Tide, and about a week in I'll email you asking what you think — that link is what opens this.</p>
     </div>
   </div>
 </section>

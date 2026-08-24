@@ -10,12 +10,13 @@
      .rv-list       the approved reviews themselves
      .rv-form       the leave-a-review form
 
-   Nothing here needs a key beyond the publishable one already public in
-   every page on this site. A review is written straight to a table
-   nobody can read back, the same shape as the mailing list - a visitor
-   can add one and can never see what anyone else wrote through that
-   door, only through app_reviews_public, which shows approved rows
-   only.
+   Reading is direct - the publishable key already public on every page
+   can list approved reviews and download counts, both harmless to hand
+   to anyone. Posting one is not: that goes through POST /api/review on
+   the Worker, not straight to Supabase, because some apps (see
+   REVIEW_GATED below) only accept a review from someone who arrived
+   through the signed link a review-invite email sends about a week
+   after a confirmed download - a check only the Worker can make.
 
    Text from a stranger goes in through textContent, never innerHTML.
    A review can contain anything somebody typed, including a stray
@@ -26,6 +27,11 @@
   var SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
   var SUPABASE_KEY = 'sb_publishable_PlVBmRgFdhTkVMurXLiBFQ_NjiVssQp';
   var app = (document.body.getAttribute('data-app') || '').toLowerCase();
+
+  /* Apps whose review form only opens with the signed link from the
+     review-invite email (see worker.js's REVIEW_INVITE_APPS - keep the
+     two lists the same). Everything else posts a review straight away. */
+  var REVIEW_GATED = { nebulatide: true };
 
   function esc(s) { return String(s == null ? '' : s); }
 
@@ -174,6 +180,33 @@
   var form = document.querySelector('.rv-form');
   if (!form) return;
 
+  /* A gated app's form only opens for someone who arrived through the
+     signed link the review-invite email sends about a week after a
+     confirmed download. The token rides in on ?rv= once, then lives in
+     localStorage so the same browser can still leave a review after
+     closing that email and coming back later - reloading or bookmarking
+     the page does not lose it, and it does not sit in the visible URL
+     any longer than the one page load that reads it. */
+  var tokenKey = 'as-rv-' + app;
+  var params = new URLSearchParams(location.search);
+  var urlToken = params.get('rv');
+  if (urlToken) {
+    try { localStorage.setItem(tokenKey, urlToken); } catch (e) {}
+    params.delete('rv');
+    var clean = location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash;
+    history.replaceState(null, '', clean);
+  }
+  var token = urlToken || (function () { try { return localStorage.getItem(tokenKey) || ''; } catch (e) { return ''; } })();
+
+  var locked = !!REVIEW_GATED[app] && !token;
+  var lockedEl = document.querySelector('.rv-locked');
+  if (locked) {
+    form.hidden = true;
+    if (lockedEl) lockedEl.hidden = false;
+    return;               // nothing below here applies until a token shows up
+  }
+  if (lockedEl) lockedEl.hidden = true;
+
   var picked = 0;
   var pickerEls = form.querySelectorAll('.rv-pick .star');
   pickerEls.forEach(function (el, i) {
@@ -214,14 +247,22 @@
     go.disabled = true; go.textContent = 'Sending';
     say('');
 
-    rpc('submit_app_review', { p_app: app, p_rating: picked, p_name: name || null, p_body: body })
+    // Reviews are written through the Worker, not Supabase directly - see
+    // /api/review in worker.js. The token, when this app needs one, rides
+    // along here rather than being trusted from anything client-side.
+    fetch('/api/review', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ app: app, rating: picked, name: name || null, body: body, rv: token })
+    })
+      .then(function (r) { return r.json().then(function (j) { return r.ok ? j : Promise.reject(j); }); })
       .then(function () {
         form.hidden = true;
         var done = form.parentElement.querySelector('.rv-done');
         if (done) done.hidden = false;
       })
-      .catch(function () {
-        say('Could not send that. Try again in a moment.', true);
+      .catch(function (j) {
+        say((j && j.error) || 'Could not send that. Try again in a moment.', true);
         go.disabled = false; go.textContent = 'Post review';
       });
   });

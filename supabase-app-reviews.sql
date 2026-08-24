@@ -79,6 +79,13 @@ grant usage, select on sequence public.app_reviews_id_seq to authenticated;
 --  review and can never read the table back, so nothing they submit can
 --  be harvested through this door. It goes in marked pending. Nothing
 --  is public until a person at the studio has read it.
+--
+--  Called only by the Worker now, with its own service key - never with
+--  the publishable key a browser holds. Nebula Tide's review form only
+--  ever lets the Worker submit one after checking a signed invite link;
+--  routing every app's submission through the same door, instead of
+--  leaving PulseRoom writable straight from any browser with the public
+--  key, means there is one place this ever happens, not two.
 -- =====================================================================
 
 create or replace function public.submit_app_review(
@@ -106,8 +113,8 @@ begin
 end;
 $$;
 
-revoke all on function public.submit_app_review(text,int,text,text) from public;
-grant execute on function public.submit_app_review(text,int,text,text) to anon, authenticated;
+revoke all on function public.submit_app_review(text,int,text,text) from public, anon, authenticated;
+grant execute on function public.submit_app_review(text,int,text,text) to service_role;
 
 
 -- =====================================================================

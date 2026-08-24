@@ -66,9 +66,11 @@ export default {
         }
       }
 
-      // the only thing on this site that accepts a POST
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/download') {
         return await handoutDownload(request, env);
+      }
+      if (request.method === 'POST' && new URL(request.url).pathname === '/api/review') {
+        return await submitReview(request, env);
       }
     } catch (e) {
       // fall through: a broken blog is not a reason for a broken site
@@ -85,6 +87,13 @@ export default {
     } catch (e) {
       return new Response('Not found', { status: 404 });
     }
+  },
+
+  /* Once a day. Cloudflare's own clock, not a request - nobody is
+     waiting on this, so a slow run costs nothing but does not need to
+     be fast either. See sendReviewInvites for what it actually does. */
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(sendReviewInvites(env));
   }
 };
 
@@ -180,6 +189,17 @@ const INSTALLERS = {
                          as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
                          dropbox: 'https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0' }
 };
+
+/* Plain names for the review-invite email, decoupled from the
+   platform-specific installer titles above ("Nebula Tide for Windows"
+   reads wrong in "how's Nebula Tide for Windows working out?"). */
+const APP_TITLES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide' };
+
+/* The only apps whose review form requires the signed link from the
+   invite email. Add an app here once it has a real download history to
+   ask about; nothing else changes - submitReview and sendReviewInvites
+   both read this same list. */
+const REVIEW_INVITE_APPS = ['nebulatide'];
 
 /* Turn an ordinary Dropbox share link into one that hands over bytes
    instead of Dropbox's own preview page. dl=1 is the documented way to
@@ -477,6 +497,168 @@ async function serveInstaller(app, platform, url, env, request) {
   const partial = object.range && ('body' in object);
   return new Response(object.body,
     { status: partial && request.headers.has('range') ? 206 : 200, headers: headers });
+}
+
+
+/* ---------------------------------------------------------------------
+   reviews
+
+   The publishable key that every page already carries can read the
+   approved ones and count downloads - both harmless to hand to anyone,
+   which is why app-reviews.js still talks to Supabase directly for
+   those. Writing one is different: submit_app_review now only answers
+   to the Worker's own service key, so POST /api/review is the one door
+   a review goes through, for every app.
+
+   For an app in REVIEW_INVITE_APPS that door only opens with the
+   signed link this file emails out on its own schedule - see
+   sendReviewInvites below. Any other app's form has no such link to
+   check, so it posts through here exactly as if the token check were
+   not there at all.
+   --------------------------------------------------------------------- */
+
+async function submitReview(request, env) {
+  const say = (obj, status) => new Response(JSON.stringify(obj), {
+    status: status || 200,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
+  });
+
+  if (!env.SUPABASE_SERVICE_KEY || !env.DOWNLOAD_SECRET) {
+    return say({ error: 'Reviews are not set up yet.' }, 503);
+  }
+
+  let body = {};
+  try { body = await request.json(); } catch (e) {}
+
+  const app    = String(body.app || '').toLowerCase().slice(0, 40);
+  const rating = parseInt(body.rating, 10);
+  const name   = body.name ? String(body.name).slice(0, 60) : null;
+  const text   = String(body.body || '').slice(0, 2000);
+  const rv     = String(body.rv || '');
+
+  if (!APP_TITLES[app])             return say({ error: 'No such app.' }, 404);
+  if (!(rating >= 1 && rating <= 5)) return say({ error: 'Pick a rating first.' }, 400);
+  if (!text.trim())                 return say({ error: 'Say a little about it.' }, 400);
+
+  if (REVIEW_INVITE_APPS.includes(app)) {
+    const dot = rv.indexOf('.');
+    const expires = dot > 0 ? parseInt(rv.slice(0, dot), 10) : 0;
+    const sig = dot > 0 ? rv.slice(dot + 1) : '';
+    const want = expires ? await sign(env.DOWNLOAD_SECRET, ['review', app, expires].join(':')) : '';
+    if (!expires || Date.now() > expires || !sig || !sameString(sig, want)) {
+      return say({ error: 'Reviews for this app come from the link in the follow-up ' +
+        'email sent about a week after downloading it.' }, 403);
+    }
+  }
+
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/submit_app_review', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json',
+                 apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+      body: JSON.stringify({ p_app: app, p_rating: rating, p_name: name, p_body: text })
+    });
+    if (!r.ok) {
+      console.error('submit_app_review refused:', r.status, await r.text());
+      return say({ error: 'Could not save that. Try again shortly.' }, 502);
+    }
+  } catch (e) {
+    return say({ error: 'Could not reach the studio.' }, 502);
+  }
+
+  return say({ ok: true });
+}
+
+/* Once a day: for every app in REVIEW_INVITE_APPS, ask the database who
+   downloaded it a week or more ago and has not already been asked, mail
+   each of them a signed link, and only mark an address asked once the
+   email provider has confirmed the letter actually went. A failed send
+   is retried tomorrow rather than silently recorded as done. */
+async function sendReviewInvites(env) {
+  if (!env.SUPABASE_SERVICE_KEY || !env.DOWNLOAD_SECRET || !env.RESEND_API_KEY) {
+    console.error('review invites: SUPABASE_SERVICE_KEY, DOWNLOAD_SECRET or RESEND_API_KEY not set, skipping');
+    return;
+  }
+
+  for (const app of REVIEW_INVITE_APPS) {
+    let candidates = [];
+    try {
+      const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/review_invite_candidates', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json',
+                   apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+        body: JSON.stringify({ p_app: app })
+      });
+      if (r.ok) candidates = await r.json();
+      else console.error('review_invite_candidates refused:', app, r.status, await r.text());
+    } catch (e) { console.error('review_invite_candidates unreachable:', app, e && e.message); }
+
+    for (const row of candidates) {
+      const email = String(row.email || '').toLowerCase();
+      if (!looksLikeEmail(email)) continue;
+
+      // A month to open the letter and click through - long enough for
+      // someone who reads email in batches, not so long the link is
+      // still sitting in an inbox at the start of next quarter.
+      const expires = Date.now() + 30 * 24 * 60 * 60 * 1000;
+      const sig = await sign(env.DOWNLOAD_SECRET, ['review', app, expires].join(':'));
+      const link = SITE + '/' + app + '?rv=' + expires + '.' + sig;
+
+      const sent = await sendReviewInvite(env, email, APP_TITLES[app], link);
+      if (!sent) { console.error('review invite email failed to send:', email, app); continue; }
+
+      try {
+        const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/mark_review_invite_sent', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json',
+                     apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+          body: JSON.stringify({ p_email: email, p_app: app })
+        });
+        if (!r.ok) console.error('mark_review_invite_sent refused:', email, app, r.status, await r.text());
+      } catch (e) { console.error('mark_review_invite_sent unreachable:', email, app, e && e.message); }
+    }
+  }
+}
+
+async function sendReviewInvite(env, email, appTitle, link) {
+  const text =
+    'You downloaded ' + appTitle + ' a little over a week ago.\n\n' +
+    'Got a minute to say what you think? It helps other people decide, ' +
+    'and helps me know what to fix next.\n\n' +
+    link + '\n\n' +
+    'That link is yours alone and works for 30 days. If you would rather ' +
+    'not, ignore this - you will not be asked again about this download.\n\n' +
+    'Amanorsac Studio\n' + SITE + '\n';
+
+  const html =
+    '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:16px;' +
+    'line-height:1.6;color:#1C1916;max-width:520px">' +
+    '<p style="margin:0 0 18px">You downloaded <b>' + esc(appTitle) + '</b> a little over a week ago.</p>' +
+    '<p style="margin:0 0 22px">Got a minute to say what you think? It helps other ' +
+      'people decide, and helps me know what to fix next.</p>' +
+    '<p style="margin:0 0 22px"><a href="' + esc(link) + '" ' +
+      'style="display:inline-block;background:#1C1916;color:#fff;text-decoration:none;' +
+      'padding:13px 22px;border-radius:9px;font-weight:600">Leave a rating</a></p>' +
+    '<p style="margin:0 0 18px;color:#6B655C;font-size:14px">' +
+      'That link is yours alone and works for 30 days. If you would rather not, ' +
+      'ignore this &mdash; you will not be asked again about this download.</p>' +
+    '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json',
+                 Authorization: 'Bearer ' + env.RESEND_API_KEY },
+      body: JSON.stringify({
+        from: env.NOTIFY_FROM || 'Amanorsac Studio <hello@amanorsac.studio>',
+        to: [email],
+        subject: 'How’s ' + appTitle + ' working out?',
+        text: text, html: html
+      })
+    });
+    return r.ok;
+  } catch (e) { return false; }
 }
 
 
