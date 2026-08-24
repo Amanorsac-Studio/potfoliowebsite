@@ -46,6 +46,16 @@
     { "binding": "DOWNLOADS", "bucket_name": "amanorsac-downloads" }
   ],
 
+  /* Once a day, worker.js's scheduled() runs and emails a review-invite
+     link to anyone who downloaded a REVIEW_INVITE_APPS app a week or
+     more ago and hasn't already been asked. 15:00 UTC is late morning
+     across the US and evening in Europe - no real science to it beyond
+     not being the middle of the night anywhere Nebula Tide has actually
+     been downloaded so far. */
+  "triggers": {
+    "crons": ["0 15 * * *"]
+  },
+
   "assets": {
     "directory": ".",
     // worker.js reaches the files through this name
