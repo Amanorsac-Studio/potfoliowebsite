@@ -425,25 +425,43 @@ async function serveInstaller(app, platform, url, env, request) {
     if (item.dropbox) {
       let upstream;
       try {
-        upstream = await fetch(dropboxDirect(item.dropbox));
+        // Dropbox's dl=1 trick does not reliably hand over raw bytes to a
+        // request with no browser session behind it - without something
+        // that looks like a browser, a large file can come back as a
+        // small HTML interstitial ("too many people are downloading
+        // this file", a confirmation page) instead, still with a 200.
+        upstream = await fetch(dropboxDirect(item.dropbox), {
+          headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36' }
+        });
       } catch (e) { upstream = null; }
-      if (upstream && upstream.ok && upstream.body) {
+      const upstreamType = upstream && (upstream.headers.get('content-type') || '');
+      const upstreamLen = upstream && parseInt(upstream.headers.get('content-length') || '0', 10);
+      // Below this, it is never a real installer - every current build is
+      // well over 50 MB - so anything smaller is Dropbox's interstitial,
+      // not the file, and must not be handed to a visitor as one.
+      const looksReal = upstream && upstream.ok && upstream.body &&
+        !/html|text/i.test(upstreamType) &&
+        (!upstreamLen || upstreamLen > 50 * 1024 * 1024);
+      if (looksReal) {
         const headers = new Headers();
         headers.set('content-type', 'application/zip');
         headers.set('content-disposition', 'attachment; filename="' + item.as + '"');
         headers.set('cache-control', 'private, no-store');
-        const len = upstream.headers.get('content-length');
-        if (len) headers.set('content-length', len);
+        if (upstreamLen) headers.set('content-length', String(upstreamLen));
         return new Response(upstream.body, { status: 200, headers });
       }
+      console.error('dropbox bridge did not return the installer:', app, platform,
+        upstream ? upstream.status + ' ' + upstreamType + ' ' + upstreamLen + 'b' : 'fetch failed');
     }
-    /* Neither R2 nor a bridge had it. That is the studio's mistake, not
-       the visitor's, and answering it with the same blank 404 a forged
-       ticket gets means nobody ever finds out which of the two
-       happened. */
+    /* Neither R2 nor a working bridge had it. That is the studio's
+       mistake, not the visitor's, and answering it with the same blank
+       404 a forged ticket gets means nobody ever finds out which of the
+       two happened. */
     return confirmPage('That file is not where it should be.',
-      'The link was good - the installer is missing from storage. It should be at ' +
-      item.keys[0] + ' in the amanorsac-downloads bucket. Try again shortly.', null, 503);
+      'The link was good, but the installer could not be handed over right now. ' +
+      'It should be at ' + item.keys[0] + ' in the amanorsac-downloads bucket' +
+      (item.dropbox ? ', or the Dropbox bridge standing in for it just failed' : '') +
+      '. Try again shortly.', null, 503);
   }
 
   const headers = new Headers();
