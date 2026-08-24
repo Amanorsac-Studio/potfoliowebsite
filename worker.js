@@ -164,22 +164,21 @@ const INSTALLERS = {
                          as: 'PulseRoom-Windows.zip', title: 'PulseRoom for Windows' },
   'pulseroom:mac':     { keys: ['pulseroom/PulseRoom-macOS.zip', 'PulseRoom-macOS.zip'],
                          as: 'PulseRoom-macOS.zip',   title: 'PulseRoom for Mac' },
-  /* Windows only, which is what the app's own page claims - macOS is
-     "planned", and the map must not promise what the bucket cannot
-     hand over. Several candidate keys because the upload happened
-     before the name was agreed. */
+  /* dropbox is a bridge, not a home. As of 1.2.2 neither platform has a
+     working R2 copy - the CLI tooling to get a proper upload talking to
+     R2 is still not sorted, so both links stand in until it is. The R2
+     keys are left in place on purpose: the day a real upload lands at
+     one of them, delete that platform's dropbox line and stop deleting
+     the stale R2 object before every future release. Until then, the
+     R2 object at these keys MUST stay empty/deleted, because the R2
+     lookup above always runs first - a stale file sitting there would
+     keep being served instead of the current Dropbox link, silently. */
   'nebulatide:windows':{ keys: ['nebulatide/NebulaTide-Windows.zip', 'NebulaTide-Windows.zip'],
-                         as: 'NebulaTide-Windows.zip', title: 'Nebula Tide for Windows' },
-  /* dropbox is a bridge, not a home. R2 has no working copy of this
-     one yet - the file is over the Cloudflare dashboard's 300 MB
-     upload cap and getting a proper S3 tool talking to R2 is still in
-     progress - so this link stands in until it does. Delete this line
-     the day the real upload succeeds; nothing else in this file has to
-     change when that happens, because the R2 lookup above always runs
-     first and this is only ever reached when it comes up empty. */
+                         as: 'NebulaTide-Windows.zip', title: 'Nebula Tide for Windows',
+                         dropbox: 'https://www.dropbox.com/scl/fi/mh40nxu467ouw0uka6si9/NebulaTide-Windows.zip?rlkey=ngvoa116wi7xognir4frynqwn&st=k7lhh0at&dl=0' },
   'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
                          as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
-                         dropbox: 'https://www.dropbox.com/scl/fi/5ad1y3i315bqlvespji7j/NebulaTide-macOS.zip?rlkey=8bcexdmjpsrfubwn68d542oox&st=kvlq3du5&dl=0' }
+                         dropbox: 'https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0' }
 };
 
 /* Turn an ordinary Dropbox share link into one that hands over bytes
