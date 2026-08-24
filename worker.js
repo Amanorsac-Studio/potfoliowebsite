@@ -163,8 +163,33 @@ const INSTALLERS = {
   'pulseroom:windows': { keys: ['pulseroom/PulseRoom-Windows.zip', 'PulseRoom-Windows.zip'],
                          as: 'PulseRoom-Windows.zip', title: 'PulseRoom for Windows' },
   'pulseroom:mac':     { keys: ['pulseroom/PulseRoom-macOS.zip', 'PulseRoom-macOS.zip'],
-                         as: 'PulseRoom-macOS.zip',   title: 'PulseRoom for Mac' }
+                         as: 'PulseRoom-macOS.zip',   title: 'PulseRoom for Mac' },
+  /* Windows only, which is what the app's own page claims - macOS is
+     "planned", and the map must not promise what the bucket cannot
+     hand over. Several candidate keys because the upload happened
+     before the name was agreed. */
+  'nebulatide:windows':{ keys: ['nebulatide/NebulaTide-Windows.zip', 'NebulaTide-Windows.zip'],
+                         as: 'NebulaTide-Windows.zip', title: 'Nebula Tide for Windows' },
+  /* dropbox is a bridge, not a home. R2 has no working copy of this
+     one yet - the file is over the Cloudflare dashboard's 300 MB
+     upload cap and getting a proper S3 tool talking to R2 is still in
+     progress - so this link stands in until it does. Delete this line
+     the day the real upload succeeds; nothing else in this file has to
+     change when that happens, because the R2 lookup above always runs
+     first and this is only ever reached when it comes up empty. */
+  'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
+                         as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
+                         dropbox: 'https://www.dropbox.com/scl/fi/5ad1y3i315bqlvespji7j/NebulaTide-macOS.zip?rlkey=8bcexdmjpsrfubwn68d542oox&st=kvlq3du5&dl=0' }
 };
+
+/* Turn an ordinary Dropbox share link into one that hands over bytes
+   instead of Dropbox's own preview page. dl=1 is the documented way to
+   ask for that; anything already asking for it is left alone. */
+function dropboxDirect(link) {
+  const u = new URL(link);
+  u.searchParams.set('dl', '1');
+  return u.toString();
+}
 
 const TICKET_MINUTES = 15;
 
@@ -234,14 +259,21 @@ async function handoutDownload(request, env) {
   /* Recorded now, but not yet confirmed. An address that never gets
      clicked stays in the list marked unconfirmed and is never written
      to - which is the point of doing it this way. */
+  /* The download must never be blocked by bookkeeping, but bookkeeping
+     that fails must at least say so: fetch only throws on network
+     failure, and a missing database function answers 404, politely and
+     invisibly. For a while that is exactly what happened - people were
+     handed files with nothing written down. These land in the Worker's
+     live logs. */
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/rpc/record_subscriber', {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/record_subscriber', {
       method: 'POST',
       headers: { 'content-type': 'application/json',
                  apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
       body: JSON.stringify({ p_email: email, p_app: app, p_source: source, p_consent: true })
     });
-  } catch (e) {}
+    if (!r.ok) console.error('record_subscriber refused:', r.status, await r.text());
+  } catch (e) { console.error('record_subscriber unreachable:', e && e.message); }
 
   /* The letter carries a signed link. Signed over the address as well as
      the file, so it opens the download for that person and nobody else,
@@ -324,13 +356,15 @@ async function confirmDownload(url, env) {
   if (!sameString(sig, want)) return confirmPage('That link is not one of ours.', null, null);
 
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/rpc/confirm_subscriber', {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/confirm_subscriber', {
       method: 'POST',
       headers: { 'content-type': 'application/json',
                  apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY },
       body: JSON.stringify({ p_email: email, p_app: app, p_platform: platform })
     });
-  } catch (e) {}
+    // the download proceeds either way; the loss is only the record of it
+    if (!r.ok) console.error('confirm_subscriber refused:', r.status, await r.text());
+  } catch (e) { console.error('confirm_subscriber unreachable:', e && e.message); }
 
   const t = Date.now() + TICKET_MINUTES * 60 * 1000;
   const path = '/download/' + app + '/' + platform;
@@ -356,7 +390,7 @@ function confirmPage(heading, note, ticket, status) {
 (note ? '<p>' + esc(note) + '</p>' : '') +
 (ticket ? '<a class="b" href="' + esc(ticket) + '" download>Download now</a>' +
           '<script>setTimeout(function(){location.href=' + JSON.stringify(ticket) + ';},700);<\/script>'
-        : '<a class="b" href="' + SITE + '/pulseroom">Back to PulseRoom</a>') +
+        : '<a class="b" href="' + SITE + '/apps.html">Back to the App Store</a>') +
 '<a class="s" href="' + SITE + '">amanorsac.studio</a>' +
 '</main></body></html>';
   return new Response(page, {
@@ -381,11 +415,33 @@ async function serveInstaller(app, platform, url, env, request) {
     object = await env.DOWNLOADS.get(key, { range: request.headers, onlyIf: request.headers });
     if (object) break;
   }
-  /* The ticket was good and the file is not in the bucket. That is the
-     studio's mistake, not the visitor's, and answering it with the same
-     blank 404 that a forged ticket gets means nobody ever finds out
-     which of the two happened. */
+
   if (!object) {
+    /* R2 does not have it. Dropbox, if one is configured, is a bridge
+       until it does - fetched here, on the Worker's side, so the
+       visitor's browser only ever talks to amanorsac.studio. Nothing
+       about the gate changes: the ticket above already proved the
+       address was confirmed and fifteen minutes have not passed:
+       this only decides where the bytes come from once that is true. */
+    if (item.dropbox) {
+      let upstream;
+      try {
+        upstream = await fetch(dropboxDirect(item.dropbox));
+      } catch (e) { upstream = null; }
+      if (upstream && upstream.ok && upstream.body) {
+        const headers = new Headers();
+        headers.set('content-type', 'application/zip');
+        headers.set('content-disposition', 'attachment; filename="' + item.as + '"');
+        headers.set('cache-control', 'private, no-store');
+        const len = upstream.headers.get('content-length');
+        if (len) headers.set('content-length', len);
+        return new Response(upstream.body, { status: 200, headers });
+      }
+    }
+    /* Neither R2 nor a bridge had it. That is the studio's mistake, not
+       the visitor's, and answering it with the same blank 404 a forged
+       ticket gets means nobody ever finds out which of the two
+       happened. */
     return confirmPage('That file is not where it should be.',
       'The link was good - the installer is missing from storage. It should be at ' +
       item.keys[0] + ' in the amanorsac-downloads bucket. Try again shortly.', null, 503);
