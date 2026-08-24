@@ -82,3 +82,13 @@
 # use the old copy once while it fetches the new one in the background.
 /assets/*
   Cache-Control: public, max-age=3600, stale-while-revalidate=604800
+
+# The desktop app's update check. It reads this on every launch, so it is
+# kept small and cheap - five minutes of caching means a new release is
+# picked up quickly without every launch hitting the origin. Content-Type
+# is set explicitly rather than trusted to guesswork, because the app
+# parses this as JSON, not HTML - a wrong type here and the update check
+# silently never fires.
+/nebulatide/latest.json
+  Content-Type: application/json
+  Cache-Control: public, max-age=300
