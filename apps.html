@@ -392,6 +392,15 @@ body[data-room="apps"] .wrap{max-width:1280px}
   box-shadow:0 20px 54px rgba(0,0,0,.6), 0 0 44px -18px var(--k)}
 .app-shot img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center top;display:block}
 
+/* Still real screenshots, not mockups - dimmed and labelled rather than
+   swapped out, so the capture keeps proving the app is real work in
+   progress instead of a promise with nothing behind it. */
+.app-shot .soon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(5,4,11,.72)}
+.app-shot .soon span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.4);
+  border-radius:999px;padding:9px 20px;backdrop-filter:blur(2px)}
+
 .app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.6;
   text-align:center;margin:20px 0 0;padding:0 4px}
 .app-badge{text-align:center;margin:12px 0 0;font-family:var(--mono);
@@ -684,7 +693,8 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
           <p class="app-say">Live performance, perfected.</p>
         </span>
       </div>
-      <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy"></div>
+      <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
       <p class="app-note">Multitrack playback and stem performance for worship teams, bands and artists on stage.</p>
       <p class="app-go">Explore →</p>
     </a>
@@ -707,7 +717,8 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
           <p class="app-say">Share. Simplify. Serve.</p>
         </span>
       </div>
-      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy"></div>
+      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
       <p class="app-note">The rehearsal studio for choirs. Every singer gets their own harmony part to practise at home.</p>
       <p class="app-go">Explore →</p>
     </a>
