@@ -291,7 +291,8 @@
   .diagcell .v.amber{ color:var(--amber); }
 
   /* ---------- use cases ---------- */
-  .cases{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:var(--radius-m); overflow:hidden; }
+  .cases{ display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:var(--radius-m); overflow:hidden; }
+  @media (max-width:1080px){ .cases{ grid-template-columns:repeat(3,1fr); } }
   @media (max-width:900px){ .cases{ grid-template-columns:repeat(2,1fr); } }
   @media (max-width:520px){ .cases{ grid-template-columns:1fr; } }
   .case{ background:var(--panel); padding:26px 22px; }
@@ -468,7 +469,7 @@
         <div class="idx"><b>02</b>STREAM</div>
         <div>
           <h3>Opens its own WASAPI connection to Device B</h3>
-          <p>Independent of ASIO entirely. Runs in shared mode by design, so it won't fight your interface — or anything else — for exclusive access to a device.</p>
+          <p>Independent of ASIO entirely. Runs in shared mode by design, so it won't fight your interface — or anything else — for exclusive access to a device. Switching devices happens on a background thread, so the plugin window never locks up while it reconnects.</p>
         </div>
       </div>
       <div class="specrow">
@@ -476,6 +477,13 @@
         <div>
           <h3>Keeps two unsynced clocks locked together</h3>
           <p>Your DAW and the second device run on separate hardware clocks that drift apart by nature. A servo loop nudges the resampling ratio by fractions of a sample per second — the buffer stays centred, and you never hear it happen.</p>
+        </div>
+      </div>
+      <div class="specrow">
+        <div class="idx"><b>04</b>ROUTE</div>
+        <div>
+          <h3>Picks a specific pair on multi-channel interfaces</h3>
+          <p>On an interface with more than two outputs, choose exactly which pair SecondOut uses — outputs 1-2, 3-4, and so on. Run several SecondOut instances at once, each on its own pair, to send different mixes out different outputs of the same interface simultaneously.</p>
         </div>
       </div>
     </div>
@@ -499,6 +507,7 @@
         <div class="callout"><span class="mark" style="background:var(--blue)"></span><div><h4>Buffer health, not a black box</h4><p>Watch the drift correction hold centre. If it starts creeping toward an edge, you'll see it before it becomes a dropout.</p></div></div>
         <div class="callout"><span class="mark" style="background:var(--amber)"></span><div><h4>Every device your system can see</h4><p>Physical interfaces or virtual cables — pick any WASAPI output, rescan when something changes.</p></div></div>
         <div class="callout"><span class="mark" style="background:var(--red)"></span><div><h4>Clear about failure, not silent about it</h4><p>Device disconnected, or another app already has it open — SecondOut says which, and what to do next.</p></div></div>
+        <div class="callout"><span class="mark" style="background:var(--green)"></span><div><h4>A channel picker for multi-output interfaces</h4><p>Shows up automatically once a device reports more than two outputs — pick the exact pair this instance should use.</p></div></div>
       </div>
     </div>
   </div>
@@ -517,7 +526,7 @@
         <div class="diagcell"><div class="k">Also included</div><div class="v">Standalone app</div></div>
         <div class="diagcell"><div class="k">Platform</div><div class="v">Windows 10 / 11</div></div>
         <div class="diagcell"><div class="k">Output mode</div><div class="v green">WASAPI shared</div></div>
-        <div class="diagcell"><div class="k">Channels</div><div class="v">Stereo</div></div>
+        <div class="diagcell"><div class="k">Channels</div><div class="v green">Selectable pair</div></div>
         <div class="diagcell"><div class="k">Buffer window</div><div class="v">~400 ms</div></div>
         <div class="diagcell"><div class="k">Drift correction</div><div class="v amber">&lt; 10 ppm servo</div></div>
         <div class="diagcell"><div class="k">Sample rate</div><div class="v">Auto-matched</div></div>
@@ -538,6 +547,7 @@
       <div class="case"><div class="eyebrow">Church &amp; live AV</div><p>Send the mix to a streaming rig during a service without repatching the console or your monitor path.</p></div>
       <div class="case"><div class="eyebrow">Podcasting &amp; streaming</div><p>Route your session into OBS or a capture app through a virtual cable, no exclusive-mode conflicts.</p></div>
       <div class="case"><div class="eyebrow">Safety recording</div><p>Keep a parallel record of the mix on a second device, isolated from your primary signal chain.</p></div>
+      <div class="case"><div class="eyebrow">Multi-mix distribution</div><p>Run several SecondOut instances at once, each on its own output pair of the same interface, to send different mixes to different destinations simultaneously.</p></div>
     </div>
   </div>
 </section>
