@@ -360,7 +360,7 @@ body[data-room="apps"] .wrap{max-width:1280px}
   background:#EAE4FF;box-shadow:0 0 18px 4px rgba(160,140,255,.7)}
 
 /* ---------- the four columns ---------- */
-.shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,26px);
+.shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(14px,2vw,26px);
   padding:clamp(38px,6vh,68px) 0 0}
 .app{display:flex;flex-direction:column;text-decoration:none;color:inherit;
   transition:transform var(--dur) var(--ease-out)}
@@ -392,6 +392,15 @@ body[data-room="apps"] .wrap{max-width:1280px}
   box-shadow:0 20px 54px rgba(0,0,0,.6), 0 0 44px -18px var(--k)}
 .app-shot img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center top;display:block}
 
+/* Still real screenshots, not mockups - dimmed and labelled rather than
+   swapped out, so the capture keeps proving the app is real work in
+   progress instead of a promise with nothing behind it. */
+.app-shot .soon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(5,4,11,.72)}
+.app-shot .soon span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.4);
+  border-radius:999px;padding:9px 20px;backdrop-filter:blur(2px)}
+
 .app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.6;
   text-align:center;margin:20px 0 0;padding:0 4px}
 .app-badge{text-align:center;margin:12px 0 0;font-family:var(--mono);
@@ -403,8 +412,9 @@ body[data-room="apps"] .wrap{max-width:1280px}
   color:var(--k);opacity:.72;transition:opacity var(--dur) var(--ease-out)}
 .app:hover .app-go{opacity:1}
 
-@media (max-width:900px){ .shelf{grid-template-columns:1fr 1fr;gap:26px} }
-@media (max-width:520px){ .shelf{grid-template-columns:1fr;gap:38px} }
+@media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:700px){ .shelf{grid-template-columns:1fr 1fr;gap:26px} }
+@media (max-width:480px){ .shelf{grid-template-columns:1fr;gap:38px} }
 
 /* ---------- what they all have in common ---------- */
 .traits{display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;
@@ -622,6 +632,11 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       "@type": "ListItem",
       "position": 4,
       "url": "https://amanorsac.studio/pulseroom"
+    },
+    {
+      "@type": "ListItem",
+      "position": 5,
+      "url": "https://amanorsac.studio/secondout"
     }
   ]
 }
@@ -684,7 +699,8 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
           <p class="app-say">Live performance, perfected.</p>
         </span>
       </div>
-      <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy"></div>
+      <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
       <p class="app-note">Multitrack playback and stem performance for worship teams, bands and artists on stage.</p>
       <p class="app-go">Explore →</p>
     </a>
@@ -707,7 +723,8 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
           <p class="app-say">Share. Simplify. Serve.</p>
         </span>
       </div>
-      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy"></div>
+      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
       <p class="app-note">The rehearsal studio for choirs. Every singer gets their own harmony part to practise at home.</p>
       <p class="app-go">Explore →</p>
     </a>
@@ -759,6 +776,29 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-go">Explore →</p>
     </a>
 
+    <a class="app" href="secondout.html" style="--k:#3fe083">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 0%,#12351F 0%,#0A1F14 58%,#05100B 100%)">
+          <!-- SecondOut: one source splitting into an unchanged path and a new one -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
+            <rect x="1" y="9" width="7" height="6" rx="1.6" fill="#3fe083" opacity=".9"/>
+            <path d="M8 12 H12 M12 12 V6 H17 M12 12 V18 H17" stroke="#3fe083" stroke-width="1.8" opacity=".5"/>
+            <rect x="17" y="3" width="6" height="6" rx="1.6" fill="#3fe083" opacity=".28"/>
+            <rect x="17" y="15" width="6" height="6" rx="1.6" fill="#3fe083" opacity=".95"/>
+          </svg>
+        </span>
+        <span>
+          <h2 class="app-name">Second<em>Out</em></h2>
+          <p class="app-say">One master bus. Two outputs.</p>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window showing an active stream to a second output device, buffer health, and drift correction" loading="lazy"></div>
+      <p class="app-note">Mirrors your DAW’s master bus to a second output device — feed a switcher, stream, or record a safety copy, without touching your ASIO interface.</p>
+      <p class="app-badge presale">$19 · pre-order — still being built</p>
+      <p class="app-go">Explore →</p>
+    </a>
+
   </section>
 
   <!-- What is true of all four, so it does not need saying four times. -->
@@ -787,7 +827,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
   <section id="access" class="close-cta">
     <h2>Want in?</h2>
-    <p>PulseRoom is free and rolling out now. HarmonieMD and Nebula Tide are in private testing, and PerformLive is deep in development. Tell us which one fits your team and you’ll hear back within two working days.</p>
+    <p>PulseRoom and Nebula Tide are free and rolling out now. HarmonieMD, PerformLive and SecondOut are still in development. Tell us which one fits your team and you’ll hear back within two working days.</p>
     <div class="hero-cta" style="justify-content:center">
       <a class="cta" href="about.html#contact">Get in touch <span class="go">→</span></a>
       <a class="cta ghost" href="index.html">Back to the studio</a>

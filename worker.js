@@ -813,7 +813,8 @@ const PAGES = [
   ['/performlive', 'monthly', '0.7'],
   ['/pulseroom',   'monthly', '0.7'],
   ['/harmoniemd',  'monthly', '0.7'],
-  ['/nebulatide',  'monthly', '0.7']
+  ['/nebulatide',  'monthly', '0.7'],
+  ['/secondout',   'monthly', '0.7']
 ];
 
 async function sitemap() {

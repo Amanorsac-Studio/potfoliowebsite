@@ -44,9 +44,20 @@
 <div class="auth-wrap">
   <a class="auth-back" href="index.html"><span>&#8592;</span> Back to the studio</a>
   <div class="auth">
-  <p class="eyebrow">Client portal</p>
-  <h1>Welcome back</h1>
-  <p class="sub">Sign in with the details the studio sent you.</p>
+  <p class="eyebrow">Amanorsac account</p>
+  <h1 id="h1">Welcome back</h1>
+  <p class="sub" id="sub">Sign in to your account.</p>
+
+  <!-- One account either way: a client the studio booked, or someone
+       who bought or downloaded an app. The toggle just picks which
+       form is on screen — signing in and creating an account both end
+       up in the same place, the account switcher below decides which
+       one you see right now. -->
+  <div class="switcher" role="tablist" aria-label="Sign in or create an account">
+    <button type="button" class="switcher-btn on" id="tab-in" role="tab" aria-selected="true">Sign in</button>
+    <button type="button" class="switcher-btn" id="tab-up" role="tab" aria-selected="false">Create account</button>
+  </div>
+
   <form id="f" novalidate>
     <div class="field"><label for="email">Email</label>
       <input id="email" type="email" autocomplete="email" required></div>
@@ -55,9 +66,22 @@
     <button class="btn" id="go" type="submit">Sign in</button>
     <p class="msg" id="m" role="status" aria-live="polite"></p>
   </form>
-  <p class="foot">Forgotten your password? <a href="#" id="forgot">Email me a reset link</a><br>
-  No account yet? The studio creates these — email
-  <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a>.</p>
+
+  <form id="signup-f" novalidate hidden>
+    <div class="field"><label for="su-name">Name</label>
+      <input id="su-name" type="text" autocomplete="name" required></div>
+    <div class="field"><label for="su-email">Email</label>
+      <input id="su-email" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="su-pw">Password</label>
+      <input id="su-pw" type="password" autocomplete="new-password" minlength="8" required></div>
+    <button class="btn" id="su-go" type="submit">Create account</button>
+    <p class="msg" id="su-m" role="status" aria-live="polite"></p>
+  </form>
+
+  <p class="foot" id="foot-in">Forgotten your password? <a href="#" id="forgot">Email me a reset link</a><br>
+  Bought or downloaded an app and don't have a password yet? <a href="#" id="go-signup">Create your account</a>.</p>
+  <p class="foot" id="foot-up" hidden>Already have an account? <a href="#" id="go-signin">Sign in</a> instead.<br>
+  Booked a mixing project? The studio may have already set your login up — try signing in with the details they sent you first.</p>
 </div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/portal.js"></script>
 <script>
@@ -65,9 +89,46 @@
 /* the portal lives one level down; this page does not */
 const PORTAL_DIR = location.origin + '/portal';
 
+/* Where to land after a successful sign-in or signup. Coming from a
+   specific app's Buy button lands back on that page, ready to pick up
+   where the purchase left off; anyone else goes to the dashboard, same
+   as before this existed. Only ever a same-site path — never an
+   attacker-supplied external URL — so a crafted ?next= cannot send
+   someone signing in here off to somewhere else entirely. */
+function nextUrl(){
+  const raw = new URLSearchParams(location.search).get('next') || '';
+  if(raw.startsWith('/')) return location.origin + raw;
+  return PORTAL_DIR + '/dashboard.html';
+}
+
 sb.auth.getSession().then(({data:{session}}) => {
-  if(session) location.replace(PORTAL_DIR + '/dashboard.html');
+  if(session) location.replace(nextUrl());
 });
+
+/* ---- sign in / create account switcher ---- */
+const tabIn = $('#tab-in'), tabUp = $('#tab-up');
+const foF = $('#f'), foUp = $('#signup-f');
+const footIn = $('#foot-in'), footUp = $('#foot-up');
+function showSignIn(){
+  tabIn.classList.add('on'); tabIn.setAttribute('aria-selected','true');
+  tabUp.classList.remove('on'); tabUp.setAttribute('aria-selected','false');
+  foF.hidden = false; foUp.hidden = true;
+  footIn.hidden = false; footUp.hidden = true;
+  $('#h1').textContent = 'Welcome back';
+  $('#sub').textContent = 'Sign in to your account.';
+}
+function showSignUp(){
+  tabUp.classList.add('on'); tabUp.setAttribute('aria-selected','true');
+  tabIn.classList.remove('on'); tabIn.setAttribute('aria-selected','false');
+  foUp.hidden = false; foF.hidden = true;
+  footUp.hidden = false; footIn.hidden = true;
+  $('#h1').textContent = 'Create your account';
+  $('#sub').textContent = 'One account covers every app and, if you book one, your mixing project too.';
+}
+tabIn.addEventListener('click', showSignIn);
+tabUp.addEventListener('click', showSignUp);
+$('#go-signup').addEventListener('click', e => { e.preventDefault(); showSignUp(); });
+$('#go-signin').addEventListener('click', e => { e.preventDefault(); showSignIn(); });
 
 $('#f').addEventListener('submit', async e => {
   e.preventDefault();
@@ -78,9 +139,9 @@ $('#f').addEventListener('submit', async e => {
   const { error } = await sb.auth.signInWithPassword({ email, password });
   go.disabled = false; go.textContent = 'Sign in';
   if(error){ return say(m, /Invalid/i.test(error.message)
-      ? 'That email and password do not match. Check the details the studio sent you.'
+      ? 'That email and password do not match.'
       : error.message, 'err'); }
-  location.replace(PORTAL_DIR + '/dashboard.html');
+  location.replace(nextUrl());
 });
 
 $('#forgot').addEventListener('click', async e => {
@@ -89,6 +150,33 @@ $('#forgot').addEventListener('click', async e => {
   if(!email) return say(m,'Type your email above first, then click this.','err');
   const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: PORTAL_DIR + '/reset.html' });
   say(m, error ? error.message : 'Check your inbox for the reset link.', error ? 'err' : 'ok');
+});
+
+$('#signup-f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const m = $('#su-m'), go = $('#su-go');
+  const full_name = $('#su-name').value.trim();
+  const email = $('#su-email').value.trim();
+  const password = $('#su-pw').value;
+  if(!full_name || !email || !password) return say(m,'Fill in every field.','err');
+  if(password.length < 8) return say(m,'Password needs to be at least 8 characters.','err');
+
+  go.disabled = true; go.textContent = 'Creating account';
+  const { data, error } = await sb.auth.signUp({
+    email, password,
+    options: { data: { full_name }, emailRedirectTo: location.origin + '/client.html' + location.search }
+  });
+  go.disabled = false; go.textContent = 'Create account';
+
+  if(error){
+    return say(m, /already registered|already exists/i.test(error.message)
+      ? 'An account already exists for that email — try signing in instead.'
+      : error.message, 'err');
+  }
+  // A project with "confirm your email" turned on hands back a user
+  // but no session; one with it off signs them straight in.
+  if(data.session){ location.replace(nextUrl()); return; }
+  say(m, 'Check your inbox to confirm ' + email + ', then come back and sign in.', 'ok');
 });
 
 </script>

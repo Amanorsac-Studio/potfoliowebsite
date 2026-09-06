@@ -1,9 +1,21 @@
 // =====================================================================
 //  stripe-webhook  ·  Supabase Edge Function
 //
-//  Stripe calls this when someone pays. We mark the invoice paid; the
-//  existing notify_on_invoice trigger then sends the client their
-//  receipt automatically. Nobody clicks anything.
+//  Stripe calls this when someone pays. Two different things can be
+//  getting paid for, told apart by which metadata key the checkout
+//  session carries:
+//
+//    metadata.invoice_id            a mixing-client invoice, created by
+//                                    create-payment-link. Marks it paid;
+//                                    the existing notify_on_invoice
+//                                    trigger sends the client their
+//                                    receipt automatically.
+//    metadata.app + metadata.user_id   an App Store purchase, created
+//                                    by create-app-checkout. Records a
+//                                    row in purchases for that account.
+//
+//  Nobody clicks anything either way - this is the one place both
+//  purchases actually complete.
 //
 //  Deploy:  name it exactly  stripe-webhook  ·  Verify JWT OFF
 //           (Stripe is not a signed-in user; authenticity is proven by
@@ -74,8 +86,6 @@ Deno.serve(async (req) => {
   if (event.type !== "checkout.session.completed") return json({ ignored: event.type });
 
   const session = event.data?.object ?? {};
-  const invoiceId = session.metadata?.invoice_id;
-  if (!invoiceId) return json({ ignored: "no invoice_id in metadata" });
   if (session.payment_status && session.payment_status !== "paid") {
     return json({ ignored: "not paid yet: " + session.payment_status });
   }
@@ -85,6 +95,32 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     { auth: { autoRefreshToken: false, persistSession: false } },
   );
+
+  const invoiceId = session.metadata?.invoice_id;
+  const app = session.metadata?.app;
+  const userId = session.metadata?.user_id;
+
+  if (app && userId) {
+    // An App Store purchase. unique(stripe_session_id) is the real
+    // guard against a retried delivery double-selling the same
+    // checkout - this on-conflict just keeps a retry from erroring.
+    const lineItem = (session.amount_total ?? 0) as number;
+    const { error } = await db.from("purchases").upsert({
+      user_id: String(userId),
+      app: String(app),
+      amount_cents: lineItem,
+      currency: String(session.currency ?? "usd"),
+      stripe_session_id: String(session.id ?? ""),
+      update_eligible_until: new Date(
+        Date.now() + 365 * 24 * 60 * 60 * 1000,
+      ).toISOString(),
+    }, { onConflict: "stripe_session_id", ignoreDuplicates: true });
+
+    if (error) return json({ error: error.message }, 500);
+    return json({ ok: true, app, user_id: userId });
+  }
+
+  if (!invoiceId) return json({ ignored: "no invoice_id or app in metadata" });
 
   // neq guard: Stripe retries deliveries, and a second "paid" must not
   // re-fire the receipt email.
