@@ -42,6 +42,8 @@
     border-radius:6px;padding:5px 10px;cursor:pointer;color:var(--muted)}
   .device button:hover{color:var(--ink);border-color:var(--muted)}
   .no-devices{color:var(--muted);font-size:13px;padding:9px 0 0}
+  .note-err{background:var(--warn-soft);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 25%,transparent);
+    border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.5;margin:0 0 16px}
 </style>
 </head>
 <body>
@@ -107,23 +109,31 @@
     btn.disabled = false; btn.textContent = label;
   }
 
+  // Claiming the free apps happens once per page load, not until it
+  // works: a claim that keeps failing must say so, not spin forever.
+  let claimed = false, claimError = '';
   async function load(){
     const { data: owned, error } = await sb.from('purchases')
       .select('id, app, license_key, max_devices, purchased_at, update_eligible_until')
       .order('purchased_at', { ascending: true });
-    if(error){ box.innerHTML = '<p class="msg err">'+esc(error.message)+'</p>'; return; }
+    if(error){ box.innerHTML = '<p class="note-err">Could not load your apps: '+esc(error.message)+'</p>'; return; }
 
     const have = new Set((owned||[]).map(r => r.app));
     const toClaim = FREE_APPS.filter(a => !have.has(a));
-    if(toClaim.length){
-      await Promise.all(toClaim.map(a => sb.rpc('claim_license', { p_app: a }).catch(()=>{})));
-      return load();   // one re-fetch, now that every free app has a row
+    if(toClaim.length && !claimed){
+      claimed = true;
+      const results = await Promise.all(toClaim.map(a =>
+        sb.rpc('claim_license', { p_app: a }).then(r => r.error ? r.error.message : '', e => e.message || 'failed')));
+      claimError = results.filter(Boolean)[0] || '';
+      return load();   // one re-fetch, now that every free app should have a row
     }
 
     if(!owned || !owned.length){
-      box.innerHTML = '<p class="empty">Nothing yet.</p>';
+      box.innerHTML = '<p class="empty">Nothing yet.</p>' +
+        (claimError ? '<p class="note-err">The free apps could not be added to this account: '+esc(claimError)+'</p>' : '');
       return;
     }
+    if(claimError) box.insertAdjacentHTML('beforebegin', '<p class="note-err">Some free apps could not be added: '+esc(claimError)+'</p>');
 
     const { data: devices } = await sb.from('device_activations')
       .select('id, license_id, device_name, device_id, first_seen, last_seen, revoked_at')

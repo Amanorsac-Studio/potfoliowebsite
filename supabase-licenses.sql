@@ -21,6 +21,9 @@ begin
     from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
+      -- mint_license_key is deliberately not here: a trigger depends on
+      -- it, and its signature (no args, returns trigger) can never change,
+      -- so create or replace is enough and dropping it would fail.
       and p.proname in (
         'generate_license_key', 'claim_license', 'revoke_device',
         'activate_device', 'deactivate_device', 'check_license')
@@ -115,6 +118,37 @@ returns text language sql volatile set search_path = '' as $$
          upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 4)) || '-' ||
          upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 4));
 $$;
+
+
+-- =====================================================================
+--  3b · EVERY PURCHASE ROW GETS A KEY, WHOEVER WROTE IT
+--
+--  The Stripe webhook inserts a paid purchase knowing nothing about
+--  keys, and it should not have to: the moment any row lands in
+--  purchases without one, this mints it. That covers the webhook, a
+--  row added by hand in the dashboard, and claim_license below (which
+--  still supplies its own, harmlessly). The backfill afterwards gives
+--  a key to any row that slipped in before this existed.
+-- =====================================================================
+
+create or replace function public.mint_license_key()
+returns trigger language plpgsql security definer set search_path = '' as $$
+begin
+  if new.license_key is null then
+    new.license_key := public.generate_license_key(new.app);
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists purchases_mint_key on public.purchases;
+create trigger purchases_mint_key
+  before insert on public.purchases
+  for each row execute function public.mint_license_key();
+
+update public.purchases
+   set license_key = public.generate_license_key(app)
+ where license_key is null;
 
 
 -- =====================================================================
