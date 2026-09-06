@@ -32,7 +32,7 @@
   var statusEl = document.querySelector('[data-buy-status]');
 
   var APP_NAMES = { secondout: 'SecondOut' };
-  var PRICES = { secondout: 'Buy — $19' };
+  var PRICES = { secondout: 'Buy — $1' };
   var PLATFORM = { secondout: 'windows' };
   var DOWNLOAD_LABEL = { secondout: 'Download for Windows' };
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }
