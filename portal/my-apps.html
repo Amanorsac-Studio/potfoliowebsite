@@ -22,6 +22,12 @@
   .app-card{border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:0 0 16px}
   .app-card h3{margin:0 0 3px}
   .app-card .meta{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .dlrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+  .dlrow .btn{display:inline-flex;align-items:center;gap:8px}
+  .dlrow .btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .dlrow .dlnote{font-size:12.5px;color:var(--muted);margin:0;flex-basis:100%}
+  .dlrow .dlnote.err{color:var(--warn)}
+  .keyhead{font-size:12.5px;color:var(--muted);font-weight:600;margin:0 0 8px}
   .keybox{display:flex;align-items:center;gap:10px;background:var(--surface-2);
     border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:0 0 14px}
   .keybox code{font-family:var(--mono);font-size:14px;letter-spacing:.03em;flex:1}
@@ -63,6 +69,44 @@
   const APP_NAMES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide', secondout: 'SecondOut' };
   const nice = a => APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1));
 
+  // Which installers exist, per app. The Worker holds the real list
+  // (INSTALLERS in worker.js) and is the one that hands a file over;
+  // this only decides which buttons to draw.
+  const DOWNLOADS = {
+    secondout:  [['windows', 'Download for Windows']],
+    pulseroom:  [['windows', 'Windows'], ['mac', 'Mac']],
+    nebulatide: [['windows', 'Windows'], ['mac', 'Mac']],
+  };
+  const DL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>';
+
+  /* Ownership is checked again on the Worker with this session's token;
+     the button is a request, not a permission. */
+  async function startDownload(btn){
+    const note = btn.closest('.dlrow').querySelector('.dlnote');
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Preparing';
+    note.textContent = ''; note.className = 'dlnote';
+    try {
+      const r = await fetch('/api/app-download', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + s.access_token },
+        body: JSON.stringify({ app: btn.dataset.app, platform: btn.dataset.platform })
+      });
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok || !j.url){
+        note.textContent = j.message || 'Could not start the download. Try again in a moment.';
+        note.className = 'dlnote err';
+      } else {
+        note.textContent = 'Downloading ' + (j.file || '') + (j.version ? ' — version ' + j.version : '') + '. If nothing happens, click again.';
+        location.href = j.url;
+      }
+    } catch(e) {
+      note.textContent = 'Could not reach the studio. Check your connection and try again.';
+      note.className = 'dlnote err';
+    }
+    btn.disabled = false; btn.textContent = label;
+  }
+
   async function load(){
     const { data: owned, error } = await sb.from('purchases')
       .select('id, app, license_key, max_devices, purchased_at, update_eligible_until')
@@ -97,6 +141,15 @@
           (r.purchased_at ? 'Since '+when(r.purchased_at) : '') +
           (infinite ? '' : ' · updates included until '+when(r.update_eligible_until)) +
         '</p>'+
+        ((DOWNLOADS[r.app] || []).length
+          ? '<div class="dlrow">'+
+              DOWNLOADS[r.app].map(([platform, label], i) =>
+                '<button class="btn'+(i ? ' ghost' : '')+' dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+
+                  DL_ICON+esc(label)+'</button>').join('')+
+              '<p class="dlnote"></p>'+
+            '</div>'
+          : '')+
+        '<p class="keyhead">LICENSE KEY · paste this into the app when it asks</p>'+
         '<div class="keybox"><code>'+esc(r.license_key||'—')+'</code>'+
           '<button class="btn ghost copy-key" type="button" data-key="'+esc(r.license_key||'')+'">Copy</button></div>'+
         '<div class="devhead"><b>DEVICES · '+devs.length+' OF '+esc(r.max_devices)+' USED</b></div>'+
@@ -113,6 +166,7 @@
       '</div>';
     }).join('');
 
+    box.querySelectorAll('.dl').forEach(btn => btn.addEventListener('click', () => startDownload(btn)));
     box.querySelectorAll('.copy-key').forEach(btn => {
       btn.addEventListener('click', async () => {
         try { await navigator.clipboard.writeText(btn.dataset.key); btn.textContent = 'Copied'; }
