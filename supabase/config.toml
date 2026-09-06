@@ -1,0 +1,23 @@
+# Supabase CLI settings for this project.
+#
+# The one thing that matters here: stripe-webhook must be deployed with
+# JWT verification OFF. Stripe calls it with its own signature header and
+# no user token; with verification on, every payment notification is
+# bounced with 401 before the function runs, the purchase is never
+# recorded, and the buyer sees nothing. Without this file the CLI's
+# default is ON, which is how `npx supabase functions deploy
+# stripe-webhook` quietly broke purchases once.
+#
+# The function proves the call came from Stripe itself (HMAC check on
+# STRIPE_WEBHOOK_SECRET) - see supabase/functions/stripe-webhook/index.ts.
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+# The two checkout functions are called by signed-in visitors and check
+# the caller themselves; the default (verification on) is right for them.
+[functions.create-app-checkout]
+verify_jwt = true
+
+[functions.create-payment-link]
+verify_jwt = true
