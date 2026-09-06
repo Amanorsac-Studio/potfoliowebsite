@@ -23,7 +23,7 @@ begin
     where n.nspname = 'public'
       and p.proname in (
         'generate_license_key', 'claim_license', 'revoke_device',
-        'activate_device', 'check_license')
+        'activate_device', 'deactivate_device', 'check_license')
   loop
     execute 'drop function if exists ' || f.sig;
   end loop;
@@ -180,11 +180,18 @@ grant execute on function public.revoke_device(bigint) to authenticated;
 --  6 · WHAT THE APP ITSELF CALLS
 --
 --  The app never talks to Supabase directly - these are reached only
---  through the Worker's /api/license/* routes, using the service key,
---  the same arrangement reviews and downloads already use. A license
---  key is the only credential here, so these two functions are the
---  entire security boundary: anyone who can call them at all already
---  has to have a real key.
+--  through the Worker's /licenses/* routes, using the service key, the
+--  same arrangement reviews and downloads already use. A license key is
+--  the only credential here, so these two functions are the entire
+--  security boundary: anyone who can call them at all already has to
+--  have a real key.
+--
+--  The `error` values below are machine-readable codes, not prose - the
+--  compiled app (LicenseClient.h) switches on them by exact string
+--  ("no_such_license", "device_limit_reached") to choose its own
+--  user-facing message. The Worker passes these straight through as the
+--  `error` field of a non-2xx JSON response; it does not invent its own
+--  codes or reword these.
 -- =====================================================================
 
 create or replace function public.activate_device(
@@ -200,7 +207,7 @@ begin
   select id, app, max_devices into v_lic
     from public.purchases where license_key = trim(coalesce(p_license_key,''));
   if v_lic.id is null then
-    return jsonb_build_object('ok', false, 'error', 'Not a recognised license key.');
+    return jsonb_build_object('ok', false, 'error', 'no_such_license');
   end if;
 
   -- Already activated on this device: just a heartbeat, not a new seat.
@@ -220,7 +227,7 @@ begin
     select jsonb_agg(jsonb_build_object('device_name', coalesce(device_name, device_id), 'last_seen', last_seen))
       into v_devices
       from public.device_activations where license_id = v_lic.id and revoked_at is null;
-    return jsonb_build_object('ok', false, 'error', 'Device limit reached.',
+    return jsonb_build_object('ok', false, 'error', 'device_limit_reached',
       'max_devices', v_lic.max_devices, 'devices', coalesce(v_devices, '[]'::jsonb));
   end if;
 
@@ -234,17 +241,39 @@ $$;
 revoke all on function public.activate_device(text,text,text) from public, anon, authenticated;
 grant execute on function public.activate_device(text,text,text) to service_role;
 
-create or replace function public.check_license(p_license_key text, p_device_id text)
+
+-- =====================================================================
+--  7 · FREEING THIS DEVICE'S OWN SEAT, FROM INSIDE THE APP
+--
+--  Backs the app's own "deactivate this device" button (LicenseClient::
+--  deactivateThisDevice), as opposed to revoke_device above, which is
+--  the portal owner removing some other device from their account. Always
+--  reports ok - the app clears its local proof either way once a real
+--  license key was presented, so there's no useful distinction between
+--  "already not active here" and "just deactivated" for the caller.
+-- =====================================================================
+
+create or replace function public.deactivate_device(p_license_key text, p_device_id text)
 returns jsonb
-language sql security definer stable set search_path = '' as $$
-  select jsonb_build_object('valid', exists (
-    select 1 from public.purchases p
-    join public.device_activations d on d.license_id = p.id
-    where p.license_key = trim(coalesce(p_license_key,''))
-      and d.device_id = trim(coalesce(p_device_id,''))
-      and d.revoked_at is null
-  ));
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_lic record;
+begin
+  select id, app into v_lic
+    from public.purchases where license_key = trim(coalesce(p_license_key,''));
+  if v_lic.id is null then
+    return jsonb_build_object('ok', false, 'error', 'no_such_license');
+  end if;
+
+  update public.device_activations
+     set revoked_at = now()
+   where license_id = v_lic.id
+     and device_id = trim(coalesce(p_device_id,''))
+     and revoked_at is null;
+
+  return jsonb_build_object('ok', true, 'app', v_lic.app);
+end;
 $$;
 
-revoke all on function public.check_license(text,text) from public, anon, authenticated;
-grant execute on function public.check_license(text,text) to service_role;
+revoke all on function public.deactivate_device(text,text) from public, anon, authenticated;
+grant execute on function public.deactivate_device(text,text) to service_role;

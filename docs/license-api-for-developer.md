@@ -1,113 +1,81 @@
-# SecondOut license activation — API contract
+# SecondOut licensing — what to configure in the app
 
-Two endpoints, both already live at `amanorsac.studio`. No API key, no
-account, no CORS — just the license key the customer already has. This
-is the entire integration; nothing else needs to be built server-side.
+Superseded version of this document: the previous one described a
+contract that didn't match `LicenseClient.h`/`LicenseCrypto.h`, and
+dropped the signature check your code already does. That's fixed now —
+the server was rewritten to match your existing client exactly, not the
+other way around. Nothing in `LicenseClient.h` or `LicenseCrypto.h`
+needs to change. Two things to configure:
 
-## 1. Generate and store a device ID — do this first, once
+## 1. Base URL
 
-Before calling either endpoint, the app needs a **device ID**: a random
-identifier generated once on first launch and saved to local disk (a
-config file, the registry, wherever the app already keeps settings).
-**It must stay the same across every future launch on that machine.**
-
-If a new random ID were generated every time the app starts, every
-launch would look like a brand-new device to the server, and the
-two-device limit would be exhausted almost immediately. Generate it
-once, save it, reuse it forever (or until the app is uninstalled).
-
-A UUID v4 is fine. Example (any language):
+`LicenseClient::defaultBaseUrl()` already reads `AMANORSAC_LICENSE_URL`,
+falling back to `http://127.0.0.1:4790` for local dev. In the production
+build, set:
 
 ```
-device_id = uuid.uuid4().toString()   // generate once, save to disk
+AMANORSAC_LICENSE_URL=https://amanorsac.studio
 ```
 
-## 2. `POST https://amanorsac.studio/api/license/activate`
+`POST https://amanorsac.studio/licenses/activate` and
+`POST https://amanorsac.studio/licenses/deactivate` are both live now.
+There is no separate `/check` or `/status` endpoint — your hourly
+`Timer` re-activation via `/licenses/activate` is the only re-validation
+call, exactly as `LicenseClient.h` already does it.
 
-Call this the first time someone enters their license key, and again
-on every app launch after that (it's safe to call repeatedly — calling
-it again from a device already activated just updates a "last seen"
-timestamp, it doesn't use up a second slot).
+## 2. Public key for `LicenseKeys.h`
 
-**Request body (JSON):**
-```json
-{
-  "license_key": "SECO-XXXX-XXXX-XXXX",
-  "device_id": "the-uuid-you-generated-and-saved",
-  "device_name": "STEPHEN-PC"
-}
-```
-`device_name` is optional but recommended — it's what shows up in the
-customer's account page when they look at which devices are using
-their key, so a real computer name is much friendlier than a raw UUID.
-
-**Response on success:**
-```json
-{ "ok": true, "app": "secondout" }
-```
-Unlock the app / store a local "activated" flag and proceed normally.
-
-**Response when the license key doesn't exist:**
-```json
-{ "ok": false, "error": "Not a recognised license key." }
-```
-Show the customer this message and let them re-enter the key.
-
-**Response when the two-device limit is already used up:**
-```json
-{
-  "ok": false,
-  "error": "Device limit reached.",
-  "max_devices": 2,
-  "devices": [
-    { "device_name": "STUDIO-PC", "last_seen": "2026-09-06T00:00:00Z" },
-    { "device_name": "LAPTOP",    "last_seen": "2026-09-05T00:00:00Z" }
-  ]
-}
-```
-Show the customer this message, and tell them: *"Sign in at
-amanorsac.studio/client, open My Apps, and remove a device to free up
-a slot."* The app itself has no way to remove a device — that's
-deliberately only done from the account portal, so a lost or stolen
-device can't remove itself to make room for whoever has it.
-
-## 3. `POST https://amanorsac.studio/api/license/check`
-
-Call this periodically after activation (e.g. once per launch, or on a
-timer every few days) to make sure the license/device pairing is still
-valid — a customer may have removed this exact device from their
-portal since it last activated.
-
-**Request body:**
-```json
-{ "license_key": "SECO-XXXX-XXXX-XXXX", "device_id": "the-same-uuid" }
+```cpp
+constexpr uint8_t kLicenseSigningKey[65] = {
+  0x04, 0xcd, 0xa5, 0x7d, 0x1c, 0xc8, 0xa6, 0xe2, 0x71, 0xd5, 0x48, 0x49,
+  0xce, 0x55, 0xd5, 0x03, 0x77, 0x56, 0x66, 0x90, 0xfd, 0xb6, 0x95, 0x45,
+  0xa4, 0x1a, 0x92, 0xc4, 0x77, 0xda, 0xcb, 0x00, 0x0d, 0x2c, 0x06, 0x0b,
+  0xa8, 0x3f, 0xbd, 0x9b, 0x70, 0x85, 0xaf, 0xff, 0xc0, 0x42, 0xd4, 0x00,
+  0x7e, 0x5b, 0x96, 0xfe, 0x68, 0xff, 0xec, 0x91, 0x11, 0xf6, 0x21, 0x00,
+  0x79, 0xfc, 0x43, 0x59, 0x52
+};
+constexpr bool kLicenseSigningKeyConfigured = true;
 ```
 
-**Response:**
-```json
-{ "valid": true }
-```
-or
-```json
-{ "valid": false }
-```
+This is a public key — safe to compile into the binary, safe to have in
+this file. The matching private key lives only as a Cloudflare Worker
+secret (`LICENSE_SIGNING_KEY`), never in any repo.
 
-If `false`, the app should call `/api/license/activate` again (it'll
-either succeed — a slot opened up — or come back with the device-limit
-message above).
+## What the server actually does now (for reference — you don't need to change anything)
 
-## 4. One important note on being offline
+- `POST /licenses/activate` — body `{licenseKey, deviceKey, deviceLabel}`.
+  On success (2xx): `{"proof": "base64url(json).base64url(sig)"}`, a
+  P-256/SHA-256 signature over the raw JSON bytes, raw IEEE-P1363 (64
+  bytes, r‖s) — exactly what `parseAndVerifySignedBlob` expects. The
+  signed JSON carries `deviceKey`, `licenseKey`, `issuedAt`, `expiresAt`
+  (+48h), `graceUntil` (+30 days from issue).
+  On failure (non-2xx): `{"error": "<code>"}`, where `<code>` is one of
+  the exact strings `friendlyMessageFor` already switches on —
+  `no_such_license`, `device_limit_reached` (with `max_devices` and
+  `devices` alongside it) — plus a couple of new ones your client
+  already handles generically via its status-code fallback:
+  `invalid_request` (400, malformed body), `licensing_unavailable` (503,
+  server misconfigured), `upstream_error` (502, database unreachable).
+- `POST /licenses/deactivate` — body `{licenseKey, deviceKey}`. Success:
+  `{"ok": true}`. Failure: `{"error": "no_such_license"}`.
 
-Don't make a failed network request lock a paying customer out
-instantly — someone on a plane or a bad connection shouldn't lose
-access to something they own. A common, sensible approach: cache the
-last known-valid state locally, and only require a fresh successful
-`/check` after some grace period (a week is reasonable) of being
-unable to reach the server at all.
+## Device limit and removing a device
 
-## 5. What NOT to build
+Two devices per license, same as before. A customer who's used both
+slots sees `device_limit_reached` from the app; tell them to sign in at
+amanorsac.studio/client, open **My Apps**, and remove a device there to
+free a slot. The app itself has no way to remove a device other than
+its own `deactivateThisDevice()` — removing a *different* device is
+deliberately only ever done from the account portal, so a lost or
+stolen device can't free up its own slot for whoever has it.
 
-No login, no account system, no separate Stripe integration, no API
-key of your own — the license key the customer already has is the only
-credential this needs. If either endpoint ever needs to change, we'll
-send an updated version of this document.
+## Verification note
+
+This contract was checked by re-implementing your exact verification
+algorithm (P-256 / SHA-256 / raw IEEE-P1363 / base64url blob split
+before parsing) against the server's actual signing code, including
+negative controls — tampered body, wrong public key, garbage input all
+correctly rejected. It has not been run against the real compiled
+binary, since that isn't possible from here; if anything doesn't
+verify on your end, the most likely culprit is the public key in
+`LicenseKeys.h` not matching the one above exactly.

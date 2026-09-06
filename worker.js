@@ -72,11 +72,11 @@ export default {
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/review') {
         return await submitReview(request, env);
       }
-      if (request.method === 'POST' && new URL(request.url).pathname === '/api/license/activate') {
+      if (request.method === 'POST' && new URL(request.url).pathname === '/licenses/activate') {
         return await licenseActivate(request, env);
       }
-      if (request.method === 'POST' && new URL(request.url).pathname === '/api/license/check') {
-        return await licenseCheck(request, env);
+      if (request.method === 'POST' && new URL(request.url).pathname === '/licenses/deactivate') {
+        return await licenseDeactivate(request, env);
       }
     } catch (e) {
       // fall through: a broken blog is not a reason for a broken site
@@ -671,77 +671,146 @@ async function sendReviewInvite(env, email, appTitle, link) {
 /* ---------------------------------------------------------------------
    licenses
 
-   The one door a native app talks to. It never sees Supabase, never
-   holds a Supabase key of any kind - only the license key its owner
-   typed in or the site emailed them, and a device id it generates and
-   keeps for itself. The Worker takes both, calls the matching database
-   function with the service key, and hands back exactly what that
-   function returned. No CORS header is set on purpose: nothing here is
-   meant to be called from a browser page on another origin, only from
-   the app itself making a plain HTTPS request.
+   The one door a native app talks to, at exactly the paths, field names
+   and response shape its own compiled client already expects
+   (LicenseClient.h / LicenseCrypto.h in the SecondOut source) - that
+   contract is fixed by the shipping binary, not by this file, so
+   nothing here invents its own. It never sees Supabase, never holds a
+   Supabase key of any kind - only the license key its owner typed in or
+   the site emailed them, and a device id it generates once and keeps
+   for itself.
+
+   A successful activation is signed, not handed back as bare JSON: the
+   app verifies a P-256 signature (LicenseCrypto.h) against a public key
+   compiled into the binary before it will trust the response at all, so
+   a patched binary or a spoofed local server cannot forge a license
+   without this Worker's private key. LICENSE_SIGNING_KEY (a P-256
+   private key, JWK) is a Worker secret set with `wrangler secret put`,
+   never committed here.
+
+   No CORS header is set on purpose: nothing here is meant to be called
+   from a browser page on another origin, only from the app itself
+   making a plain HTTPS request.
    --------------------------------------------------------------------- */
+
+// The app re-activates on its own every hour, so this is not "how long
+// until it's locked out" - it's the offline cliff before the extended
+// grace period below kicks in.
+const LICENSE_PROOF_VALID_MS = 48 * 60 * 60 * 1000;
+const LICENSE_GRACE_MS = 30 * 24 * 60 * 60 * 1000;
+
+function licenseB64Url(bytes) {
+  let str = '';
+  for (let i = 0; i < bytes.length; i++) str += String.fromCharCode(bytes[i]);
+  return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+// Raw IEEE P1363 (r||s, 64 bytes) is what crypto.subtle.sign already
+// returns for ECDSA - the same format LicenseCrypto.h verifies via
+// BCryptVerifySignature, so no DER conversion belongs on this path.
+async function signLicenseProof(env, deviceKey, licenseKey) {
+  const key = await crypto.subtle.importKey(
+    'jwk', JSON.parse(env.LICENSE_SIGNING_KEY),
+    { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+  const now = Date.now();
+  const bodyBytes = new TextEncoder().encode(JSON.stringify({
+    deviceKey, licenseKey,
+    issuedAt: now,
+    expiresAt: now + LICENSE_PROOF_VALID_MS,
+    graceUntil: now + LICENSE_GRACE_MS
+  }));
+  const sig = new Uint8Array(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, bodyBytes));
+  return licenseB64Url(bodyBytes) + '.' + licenseB64Url(sig);
+}
 
 async function licenseActivate(request, env) {
   const say = (obj, status) => new Response(JSON.stringify(obj), {
     status: status || 200,
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
   });
-  if (!env.SUPABASE_SERVICE_KEY) return say({ ok: false, error: 'Licensing is not set up yet.' }, 503);
+  if (!env.SUPABASE_SERVICE_KEY || !env.LICENSE_SIGNING_KEY) {
+    return say({ error: 'licensing_unavailable', message: 'Licensing is not set up yet.' }, 503);
+  }
 
   let body = {};
   try { body = await request.json(); } catch (e) {}
-  const licenseKey = String(body.license_key || body.licenseKey || '').trim();
-  const deviceId = String(body.device_id || body.deviceId || '').trim();
-  const deviceName = body.device_name || body.deviceName ? String(body.device_name || body.deviceName).slice(0, 120) : null;
+  const licenseKey = String(body.licenseKey || '').trim().toUpperCase();
+  const deviceKey = String(body.deviceKey || '').trim();
+  const deviceLabel = body.deviceLabel ? String(body.deviceLabel).slice(0, 120) : null;
 
-  if (!licenseKey) return say({ ok: false, error: 'license_key is required.' }, 400);
-  if (!deviceId)   return say({ ok: false, error: 'device_id is required.' }, 400);
+  if (!licenseKey || !deviceKey) {
+    return say({ error: 'invalid_request', message: 'licenseKey and deviceKey are required.' }, 400);
+  }
 
+  let result;
   try {
     const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/activate_device', {
       method: 'POST',
       headers: { 'content-type': 'application/json',
                  apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
-      body: JSON.stringify({ p_license_key: licenseKey, p_device_id: deviceId, p_device_name: deviceName })
+      body: JSON.stringify({ p_license_key: licenseKey, p_device_id: deviceKey, p_device_name: deviceLabel })
     });
     if (!r.ok) {
       console.error('activate_device refused:', r.status, await r.text());
-      return say({ ok: false, error: 'Could not reach the license server. Try again shortly.' }, 502);
+      return say({ error: 'upstream_error', message: 'Could not reach the license server. Try again shortly.' }, 502);
     }
-    const result = await r.json();
-    return say(result, result && result.ok ? 200 : 403);
+    result = await r.json();
   } catch (e) {
-    return say({ ok: false, error: 'Could not reach the license server.' }, 502);
+    return say({ error: 'upstream_error', message: 'Could not reach the license server.' }, 502);
+  }
+
+  if (!result || !result.ok) {
+    // These are the exact codes LicenseClient.h switches on
+    // (friendlyMessageFor) - pass them through untouched, don't reword.
+    const code = (result && result.error) || 'no_such_license';
+    if (code === 'device_limit_reached') {
+      return say({ error: code, max_devices: result.max_devices, devices: result.devices }, 409);
+    }
+    return say({ error: code }, 404);
+  }
+
+  try {
+    const proof = await signLicenseProof(env, deviceKey, licenseKey);
+    return say({ proof: proof }, 200);
+  } catch (e) {
+    return say({ error: 'licensing_unavailable', message: 'Licensing is not set up yet.' }, 503);
   }
 }
 
-async function licenseCheck(request, env) {
+async function licenseDeactivate(request, env) {
   const say = (obj, status) => new Response(JSON.stringify(obj), {
     status: status || 200,
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
   });
-  if (!env.SUPABASE_SERVICE_KEY) return say({ valid: false, error: 'Licensing is not set up yet.' }, 503);
+  if (!env.SUPABASE_SERVICE_KEY) return say({ error: 'licensing_unavailable', message: 'Licensing is not set up yet.' }, 503);
 
   let body = {};
   try { body = await request.json(); } catch (e) {}
-  const licenseKey = String(body.license_key || body.licenseKey || '').trim();
-  const deviceId = String(body.device_id || body.deviceId || '').trim();
-  if (!licenseKey || !deviceId) return say({ valid: false, error: 'license_key and device_id are required.' }, 400);
+  const licenseKey = String(body.licenseKey || '').trim().toUpperCase();
+  const deviceKey = String(body.deviceKey || '').trim();
+
+  if (!licenseKey || !deviceKey) {
+    return say({ error: 'invalid_request', message: 'licenseKey and deviceKey are required.' }, 400);
+  }
 
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/check_license', {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/deactivate_device', {
       method: 'POST',
       headers: { 'content-type': 'application/json',
                  apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
-      body: JSON.stringify({ p_license_key: licenseKey, p_device_id: deviceId })
+      body: JSON.stringify({ p_license_key: licenseKey, p_device_id: deviceKey })
     });
     if (!r.ok) {
-      console.error('check_license refused:', r.status, await r.text());
-      return say({ valid: false, error: 'Could not reach the license server.' }, 502);
+      console.error('deactivate_device refused:', r.status, await r.text());
+      return say({ error: 'upstream_error', message: 'Could not reach the license server.' }, 502);
     }
-    return say(await r.json());
+    const result = await r.json();
+    if (!result || !result.ok) {
+      return say({ error: (result && result.error) || 'no_such_license' }, 404);
+    }
+    return say({ ok: true }, 200);
   } catch (e) {
-    return say({ valid: false, error: 'Could not reach the license server.' }, 502);
+    return say({ error: 'upstream_error', message: 'Could not reach the license server.' }, 502);
   }
 }
 
