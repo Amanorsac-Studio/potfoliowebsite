@@ -72,6 +72,9 @@ export default {
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/review') {
         return await submitReview(request, env);
       }
+      if (request.method === 'POST' && new URL(request.url).pathname === '/api/app-download') {
+        return await appDownload(request, env);
+      }
       if (request.method === 'POST' && new URL(request.url).pathname === '/licenses/activate') {
         return await licenseActivate(request, env);
       }
@@ -179,27 +182,30 @@ const INSTALLERS = {
                          as: 'PulseRoom-Windows.zip', title: 'PulseRoom for Windows' },
   'pulseroom:mac':     { keys: ['pulseroom/PulseRoom-macOS.zip', 'PulseRoom-macOS.zip'],
                          as: 'PulseRoom-macOS.zip',   title: 'PulseRoom for Mac' },
-  /* dropbox is a bridge, not a home. As of 1.2.2 neither platform has a
-     working R2 copy - the CLI tooling to get a proper upload talking to
-     R2 is still not sorted, so both links stand in until it is. The R2
-     keys are left in place on purpose: the day a real upload lands at
-     one of them, delete that platform's dropbox line and stop deleting
-     the stale R2 object before every future release. Until then, the
-     R2 object at these keys MUST stay empty/deleted, because the R2
-     lookup above always runs first - a stale file sitting there would
-     keep being served instead of the current Dropbox link, silently. */
+  /* R2 is looked up first; the Dropbox link is only a fallback for the
+     day the R2 object is missing. The bucket's nebulatide/ folder was
+     uploaded from the dashboard in September 2026, so in practice these
+     are served from R2 - a release means uploading the new zip under the
+     same name, and the Dropbox line can go once that routine is settled. */
   'nebulatide:windows':{ keys: ['nebulatide/NebulaTide-Windows.zip', 'NebulaTide-Windows.zip'],
                          as: 'NebulaTide-Windows.zip', title: 'Nebula Tide for Windows',
                          dropbox: 'https://www.dropbox.com/scl/fi/mh40nxu467ouw0uka6si9/NebulaTide-Windows.zip?rlkey=ngvoa116wi7xognir4frynqwn&st=k7lhh0at&dl=0' },
   'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
                          as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
-                         dropbox: 'https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0' }
+                         dropbox: 'https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0' },
+  /* The one paid app. `paid` closes the email gate to it - the only door
+     is /api/app-download, which asks the database whether the signed-in
+     account owns it. A new release means uploading the new installer to
+     the bucket and changing the file name here, nothing else. */
+  'secondout:windows': { keys: ['SecondOut-1.3.0-Setup.exe', 'secondout/SecondOut-1.3.0-Setup.exe'],
+                         as: 'SecondOut-1.3.0-Setup.exe', title: 'SecondOut for Windows',
+                         version: '1.3.0', type: 'application/octet-stream', paid: true }
 };
 
 /* Plain names for the review-invite email, decoupled from the
    platform-specific installer titles above ("Nebula Tide for Windows"
    reads wrong in "how's Nebula Tide for Windows working out?"). */
-const APP_TITLES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide' };
+const APP_TITLES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide', secondout: 'SecondOut' };
 
 /* The only apps whose review form requires the signed link from the
    invite email. Add an app here once it has a real download history to
@@ -280,6 +286,8 @@ async function handoutDownload(request, env) {
   if (!body.consent)          return say({ error: 'Please tick the box to continue.' }, 400);
   const item = INSTALLERS[app + ':' + platform];
   if (!item) return say({ error: 'No such download.' }, 404);
+  // An email address is not a receipt. Bought apps go through appDownload.
+  if (item.paid) return say({ error: 'This app is bought, not emailed - sign in to download it.' }, 403);
 
   /* Recorded now, but not yet confirmed. An address that never gets
      clicked stays in the list marked unconfirmed and is never written
@@ -398,6 +406,59 @@ async function confirmDownload(url, env) {
     item.title + ' is downloading now. If nothing happens, use the button.', ticket);
 }
 
+/* A bought app is handed over on proof of ownership, not on an email
+   address. My Apps, or the app's own page, sends the signed-in visitor's
+   Supabase token; the database answers has_app_access() AS THAT USER -
+   Row Level Security decides, the Worker only relays - and a fifteen-
+   minute ticket for the file comes back. It is the same ticket the email
+   gate mints, so serveInstaller neither knows nor cares which door
+   somebody came through. Free apps can take this door too once claimed
+   in My Apps; the email gate stays open for visitors who never sign in. */
+async function appDownload(request, env) {
+  const say = (obj, status) => new Response(JSON.stringify(obj), {
+    status: status || 200,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
+  });
+  if (!env.DOWNLOADS || !env.DOWNLOAD_SECRET) {
+    return say({ error: 'unavailable', message: 'Downloads are not set up yet.' }, 503);
+  }
+
+  const jwt = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  if (!jwt) return say({ error: 'sign_in', message: 'Sign in to download this.' }, 401);
+
+  let body = {};
+  try { body = await request.json(); } catch (e) {}
+  const app      = String(body.app || '').toLowerCase().slice(0, 40);
+  const platform = String(body.platform || '').toLowerCase().slice(0, 20);
+  const item = INSTALLERS[app + ':' + platform];
+  if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
+
+  let owned = false;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/has_app_access', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY, Authorization: 'Bearer ' + jwt },
+      body: JSON.stringify({ p_app: app })
+    });
+    if (r.status === 401) return say({ error: 'sign_in', message: 'Your session has expired - sign in again.' }, 401);
+    if (!r.ok) {
+      console.error('has_app_access refused:', r.status, await r.text());
+      return say({ error: 'upstream_error', message: 'Could not check your account. Try again shortly.' }, 502);
+    }
+    owned = (await r.json()) === true;
+  } catch (e) {
+    return say({ error: 'upstream_error', message: 'Could not check your account. Try again shortly.' }, 502);
+  }
+  if (!owned) {
+    return say({ error: 'not_owned', message: 'This account does not own ' + (APP_TITLES[app] || app) + ' yet.' }, 403);
+  }
+
+  const t = Date.now() + TICKET_MINUTES * 60 * 1000;
+  const path = '/download/' + app + '/' + platform;
+  const ticket = path + '?e=' + t + '&s=' + (await sign(env.DOWNLOAD_SECRET, path + ':' + t));
+  return say({ url: ticket, file: item.as, title: item.title, version: item.version || null });
+}
+
 function confirmPage(heading, note, ticket, status) {
   const page =
 '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">' +
@@ -470,7 +531,7 @@ async function serveInstaller(app, platform, url, env, request) {
         (!upstreamLen || upstreamLen > 50 * 1024 * 1024);
       if (looksReal) {
         const headers = new Headers();
-        headers.set('content-type', 'application/zip');
+        headers.set('content-type', item.type || 'application/zip');
         headers.set('content-disposition', 'attachment; filename="' + item.as + '"');
         headers.set('cache-control', 'private, no-store');
         if (upstreamLen) headers.set('content-length', String(upstreamLen));
@@ -493,7 +554,7 @@ async function serveInstaller(app, platform, url, env, request) {
   const headers = new Headers();
   object.writeHttpMetadata(headers);
   headers.set('etag', object.httpEtag);
-  headers.set('content-type', 'application/zip');
+  headers.set('content-type', item.type || 'application/zip');
   headers.set('content-disposition', 'attachment; filename="' + item.as + '"');
   // a ticket is personal and short-lived; nothing in between should keep this
   headers.set('cache-control', 'private, no-store');

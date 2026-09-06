@@ -118,6 +118,9 @@ section{padding:clamp(64px,10vh,120px) 0}
   font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
 .top .name img{width:18px;height:18px}
 .top .name b{color:var(--accent);font-weight:700}
+/* the account chip (site-auth.js) wears this page's own palette */
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#04161a}
 
 /* ---------- hero ---------- */
 .hero{padding:clamp(56px,9vh,100px) 0 0}
@@ -338,12 +341,14 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   }
 }
 </script>
+<link rel="stylesheet" href="assets/site-auth.css">
 </head>
 <body data-app="pulseroom">
 
 <div class="top">
   <a class="back" href="apps.html">← App Store</a>
   <span class="name"><img src="images/apps/pulseroom-logo.svg" alt="">Pulse<b>Room</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
 </div>
 
 <header class="hero wrap">
@@ -641,5 +646,7 @@ var CONFIG = {
 <script src="/assets/download-gate.js?v=3" defer></script>
 <script src="assets/app-reviews.js" defer></script>
 <script src="assets/track.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="assets/site-auth.js" defer></script>
 </body>
 </html>

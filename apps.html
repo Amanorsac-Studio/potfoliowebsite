@@ -208,6 +208,37 @@ img{display:block;max-width:100%}
   .sh-login:active{transform:scale(.96)}
 }
 
+/* ---------- the account chip in the top bar ----------
+   site-auth.js fills .sh-auth: "Sign in" for a visitor, initials and a
+   menu for someone signed in. Inside the accent pill everything is white
+   and borderless, the way the old Clients link sat there; on a phone the
+   pill dissolves and the link becomes its own accent-coloured button,
+   exactly as .sh-login already does. */
+.sh-auth{--sa-fg:#fff;--sa-line:rgba(255,255,255,.4);--sa-accent:#fff;--sa-bg:var(--panel);--sa-muted:var(--muted)}
+.sh-auth .sa-in{padding:4px 10px;border-color:transparent;font-size:14px}
+.sh-auth .sa-in:hover{background:rgba(255,255,255,.14)}
+.sh-auth .sa-chip{border-color:transparent;padding:2px 8px 2px 2px}
+.sh-auth .sa-chip:hover,.sh-auth .sa[data-open] .sa-chip{background:rgba(255,255,255,.14);border-color:transparent}
+.sh-auth .sa-av{color:var(--accent)}
+.sh-auth .sa-dot{border-color:var(--accent)}
+.sh-auth .sa-item:hover{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.sh-auth .sa-item svg{stroke:var(--accent)}
+.sh-auth .sa-k{color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
+@media(max-width:860px){
+  .sh-auth{--sa-fg:var(--paper);--sa-line:var(--line);order:2}
+  .sh-auth .sa-in{background:var(--accent);color:#fff;padding:8px 15px;font-size:13.5px;line-height:1}
+  .sh-auth .sa-in svg{display:none}
+  .sh-auth .sa-chip{border-color:var(--line)}
+  .sh-auth .sa-dot{border-color:var(--ink)}
+}
+/* once someone is in, one quiet line above the shelf points at their keys */
+.mine{align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin:-34px 0 38px;
+  padding:13px 18px;border:1px solid var(--line);border-radius:var(--r);
+  background:color-mix(in srgb,var(--panel) 82%,transparent);color:var(--muted);font-size:14.5px}
+.mine b{color:var(--paper);font-weight:600}
+.mine a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.mine a:hover{text-decoration:underline;text-underline-offset:3px}
+
 /* ---------- shell ---------- */
 main{margin-left:var(--rail);padding:62px var(--gut) 0}
 .wrap{max-width:1080px;margin:0 auto}
@@ -641,6 +672,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
   ]
 }
 </script>
+<link rel="stylesheet" href="assets/site-auth.css">
 </head>
 <body data-room="apps">
 
@@ -665,7 +697,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
     <span class="txt">Stephen Amanor Sackey</span>
   </a>
   <div class="sitehead-actions">
-    <a class="sh-login" href="/client">Clients</a>
+    <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
     <span class="sh-social" id="head-social"></span>
   </div>
 </div>
@@ -679,6 +711,12 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
     <p class="said">Built in the studio, not in a product meeting. Open it and you&rsquo;ll know what to do.</p>
     <div class="hairline"></div><div class="glowdot"></div>
   </header>
+
+  <!-- shown by site-auth.js only when someone is signed in -->
+  <p class="mine" data-auth-banner>
+    <span>Signed in as <b data-auth-name></b> — your license keys, devices and downloads are in one place.</span>
+    <a href="/portal/my-apps.html">Open My Apps <span aria-hidden="true">→</span></a>
+  </p>
 
   <!-- Four columns, four doors. Each app's own mark, its own colour, and
        a real capture of the thing running. -->
@@ -795,7 +833,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       </div>
       <div class="app-shot"><img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window showing an active stream to a second output device, buffer health, and drift correction" loading="lazy"></div>
       <p class="app-note">Mirrors your DAW’s master bus to a second output device — feed a switcher, stream, or record a safety copy, without touching your ASIO interface.</p>
-      <p class="app-badge presale">$19 · pre-order — still being built</p>
+      <p class="app-badge">$19 · Windows 10/11</p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -1223,5 +1261,7 @@ var CONFIG = {
 </script>
 <script src="assets/track.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="assets/site-auth.js" defer></script>
 </body>
 </html>

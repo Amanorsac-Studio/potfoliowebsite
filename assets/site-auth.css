@@ -1,0 +1,81 @@
+/* =====================================================================
+   The account chip in the public pages' headers.
+
+   Drawn by site-auth.js into whatever element carries data-auth-slot.
+   Every colour here is read from the page it lands on, with a fallback,
+   so the same chip wears the App Store's violet, SecondOut's green and
+   PulseRoom's cyan without a line of per-page CSS. A page that wants a
+   different primary sets --sa-accent; one whose text/panel/line tokens
+   go by other names sets --sa-fg, --sa-bg, --sa-line.
+   ===================================================================== */
+.sa{--_ac:var(--sa-accent,var(--accent,#8B7BFF));
+    --_fg:var(--sa-fg,var(--text,var(--paper,#F3F1FA)));
+    --_bg:var(--sa-bg,var(--panel,#14121F));
+    --_ln:var(--sa-line,var(--line,rgba(255,255,255,.1)));
+    --_mu:var(--sa-muted,var(--muted,#9A96B0));
+  position:relative;display:inline-flex;align-items:center;font-family:var(--body,Inter,system-ui,sans-serif)}
+
+/* signed out: one plain verb */
+.sa-in{display:inline-flex;align-items:center;gap:8px;text-decoration:none;white-space:nowrap;
+  font-size:14px;font-weight:600;color:var(--_fg);padding:8px 14px;border-radius:999px;
+  border:1px solid var(--_ln);transition:border-color .2s,background .2s,transform .12s}
+.sa-in:hover{border-color:var(--_ac);background:color-mix(in srgb,var(--_ac) 10%,transparent)}
+.sa-in:active{transform:scale(.97)}
+.sa-in svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* signed in: initials, first name, a menu */
+.sa-chip{display:inline-flex;align-items:center;gap:9px;background:none;border:1px solid var(--_ln);
+  border-radius:999px;padding:4px 10px 4px 4px;cursor:pointer;color:var(--_fg);font:inherit;
+  transition:border-color .2s,background .2s,transform .12s}
+.sa-chip:hover,.sa[data-open] .sa-chip{border-color:var(--_ac);background:color-mix(in srgb,var(--_ac) 10%,transparent)}
+.sa-chip:active{transform:scale(.97)}
+.sa-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none;
+  background:var(--_ac);color:#0B0A14;font-size:11px;font-weight:700;letter-spacing:.04em;
+  font-family:var(--mono,ui-monospace,monospace)}
+.sa-name{font-size:13.5px;font-weight:600;max-width:12ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sa-chev{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  opacity:.7;transition:transform .25s}
+.sa[data-open] .sa-chev{transform:rotate(180deg)}
+/* the pulse says "live account", quietly */
+.sa-dot{position:absolute;left:24px;top:4px;width:9px;height:9px;border-radius:50%;background:#3fe083;
+  border:2px solid var(--_bg);box-shadow:0 0 0 0 rgba(63,224,131,.6);animation:sa-pulse 2.6s ease-out infinite}
+@keyframes sa-pulse{0%{box-shadow:0 0 0 0 rgba(63,224,131,.55)}70%{box-shadow:0 0 0 7px rgba(63,224,131,0)}100%{box-shadow:0 0 0 0 rgba(63,224,131,0)}}
+
+.sa-menu{position:absolute;top:calc(100% + 10px);right:0;min-width:236px;z-index:80;
+  background:var(--_bg);border:1px solid var(--_ln);border-radius:14px;padding:6px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.6),0 30px 70px -20px rgba(0,0,0,.7);
+  transform-origin:top right;animation:sa-in .22s cubic-bezier(.2,.8,.3,1)}
+.sa-menu[hidden]{display:none}
+@keyframes sa-in{from{opacity:0;transform:translateY(-6px) scale(.98)}to{opacity:1;transform:none}}
+.sa-who{padding:10px 12px 12px;border-bottom:1px solid var(--_ln);margin:0 0 6px}
+.sa-who small{display:block;font-family:var(--mono,ui-monospace,monospace);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--_mu);margin:0 0 4px}
+.sa-who b{display:block;font-size:13.5px;font-weight:600;color:var(--_fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sa-item{display:flex;align-items:center;gap:11px;width:100%;text-align:left;text-decoration:none;color:var(--_fg);
+  background:none;border:0;font:inherit;font-size:14px;font-weight:500;padding:10px 12px;border-radius:9px;cursor:pointer;
+  transition:background .15s}
+.sa-item:hover{background:color-mix(in srgb,var(--_ac) 12%,transparent)}
+.sa-item svg{width:16px;height:16px;flex:none;fill:none;stroke:var(--_ac);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.sa-item.quiet{color:var(--_mu)}
+.sa-item.quiet svg{stroke:currentColor}
+.sa-item .sa-k{margin-left:auto;font-family:var(--mono,ui-monospace,monospace);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--_ac);background:color-mix(in srgb,var(--_ac) 14%,transparent);
+  padding:3px 7px;border-radius:999px}
+.sa-sep{height:1px;background:var(--_ln);margin:6px 4px}
+
+/* a strip a page can show once someone is in: "your keys live here" */
+[data-auth-banner]{display:none}
+[data-auth-banner].sa-on{display:flex}
+
+/* Still a dropdown on a phone, not a bottom sheet: the headers these
+   chips live in use backdrop-filter, which makes them the containing
+   block for anything position:fixed inside them - a sheet pinned to the
+   "bottom" would pin to the bottom of the 56px header and vanish. */
+@media (max-width:560px){
+  .sa-name{display:none}
+  .sa-chip{padding:3px 8px 3px 3px}
+  .sa-menu{min-width:0;width:min(280px,calc(100vw - 24px))}
+}
+@media (prefers-reduced-motion:reduce){
+  .sa-dot{animation:none}.sa-menu{animation:none}.sa-chev{transition:none}
+}
