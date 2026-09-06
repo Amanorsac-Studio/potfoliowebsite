@@ -1,0 +1,68 @@
+<!-- Supabase → Authentication → Email Templates → "Invite user" → Message body.
+     Subject line to use: Your Amanorsac Studio account is ready
+     Variables Supabase fills in: {{ .ConfirmationURL }}  {{ .Email }}  {{ .SiteURL }} -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Your account is ready</title>
+</head>
+<body style="margin:0;padding:0;background:#F4F1EB;-webkit-font-smoothing:antialiased;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">The studio has opened a client account for you. Accept the invite to choose a password and see your project.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F4F1EB;">
+<tr><td align="center" style="padding:40px 16px 48px;">
+
+  <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;">
+
+    <tr><td style="padding:0 6px 22px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="vertical-align:middle;padding-right:12px;">
+          <img src="https://amanorsac.studio/portal/icons/icon-192.png" width="36" height="36" alt="" style="display:block;width:36px;height:36px;border-radius:10px;">
+        </td>
+        <td style="vertical-align:middle;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#6B655C;">
+          Amanorsac Studio
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <tr><td style="background:#FFFFFF;border:1px solid #E3DDD2;border-radius:18px;padding:44px 44px 40px;">
+      <p style="margin:0 0 18px;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#8A6A3C;">You&rsquo;re invited</p>
+      <h1 style="margin:0 0 16px;font-family:'Instrument Serif',Georgia,'Times New Roman',serif;font-weight:400;font-size:34px;line-height:1.1;letter-spacing:-.01em;color:#1C1916;">The studio set up your account.</h1>
+      <p style="margin:0 0 28px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.65;color:#4A443C;">
+        Stephen has opened a client account for <span style="color:#1C1916;font-weight:600;">{{ .Email }}</span>. Accept the invite to choose your password, then follow your project as it moves &mdash; every stage, every file, every message, in one place.
+      </p>
+
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 26px;"><tr>
+        <td style="background:#1C1916;border-radius:11px;">
+          <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:15px 28px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#FFFFFF;text-decoration:none;letter-spacing:-.005em;">Accept the invite &nbsp;&rarr;</a>
+        </td>
+      </tr></table>
+
+      <p style="margin:0 0 6px;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#6B655C;">
+        Button not working? Paste this into your browser:
+      </p>
+      <p style="margin:0 0 30px;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11.5px;line-height:1.6;word-break:break-all;">
+        <a href="{{ .ConfirmationURL }}" style="color:#8A6A3C;text-decoration:underline;">{{ .ConfirmationURL }}</a>
+      </p>
+
+      <hr style="border:0;border-top:1px solid #E3DDD2;margin:0 0 22px;">
+      <p style="margin:0;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.65;color:#6B655C;">
+        Not expecting this? Just ignore it &mdash; nothing is created until the link is opened.
+      </p>
+    </td></tr>
+
+    <tr><td style="padding:26px 6px 0;font-family:Inter,-apple-system,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.7;color:#9A9288;">
+      Stephen Amanor Sackey &middot; Virginia, United States<br>
+      <a href="{{ .SiteURL }}" style="color:#8A6A3C;text-decoration:none;">amanorsac.studio</a>
+      &nbsp;&middot;&nbsp; <a href="mailto:hello@amanorsac.studio" style="color:#8A6A3C;text-decoration:none;">hello@amanorsac.studio</a>
+    </td></tr>
+
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>
