@@ -96,6 +96,7 @@ async function mountChrome(active){
       '<a href="account.html"        class="'+(active==='account'        ?'on':'')+'">Account</a>'+
       '<a href="../index.html">Studio site</a>'
     : '<a href="dashboard.html" class="'+(active==='projects'?'on':'')+'">Projects</a>'+
+      '<a href="my-apps.html"   class="'+(active==='my-apps' ?'on':'')+'">My Apps</a>'+
       '<a href="billing.html"   class="'+(active==='billing' ?'on':'')+'">Billing</a>'+
       '<a href="account.html"   class="'+(active==='account' ?'on':'')+'">Account</a>'+
       '<a href="../index.html">Studio site</a>';

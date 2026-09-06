@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>My Apps · Stephen Amanor Sackey</title>
+<script>
+/* set the theme BEFORE first paint so there is no flash of the wrong colours */
+(function(){ var t='light'; try{ t=localStorage.getItem('portal-theme')||'light'; }catch(e){}
+  document.documentElement.setAttribute('data-theme',t); })();
+</script>
+<link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F7F5F1">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AMANORSAC">
+<link rel="stylesheet" href="../assets/portal.css">
+<style>
+  .app-card{border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:0 0 16px}
+  .app-card h3{margin:0 0 3px}
+  .app-card .meta{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .keybox{display:flex;align-items:center;gap:10px;background:var(--surface-2);
+    border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:0 0 14px}
+  .keybox code{font-family:var(--mono);font-size:14px;letter-spacing:.03em;flex:1}
+  .keybox button{flex:none}
+  .devhead{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px}
+  .devhead b{font-size:12.5px;color:var(--muted);font-weight:600}
+  .device{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:9px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .device .name{font-weight:600}
+  .device .seen{color:var(--muted);font-size:12px}
+  .device button{font-family:var(--mono);font-size:11px;background:none;border:1px solid var(--line);
+    border-radius:6px;padding:5px 10px;cursor:pointer;color:var(--muted)}
+  .device button:hover{color:var(--ink);border-color:var(--muted)}
+  .no-devices{color:var(--muted);font-size:13px;padding:9px 0 0}
+</style>
+</head>
+<body>
+<header class="top" id="topbar"></header>
+<main>
+  <div class="head">
+    <p class="eyebrow">Your software</p>
+    <h1>My Apps</h1>
+    <p class="sub">Every app tied to this account, its license key, and which devices are using it — each key works on up to two devices at once.</p>
+  </div>
+  <div id="apps"><div class="skeleton" style="width:60%"></div></div>
+  <p class="sub" style="margin-top:8px">Looking for something new? <a href="../apps.html">Browse the App Store</a>.</p>
+</main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../assets/portal.js"></script>
+<script>
+
+(async () => {
+  const s = await requireSession(); if(!s) return;
+  await mountChrome('my-apps');
+  const box = $('#apps');
+
+  // Free apps carry no charge, but the same key-and-device system as a
+  // paid one — claimed the first time this page is ever opened.
+  const FREE_APPS = ['pulseroom', 'nebulatide'];
+  const APP_NAMES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide', secondout: 'SecondOut' };
+  const nice = a => APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1));
+
+  async function load(){
+    const { data: owned, error } = await sb.from('purchases')
+      .select('id, app, license_key, max_devices, purchased_at, update_eligible_until')
+      .order('purchased_at', { ascending: true });
+    if(error){ box.innerHTML = '<p class="msg err">'+esc(error.message)+'</p>'; return; }
+
+    const have = new Set((owned||[]).map(r => r.app));
+    const toClaim = FREE_APPS.filter(a => !have.has(a));
+    if(toClaim.length){
+      await Promise.all(toClaim.map(a => sb.rpc('claim_license', { p_app: a }).catch(()=>{})));
+      return load();   // one re-fetch, now that every free app has a row
+    }
+
+    if(!owned || !owned.length){
+      box.innerHTML = '<p class="empty">Nothing yet.</p>';
+      return;
+    }
+
+    const { data: devices } = await sb.from('device_activations')
+      .select('id, license_id, device_name, device_id, first_seen, last_seen, revoked_at')
+      .is('revoked_at', null)
+      .order('last_seen', { ascending: false });
+    const byLicense = {};
+    (devices||[]).forEach(d => { (byLicense[d.license_id] = byLicense[d.license_id] || []).push(d); });
+
+    box.innerHTML = owned.map(r => {
+      const devs = byLicense[r.id] || [];
+      const infinite = !r.update_eligible_until || r.update_eligible_until.slice(0,4) > '9000';
+      return '<div class="app-card" data-id="'+esc(r.id)+'">'+
+        '<h3>'+esc(nice(r.app))+'</h3>'+
+        '<p class="meta">'+
+          (r.purchased_at ? 'Since '+when(r.purchased_at) : '') +
+          (infinite ? '' : ' · updates included until '+when(r.update_eligible_until)) +
+        '</p>'+
+        '<div class="keybox"><code>'+esc(r.license_key||'—')+'</code>'+
+          '<button class="btn ghost copy-key" type="button" data-key="'+esc(r.license_key||'')+'">Copy</button></div>'+
+        '<div class="devhead"><b>DEVICES · '+devs.length+' OF '+esc(r.max_devices)+' USED</b></div>'+
+        (devs.length
+          ? devs.map(d =>
+              '<div class="device" data-device-row="'+esc(d.id)+'">'+
+                '<span class="name">'+esc(d.device_name || d.device_id)+'</span>'+
+                '<span class="seen">last seen '+when(d.last_seen)+
+                  ' <button class="revoke-device" type="button" data-id="'+esc(d.id)+'">Remove</button></span>'+
+              '</div>'
+            ).join('')
+          : '<p class="no-devices">No device has activated this key yet — it’s ready whenever the app asks for it.</p>'
+        ) +
+      '</div>';
+    }).join('');
+
+    box.querySelectorAll('.copy-key').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try { await navigator.clipboard.writeText(btn.dataset.key); btn.textContent = 'Copied'; }
+        catch(e) { btn.textContent = btn.dataset.key; }
+        setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      });
+    });
+    box.querySelectorAll('.revoke-device').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true; btn.textContent = 'Removing';
+        const { error } = await sb.rpc('revoke_device', { p_device_activation_id: Number(btn.dataset.id) });
+        if(error){ btn.disabled = false; btn.textContent = 'Remove'; return; }
+        btn.closest('[data-device-row]').remove();
+      });
+    });
+  }
+
+  load();
+})();
+
+</script>
+</body>
+</html>
