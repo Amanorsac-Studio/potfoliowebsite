@@ -33,7 +33,7 @@ Output in `hub/dist/`:
 | File | What it is |
 | --- | --- |
 | `Amanorsac Hub-1.0.0-win-x64.exe` | Installer (choose install folder, desktop shortcut) |
-| `Amanorsac Hub-1.0.0-win-x64.exe` in `portable` form | Runs without installing |
+| `Amanorsac Hub-1.0.0-win-x64-portable.exe` | Runs without installing |
 
 Windows SmartScreen will warn about an unsigned app the first time
 ("More info" → "Run anyway"). Code signing needs a certificate; when you

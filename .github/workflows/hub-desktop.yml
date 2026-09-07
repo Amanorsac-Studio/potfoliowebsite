@@ -91,7 +91,11 @@ jobs:
           tag_name: ${{ inputs.release_tag || github.ref_name }}
           target_commitish: ${{ github.sha }}
           name: Amanorsac Hub ${{ inputs.release_tag || github.ref_name }}
-          generate_release_notes: true
+          body: |
+            Amanorsac Hub desktop app.
+
+            - **Windows**: `…-win-x64.exe` is the installer, `…-win-x64-portable.exe` runs without installing.
+            - **macOS**: `…-mac-arm64.dmg` for Apple Silicon, `…-mac-x64.dmg` for Intel. Unsigned: right-click the app and choose Open the first time.
           files: |
             hub/dist/*.dmg
             hub/dist/*.zip
