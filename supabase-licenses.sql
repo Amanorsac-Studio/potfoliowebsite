@@ -311,3 +311,15 @@ $$;
 
 revoke all on function public.deactivate_device(text,text) from public, anon, authenticated;
 grant execute on function public.deactivate_device(text,text) to service_role;
+
+
+-- =====================================================================
+--  DONE — TELL THE API ABOUT THE NEW COLUMNS
+--
+--  Supabase's REST layer (PostgREST) caches the table schema and can be
+--  slow to notice a column added moments ago in the SQL editor - a page
+--  loaded right after running this can get a "column not found" error
+--  on license_key or max_devices until the cache catches up on its own.
+--  This line tells it to refresh right now instead of waiting.
+-- =====================================================================
+notify pgrst, 'reload schema';
