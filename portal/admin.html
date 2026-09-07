@@ -199,14 +199,22 @@
         load();
       });
 
-      // Full removal: login, projects, files, invoices — the lot.
+      // Full removal: login, projects, files, invoices, AND anything
+      // they bought — one account now covers a mixing client and an
+      // app buyer, so deleting it deletes both sides. Untick "Client
+      // access" instead if the goal is only to end their client
+      // relationship while leaving a purchased app alone.
       // Typing the email back is the safety catch; a confirm() box gets
       // clicked through on reflex.
       $('.cl-del', box).addEventListener('click', async () => {
         const m = $('.cl-msg', box);
         const email = $('.cl-email', box).value.trim();
-        const typed = prompt('This deletes the client, their login, and EVERY project, file, '+
-          'message and invoice they have. There is no undo.\n\nType their email to confirm:');
+        const typed = prompt('This deletes the client, their login, EVERY project, file, '+
+          'message and invoice they have, AND any app they bought — the license key, '+
+          'devices, everything. There is no undo.\n\n'+
+          'If you only want to end their client relationship and keep their purchases, '+
+          'cancel this and untick "Client access" instead.\n\n'+
+          'Type their email to confirm deletion:');
         if(typed === null) return;
         if(typed.trim().toLowerCase() !== email.toLowerCase()){
           return say(m, 'That did not match — nothing was deleted.', 'err');
