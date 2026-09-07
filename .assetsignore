@@ -39,3 +39,7 @@ images/gallery/originals/
 .DS_Store
 # the camera original behind the launch slide; the page serves the webp
 images/apps/Pulse Room Carasol Background.jpg
+
+# the desktop app source; built separately, not a page
+hub/
+.github/

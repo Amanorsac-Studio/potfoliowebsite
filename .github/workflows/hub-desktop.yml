@@ -1,0 +1,95 @@
+# Builds the Amanorsac Hub desktop app (hub/) for Windows and macOS.
+#
+#   - every push that touches hub/ (and manual runs) builds both and
+#     keeps the installers as workflow artifacts for 30 days
+#   - pushing a tag like hub-v1.0.0 additionally publishes them on a
+#     GitHub Release of the same name
+#
+# The macOS build is unsigned (no Apple Developer certificate in the
+# repository), so on first launch macOS shows "cannot be opened because
+# the developer cannot be verified". Right-click the app > Open, or run
+#   xattr -dr com.apple.quarantine "/Applications/Amanorsac Hub.app"
+# To sign and notarise, add CSC_LINK / CSC_KEY_PASSWORD / APPLE_ID /
+# APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID secrets and remove the
+# CSC_IDENTITY_AUTO_DISCOVERY line below.
+
+name: Hub desktop app
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "hub/**"
+      - ".github/workflows/hub-desktop.yml"
+    tags:
+      - "hub-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: hub
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macOS
+            script: build:mac
+          - os: windows-latest
+            name: Windows
+            script: build:win
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+
+      - run: npm ci
+
+      - name: Build installers
+        run: npm run ${{ matrix.script }} -- --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Keep installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: amanorsac-hub-${{ matrix.name }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            hub/dist/*.dmg
+            hub/dist/*.zip
+            hub/dist/*.exe
+            hub/dist/*.blockmap
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/hub-v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installers
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: Amanorsac Hub ${{ github.ref_name }}
+          files: |
+            installers/*.dmg
+            installers/*.zip
+            installers/*.exe
+          generate_release_notes: true
