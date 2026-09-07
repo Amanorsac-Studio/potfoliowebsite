@@ -1,14 +1,51 @@
 # Amanorsac Hub · desktop app
 
-The Hub launcher (`app/index.html`) packaged as a native desktop app for
-Windows and macOS with [Electron](https://www.electronjs.org/) and
-[electron-builder](https://www.electron.build/).
+The desktop companion to amanorsac.studio, for Windows and macOS: one
+account, one library, one place to install, update and open the
+Amanorsac apps, see license keys, manage device activations and look up
+purchases. Built with [Electron](https://www.electronjs.org/) and
+packaged with [electron-builder](https://www.electron.build/).
 
-The page is entirely self-contained: fonts and artwork are inlined and
-nothing is fetched from the network. `main.js` opens a frameless window
-for it (the page draws its own title bar; the OS overlays the real
-window controls), keeps navigation inside the app, and sends outside
-links (the website, help) to your default browser.
+## What it reuses from the website
+
+Nothing here has its own copy of account or ownership data. The Hub is a
+second front end on the systems the site already runs:
+
+| Concern | Where it lives | How the Hub uses it |
+| --- | --- | --- |
+| Sign in, create account, reset password | Supabase Auth, same project and publishable key as `assets/site-auth.js` | `supabase-js` in the page; sessions persist between launches |
+| What the account owns | `public.purchases` under Row Level Security (`supabase-purchases.sql`, `supabase-licenses.sql`) | read directly; free apps claimed with `claim_license`, as My Apps does |
+| License keys and devices | `purchases.license_key`, `public.device_activations`, `revoke_device()` | shown under License keys and My devices; Remove calls `revoke_device` |
+| Downloads | the Worker's `POST /api/app-download` (ownership re-checked with the session token) and the signed ticket it returns | requested from the main process, downloaded with progress, then installed |
+| Purchases and receipts | the same `purchases` rows | listed under Purchases, with the order id and license terms |
+| The collection itself | `GET /api/hub/catalog`, built by `worker.js` from its own `INSTALLERS` table | fetched on every sync; `app/catalog.js` is the offline copy |
+
+Availability therefore follows the website automatically: an app has a
+Windows or Mac build in the Hub exactly when `INSTALLERS` in `worker.js`
+has one, and apps without a build are shown as coming soon.
+
+## Layout
+
+```
+hub/
+  main.js          Electron main process: window, download, unpack, launch, uninstall
+  preload.js       the bridge the page talks to (window.hub)
+  app/index.html   the interface shell
+  app/styles.css   the look: graphite surfaces, amber accent, Sora and Inter
+  app/hub.js       the page: auth, library, downloads, updates, keys, devices, purchases
+  app/catalog.js   offline copy of the collection (the Worker's copy wins)
+  app/vendor/      supabase-js (UMD build, copied from node_modules)
+  app/assets/      product artwork from the site
+  build/icon.png   1024×1024 source icon; .ico / .icns are generated from it
+```
+
+Where things land on a customer's machine:
+
+- downloaded installers: the Hub's user-data folder, `downloads/`
+- apps the Hub unpacks from a `.zip`: `%LOCALAPPDATA%\Programs\Amanorsac\<App>` on Windows,
+  `~/Applications/Amanorsac/<App>` on macOS
+- apps that ship as a setup program (`.exe`, `.pkg`): wherever their installer puts them;
+  the Hub records that it ran and points to the system uninstaller for removal
 
 ## Run it locally
 
@@ -20,6 +57,11 @@ npm install
 npm start
 ```
 
+`HUB_PLATFORM=windows npm start` (or `mac`) makes the page behave as if
+it were on that platform, which is how the interface is exercised on a
+Linux build machine. It changes what is offered, not what can actually
+be unpacked or launched.
+
 ## Build the Windows installer (on Windows)
 
 ```bash
@@ -28,63 +70,42 @@ npm install
 npm run build:win
 ```
 
-Output in `hub/dist/`:
-
-| File | What it is |
-| --- | --- |
-| `Amanorsac Hub-1.0.0-win-x64.exe` | Installer (choose install folder, desktop shortcut) |
-| `Amanorsac Hub-1.0.0-win-x64-portable.exe` | Runs without installing |
-
-Windows SmartScreen will warn about an unsigned app the first time
-("More info" → "Run anyway"). Code signing needs a certificate; when you
-have one, set `CSC_LINK` and `CSC_KEY_PASSWORD` and electron-builder signs
-automatically.
+`hub/dist/` then holds `Amanorsac Hub-<version>-win-x64.exe` (installer)
+and `Amanorsac Hub-<version>-win-x64-portable.exe` (runs without
+installing). Windows SmartScreen warns about an unsigned app the first
+time: More info → Run anyway. With a code-signing certificate, set
+`CSC_LINK` and `CSC_KEY_PASSWORD` and electron-builder signs on its own.
 
 ## Build for macOS (GitHub Actions)
 
-A Mac is required to build the Mac app, so that is done by the
-`Hub desktop app` workflow in `.github/workflows/hub-desktop.yml`:
+A Mac is required to build the Mac app, so the `Hub desktop app`
+workflow (`.github/workflows/hub-desktop.yml`) does it:
 
-- **Every push touching `hub/`** builds Windows and macOS installers and
-  tries to attach them to the workflow run as artifacts (Actions tab → the
-  run → Artifacts). Artifacts count against the account's Actions storage
-  quota, so this can silently come up empty when the quota is full.
-- **Pushing a tag `hub-v1.0.0`** (matching the version in `package.json`)
-  publishes them as downloads on a GitHub Release, which is the reliable
-  way to get the files:
+- every push touching `hub/` builds both platforms (artifacts are kept
+  when the account's Actions storage quota allows);
+- pushing a tag `hub-v<version>`, or running the workflow by hand with a
+  release tag, publishes the installers on a GitHub Release: a `.dmg` and
+  `.zip` each for Apple Silicon (`arm64`) and Intel (`x64`), plus the
+  Windows installer and portable build.
 
-  ```bash
-  git tag hub-v1.0.0
-  git push origin hub-v1.0.0
-  ```
-
-macOS output: a `.dmg` and a `.zip` each for Apple Silicon (`arm64`) and
-Intel (`x64`).
-
-The Mac build is unsigned. On first launch macOS says the developer
-cannot be verified: right-click the app → **Open**, or
+The Mac build is unsigned. On first launch: right-click the app → Open, or
 
 ```bash
 xattr -dr com.apple.quarantine "/Applications/Amanorsac Hub.app"
 ```
 
-Signing and notarising needs an Apple Developer account. Add the secrets
+Signing and notarising needs an Apple Developer account: add
 `CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`
-and `APPLE_TEAM_ID` to the repository and delete the
+and `APPLE_TEAM_ID` as repository secrets and delete the
 `CSC_IDENTITY_AUTO_DISCOVERY` line from the workflow.
-
-## Layout
-
-```
-hub/
-  app/index.html   the Hub interface (single file)
-  main.js          Electron main process: window, menu, external links
-  preload.js       tells the page which platform/version it runs on
-  build/icon.png   1024×1024 source icon; .ico / .icns are generated from it
-  package.json     app metadata and electron-builder configuration
-```
 
 ## Releasing a new version
 
 1. Bump `version` in `package.json`.
-2. Commit, then tag `hub-v<version>` and push the tag.
+2. Commit, then either push a tag `hub-v<version>` or run the workflow by
+   hand with that tag as the release tag.
+
+## Deploying the Worker change
+
+`worker.js` gained `GET /api/hub/catalog`. Until the Worker is deployed,
+the Hub falls back to `app/catalog.js` and says so in its footer.

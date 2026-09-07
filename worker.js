@@ -40,6 +40,9 @@ export default {
 
         if (path === '/sitemap.xml') return await sitemap();
 
+        // what the desktop Hub shows: the same installer table, read out
+        if (path === '/api/hub/catalog') return hubCatalog();
+
         /* The live page is gone. It was in the sitemap, so search engines
            were told it existed and some of them will keep asking; a
            permanent redirect to the room that covers the same work is a
@@ -201,6 +204,57 @@ const INSTALLERS = {
                          as: 'SecondOut-1.3.0-Setup.exe', title: 'SecondOut for Windows',
                          version: '1.3.0', type: 'application/octet-stream', paid: true }
 };
+
+/* ---------------------------------------------------------------------
+   The collection, for the desktop Hub (hub/ in this repository).
+
+   Availability is not repeated here: an app has a Windows or Mac build
+   exactly when INSTALLERS above has a key for it, and the version shown
+   is the one recorded there. This only adds what a launcher needs to
+   draw a shelf - names, one-line descriptions, whether the app itself
+   asks for a license key (the `licensed` flag My Apps also keeps), and
+   which apps are still on the way. Public information, all of it; the
+   page it mirrors is /apps.
+   --------------------------------------------------------------------- */
+const HUB_APPS = [
+  { id: 'nebulatide', name: 'Nebula Tide', tagline: 'An ocean of sound. In every key.',
+    blurb: 'Endless, seamless drone pads recorded in all twelve keys. Deep Current included.',
+    kind: 'app', free: true, licensed: false, color: '#4FE3FF', page: '/nebulatide.html',
+    sizes: { windows: '279 MB', mac: '289 MB' }, version: '1.2.2' },
+  { id: 'pulseroom', name: 'PulseRoom', tagline: 'Every mixing answer. One tempo.',
+    blurb: 'Your reference desk: delay and reverb times, EQ cheat sheet, compression, mix chains.',
+    kind: 'app', free: true, licensed: false, color: '#3fd3e4', page: '/pulseroom.html',
+    sizes: { windows: '78 MB', mac: '171 MB' }, version: null },
+  { id: 'secondout', name: 'SecondOut', tagline: 'One master bus. Two independent outputs.',
+    blurb: 'Send your master to a second output device, drift-corrected, without touching the mix.',
+    kind: 'plugin', free: false, licensed: true, color: '#3fe083', page: '/secondout.html',
+    sizes: {}, version: null },
+  { id: 'performlive', name: 'PerformLive', tagline: 'Live performance, perfected.',
+    blurb: 'Stem decks, scenes and warm pads laid out for a service.',
+    kind: 'app', free: false, licensed: true, color: '#7B7DF7', page: '/performlive.html', sizes: {} },
+  { id: 'harmoniemd', name: 'HarmonieMD', tagline: 'Share. Simplify. Serve.',
+    blurb: 'The choir rehearsal studio: parts, setlists and a multi-track editor.',
+    kind: 'app', free: false, licensed: true, color: '#3ED598', page: '/harmoniemd.html', sizes: {} },
+];
+
+function hubCatalog() {
+  const apps = HUB_APPS.map((a) => {
+    const platforms = {};
+    for (const platform of ['windows', 'mac']) {
+      const item = INSTALLERS[a.id + ':' + platform];
+      if (item) platforms[platform] = { size: a.sizes[platform] || null, version: item.version || a.version || null, file: item.as };
+    }
+    return {
+      id: a.id, name: a.name, tagline: a.tagline, blurb: a.blurb, kind: a.kind,
+      status: Object.keys(platforms).length ? 'available' : 'coming_soon',
+      free: a.free, licensed: a.licensed, color: a.color, page: SITE + a.page, platforms
+    };
+  });
+  return new Response(JSON.stringify({ generatedAt: new Date().toISOString(), apps }), {
+    headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300',
+               'access-control-allow-origin': '*' }
+  });
+}
 
 /* Plain names for the review-invite email, decoupled from the
    platform-specific installer titles above ("Nebula Tide for Windows"

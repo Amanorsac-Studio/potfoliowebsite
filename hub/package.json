@@ -1,7 +1,7 @@
 {
   "name": "amanorsac-hub",
   "productName": "Amanorsac Hub",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Amanorsac Hub - your creative home. Desktop launcher for the Amanorsac Studio apps.",
   "author": "Amanorsac Studio <amanorsac@gmail.com>",
   "homepage": "https://amanorsac.studio/apps",
@@ -17,7 +17,8 @@
   },
   "devDependencies": {
     "electron": "^44.2.0",
-    "electron-builder": "^26.0.0"
+    "electron-builder": "^26.0.0",
+    "@supabase/supabase-js": "^2.116.0"
   },
   "build": {
     "appId": "studio.amanorsac.hub",

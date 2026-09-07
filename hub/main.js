@@ -1,155 +1,416 @@
-// Amanorsac Hub - desktop shell.
+// Amanorsac Hub - main process.
 //
-// The whole interface lives in app/index.html, a single self-contained
-// page (fonts and artwork are inlined, nothing is fetched from the
-// network). This file only opens a window for it, keeps navigation
-// inside the app, and sends outside links to the system browser.
+// The interface (app/) talks to Supabase directly with the same
+// publishable key the website uses; Row Level Security decides what it
+// may see. Everything that needs the operating system - downloading an
+// installer, unpacking it, launching an app - or that needs to reach
+// amanorsac.studio's Worker without a browser origin, happens here and
+// is exposed to the page through preload.js.
 
-const { app, BrowserWindow, Menu, shell, nativeTheme } = require('electron');
+const { app, BrowserWindow, Menu, shell, nativeTheme, ipcMain, net, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
+const fsp = require('fs/promises');
+const os = require('os');
+const { spawn, execFile } = require('child_process');
 
+const SITE = 'https://amanorsac.studio';
 const isMac = process.platform === 'darwin';
 const isWin = process.platform === 'win32';
 
-// One instance at a time; a second launch just focuses the open window.
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
   app.on('second-instance', () => {
     const win = BrowserWindow.getAllWindows()[0];
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      win.focus();
-    }
+    if (win) { if (win.isMinimized()) win.restore(); win.focus(); }
   });
 }
 
 nativeTheme.themeSource = 'dark';
 
+let mainWindow = null;
+
 function createWindow() {
-  const win = new BrowserWindow({
-    width: 1280,
-    height: 820,
-    minWidth: 900,
-    minHeight: 600,
-    show: false,
-    backgroundColor: '#0d0e10',
-    title: 'Amanorsac Hub',
-    // The page draws its own title bar. On macOS the native traffic
-    // lights are overlaid on it; on Windows the native minimise /
-    // maximise / close buttons are, coloured to match the page.
+  mainWindow = new BrowserWindow({
+    width: 1280, height: 840, minWidth: 940, minHeight: 620,
+    show: false, backgroundColor: '#0d0e10', title: 'Amanorsac Hub',
     titleBarStyle: 'hidden',
     ...(isMac ? { trafficLightPosition: { x: 16, y: 16 } } : {}),
-    ...(isWin
-      ? {
-          titleBarOverlay: {
-            color: '#141516',
-            symbolColor: '#a8a9ad',
-            height: 45,
-          },
-        }
-      : {}),
+    ...(isWin ? { titleBarOverlay: { color: '#141516', symbolColor: '#a8a9ad', height: 45 } } : {}),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       additionalArguments: [`--hub-version=${app.getVersion()}`],
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-      spellcheck: false,
+      contextIsolation: true, nodeIntegration: false, sandbox: true, spellcheck: false,
     },
   });
+  mainWindow.loadFile(path.join(__dirname, 'app', 'index.html'));
+  mainWindow.once('ready-to-show', () => mainWindow.show());
+  mainWindow.on('closed', () => { mainWindow = null; });
 
-  win.loadFile(path.join(__dirname, 'app', 'index.html'));
-  win.once('ready-to-show', () => win.show());
-
-  // Links marked target="_blank" (the website, help, product pages)
-  // open in the user's default browser, never in a second Electron window.
-  win.webContents.setWindowOpenHandler(({ url }) => {
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     if (/^https?:\/\//i.test(url)) shell.openExternal(url);
     return { action: 'deny' };
   });
-
-  // Keep the window on the bundled page.
-  win.webContents.on('will-navigate', (event, url) => {
+  mainWindow.webContents.on('will-navigate', (event, url) => {
     if (!url.startsWith('file://')) {
       event.preventDefault();
       if (/^https?:\/\//i.test(url)) shell.openExternal(url);
     }
   });
-
-  return win;
+  return mainWindow;
 }
 
 function buildMenu() {
-  if (!isMac) {
-    // Windows / Linux: no menu bar. The page is the whole interface.
-    Menu.setApplicationMenu(null);
-    return;
-  }
-  const template = [
-    {
-      label: app.name,
-      submenu: [
-        { role: 'about' },
-        { type: 'separator' },
-        { role: 'hide' },
-        { role: 'hideOthers' },
-        { role: 'unhide' },
-        { type: 'separator' },
-        { role: 'quit' },
-      ],
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        { role: 'undo' },
-        { role: 'redo' },
-        { type: 'separator' },
-        { role: 'cut' },
-        { role: 'copy' },
-        { role: 'paste' },
-        { role: 'selectAll' },
-      ],
-    },
-    {
-      label: 'View',
-      submenu: [
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
-    },
-    {
-      label: 'Window',
-      submenu: [{ role: 'minimize' }, { role: 'zoom' }, { type: 'separator' }, { role: 'front' }],
-    },
-    {
-      role: 'help',
-      submenu: [
-        {
-          label: 'Explore all apps',
-          click: () => shell.openExternal('https://amanorsac.studio/apps'),
-        },
-        {
-          label: 'Help & support',
-          click: () => shell.openExternal('https://amanorsac.studio/about#contact'),
-        },
-      ],
-    },
-  ];
-  Menu.setApplicationMenu(Menu.buildFromTemplate(template));
+  if (!isMac) { Menu.setApplicationMenu(null); return; }
+  Menu.setApplicationMenu(Menu.buildFromTemplate([
+    { label: app.name, submenu: [{ role: 'about' }, { type: 'separator' }, { role: 'hide' }, { role: 'hideOthers' }, { role: 'unhide' }, { type: 'separator' }, { role: 'quit' }] },
+    { label: 'Edit', submenu: [{ role: 'undo' }, { role: 'redo' }, { type: 'separator' }, { role: 'cut' }, { role: 'copy' }, { role: 'paste' }, { role: 'selectAll' }] },
+    { label: 'View', submenu: [{ role: 'resetZoom' }, { role: 'zoomIn' }, { role: 'zoomOut' }, { type: 'separator' }, { role: 'togglefullscreen' }] },
+    { label: 'Window', submenu: [{ role: 'minimize' }, { role: 'zoom' }, { type: 'separator' }, { role: 'front' }] },
+    { role: 'help', submenu: [
+      { label: 'App Store', click: () => shell.openExternal(SITE + '/apps') },
+      { label: 'My Apps on the website', click: () => shell.openExternal(SITE + '/my-apps.html') },
+      { label: 'Help & support', click: () => shell.openExternal(SITE + '/about#contact') },
+    ] },
+  ]));
 }
+
+/* ---------------------------------------------------------------------
+   Where things live on this machine
+   --------------------------------------------------------------------- */
+
+const paths = {
+  downloads: () => path.join(app.getPath('userData'), 'downloads'),
+  installRoot: () => isWin
+    ? path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), 'AppData', 'Local'), 'Programs', 'Amanorsac')
+    : isMac ? path.join(os.homedir(), 'Applications', 'Amanorsac')
+    : path.join(os.homedir(), '.local', 'share', 'amanorsac'),
+  records: () => path.join(app.getPath('userData'), 'installed.json'),
+};
+
+async function readRecords() {
+  try { return JSON.parse(await fsp.readFile(paths.records(), 'utf8')) || {}; }
+  catch (e) { return {}; }
+}
+async function writeRecords(records) {
+  await fsp.mkdir(path.dirname(paths.records()), { recursive: true });
+  await fsp.writeFile(paths.records(), JSON.stringify(records, null, 2));
+}
+function exists(p) { try { return !!p && fs.existsSync(p); } catch (e) { return false; } }
+
+/* Installed apps, checked against the disk every time they are asked
+   for: a folder the user deleted by hand is not an installed app. */
+async function installedApps() {
+  const records = await readRecords();
+  let changed = false;
+  for (const [id, r] of Object.entries(records)) {
+    const alive = r.kind === 'installer' ? true : exists(r.dir);
+    if (!alive) { delete records[id]; changed = true; }
+  }
+  if (changed) await writeRecords(records);
+  return records;
+}
+
+/* ---------------------------------------------------------------------
+   Talking to amanorsac.studio
+   The Worker has no CORS headers - the website never needed them - so
+   the page cannot call it from a file:// origin. This does it instead.
+   --------------------------------------------------------------------- */
+
+function siteRequest(pathname, { method = 'GET', token, body } = {}) {
+  return new Promise((resolve) => {
+    const req = net.request({ method, url: SITE + pathname });
+    req.setHeader('accept', 'application/json');
+    req.setHeader('user-agent', 'AmanorsacHub/' + app.getVersion() + ' (' + process.platform + ')');
+    if (token) req.setHeader('authorization', 'Bearer ' + token);
+    if (body !== undefined) req.setHeader('content-type', 'application/json');
+    req.on('response', (res) => {
+      let text = '';
+      res.on('data', (c) => { text += c; });
+      res.on('end', () => {
+        let json = null;
+        try { json = JSON.parse(text); } catch (e) {}
+        resolve({ ok: res.statusCode >= 200 && res.statusCode < 300, status: res.statusCode, json, text });
+      });
+      res.on('error', () => resolve({ ok: false, status: 0, json: null, text: '' }));
+    });
+    req.on('error', (e) => resolve({ ok: false, status: 0, json: null, text: String(e && e.message) }));
+    if (body !== undefined) req.write(JSON.stringify(body));
+    req.end();
+  });
+}
+
+/* ---------------------------------------------------------------------
+   Downloads
+   A ticket from /api/app-download is fetched to userData/downloads with
+   progress reported to the page. One at a time per app.
+   --------------------------------------------------------------------- */
+
+const active = new Map(); // app id -> { req, cancel }
+
+function progress(payload) {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send('hub:progress', payload);
+}
+
+function fetchToFile(url, dest, appId, onProgress) {
+  return new Promise((resolve, reject) => {
+    const req = net.request({ url, method: 'GET' });
+    req.setHeader('user-agent', 'AmanorsacHub/' + app.getVersion());
+    let received = 0, total = 0, out = null, cancelled = false;
+    const entry = {
+      req,
+      cancel: () => { cancelled = true; try { req.abort(); } catch (e) {} },
+    };
+    active.set(appId, entry);
+    const done = (err) => {
+      active.delete(appId);
+      if (out) out.close();
+      if (err) { fs.rm(dest, { force: true }, () => {}); reject(err); }
+      else resolve({ received, total });
+    };
+    req.on('response', (res) => {
+      if (res.statusCode !== 200) {
+        let text = '';
+        res.on('data', (c) => { text += c; });
+        res.on('end', () => done(new Error('The studio answered ' + res.statusCode + ' instead of the file.')));
+        return;
+      }
+      const type = String(res.headers['content-type'] || '');
+      if (/text\/html/i.test(type)) {
+        res.on('data', () => {}); res.on('end', () => done(new Error('The download link did not return a file.')));
+        return;
+      }
+      total = parseInt(res.headers['content-length'] || '0', 10) || 0;
+      out = fs.createWriteStream(dest);
+      let last = 0;
+      res.on('data', (chunk) => {
+        received += chunk.length;
+        out.write(chunk);
+        const now = Date.now();
+        if (now - last > 150) { last = now; onProgress(received, total); }
+      });
+      res.on('end', () => { out.end(() => done(cancelled ? new Error('cancelled') : null)); });
+      res.on('error', (e) => done(e));
+      out.on('error', (e) => done(e));
+    });
+    req.on('error', (e) => done(cancelled ? new Error('cancelled') : e));
+    req.end();
+  });
+}
+
+ipcMain.handle('hub:download', async (event, { app: appId, platform, token, title }) => {
+  if (active.has(appId)) return { error: 'busy', message: 'That download is already running.' };
+  // Ownership is decided by the Worker with this session's token, exactly
+  // as the website does it; the Hub only asks.
+  progress({ app: appId, state: 'preparing', received: 0, total: 0, percent: 0 });
+  const ticket = await siteRequest('/api/app-download', { method: 'POST', token, body: { app: appId, platform } });
+  if (!ticket.ok || !ticket.json || !ticket.json.url) {
+    progress({ app: appId, state: 'error' });
+    const j = ticket.json || {};
+    return { error: j.error || 'download_failed', message: j.message || 'Could not start the download. Try again in a moment.' };
+  }
+  const file = String(ticket.json.file || (appId + '-' + platform + '.zip')).replace(/[\\/:*?"<>|]/g, '_');
+  await fsp.mkdir(paths.downloads(), { recursive: true });
+  const dest = path.join(paths.downloads(), file);
+  const url = ticket.json.url.startsWith('http') ? ticket.json.url : SITE + ticket.json.url;
+  try {
+    const r = await fetchToFile(url, dest, appId, (received, total) => {
+      progress({ app: appId, state: 'downloading', received, total, percent: total ? Math.round(received / total * 100) : 0, file, title });
+    });
+    progress({ app: appId, state: 'downloaded', received: r.received, total: r.total, percent: 100, file, title });
+    return { ok: true, path: dest, file, version: ticket.json.version || null, bytes: r.received };
+  } catch (e) {
+    const cancelled = e && e.message === 'cancelled';
+    progress({ app: appId, state: cancelled ? 'cancelled' : 'error' });
+    return { error: cancelled ? 'cancelled' : 'download_failed', message: cancelled ? 'Download cancelled.' : (e && e.message) || 'The download failed.' };
+  }
+});
+
+ipcMain.handle('hub:cancel', async (event, appId) => {
+  const a = active.get(appId);
+  if (a) a.cancel();
+  return { ok: !!a };
+});
+
+/* ---------------------------------------------------------------------
+   Installing
+   .zip  -> unpacked into the Hub's own apps folder (ditto on macOS keeps
+            .app bundles intact; bsdtar ships with Windows 10 and later)
+   .exe / .pkg / .dmg -> the platform's own installer is run and the
+            Hub records that it was, since the file decides where it goes
+   --------------------------------------------------------------------- */
+
+function run(cmd, args, opts) {
+  return new Promise((resolve, reject) => {
+    execFile(cmd, args, { windowsHide: true, ...opts }, (err, stdout, stderr) => {
+      if (err) reject(new Error((stderr || err.message || '').trim())); else resolve(stdout);
+    });
+  });
+}
+
+async function unzip(zip, dest) {
+  await fsp.rm(dest, { recursive: true, force: true });
+  await fsp.mkdir(dest, { recursive: true });
+  if (isMac) return run('ditto', ['-xk', zip, dest]);
+  if (isWin) {
+    try { return await run('tar', ['-xf', zip, '-C', dest]); }
+    catch (e) {
+      return run('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
+        `Expand-Archive -LiteralPath '${zip.replace(/'/g, "''")}' -DestinationPath '${dest.replace(/'/g, "''")}' -Force`]);
+    }
+  }
+  return run('unzip', ['-oq', zip, '-d', dest]);
+}
+
+/* What in the unpacked folder is the thing to open. */
+async function findLaunchable(dir, appName, depth = 0) {
+  const found = [];
+  let entries = [];
+  try { entries = await fsp.readdir(dir, { withFileTypes: true }); } catch (e) { return found; }
+  for (const ent of entries) {
+    const full = path.join(dir, ent.name);
+    const lower = ent.name.toLowerCase();
+    if (isMac && ent.isDirectory() && lower.endsWith('.app')) { found.push({ path: full, kind: 'app' }); continue; }
+    if (isWin && ent.isFile() && lower.endsWith('.exe')) {
+      const installerish = /(^|[^a-z])(setup|install|unins|uninstall|vc_redist|vcredist|redist)/i.test(lower);
+      found.push({ path: full, kind: installerish ? 'installer' : 'exe' });
+      continue;
+    }
+    if (ent.isDirectory() && depth < 3 && !lower.endsWith('.app')) found.push(...await findLaunchable(full, appName, depth + 1));
+  }
+  const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const want = norm(appName);
+  found.sort((a, b) => {
+    const score = (f) => (f.kind === 'installer' ? 0 : 2) + (norm(path.basename(f.path)).includes(want) ? 1 : 0) - f.path.split(path.sep).length / 100;
+    return score(b) - score(a);
+  });
+  return found;
+}
+
+function runInstaller(file) {
+  return new Promise((resolve) => {
+    if (isMac) {
+      // .pkg / .dmg / .app: hand it to the system installer or Finder
+      shell.openPath(file).then((err) => resolve({ ok: !err, error: err || null, detached: true }));
+      return;
+    }
+    // A Windows setup program. It asks for elevation itself if it needs
+    // it; the Hub waits for it to finish so it can record the outcome.
+    let child;
+    try {
+      child = spawn(file, [], { detached: false, stdio: 'ignore', windowsHide: false });
+    } catch (e) { resolve({ ok: false, error: e.message }); return; }
+    child.on('error', (e) => {
+      // EACCES here usually means UAC: fall back to the shell, which
+      // shows the elevation prompt, and consider it started.
+      shell.openPath(file).then((err) => resolve({ ok: !err, error: err || null, detached: true }));
+    });
+    child.on('exit', (code) => resolve({ ok: code === 0, code, error: code === 0 ? null : 'The installer closed with code ' + code + '.' }));
+  });
+}
+
+ipcMain.handle('hub:install', async (event, { app: appId, name, path: file, version, kind }) => {
+  if (!exists(file)) return { error: 'missing', message: 'The downloaded file is no longer there. Download it again.' };
+  const records = await readRecords();
+  const lower = file.toLowerCase();
+  try {
+    if (lower.endsWith('.zip')) {
+      const dir = path.join(paths.installRoot(), name.replace(/[\\/:*?"<>|]/g, ''));
+      await unzip(file, dir);
+      const launch = await findLaunchable(dir, name);
+      const best = launch[0];
+      if (best && best.kind === 'installer' && !launch.some((l) => l.kind !== 'installer')) {
+        // The zip was a wrapper around a setup program.
+        const r = await runInstaller(best.path);
+        if (!r.ok) return { error: 'install_failed', message: r.error || 'The installer did not finish.' };
+        records[appId] = { app: appId, name, kind: 'installer', version: version || null, installedAt: new Date().toISOString(), source: best.path };
+      } else {
+        records[appId] = { app: appId, name, kind: kind === 'plugin' ? 'plugin' : 'portable', dir, exe: best ? best.path : null,
+          version: version || null, installedAt: new Date().toISOString() };
+      }
+    } else {
+      const r = await runInstaller(file);
+      if (!r.ok) return { error: 'install_failed', message: r.error || 'The installer did not finish.' };
+      records[appId] = { app: appId, name, kind: kind === 'plugin' ? 'plugin' : 'installer', version: version || null,
+        installedAt: new Date().toISOString(), source: file, pending: !!r.detached };
+    }
+    await writeRecords(records);
+    return { ok: true, record: records[appId] };
+  } catch (e) {
+    return { error: 'install_failed', message: (e && e.message) || 'Could not install.' };
+  }
+});
+
+ipcMain.handle('hub:installed', async () => installedApps());
+
+ipcMain.handle('hub:launch', async (event, appId) => {
+  const records = await installedApps();
+  const r = records[appId];
+  if (!r) return { error: 'not_installed' };
+  if (r.kind === 'plugin') return { error: 'plugin', message: r.name + ' is a plug-in: open it inside your DAW.' };
+  if (!r.exe || !exists(r.exe)) return { error: 'no_launcher', message: 'Nothing to open was found for ' + r.name + '. Open it from your system as usual.' };
+  try {
+    if (isMac) await run('open', ['-a', r.exe]);
+    else { const child = spawn(r.exe, [], { cwd: path.dirname(r.exe), detached: true, stdio: 'ignore' }); child.unref(); }
+    return { ok: true };
+  } catch (e) { return { error: 'launch_failed', message: e.message }; }
+});
+
+ipcMain.handle('hub:uninstall', async (event, appId) => {
+  const records = await installedApps();
+  const r = records[appId];
+  if (!r) return { ok: true };
+  if (r.kind === 'portable' && r.dir && r.dir.startsWith(paths.installRoot())) {
+    await fsp.rm(r.dir, { recursive: true, force: true });
+  } else if (isWin) {
+    shell.openExternal('ms-settings:appsfeatures');
+  } else if (isMac) {
+    shell.openPath(path.join(os.homedir(), 'Applications'));
+  }
+  delete records[appId];
+  await writeRecords(records);
+  return { ok: true, removedFiles: r.kind === 'portable' };
+});
+
+ipcMain.handle('hub:reveal', async (event, which) => {
+  const p = which === 'apps' ? paths.installRoot() : paths.downloads();
+  await fsp.mkdir(p, { recursive: true });
+  shell.openPath(p);
+  return { ok: true, path: p };
+});
+
+ipcMain.handle('hub:site', async (event, { path: pathname, method, token, body }) => {
+  if (!/^\/[a-z0-9\/_-]*$/i.test(pathname || '')) return { ok: false, status: 0, json: null };
+  return siteRequest(pathname, { method, token, body });
+});
+
+// HUB_PLATFORM=windows|mac lets the interface be exercised on a machine
+// that is neither (the automated checks run on Linux); it changes what
+// the page offers, not what the installer steps above can do.
+const shownPlatform = ['windows', 'mac'].includes(process.env.HUB_PLATFORM) ? process.env.HUB_PLATFORM : (isWin ? 'windows' : isMac ? 'mac' : 'linux');
+ipcMain.handle('hub:device', async () => ({
+  hostname: os.hostname(),
+  platform: shownPlatform,
+  arch: process.arch,
+  os: shownPlatform === 'windows' ? 'Windows' : shownPlatform === 'mac' ? 'macOS' : 'Linux',
+  release: os.release(),
+  paths: { downloads: paths.downloads(), apps: paths.installRoot() },
+}));
+
+ipcMain.handle('hub:external', async (event, url) => {
+  if (/^https?:\/\//i.test(url)) { await shell.openExternal(url); return { ok: true }; }
+  return { ok: false };
+});
+
+ipcMain.handle('hub:confirm', async (event, { title, message, ok }) => {
+  const r = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: [ok || 'Continue', 'Cancel'], defaultId: 0, cancelId: 1, title, message });
+  return r.response === 0;
+});
 
 app.whenReady().then(() => {
   buildMenu();
   createWindow();
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
-
-app.on('window-all-closed', () => {
-  if (!isMac) app.quit();
-});
+app.on('window-all-closed', () => { if (!isMac) app.quit(); });
