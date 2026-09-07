@@ -42,7 +42,7 @@ const SITE = "https://amanorsac.studio";
  *  invent a price or a product name that is not on this list. */
 const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
   secondout: {
-    amount_cents: 100,   // TEMPORARY test price - restore to 1900 after the end-to-end purchase test
+    amount_cents: 1900,
     label: "SecondOut — lifetime license, one year of updates included",
   },
 };

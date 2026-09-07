@@ -2,7 +2,7 @@
    How many people have this, and what they think of it.
 
    Reads the app's name off data-app on <body>, same convention
-   download-gate.js already uses. Wherever the markup for these pieces
+   hub-download.js already uses. Wherever the markup for these pieces
    is on the page, this script finds it by class and fills it in:
 
      .dl-count      the download count badge

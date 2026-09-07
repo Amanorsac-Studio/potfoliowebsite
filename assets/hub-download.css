@@ -1,0 +1,53 @@
+/* =====================================================================
+   The door to Amanorsac Hub.
+
+   Drawn by hub-download.js into any element carrying data-hub-get. One
+   primary button for the visitor's own platform, then a quiet line with
+   the other platforms and the "already have it" link. Colours come from
+   whichever page it lands on, with fallbacks, the same way the account
+   chip does - so it wears SecondOut's green and PulseRoom's cyan without
+   per-page CSS. A page can override with --hub-accent / --hub-fg.
+   ===================================================================== */
+.hub-get{--_ac:var(--hub-accent,var(--accent,#8B7BFF));
+  --_fg:var(--hub-fg,var(--text,var(--paper,var(--text-1,#F3F1FA))));
+  --_mu:var(--hub-muted,var(--muted,var(--text-2,#9A96B0)));
+  --_ln:var(--hub-line,var(--line,var(--hairline,rgba(255,255,255,.12))));
+  display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+  font-family:var(--body,Inter,system-ui,sans-serif)}
+.hub-get.center{align-items:center;text-align:center}
+
+.hub-btn{display:inline-flex;align-items:center;gap:14px;text-decoration:none;
+  background:var(--_ac);color:#07050F;border-radius:999px;padding:12px 22px 12px 16px;
+  font-family:var(--display,Sora,system-ui,sans-serif);font-weight:700;font-size:15.5px;letter-spacing:-.005em;
+  box-shadow:0 10px 30px -12px color-mix(in srgb,var(--_ac) 70%,transparent);
+  transition:transform .22s cubic-bezier(.23,1,.32,1),filter .2s,box-shadow .22s}
+.hub-btn:hover{transform:translateY(-2px);filter:brightness(1.06);box-shadow:0 16px 40px -14px color-mix(in srgb,var(--_ac) 80%,transparent)}
+.hub-btn:active{transform:scale(.98)}
+.hub-btn .hub-ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;flex:none;
+  background:rgba(7,5,15,.18)}
+.hub-btn .hub-ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hub-btn .hub-txt{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+.hub-btn .hub-txt small{font-family:var(--mono,ui-monospace,monospace);font-weight:500;font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;opacity:.78;margin-top:3px}
+
+.hub-alt{margin:0;font-size:13px;color:var(--_mu);line-height:1.7}
+.hub-alt a{color:var(--_fg);text-decoration:none;border-bottom:1px solid var(--_ln);padding-bottom:1px;transition:border-color .2s,color .2s}
+.hub-alt a:hover{color:var(--_ac);border-color:var(--_ac)}
+.hub-alt .sep{opacity:.5;margin:0 6px}
+
+/* the "open it in the Hub" state, when the visitor already has it */
+.hub-open{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--_fg);
+  border:1px solid var(--_ln);border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600;
+  transition:border-color .2s,background .2s}
+.hub-open:hover{border-color:var(--_ac);background:color-mix(in srgb,var(--_ac) 10%,transparent)}
+.hub-open svg{width:15px;height:15px;fill:none;stroke:var(--_ac);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.hub-note{margin:0;font-size:13px;color:var(--_mu)}
+.hub-note.err{color:#FF7A8A}
+.hub-note:empty{display:none}
+
+@media (max-width:520px){
+  .hub-btn{width:100%;justify-content:flex-start}
+  .hub-get:not(.center){align-items:stretch}
+}
+@media (prefers-reduced-motion:reduce){.hub-btn{transition:none}}
