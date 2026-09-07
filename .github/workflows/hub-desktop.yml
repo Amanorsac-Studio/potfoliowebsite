@@ -27,6 +27,11 @@ on:
     tags:
       - "hub-v*"
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Also publish a GitHub Release with this tag (e.g. hub-v1.0.0). Leave empty to only build."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -80,10 +85,12 @@ jobs:
             hub/dist/*.blockmap
 
       - name: Publish on the GitHub Release
-        if: startsWith(github.ref, 'refs/tags/hub-v')
+        if: startsWith(github.ref, 'refs/tags/hub-v') || inputs.release_tag != ''
         uses: softprops/action-gh-release@v2
         with:
-          name: Amanorsac Hub ${{ github.ref_name }}
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: Amanorsac Hub ${{ inputs.release_tag || github.ref_name }}
           generate_release_notes: true
           files: |
             hub/dist/*.dmg
