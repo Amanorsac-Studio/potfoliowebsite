@@ -62,3 +62,16 @@ drop trigger if exists profiles_guard_flags on public.profiles;
 create trigger profiles_guard_flags
   before update on public.profiles
   for each row execute function public.guard_profile_flags();
+
+
+-- =====================================================================
+--  DONE — TELL THE API ABOUT THE NEW COLUMN
+--
+--  Supabase's REST layer (PostgREST) caches the table schema and does
+--  not always notice a column added a moment ago in the SQL editor - a
+--  page loaded right after running this can get "Could not find the
+--  'is_client' column of 'profiles' in the schema cache" on every read
+--  and write, admin included, until the cache catches up on its own.
+--  This line tells it to refresh right now instead of waiting.
+-- =====================================================================
+notify pgrst, 'reload schema';
