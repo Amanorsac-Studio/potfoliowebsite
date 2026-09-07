@@ -46,10 +46,12 @@ A Mac is required to build the Mac app, so that is done by the
 `Hub desktop app` workflow in `.github/workflows/hub-desktop.yml`:
 
 - **Every push touching `hub/`** builds Windows and macOS installers and
-  attaches them to the workflow run as artifacts (Actions tab → the run →
-  Artifacts). Or run it by hand: Actions → Hub desktop app → Run workflow.
+  tries to attach them to the workflow run as artifacts (Actions tab → the
+  run → Artifacts). Artifacts count against the account's Actions storage
+  quota, so this can silently come up empty when the quota is full.
 - **Pushing a tag `hub-v1.0.0`** (matching the version in `package.json`)
-  also publishes them on a GitHub Release:
+  publishes them as downloads on a GitHub Release, which is the reliable
+  way to get the files:
 
   ```bash
   git tag hub-v1.0.0

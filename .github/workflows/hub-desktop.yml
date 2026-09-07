@@ -1,9 +1,12 @@
 # Builds the Amanorsac Hub desktop app (hub/) for Windows and macOS.
 #
 #   - every push that touches hub/ (and manual runs) builds both and
-#     keeps the installers as workflow artifacts for 30 days
-#   - pushing a tag like hub-v1.0.0 additionally publishes them on a
-#     GitHub Release of the same name
+#     tries to keep the installers as workflow artifacts for 30 days
+#     (best effort: artifacts count against the account's Actions
+#     storage quota, and a full quota must not fail the build)
+#   - pushing a tag like hub-v1.0.0 publishes them as assets on a
+#     GitHub Release of the same name. Release assets do not count
+#     against the Actions storage quota.
 #
 # The macOS build is unsigned (no Apple Developer certificate in the
 # repository), so on first launch macOS shows "cannot be opened because
@@ -65,6 +68,7 @@ jobs:
 
       - name: Keep installers
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: amanorsac-hub-${{ matrix.name }}
           if-no-files-found: error
@@ -75,21 +79,14 @@ jobs:
             hub/dist/*.exe
             hub/dist/*.blockmap
 
-  release:
-    name: GitHub Release
-    if: startsWith(github.ref, 'refs/tags/hub-v')
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: installers
-          merge-multiple: true
-      - uses: softprops/action-gh-release@v2
+      - name: Publish on the GitHub Release
+        if: startsWith(github.ref, 'refs/tags/hub-v')
+        uses: softprops/action-gh-release@v2
         with:
           name: Amanorsac Hub ${{ github.ref_name }}
-          files: |
-            installers/*.dmg
-            installers/*.zip
-            installers/*.exe
           generate_release_notes: true
+          files: |
+            hub/dist/*.dmg
+            hub/dist/*.zip
+            hub/dist/*.exe
+            hub/dist/*.blockmap
