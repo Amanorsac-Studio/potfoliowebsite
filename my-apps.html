@@ -154,6 +154,8 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);lin
   border:1px solid var(--line);border-radius:var(--r-pill);padding:5px 10px;cursor:pointer;color:var(--muted)}
 .revoke:hover{color:var(--warn);border-color:var(--warn)}
 .nodev{color:var(--muted);font-size:13.5px;margin:0;padding:2px 0 0}
+.free{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:13.5px;margin:-8px 0 0}
+.free i{width:7px;height:7px;border-radius:50%;background:var(--k);box-shadow:0 0 8px var(--k)}
 
 .more{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
   border:1px dashed var(--line-lit);border-radius:var(--r);padding:22px clamp(20px,3vw,28px);color:var(--muted);font-size:15px}
@@ -197,7 +199,7 @@ footer a:hover{color:var(--accent)}
   <div class="head">
     <p class="eyebrow">Your software</p>
     <h1>My Apps</h1>
-    <p>Every app tied to this account, its license key, and which devices are using it. Each key works on up to two devices at once — remove one here to free the slot.</p>
+    <p>Every app tied to this account, ready to download. A paid app comes with a license key that works on up to two devices at once — remove a device here to free the slot.</p>
     <div class="also" id="also"></div>
   </div>
 
@@ -227,13 +229,17 @@ footer a:hover{color:var(--accent)}
   // What each app looks like on this shelf. The Worker's INSTALLERS map
   // (worker.js) is the real list of downloadable files; this only
   // decides what to draw.
+  // `licensed` is whether the app itself asks for a key. PulseRoom and
+  // Nebula Tide were built without the license client, so their keys
+  // stay in the database, unseen, until a build that uses them ships -
+  // then this is the one flag to flip.
   const APPS = {
     secondout:  { name:'SecondOut',   say:'One master bus. Two independent outputs.', icon:'images/apps/secondout-icon.png',
-                  k:'#3fe083', page:'secondout.html', dl:[['windows','Download for Windows']] },
+                  k:'#3fe083', page:'secondout.html', dl:[['windows','Download for Windows']], licensed:true },
     pulseroom:  { name:'PulseRoom',   say:'Every mixing answer. One tempo.',          icon:'images/apps/pulseroom-logo.svg',
-                  k:'#3fd3e4', page:'pulseroom.html', dl:[['windows','Windows'],['mac','Mac']] },
+                  k:'#3fd3e4', page:'pulseroom.html', dl:[['windows','Windows'],['mac','Mac']], licensed:false },
     nebulatide: { name:'Nebula Tide', say:'An ocean of sound. In every key.',         icon:'images/apps/nt-logo.webp',
-                  k:'#4FE3FF', page:'nebulatide.html', dl:[['windows','Windows'],['mac','Mac']] },
+                  k:'#4FE3FF', page:'nebulatide.html', dl:[['windows','Windows'],['mac','Mac']], licensed:false },
   };
   const FREE_APPS = ['pulseroom', 'nebulatide'];
   const ORDER = ['secondout', 'pulseroom', 'nebulatide'];
@@ -298,18 +304,20 @@ footer a:hover{color:var(--accent)}
               '<button class="btn '+(i ? 'ghost' : 'main')+' dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(label)+'</button>').join('')+
               '<p class="dlnote"></p></div>'
           : '')+
-        '<p class="section">License key <b>paste it into the app when it asks</b></p>'+
-        '<div class="keybox"><code>'+esc(r.license_key || '—')+'</code>'+
-          '<button class="copy" type="button" data-key="'+esc(r.license_key || '')+'">Copy</button></div>'+
-        '<p class="section">Devices <b>'+devs.length+' of '+esc(r.max_devices)+' in use</b></p>'+
-        (devs.length
-          ? devs.map(d =>
-              '<div class="device" data-row="'+esc(d.id)+'">'+
-                '<span class="dn"><i aria-hidden="true"></i>'+esc(d.device_name || d.device_id)+'</span>'+
-                '<span class="seen">last seen '+when(d.last_seen)+
-                  ' <button class="revoke" type="button" data-id="'+esc(d.id)+'">Remove</button></span>'+
-              '</div>').join('')
-          : '<p class="nodev">No device has activated this key yet — it’s ready whenever the app asks for it.</p>')+
+        (a.licensed
+          ? '<p class="section">License key <b>paste it into the app when it asks</b></p>'+
+            '<div class="keybox"><code>'+esc(r.license_key || '—')+'</code>'+
+              '<button class="copy" type="button" data-key="'+esc(r.license_key || '')+'">Copy</button></div>'+
+            '<p class="section">Devices <b>'+devs.length+' of '+esc(r.max_devices)+' in use</b></p>'+
+            (devs.length
+              ? devs.map(d =>
+                  '<div class="device" data-row="'+esc(d.id)+'">'+
+                    '<span class="dn"><i aria-hidden="true"></i>'+esc(d.device_name || d.device_id)+'</span>'+
+                    '<span class="seen">last seen '+when(d.last_seen)+
+                      ' <button class="revoke" type="button" data-id="'+esc(d.id)+'">Remove</button></span>'+
+                  '</div>').join('')
+              : '<p class="nodev">No device has activated this key yet — it’s ready whenever the app asks for it.</p>')
+          : '<p class="free"><i aria-hidden="true"></i>Free — no key needed. Install it and go.</p>')+
       '</article>';
     }).join('') + moreCard();
 
