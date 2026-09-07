@@ -98,6 +98,11 @@ Deno.serve(async (req) => {
       full_name: full_name || email,
       company: company || null,
       email,
+      // Created by the studio, so this is a client, not an app user -
+      // the handle_new_user trigger already infers this from the
+      // must_change_password flag above; saying it here too keeps the
+      // function honest on its own.
+      is_client: true,
       // phone only sticks if the notifications migration has been run;
       // ignored harmlessly otherwise
       ...(phone ? { phone } : {}),

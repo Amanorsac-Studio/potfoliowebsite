@@ -89,7 +89,18 @@
   <!-- ---------------- clients ---------------- -->
   <div class="card" id="clients-card" style="margin-top:16px">
     <div class="card-head"><h2>Clients</h2><span class="hint" id="clientcount"></span></div>
+    <p class="hint">People the studio is working for. They see their projects, billing and mix reviews — and My Apps, like everyone.</p>
     <div id="clients"><div class="skeleton" style="width:40%"></div></div>
+  </div>
+
+  <!-- ---------------- app accounts ----------------
+       Signed up on the site to download or buy an app. Same login as a
+       client, but they only ever see My Apps and their account, until
+       one of them is made a client here. -->
+  <div class="card" id="appusers-card" style="margin-top:16px">
+    <div class="card-head"><h2>App accounts</h2><span class="hint" id="appusercount"></span></div>
+    <p class="hint">Signed up to download or buy an app. They see My Apps and their account, nothing else — until you make one a client.</p>
+    <div id="appusers"><div class="skeleton" style="width:40%"></div></div>
   </div>
 </main>
 
@@ -106,9 +117,13 @@
     // ---- clients
     const { data: people } = await sb.from('profiles')
       .select('*').order('created_at',{ascending:false});
-    const clients = (people||[]).filter(p => !p.is_admin);
+    // One login for everyone; is_client is what separates a client of
+    // the studio from someone who signed up for an app.
+    const clients  = (people||[]).filter(p => !p.is_admin && p.is_client);
+    const appUsers = (people||[]).filter(p => !p.is_admin && !p.is_client);
 
     $('#clientcount').textContent = clients.length + (clients.length===1?' client':' clients');
+    $('#appusercount').textContent = appUsers.length + (appUsers.length===1?' account':' accounts');
     // Signed avatar links are fetched up front, so the map below can stay
     // synchronous and the list paints in one go rather than popping in.
     const faces = await Promise.all(clients.map(c => avatarUrl(c.avatar_path)));
@@ -146,6 +161,8 @@
             (c.notify_email===false?'':' checked')+'> Email them about updates</label>'+
           '<label class="check"><input class="cl-nwa" type="checkbox"'+
             (c.notify_whatsapp?' checked':'')+'> WhatsApp / SMS them too</label>'+
+          '<label class="check"><input class="cl-client" type="checkbox" checked> '+
+            'Client access — projects, billing and mix reviews. Untick to make this an app-only account.</label>'+
           '<button class="btn cl-save" type="button">Save changes</button>'+
           '<button class="linkbtn cl-del" type="button" style="color:var(--warn);margin-left:12px">'+
             'Delete this client…</button>'+
@@ -174,6 +191,7 @@
           phone:           $('.cl-phone', box).value.replace(/[^\d+]/g,'') || null,
           notify_email:    $('.cl-nemail', box).checked,
           notify_whatsapp: $('.cl-nwa', box).checked,
+          is_client:       $('.cl-client', box).checked,
         }).eq('id', id);
         btn.disabled = false;
         if(error) return say(m, error.message, 'err');
@@ -218,6 +236,25 @@
       ? clients.map(c => '<option value="'+esc(c.id)+'">'+esc(c.full_name || c.email)+'</option>').join('')
       : '<option value="">— add a client first —</option>';
 
+    // ---- app accounts: one button each, to make them a client
+    const appFaces = await Promise.all(appUsers.map(c => avatarUrl(c.avatar_path)));
+    $('#appusers').innerHTML = appUsers.length ? appUsers.map((c, i) =>
+      '<div class="row" data-id="'+esc(c.id)+'">'+
+        '<div class="avatar">'+(appFaces[i]
+          ? '<img src="'+esc(appFaces[i])+'" alt="">'
+          : initialsOf(c.full_name || c.email))+'</div>'+
+        '<div><h3>'+esc(c.full_name || c.email)+'</h3>'+
+        '<p class="meta">'+esc(c.email||'')+' · joined '+when(c.created_at)+'</p></div>'+
+        '<span class="meta"><button class="btn ghost mk-client" type="button" data-id="'+esc(c.id)+'">Make a client</button></span>'+
+      '</div>').join('')
+      : '<p class="empty">Nobody has signed up for an app yet.</p>';
+    $$('.mk-client').forEach(btn => btn.addEventListener('click', async () => {
+      btn.disabled = true; btn.textContent = 'Making…';
+      const { error } = await sb.from('profiles').update({ is_client: true }).eq('id', btn.dataset.id);
+      if(error){ btn.disabled = false; btn.textContent = 'Make a client'; alert(error.message); return; }
+      load();
+    }));
+
     // ---- headline numbers, each one a door to its page
     const { count: open } = await sb.from('projects')
       .select('id',{count:'exact',head:true}).eq('status','active');
@@ -232,6 +269,7 @@
                              .reduce((t,i) => t + i.amount_cents, 0);
     $('#stats').innerHTML =
       '<a class="stat" href="#clients-card"><b>'+clients.length+'</b><span>Clients</span></a>'+
+      '<a class="stat" href="#appusers-card"><b>'+appUsers.length+'</b><span>App accounts</span></a>'+
       '<a class="stat" href="admin-projects.html"><b>'+(open||0)+'</b><span>Active projects</span></a>'+
       '<a class="stat" href="admin-reviews.html"><b>'+(reviews||0)+'</b><span>Open mix reviews</span></a>'+
       '<a class="stat" href="admin-billing.html"><b>'+money(owed)+'</b><span>Awaiting payment</span></a>'+

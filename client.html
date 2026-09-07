@@ -154,20 +154,32 @@ const params = new URLSearchParams(location.search);
 
 /* Where to land after a successful sign-in or signup. Coming from a
    specific app's Buy button lands back on that page, ready to pick up
-   where the purchase left off; anyone else goes to the dashboard. Only
-   ever a same-site path — never an attacker-supplied external URL — so
-   a crafted ?next= cannot send someone signing in here off to somewhere
-   else entirely. */
-function nextUrl(){
+   where the purchase left off. Otherwise the account decides: the
+   studio goes to its dashboard, a client to their projects, and an app
+   user to My Apps - the one place that is theirs. Only ever a same-site
+   path — never an attacker-supplied external URL — so a crafted ?next=
+   cannot send someone signing in here off to somewhere else entirely. */
+async function landing(){
   const raw = params.get('next') || '';
   if(raw.startsWith('/')) return location.origin + raw;
-  return PORTAL_DIR + '/dashboard.html';
+  let p = null;
+  try {
+    const { data:{ user } } = await sb.auth.getUser();
+    if(user){
+      const r = await sb.from('profiles').select('is_admin,is_client').eq('id', user.id).maybeSingle();
+      p = r && r.data;
+    }
+  } catch(e) {}
+  if(p && p.is_admin)  return PORTAL_DIR + '/admin.html';
+  if(p && p.is_client) return PORTAL_DIR + '/dashboard.html';
+  return location.origin + '/my-apps.html';
 }
+const goHome = () => landing().then(u => location.replace(u));
 
 /* Say where the sign-in leads when it leads somewhere specific. */
 const APP_LABELS = { '/secondout.html':'SecondOut', '/pulseroom.html':'PulseRoom',
   '/nebulatide.html':'Nebula Tide', '/apps.html':'the App Store',
-  '/portal/my-apps.html':'My Apps' };
+  '/my-apps.html':'My Apps' };
 (function(){
   const raw = params.get('next') || '';
   const label = APP_LABELS[raw.replace(/\?.*$/,'')];
@@ -175,7 +187,7 @@ const APP_LABELS = { '/secondout.html':'SecondOut', '/pulseroom.html':'PulseRoom
 })();
 
 sb.auth.getSession().then(({data:{session}}) => {
-  if(session) location.replace(nextUrl());
+  if(session) goHome();
 });
 
 /* ---- sign in / create account switcher ---- */
@@ -287,7 +299,7 @@ $('#f').addEventListener('submit', async e => {
       : error.message, 'err');
   }
   busy(go, true, 'Taking you in');
-  location.replace(nextUrl());
+  goHome();
 });
 
 $('#forgot').addEventListener('click', async e => {
@@ -327,7 +339,7 @@ $('#signup-f').addEventListener('submit', async e => {
   }
   // A project with "confirm your email" turned on hands back a user
   // but no session; one with it off signs them straight in.
-  if(data.session){ location.replace(nextUrl()); return; }
+  if(data.session){ goHome(); return; }
   sentTo = email;
   showSent(email);
 });

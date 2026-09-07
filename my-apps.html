@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>My Apps · Amanorsac App Store</title>
+
+<!-- =====================================================================
+     MY APPS — every app tied to this account, its license key, which
+     devices are using it, and the download for each.
+
+     Lives on the store side of the site, next to apps.html, because
+     that is what it is: the shelf behind the counter. It wears the App
+     Store's own dark palette and type so buying an app and opening it
+     afterwards look like the same place. A client of the studio also
+     gets a door back to their projects from here; an app user does not
+     see one, because there is nothing behind it for them.
+
+     Nothing here decides who owns what. The list is what Row Level
+     Security lets this account read from purchases, the free apps are
+     claimed through claim_license, a download goes through
+     /api/app-download which checks ownership again with this session's
+     token, and a device is removed through revoke_device.
+     ===================================================================== -->
+
+<link rel="icon" href="images/logo.svg" type="image/svg+xml">
+<meta name="theme-color" content="#07050F">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<link rel="stylesheet" href="assets/site-auth.css">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Inter';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Sora';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+
+/* the App Store's own palette - see body[data-room="apps"] in apps.html */
+:root{
+  --bg:#07050F; --panel:#120E22; --panel-2:#191234; --line:#251C46; --line-lit:#3A2E6A;
+  --text:#EDEAF7; --muted:#948CB8; --dim:#6E6790; --accent:#8B7BFF; --signal:#4FA8FF;
+  --ok:#3fe083; --warn:#FF7A8A;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:18px; --r-sm:10px; --r-pill:999px;
+  --ease:cubic-bezier(.23,1,.32,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;min-height:100dvh}
+a{color:inherit}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:960px;margin:0 auto;padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+
+/* two soft lights behind everything, the store's aurora at half volume */
+.aurora{position:fixed;inset:-20%;z-index:-1;pointer-events:none;
+  background:radial-gradient(38% 30% at 82% 6%,color-mix(in srgb,var(--accent) 26%,transparent),transparent 70%),
+             radial-gradient(34% 30% at 10% 96%,color-mix(in srgb,var(--signal) 16%,transparent),transparent 70%);
+  filter:blur(24px)}
+
+/* ---------- top bar (same bones as the app pages) ---------- */
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 86%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;display:flex;align-items:center;gap:9px;
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name img{width:22px;height:22px}
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line-lit);--sa-muted:var(--muted)}
+
+/* ---------- head ---------- */
+.head{padding:clamp(44px,8vh,80px) 0 26px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin:0 0 14px;
+  display:flex;align-items:center;gap:12px}
+.eyebrow::before{content:"";width:22px;height:1px;background:currentColor;opacity:.7}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);line-height:.98;letter-spacing:-.02em;margin:0 0 16px;
+  background:linear-gradient(92deg,#B3A8FF 0%,var(--accent) 45%,var(--signal) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.head p{color:var(--muted);max-width:56ch;margin:0;font-size:16.5px;text-wrap:pretty}
+
+/* a client's door back to the studio - drawn only when there is one */
+.also{display:none;align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin:26px 0 0;
+  padding:13px 18px;border:1px solid var(--line);border-radius:var(--r-sm);background:color-mix(in srgb,var(--panel) 82%,transparent);
+  color:var(--muted);font-size:14.5px}
+.also.on{display:flex}
+.also b{color:var(--text);font-weight:600}
+.also a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
+.also a:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- the shelf ---------- */
+.shelf{display:grid;gap:18px;padding:22px 0 70px}
+.card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:clamp(20px,3vw,28px);
+  animation:rise .55s var(--ease) both}
+.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.12s}.card:nth-child(4){animation-delay:.18s}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+/* the app's own colour, one hairline of it along the top edge */
+.card::before{content:"";position:absolute;left:24px;right:24px;top:-1px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--k),transparent);opacity:.9}
+.id{display:grid;grid-template-columns:56px 1fr auto;gap:16px;align-items:center;margin:0 0 22px}
+.mark{width:56px;height:56px;border-radius:14px;display:grid;place-items:center;overflow:hidden;
+  background:color-mix(in srgb,var(--k) 12%,var(--panel-2));border:1px solid color-mix(in srgb,var(--k) 25%,transparent)}
+.mark img{width:34px;height:34px;object-fit:contain}
+.id h2{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:0 0 2px;line-height:1.1}
+.id h2 a{text-decoration:none}
+.id h2 a:hover{color:var(--k)}
+.id .say{color:var(--muted);font-size:14px;margin:0}
+.since{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:right;white-space:nowrap}
+.since b{display:block;color:var(--muted);font-weight:500}
+
+.section{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 10px;
+  display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.section b{color:var(--muted);font-weight:500}
+
+.dlrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 22px}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--display);font-weight:600;font-size:14.5px;
+  padding:11px 18px;border-radius:var(--r-pill);border:1px solid transparent;cursor:pointer;text-decoration:none;
+  transition:transform var(--dur) var(--ease),filter var(--dur),background var(--dur),border-color var(--dur)}
+.btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn.main{background:var(--k);color:#07050F}
+.btn.main:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line-lit)}
+.btn.ghost:hover{border-color:var(--text);background:color-mix(in srgb,var(--panel-2) 70%,transparent)}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.55;cursor:default;transform:none}
+.dlnote{flex-basis:100%;font-size:13px;color:var(--muted);margin:0}
+.dlnote.err{color:var(--warn)}
+.dlnote:empty{display:none}
+
+.keybox{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:12px 14px 12px 16px;margin:0 0 22px}
+.keybox code{font-family:var(--mono);font-size:15px;letter-spacing:.06em;flex:1;color:var(--text);font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere}
+.copy{flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;background:none;
+  border:1px solid var(--line-lit);border-radius:var(--r-pill);padding:8px 13px;color:var(--muted);cursor:pointer;
+  transition:color var(--dur),border-color var(--dur)}
+.copy:hover{color:var(--text);border-color:var(--text)}
+.copy.done{color:var(--ok);border-color:var(--ok)}
+
+.device{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:14px}
+.device:last-child{padding-bottom:0}
+.device .dn{display:flex;align-items:center;gap:10px;font-weight:600}
+.device .dn i{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.device .seen{color:var(--muted);font-size:12.5px;display:flex;align-items:center;gap:12px}
+.revoke{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:none;
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:5px 10px;cursor:pointer;color:var(--muted)}
+.revoke:hover{color:var(--warn);border-color:var(--warn)}
+.nodev{color:var(--muted);font-size:13.5px;margin:0;padding:2px 0 0}
+
+.more{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  border:1px dashed var(--line-lit);border-radius:var(--r);padding:22px clamp(20px,3vw,28px);color:var(--muted);font-size:15px}
+.more b{color:var(--text);font-weight:600;display:block;font-family:var(--display);font-size:17px;margin:0 0 2px}
+.more a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
+.more a:hover{text-decoration:underline;text-underline-offset:3px}
+
+.note{border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);background:color-mix(in srgb,var(--warn) 10%,transparent);
+  color:var(--text);border-radius:var(--r-sm);padding:12px 16px;font-size:14px;margin:0 0 18px}
+.skeleton{height:150px;border-radius:var(--r);background:linear-gradient(90deg,var(--panel) 25%,var(--panel-2) 50%,var(--panel) 75%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite}
+@keyframes shimmer{to{background-position:-200% 0}}
+.empty{color:var(--muted);text-align:center;padding:30px 0}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px) 40px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+footer a{color:inherit;text-decoration:none}
+footer a:hover{color:var(--accent)}
+
+@media (max-width:640px){
+  .id{grid-template-columns:48px 1fr}
+  .mark{width:48px;height:48px;border-radius:12px}.mark img{width:30px;height:30px}
+  .since{grid-column:2;text-align:left}
+  .since b{display:inline;margin-left:6px}
+  .device{flex-direction:column;align-items:flex-start;gap:6px}
+  .section{flex-direction:column;align-items:flex-start;gap:2px}
+}
+@media (prefers-reduced-motion:reduce){.card,.skeleton{animation:none}}
+</style>
+</head>
+<body>
+<span class="aurora" aria-hidden="true"></span>
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name"><img src="images/logo-dark.svg" alt="" style="width:auto;height:22px">My Apps</span>
+  <span data-auth-slot><a class="sa-in" href="/client.html?next=/my-apps.html">Sign in</a></span>
+</div>
+
+<main class="wrap">
+  <div class="head">
+    <p class="eyebrow">Your software</p>
+    <h1>My Apps</h1>
+    <p>Every app tied to this account, its license key, and which devices are using it. Each key works on up to two devices at once — remove one here to free the slot.</p>
+    <div class="also" id="also"></div>
+  </div>
+
+  <div id="note"></div>
+  <div class="shelf" id="shelf"><div class="skeleton"></div><div class="skeleton" style="animation-delay:.2s"></div></div>
+</main>
+
+<footer>
+  <span><a href="apps.html">← App Store</a></span>
+  <span><a href="portal/account.html">Account</a> · <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a></span>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/site-auth.js"></script>
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_PlVBmRgFdhTkVMurXLiBFQ_NjiVssQp';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const $ = (s, r) => (r || document).querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const when = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){ location.replace('/client.html?next=' + encodeURIComponent('/my-apps.html')); return; }
+
+  // What each app looks like on this shelf. The Worker's INSTALLERS map
+  // (worker.js) is the real list of downloadable files; this only
+  // decides what to draw.
+  const APPS = {
+    secondout:  { name:'SecondOut',   say:'One master bus. Two independent outputs.', icon:'images/apps/secondout-icon.png',
+                  k:'#3fe083', page:'secondout.html', dl:[['windows','Download for Windows']] },
+    pulseroom:  { name:'PulseRoom',   say:'Every mixing answer. One tempo.',          icon:'images/apps/pulseroom-logo.svg',
+                  k:'#3fd3e4', page:'pulseroom.html', dl:[['windows','Windows'],['mac','Mac']] },
+    nebulatide: { name:'Nebula Tide', say:'An ocean of sound. In every key.',         icon:'images/apps/nt-logo.webp',
+                  k:'#4FE3FF', page:'nebulatide.html', dl:[['windows','Windows'],['mac','Mac']] },
+  };
+  const FREE_APPS = ['pulseroom', 'nebulatide'];
+  const ORDER = ['secondout', 'pulseroom', 'nebulatide'];
+  const DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>';
+
+  // A client of the studio gets a door back to their projects.
+  sb.from('profiles').select('is_admin,is_client').eq('id', session.user.id).maybeSingle().then(r => {
+    const p = r && r.data; const also = $('#also');
+    if(p && p.is_admin){ also.innerHTML = '<span>You run the place — the <b>studio dashboard</b> is over there.</span><a href="portal/admin.html">Open the dashboard →</a>'; also.classList.add('on'); }
+    else if(p && p.is_client){ also.innerHTML = '<span>You’re also a <b>studio client</b> — your mixing projects live in the portal.</span><a href="portal/dashboard.html">Open my projects →</a>'; also.classList.add('on'); }
+  });
+
+  const shelf = $('#shelf'), note = $('#note');
+  let claimed = false, claimError = '';
+
+  async function load(){
+    const { data: owned, error } = await sb.from('purchases')
+      .select('id, app, license_key, max_devices, purchased_at, update_eligible_until')
+      .order('purchased_at', { ascending: true });
+    if(error){ shelf.innerHTML = '<p class="note">Could not load your apps: '+esc(error.message)+'</p>'; return; }
+
+    // Free apps carry no charge, but the same key-and-device system as a
+    // paid one - claimed the first time this page is ever opened. Once
+    // per load, not until it works: a claim that fails must say so.
+    const have = new Set((owned||[]).map(r => r.app));
+    const toClaim = FREE_APPS.filter(a => !have.has(a));
+    if(toClaim.length && !claimed){
+      claimed = true;
+      const results = await Promise.all(toClaim.map(a =>
+        sb.rpc('claim_license', { p_app: a }).then(r => r.error ? r.error.message : '', e => e.message || 'failed')));
+      claimError = results.filter(Boolean)[0] || '';
+      return load();
+    }
+    if(claimError) note.innerHTML = '<p class="note">The free apps could not be added to this account: '+esc(claimError)+'</p>';
+
+    if(!owned || !owned.length){
+      shelf.innerHTML = '<p class="empty">Nothing here yet.</p>' + moreCard();
+      return;
+    }
+
+    const { data: devices } = await sb.from('device_activations')
+      .select('id, license_id, device_name, device_id, first_seen, last_seen, revoked_at')
+      .is('revoked_at', null).order('last_seen', { ascending: false });
+    const byLicense = {};
+    (devices||[]).forEach(d => { (byLicense[d.license_id] = byLicense[d.license_id] || []).push(d); });
+
+    owned.sort((a,b) => (ORDER.indexOf(a.app) + 99) % 99 - (ORDER.indexOf(b.app) + 99) % 99);
+
+    shelf.innerHTML = owned.map(r => {
+      const a = APPS[r.app] || { name: r.app, say: '', icon: '', k: '#8B7BFF', page: 'apps.html', dl: [] };
+      const devs = byLicense[r.id] || [];
+      const forever = !r.update_eligible_until || r.update_eligible_until.slice(0,4) > '9000';
+      return '<article class="card" style="--k:'+esc(a.k)+'" data-id="'+esc(r.id)+'">'+
+        '<div class="id">'+
+          '<span class="mark">'+(a.icon ? '<img src="'+esc(a.icon)+'" alt="">' : '')+'</span>'+
+          '<div><h2><a href="'+esc(a.page)+'">'+esc(a.name)+'</a></h2><p class="say">'+esc(a.say)+'</p></div>'+
+          '<p class="since">'+(r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : '')+
+            (forever ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
+        '</div>'+
+        (a.dl.length
+          ? '<div class="dlrow">'+ a.dl.map(([platform, label], i) =>
+              '<button class="btn '+(i ? 'ghost' : 'main')+' dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(label)+'</button>').join('')+
+              '<p class="dlnote"></p></div>'
+          : '')+
+        '<p class="section">License key <b>paste it into the app when it asks</b></p>'+
+        '<div class="keybox"><code>'+esc(r.license_key || '—')+'</code>'+
+          '<button class="copy" type="button" data-key="'+esc(r.license_key || '')+'">Copy</button></div>'+
+        '<p class="section">Devices <b>'+devs.length+' of '+esc(r.max_devices)+' in use</b></p>'+
+        (devs.length
+          ? devs.map(d =>
+              '<div class="device" data-row="'+esc(d.id)+'">'+
+                '<span class="dn"><i aria-hidden="true"></i>'+esc(d.device_name || d.device_id)+'</span>'+
+                '<span class="seen">last seen '+when(d.last_seen)+
+                  ' <button class="revoke" type="button" data-id="'+esc(d.id)+'">Remove</button></span>'+
+              '</div>').join('')
+          : '<p class="nodev">No device has activated this key yet — it’s ready whenever the app asks for it.</p>')+
+      '</article>';
+    }).join('') + moreCard();
+
+    shelf.querySelectorAll('.dl').forEach(b => b.addEventListener('click', () => download(b)));
+    shelf.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(b.dataset.key); b.textContent = 'Copied'; b.classList.add('done'); }
+      catch(e) { b.textContent = b.dataset.key; }
+      setTimeout(() => { b.textContent = 'Copy'; b.classList.remove('done'); }, 1600);
+    }));
+    shelf.querySelectorAll('.revoke').forEach(b => b.addEventListener('click', async () => {
+      b.disabled = true; b.textContent = 'Removing';
+      const { error } = await sb.rpc('revoke_device', { p_device_activation_id: Number(b.dataset.id) });
+      if(error){ b.disabled = false; b.textContent = 'Remove'; return; }
+      load();
+    }));
+  }
+
+  function moreCard(){
+    return '<div class="more"><div><b>Looking for something new?</b>PerformLive and HarmonieMD are on the way.</div>'+
+      '<a href="apps.html">Browse the App Store →</a></div>';
+  }
+
+  /* Ownership is checked again on the Worker with this session's token;
+     the button is a request, not a permission. */
+  async function download(btn){
+    const noteEl = btn.closest('.dlrow').querySelector('.dlnote');
+    const label = btn.innerHTML;
+    btn.disabled = true; btn.textContent = 'Preparing…';
+    noteEl.textContent = ''; noteEl.className = 'dlnote';
+    try {
+      const r = await fetch('/api/app-download', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + session.access_token },
+        body: JSON.stringify({ app: btn.dataset.app, platform: btn.dataset.platform })
+      });
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok || !j.url){
+        noteEl.textContent = j.message || 'Could not start the download. Try again in a moment.';
+        noteEl.className = 'dlnote err';
+      } else {
+        noteEl.textContent = 'Downloading ' + (j.file || '') + (j.version ? ' — version ' + j.version : '') + '. If nothing happens, click again.';
+        if(window.track) window.track('download_requested', btn.dataset.app + ' / ' + btn.dataset.platform);
+        location.href = j.url;
+      }
+    } catch(e) {
+      noteEl.textContent = 'Could not reach the studio. Check your connection and try again.';
+      noteEl.className = 'dlnote err';
+    }
+    btn.disabled = false; btn.innerHTML = label;
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

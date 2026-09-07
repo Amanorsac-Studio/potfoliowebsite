@@ -108,6 +108,7 @@ function noteRow(i){
 
 (async () => {
   const s = await requireSession(); if(!s) return;
+  if(!(await requireClient())) return;
   const me = await mountChrome('projects');
   if(!PID){ location.replace('dashboard.html'); return; }
 

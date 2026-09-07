@@ -61,7 +61,7 @@
   }
 
   var OWNED_NOTE = 'You own ' + esc(labelFor(app)) + '. Your license key is in ' +
-    '<a href="/portal/my-apps.html">My Apps</a> — install, open the plugin, paste it in.';
+    '<a href="/my-apps.html">My Apps</a> — install, open the plugin, paste it in.';
 
   function showOwned(thanks) {
     setButtons(DOWNLOAD_LABEL[app] || 'Download', false, 'download');
