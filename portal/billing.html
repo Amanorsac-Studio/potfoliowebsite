@@ -34,6 +34,7 @@
 
 (async () => {
   const s = await requireSession(); if(!s) return;
+  if(!(await requireClient())) return;
   await mountChrome('billing');
   const box = $('#inv');
 

@@ -75,6 +75,15 @@ async function currentProfile(){
   return Object.assign({ email:user.email, must_change: !!(user.user_metadata||{}).must_change_password }, data||{});
 }
 
+/** Client-only pages - projects, billing, a project. An app-only
+ *  account is sent to My Apps instead, the one place that is theirs. */
+async function requireClient(){
+  const p = await currentProfile();
+  if(!p){ location.replace('/client'); return null; }
+  if(!p.is_client && !p.is_admin){ location.replace('/my-apps.html'); return null; }
+  return p;
+}
+
 /* ---------- shared chrome ---------- */
 async function mountChrome(active){
   const bar = $('#topbar');
@@ -82,9 +91,11 @@ async function mountChrome(active){
   const p = await currentProfile();
   const name = p && (p.full_name || p.email) || '';
 
-  // Two different jobs, two different navs. The studio runs the place;
-  // a client visits it. Sharing one nav made the admin live in the
-  // client's read-only pages without noticing.
+  // Three different jobs, three different navs. The studio runs the
+  // place; a client visits their projects; an app user only ever has
+  // apps and an account. Sharing one nav made the admin live in the
+  // client's read-only pages without noticing, and showed an app user
+  // doors to rooms that were empty for them.
   const nav = (p && p.is_admin)
     ? '<a href="admin.html"          class="'+(active==='admin'          ?'on':'')+'">Dashboard</a>'+
       '<a href="admin-projects.html" class="'+(active==='admin-projects' ?'on':'')+'">Projects</a>'+
@@ -95,16 +106,21 @@ async function mountChrome(active){
       '<a href="admin-blog.html"     class="'+(active==='admin-blog'     ?'on':'')+'">Writing</a>'+
       '<a href="account.html"        class="'+(active==='account'        ?'on':'')+'">Account</a>'+
       '<a href="../index.html">Studio site</a>'
-    : '<a href="dashboard.html" class="'+(active==='projects'?'on':'')+'">Projects</a>'+
-      '<a href="my-apps.html"   class="'+(active==='my-apps' ?'on':'')+'">My Apps</a>'+
+    : (p && p.is_client)
+    ? '<a href="dashboard.html" class="'+(active==='projects'?'on':'')+'">Projects</a>'+
+      '<a href="/my-apps.html">My Apps</a>'+
       '<a href="billing.html"   class="'+(active==='billing' ?'on':'')+'">Billing</a>'+
       '<a href="account.html"   class="'+(active==='account' ?'on':'')+'">Account</a>'+
-      '<a href="../index.html">Studio site</a>';
+      '<a href="../index.html">Studio site</a>'
+    : '<a href="/my-apps.html">My Apps</a>'+
+      '<a href="account.html"   class="'+(active==='account' ?'on':'')+'">Account</a>'+
+      '<a href="../apps.html">App Store</a>';
 
+  const home = (p && p.is_admin) ? 'admin.html' : (p && p.is_client) ? 'dashboard.html' : '/my-apps.html';
   bar.innerHTML =
     // The wordmark, not initials. Two copies because the logo's navy
     // text vanishes on the dark theme; CSS shows whichever one reads.
-    '<a class="brand" href="'+(p && p.is_admin ? 'admin.html' : 'dashboard.html')+'" aria-label="Amanorsac Studio">'+
+    '<a class="brand" href="'+home+'" aria-label="Amanorsac Studio">'+
       '<img class="logo-l" src="../images/logo.svg" alt="">'+
       '<img class="logo-d" src="../images/logo-dark.svg" alt="">'+
     '</a>'+
@@ -132,6 +148,7 @@ async function mountChrome(active){
     person:  '<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>',
     graph:   '<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>',
     pen:     '<svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+    key:     '<svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.8 7.8 5.5 5.5 0 0 1 7.8-7.8zm0 0L19 4m-4 1l2 2"/></svg>',
   };
   const tabs = (p && p.is_admin)
     ? [['admin.html','admin','home','Home'],
@@ -142,8 +159,12 @@ async function mountChrome(active){
        // six is the most this pill will hold before the labels collide,
        // which is why this one is a verb rather than "Writing"
        ['admin-blog.html','admin-blog','pen','Write']]
-    : [['dashboard.html','projects','disc','Projects'],
+    : (p && p.is_client)
+    ? [['dashboard.html','projects','disc','Projects'],
+       ['/my-apps.html','my-apps','key','Apps'],
        ['billing.html','billing','money','Billing'],
+       ['account.html','account','person','Account']]
+    : [['/my-apps.html','my-apps','key','My Apps'],
        ['account.html','account','person','Account']];
 
   let tb = document.querySelector('.tabbar');

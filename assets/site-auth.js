@@ -56,6 +56,7 @@
     var name = (profile && profile.full_name) || (user.user_metadata || {}).full_name || '';
     var email = user.email || '';
     var isAdmin = !!(profile && profile.is_admin);
+    var isClient = !!(profile && profile.is_client);
     slot.classList.add('sa');
     slot.innerHTML =
       '<button class="sa-chip" type="button" aria-haspopup="menu" aria-expanded="false">' +
@@ -65,10 +66,14 @@
       '</button>' +
       '<div class="sa-menu" role="menu" hidden>' +
         '<div class="sa-who"><small>Signed in as</small><b>' + esc(name || email) + '</b></div>' +
-        '<a class="sa-item" role="menuitem" href="/portal/my-apps.html">' + I.key + 'My Apps <span class="sa-k">keys</span></a>' +
+        '<a class="sa-item" role="menuitem" href="/my-apps.html">' + I.key + 'My Apps <span class="sa-k">keys</span></a>' +
+        // Projects only exist for a client of the studio; an app user
+        // never sees a door to an empty room.
         (isAdmin
           ? '<a class="sa-item" role="menuitem" href="/portal/admin.html">' + I.disc + 'Studio dashboard</a>'
-          : '<a class="sa-item" role="menuitem" href="/portal/dashboard.html">' + I.disc + 'My projects</a>') +
+          : isClient
+          ? '<a class="sa-item" role="menuitem" href="/portal/dashboard.html">' + I.disc + 'My projects</a>'
+          : '') +
         '<a class="sa-item" role="menuitem" href="/portal/account.html">' + I.person + 'Account</a>' +
         '<div class="sa-sep"></div>' +
         '<button class="sa-item quiet" role="menuitem" type="button" data-signout>' + I.out + 'Sign out</button>' +
@@ -100,7 +105,7 @@
     }
     // The profile carries the name the studio knows them by; a fresh
     // self-signup has it in user_metadata until the profile row exists.
-    sb.from('profiles').select('full_name,is_admin').eq('id', user.id).maybeSingle()
+    sb.from('profiles').select('full_name,is_admin,is_client').eq('id', user.id).maybeSingle()
       .then(function (r) { return (r && r.data) || null; }, function () { return null; })
       .then(function (profile) {
         slots.forEach(function (s) { renderIn(s, user, profile); });
