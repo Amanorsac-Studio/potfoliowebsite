@@ -29,6 +29,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
 <link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="assets/hub-download.css">
 <style>
 @font-face{font-family:'Inter';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/inter-latin.woff2) format('woff2');
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -131,7 +132,27 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);lin
 .btn.ghost:hover{border-color:var(--text);background:color-mix(in srgb,var(--panel-2) 70%,transparent)}
 .btn:active{transform:scale(.97)}
 .btn[disabled]{opacity:.55;cursor:default;transform:none}
+.dlrow .hubopen{text-decoration:none}
+/* the direct download, folded away: the Hub is the door, this is the
+   window you climb through if the door sticks */
+.fallback{flex-basis:100%;margin:2px 0 0;font-size:13px;color:var(--muted)}
+.fallback summary{cursor:pointer;display:inline-block;padding:2px 0;color:var(--muted);
+  text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.fallback summary:hover{color:var(--text)}
+.fallback[open] summary{margin-bottom:8px}
+.fallback p{margin:0 0 10px}
+.fallback .btn{font-size:13.5px;padding:9px 15px}
 .dlnote{flex-basis:100%;font-size:13px;color:var(--muted);margin:0}
+
+/* the Hub itself, at the top: the one download that needs no account */
+.hubcard{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px 40px;align-items:center;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--panel)),var(--panel) 60%);
+  border:1px solid var(--line-lit);border-radius:var(--r);padding:clamp(22px,3vw,32px);margin:0 0 26px}
+.hubcard h2{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.4vw,26px);letter-spacing:-.015em;margin:0 0 10px;line-height:1.15}
+.hubcard p{color:var(--muted);font-size:15px;margin:0;text-wrap:pretty}
+.hubcard .eyebrow{margin:0 0 10px}
+.hubcard .hub-get{--hub-accent:var(--accent)}
+@media (max-width:760px){.hubcard{grid-template-columns:1fr}}
 .dlnote.err{color:var(--warn)}
 .dlnote:empty{display:none}
 
@@ -199,9 +220,18 @@ footer a:hover{color:var(--accent)}
   <div class="head">
     <p class="eyebrow">Your software</p>
     <h1>My Apps</h1>
-    <p>Every app tied to this account, ready to download. A paid app comes with a license key that works on up to two devices at once — remove a device here to free the slot.</p>
+    <p>Every app tied to this account, installed and kept up to date through Amanorsac Hub. A paid app comes with a license key that works on up to two devices at once — remove a device here to free the slot.</p>
     <div class="also" id="also"></div>
   </div>
+
+  <section class="hubcard" aria-label="Amanorsac Hub">
+    <div>
+      <p class="eyebrow">Amanorsac Hub</p>
+      <h2>Install and update everything from one place.</h2>
+      <p>Sign in to the Hub with this same account and it installs, activates and updates every app you own. Free apps, bought apps, plugins — one door.</p>
+    </div>
+    <div data-hub-get></div>
+  </section>
 
   <div id="note"></div>
   <div class="shelf" id="shelf"><div class="skeleton"></div><div class="skeleton" style="animation-delay:.2s"></div></div>
@@ -214,6 +244,7 @@ footer a:hover{color:var(--accent)}
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/site-auth.js"></script>
+<script src="assets/hub-download.js"></script>
 <script>
 (async () => {
   const SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
@@ -229,21 +260,24 @@ footer a:hover{color:var(--accent)}
   // What each app looks like on this shelf. The Worker's INSTALLERS map
   // (worker.js) is the real list of downloadable files; this only
   // decides what to draw.
-  // `licensed` is whether the app itself asks for a key. PulseRoom and
-  // Nebula Tide were built without the license client, so their keys
-  // stay in the database, unseen, until a build that uses them ships -
-  // then this is the one flag to flip.
-  const APPS = {
-    secondout:  { name:'SecondOut',   say:'One master bus. Two independent outputs.', icon:'images/apps/secondout-icon.png',
-                  k:'#3fe083', page:'secondout.html', dl:[['windows','Download for Windows']], licensed:true },
-    pulseroom:  { name:'PulseRoom',   say:'Every mixing answer. One tempo.',          icon:'images/apps/pulseroom-logo.svg',
-                  k:'#3fd3e4', page:'pulseroom.html', dl:[['windows','Windows'],['mac','Mac']], licensed:false },
-    nebulatide: { name:'Nebula Tide', say:'An ocean of sound. In every key.',         icon:'images/apps/nt-logo.webp',
-                  k:'#4FE3FF', page:'nebulatide.html', dl:[['windows','Windows'],['mac','Mac']], licensed:false },
-  };
-  const FREE_APPS = ['pulseroom', 'nebulatide'];
-  const ORDER = ['secondout', 'pulseroom', 'nebulatide'];
-  const DL = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>';
+  // Everything about each app - name, colour, icon, whether it asks for
+  // a key, which platforms it ships on - comes from catalog.json, the
+  // same file the Worker and Amanorsac Hub read. This page only draws.
+  const catalog = await fetch('/catalog.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : null).catch(() => null) || { apps: {}, hub: {} };
+  const APPS = {};
+  Object.keys(catalog.apps || {}).forEach(id => {
+    const a = catalog.apps[id];
+    APPS[id] = { name: a.name, say: a.tagline || '', icon: a.icon || '', k: a.color || '#8B7BFF', page: a.page || 'apps.html',
+                 licensed: !!a.licensed, free: !!a.free, platforms: Object.keys(a.installers || {}), version: a.version || null };
+  });
+  const FREE_APPS = Object.keys(APPS).filter(id => APPS[id].free && APPS[id].platforms.length);
+  const ORDER = Object.keys(APPS);   // the catalog's own order
+  const FALLBACK = !!catalog.direct_download_fallback;
+  const PROTO = (catalog.hub && catalog.hub.protocol) || 'amanorsac';
+  const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)' };
+  const DL  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>';
+  const HUB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
 
   // A client of the studio gets a door back to their projects.
   sb.from('profiles').select('is_admin,is_client').eq('id', session.user.id).maybeSingle().then(r => {
@@ -289,7 +323,7 @@ footer a:hover{color:var(--accent)}
     owned.sort((a,b) => (ORDER.indexOf(a.app) + 99) % 99 - (ORDER.indexOf(b.app) + 99) % 99);
 
     shelf.innerHTML = owned.map(r => {
-      const a = APPS[r.app] || { name: r.app, say: '', icon: '', k: '#8B7BFF', page: 'apps.html', dl: [] };
+      const a = APPS[r.app] || { name: r.app, say: '', icon: '', k: '#8B7BFF', page: 'apps.html', platforms: [], licensed: false };
       const devs = byLicense[r.id] || [];
       const forever = !r.update_eligible_until || r.update_eligible_until.slice(0,4) > '9000';
       return '<article class="card" style="--k:'+esc(a.k)+'" data-id="'+esc(r.id)+'">'+
@@ -299,9 +333,16 @@ footer a:hover{color:var(--accent)}
           '<p class="since">'+(r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : '')+
             (forever ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
         '</div>'+
-        (a.dl.length
-          ? '<div class="dlrow">'+ a.dl.map(([platform, label], i) =>
-              '<button class="btn '+(i ? 'ghost' : 'main')+' dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(label)+'</button>').join('')+
+        (a.platforms.length
+          ? '<div class="dlrow">'+
+              '<a class="btn main hubopen" href="'+esc(PROTO+'://install/'+r.app)+'" data-app="'+esc(r.app)+'">'+HUB+'Install in Amanorsac Hub</a>'+
+              (FALLBACK
+                ? '<details class="fallback"><summary>Trouble with the Hub?</summary>'+
+                  '<p>Download the installer directly and run it yourself:</p>'+
+                  a.platforms.map(platform =>
+                    '<button class="btn ghost dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(PLATFORM_LABEL[platform] || platform)+'</button>').join(' ')+
+                  '</details>'
+                : '')+
               '<p class="dlnote"></p></div>'
           : '')+
         (a.licensed
@@ -322,6 +363,14 @@ footer a:hover{color:var(--accent)}
     }).join('') + moreCard();
 
     shelf.querySelectorAll('.dl').forEach(b => b.addEventListener('click', () => download(b)));
+    // The protocol link opens the Hub if it is installed and does nothing
+    // visible if it isn't - so say which of the two just happened.
+    shelf.querySelectorAll('.hubopen').forEach(b => b.addEventListener('click', () => {
+      const noteEl = b.closest('.dlrow').querySelector('.dlnote');
+      noteEl.className = 'dlnote';
+      noteEl.textContent = 'Opening in Amanorsac Hub… If nothing happens, you don’t have the Hub yet — get it at the top of this page.';
+      if(window.track) window.track('hub_open', b.dataset.app);
+    }));
     shelf.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(b.dataset.key); b.textContent = 'Copied'; b.classList.add('done'); }
       catch(e) { b.textContent = b.dataset.key; }
