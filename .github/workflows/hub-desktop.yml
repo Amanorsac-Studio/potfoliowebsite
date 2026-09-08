@@ -68,6 +68,23 @@ jobs:
 
       - run: npm ci
 
+      # electron-builder reports a wrong certificate password as an opaque
+      # "SecKeychainUnlock" failure deep in the build. This says it plainly,
+      # before three minutes of packaging have been spent.
+      - name: Check the signing certificate
+        if: matrix.name == 'macOS' && secrets.MAC_CERT_P12 != ''
+        run: |
+          echo "${{ secrets.MAC_CERT_P12 }}" | base64 --decode > /tmp/cert.p12
+          if ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin pass:"${{ secrets.MAC_CERT_PASSWORD }}" -legacy > /tmp/cert.txt 2>/tmp/cert.err \
+             && ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin pass:"${{ secrets.MAC_CERT_PASSWORD }}" > /tmp/cert.txt 2>/tmp/cert.err; then
+            echo "::error::MAC_CERT_PASSWORD does not open MAC_CERT_P12. Re-set both secrets: the password must be the one given to 'openssl pkcs12 -export', and MAC_CERT_P12 must be the base64 of that exact .p12 file."
+            head -3 /tmp/cert.err
+            exit 1
+          fi
+          echo "Certificate opens. Identity:"
+          openssl x509 -noout -subject -enddate < /tmp/cert.txt || true
+          rm -f /tmp/cert.p12 /tmp/cert.txt
+
       - name: Build installers
         run: npm run ${{ matrix.script }} -- --publish never
         env:
