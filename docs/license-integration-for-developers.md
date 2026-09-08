@@ -151,22 +151,46 @@ For a new product change only:
 Everything else stays: request shapes, error codes, proof handling,
 the hourly timer, the atomic `isLicensed()` flag for the audio thread.
 
-## 7. The UI must react to activation — a bug to not repeat
+## 7. "Activated." must mean a proof verified — the SecondOut 1.3.0 lesson
 
-SecondOut 1.3.0 showed "Activated." and then stayed on the activation
-screen; the main interface never appears until the plugin is reopened.
-Cause: the editor decides which view to show once, when it is
-constructed, and nothing tells it to re-decide after `activate()`
-succeeds.
+SecondOut 1.3.0 showed "Activated." and then stayed on its activation
+screen. The interface was not the problem. Two build mistakes were, and
+either one alone would have blocked every sale:
 
-Required behaviour: **when the `activate()` completion callback fires
-with `r.ok == true`, switch to the main view right there** — the same
-code path that runs when a cached, still-valid proof loads on startup.
-`isLicensed()` is already `true` at that moment (`adoptProof()` sets the
-flag before the callback runs). A belt-and-braces alternative: while the
-activation view is showing, a `juce::Timer` at ~500 ms checks
-`isLicensed()` and swaps views the first time it is true. Do one or the
-other; both is fine.
+1. **The base URL fell back to a dev server.** `defaultBaseUrl()`
+   returned `http://127.0.0.1:4790` when the env override was unset, so
+   on every customer machine activations went to a server that did not
+   exist. The "That license key was not found." message customers saw
+   came from the developer's own local backend, not from the studio.
+   The fallback must be `https://amanorsac.studio`; the env override is
+   for development only.
+2. **The compiled-in public key was the dev keypair**, not the live one
+   in §5. The live server said yes, the plugin rejected the signature,
+   and `activate()` still reported success because it announced
+   "Activated." on the server's `200` rather than on a verified proof.
+   On disk the giveaway was `license-key.dat` present and
+   `license-proof.dat` absent — the proof file is only written after
+   the signature verifies.
+
+Required behaviour:
+
+- **Only report success when a proof verified.** The server's `200`
+  is not success. `adoptProof()` succeeding is. If verification fails,
+  say so plainly ("this version cannot verify the license — update the
+  plugin") instead of leaving the user at the gate.
+- **Verify the compiled-in key against a live proof before shipping.**
+  §8 shows how to pull a real proof with curl; check it verifies with
+  the exact bytes in your binary, not with a key from a dev store.
+- **A bad reply must not wipe a good cached proof**, a stale proof
+  should delete itself, and a stored key with no proof should
+  re-activate at startup rather than waiting for the next heartbeat.
+- **Keep dev key material out of the build.** If a local backend tool
+  writes keys into source (SecondOut's `storectl.js` did), take the
+  shipping product out of its target list.
+
+The view itself should still follow `isLicensed()` — SecondOut polls it
+several times a second, which is fine — but no amount of UI work fixes
+a proof that never verified.
 
 ## 8. Test it without the plugin
 
