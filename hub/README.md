@@ -94,10 +94,36 @@ The Mac build is unsigned. On first launch: right-click the app → Open, or
 xattr -dr com.apple.quarantine "/Applications/Amanorsac Hub.app"
 ```
 
-Signing and notarising needs an Apple Developer account: add
-`CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`
-and `APPLE_TEAM_ID` as repository secrets and delete the
-`CSC_IDENTITY_AUTO_DISCOVERY` line from the workflow.
+### Signing the Mac app
+
+Once these five repository secrets exist, every workflow run signs the
+app with hardened runtime, notarises it with Apple and staples the
+ticket, so it opens on any Mac without warnings:
+
+| Secret | What it is |
+| --- | --- |
+| `MAC_CERT_P12` | the Developer ID Application certificate, exported as `.p12`, base64-encoded |
+| `MAC_CERT_PASSWORD` | the password chosen when exporting that `.p12` |
+| `APPLE_ID` | the Apple ID of the developer account |
+| `APPLE_APP_PASSWORD` | an app-specific password for it (appleid.apple.com → Sign-In and Security → App-Specific Passwords) |
+| `APPLE_TEAM_ID` | the 10-character Team ID (developer.apple.com → Membership details) |
+
+Getting the certificate, on a Mac:
+
+1. Keychain Access → Certificate Assistant → Request a Certificate From a
+   Certificate Authority → your email, "Saved to disk". This makes a
+   `.certSigningRequest`.
+2. developer.apple.com → Certificates, Identifiers & Profiles →
+   Certificates → **+** → **Developer ID Application** → upload the
+   request → download the `.cer` and double-click it into Keychain.
+3. In Keychain Access, under My Certificates, right-click
+   "Developer ID Application: Your Name (TEAMID)" → Export → `.p12`,
+   choose a password. Make sure the export includes the private key
+   (the entry must show a disclosure triangle with a key inside).
+4. `base64 -i cert.p12 | pbcopy` and paste that as `MAC_CERT_P12`.
+
+The Windows build signs the same way with `WIN_CERT_PFX` and
+`WIN_CERT_PASSWORD` when a code-signing certificate is available.
 
 ## Releasing a new version
 

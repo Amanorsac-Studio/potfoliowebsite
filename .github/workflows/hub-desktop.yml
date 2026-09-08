@@ -8,13 +8,16 @@
 #     GitHub Release of the same name. Release assets do not count
 #     against the Actions storage quota.
 #
-# The macOS build is unsigned (no Apple Developer certificate in the
-# repository), so on first launch macOS shows "cannot be opened because
-# the developer cannot be verified". Right-click the app > Open, or run
+# macOS signing and notarisation switch on by themselves once these
+# repository secrets exist (see hub/README.md, "Signing the Mac app"):
+#   MAC_CERT_P12        base64 of the Developer ID Application .p12
+#   MAC_CERT_PASSWORD   the password that .p12 was exported with
+#   APPLE_ID            the Apple ID of the developer account
+#   APPLE_APP_PASSWORD  an app-specific password for that Apple ID
+#   APPLE_TEAM_ID       the 10-character team id
+# Without them the build is unsigned: right-click the app > Open, or
 #   xattr -dr com.apple.quarantine "/Applications/Amanorsac Hub.app"
-# To sign and notarise, add CSC_LINK / CSC_KEY_PASSWORD / APPLE_ID /
-# APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID secrets and remove the
-# CSC_IDENTITY_AUTO_DISCOVERY line below.
+# Windows signing: CSC_LINK / CSC_KEY_PASSWORD, same as electron-builder documents.
 
 name: Hub desktop app
 
@@ -68,8 +71,15 @@ jobs:
       - name: Build installers
         run: npm run ${{ matrix.script }} -- --publish never
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: "false"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # signing happens only when the certificate is there; an empty
+          # CSC_LINK means "unsigned", never a failed build
+          CSC_LINK: ${{ matrix.name == 'macOS' && secrets.MAC_CERT_P12 || secrets.WIN_CERT_PFX }}
+          CSC_KEY_PASSWORD: ${{ matrix.name == 'macOS' && secrets.MAC_CERT_PASSWORD || secrets.WIN_CERT_PASSWORD }}
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ (matrix.name == 'macOS' && secrets.MAC_CERT_P12 != '') && 'true' || 'false' }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Keep installers
         uses: actions/upload-artifact@v4
