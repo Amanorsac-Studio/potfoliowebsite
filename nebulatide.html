@@ -412,11 +412,9 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
     <span class="status">Windows and macOS</span>
     <h1>An ocean of sound. In every key.</h1>
     <p class="sub">Nebula Tide plays endless, seamless drone pads — real recordings in all twelve keys — inside an interface that’s alive. One click, infinite atmosphere.</p>
-    <div class="cta-row">
-      <a class="cta" data-get="nebulatide" href="/hub.html">Get Nebula Tide &mdash; free</a>
-      <a class="cta ghost" href="#features">See the instrument</a>
-    </div>
-    <p class="fine">Standalone and VST3 · Installs from the free <a href="/hub.html">Amanorsac Hub</a> · iPad planned</p>
+    <div data-hub-get data-app="nebulatide" style="margin:0 0 14px"></div>
+    <div class="cta-row"><a class="cta ghost" href="#features">See the instrument</a></div>
+    <p class="fine">Free · installs through Amanorsac Hub with a free account · Standalone and VST3 on Windows · iPad planned</p>
     <!-- filled in by app-reviews.js; hidden until there is a real number -->
     <p class="dl-count" hidden></p>
   </div>
@@ -597,11 +595,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 <section class="wrap finale">
   <h2>The tide is waiting.</h2>
   <p class="lede">Nebula Tide is out for Windows and Mac. Take it for a spin.</p>
-  <div class="cta-row">
-    <a class="cta" data-get="nebulatide" href="/hub.html">Get Nebula Tide &mdash; free</a>
-    <a class="cta ghost" href="/hub.html">What is the Hub?</a>
-    <a class="cta ghost" href="apps.html">Back to the App Store</a>
-  </div>
+  <div data-hub-get data-app="nebulatide" style="margin:0 0 14px"></div>
+  <div class="cta-row"><a class="cta ghost" href="apps.html">Back to the App Store</a></div>
 </section>
 
 <footer>
@@ -658,10 +653,10 @@ if('IntersectionObserver' in window &&
 })();
 </script>
 <script src="assets/track.js" defer></script>
-<link rel="stylesheet" href="/assets/download-gate.css">
+<link rel="stylesheet" href="/assets/hub-download.css">
+<script src="/assets/hub-download.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="/assets/download-gate.js?v=4" defer></script>
 <script src="assets/site-auth.js" defer></script>
 </body>
 </html>

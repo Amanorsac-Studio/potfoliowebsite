@@ -265,8 +265,16 @@ begin
       'max_devices', v_lic.max_devices, 'devices', coalesce(v_devices, '[]'::jsonb));
   end if;
 
+  -- A device removed in My Apps keeps its row (revoked_at set) so the
+  -- history stays. If that same machine comes back, it takes a free
+  -- seat again rather than tripping the unique (license_id, device_id).
   insert into public.device_activations (license_id, device_id, device_name)
-  values (v_lic.id, trim(coalesce(p_device_id,'')), p_device_name);
+  values (v_lic.id, trim(coalesce(p_device_id,'')), p_device_name)
+  on conflict (license_id, device_id) do update
+     set revoked_at  = null,
+         first_seen  = now(),
+         last_seen   = now(),
+         device_name = coalesce(excluded.device_name, public.device_activations.device_name);
 
   return jsonb_build_object('ok', true, 'app', v_lic.app);
 end;

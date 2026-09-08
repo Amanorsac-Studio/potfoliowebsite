@@ -3,7 +3,7 @@
 
    Any button carrying data-buy opens the purchase flow for the app
    named in data-app on <body> - same convention as app-reviews.js and
-   download-gate.js. Three things can be true when a button is clicked,
+   hub-download.js. Three things can be true when a button is clicked,
    checked fresh each time because a signed-in state can change in
    another tab since the page loaded:
 
@@ -11,16 +11,17 @@
                                       account, coming straight back here
      signed in, does not own it   -> create-app-checkout hands back a
                                       Stripe Checkout URL to go to
-     signed in, already owns it   -> the app is in their library, and
-                                      the Amanorsac Hub installs it. No
-                                      installer is handed over here: the
-                                      Hub asks /api/app-download itself,
-                                      with this account's token.
+     signed in, already owns it   -> the same button opens the app in
+                                      Amanorsac Hub (amanorsac://), which
+                                      installs it; the note underneath
+                                      offers the Hub itself to anyone who
+                                      hasn't got it yet
 
    This script never decides who owns what - has_app_access() on the
-   database does, checked on load, again after returning from Stripe,
-   and once more on the Worker before a file is handed over. A button's
-   on-screen text is not proof of anything.
+   database does, checked on load and again after returning from Stripe;
+   the Hub's own download goes through /api/app-download, which checks
+   once more with the account's token. A button's on-screen text is not
+   proof of anything.
    ===================================================================== */
 (function () {
   var SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
@@ -33,7 +34,9 @@
   var statusEl = document.querySelector('[data-buy-status]');
 
   var APP_NAMES = { secondout: 'SecondOut' };
-  var PRICES = { secondout: 'Buy — $1' };
+  var PRICES = { secondout: 'Buy — $19' };
+  var HUB_PROTOCOL = 'amanorsac';
+  var OWNED_LABEL = 'Install in Amanorsac Hub';
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }
 
   function esc(s) {
@@ -59,12 +62,16 @@
       .catch(function () { return false; });
   }
 
-  var OWNED_NOTE = 'You own ' + esc(labelFor(app)) + '. Install it from the ' +
-    '<a href="/hub.html">Amanorsac Hub</a>, which also holds your license key, ' +
-    'your devices and this receipt.';
+  function hubDownloadUrl() {
+    var p = (window.AmanorsacHub && window.AmanorsacHub.platform()) || 'windows';
+    return '/download/hub/' + p;
+  }
+  var OWNED_NOTE = 'You own ' + esc(labelFor(app)) + '. Install it through Amanorsac Hub — ' +
+    'don’t have the Hub yet? <a href="' + esc(hubDownloadUrl()) + '">Download it</a>. ' +
+    'Your license key is in <a href="/my-apps.html">My Apps</a>.';
 
   function showOwned(thanks) {
-    setButtons('Install in the Hub', false, 'hub');
+    setButtons(OWNED_LABEL, false, 'hub');
     say((thanks ? 'Thank you — you’re in. ' : '') + OWNED_NOTE);
   }
 
@@ -130,6 +137,18 @@
       });
   }
 
+  /* The protocol link opens the Hub when it is installed and does
+     nothing visible when it isn't, so the note says which just happened
+     and where the Hub is. */
+  function openInHub() {
+    if (window.track) window.track('hub_open', app);
+    say('Opening ' + esc(labelFor(app)) + ' in Amanorsac Hub… Nothing happened? You don’t have the Hub yet — ' +
+        '<a href="' + esc(hubDownloadUrl()) + '">download it</a>, sign in with this account, and ' +
+        esc(labelFor(app)) + ' is waiting inside.');
+    if (window.AmanorsacHub) window.AmanorsacHub.openInHub(app);
+    else location.href = HUB_PROTOCOL + '://install/' + encodeURIComponent(app);
+  }
+
   buttons.forEach(function (b) {
     b.addEventListener('click', function () {
       sb.auth.getSession().then(function (s) {
@@ -138,7 +157,7 @@
           location.href = '/client.html?next=' + encodeURIComponent(location.pathname);
           return;
         }
-        if (b.getAttribute('data-mode') === 'hub') { location.href = '/hub.html'; return; }
+        if (b.getAttribute('data-mode') === 'hub') return openInHub();
         return startCheckout(session);
       });
     });

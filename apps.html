@@ -414,33 +414,6 @@ body[data-room="apps"] .wrap{max-width:1280px}
 .app-say{font-family:var(--body);font-size:clamp(12.5px,1.05vw,14.5px);line-height:1.35;
   color:#A9A2C8;margin:0}
 
-
-/* ---------- the Hub band ----------
-   Wider than a shelf card and quieter than the hero: this is a tool for
-   people who already have the apps, so it sits after them, not before. */
-.hubband{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
-  gap:clamp(22px,3.4vw,48px);align-items:center;margin:clamp(46px,6vw,74px) 0 0;
-  padding:clamp(26px,3.4vw,44px);border-radius:22px;
-  background:linear-gradient(120deg,#17131C 0%,#120F18 52%,#141021 100%);
-  border:1px solid #2C2440}
-.hubband-eyebrow{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.19em;
-  text-transform:uppercase;color:#EEAE61;margin:0 0 12px}
-.hubband-title{font-family:var(--display);font-weight:700;letter-spacing:-.03em;
-  font-size:clamp(23px,2.7vw,34px);line-height:1.12;margin:0 0 12px;color:#fff}
-.hubband-say{font-size:clamp(13.5px,1.15vw,15.5px);line-height:1.6;color:#A9A2C8;margin:0}
-.hubband-go{margin:20px 0 0}
-.hubband-go a{display:inline-flex;align-items:center;text-decoration:none;font-weight:600;
-  font-size:14.5px;padding:12px 22px;border-radius:999px;background:#EEAE61;color:#23190D;
-  transition:transform .24s cubic-bezier(.23,1,.32,1),background .24s}
-.hubband-go a:hover{background:#FAC081;transform:translateY(-2px)}
-.hubband-shot{display:block;border-radius:14px;overflow:hidden;border:1px solid #35304A;
-  box-shadow:0 22px 60px rgba(0,0,0,.55);transition:transform .24s cubic-bezier(.23,1,.32,1),
-  box-shadow .24s,border-color .24s}
-.hubband-shot:hover{transform:translateY(-4px);border-color:#5A4B7A;
-  box-shadow:0 28px 70px rgba(0,0,0,.6), 0 0 50px -22px #EEAE61}
-.hubband-shot img{width:100%;height:auto;display:block}
-@media (max-width:820px){ .hubband{grid-template-columns:1fr} }
-
 /* the capture */
 .app-shot{position:relative;border-radius:14px;overflow:hidden;background:#05040B;
   border:1px solid color-mix(in srgb,var(--k) 26%,transparent);
@@ -700,6 +673,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 }
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="assets/hub-download.css">
 </head>
 <body data-room="apps">
 
@@ -866,21 +840,6 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
   </section>
 
-  <!-- The Hub is not a fifth instrument, so it does not belong in the
-       shelf above; it is the room the others are kept in. Its own band,
-       between the apps and what is true of all of them. -->
-  <section class="hubband" aria-label="Amanorsac Hub">
-    <div class="hubband-copy">
-      <p class="hubband-eyebrow">Free companion app</p>
-      <h2 class="hubband-title">Everything you own, in one window.</h2>
-      <p class="hubband-say">Amanorsac Hub installs, updates and opens your apps on Windows and macOS, and keeps your license keys, devices and purchases beside them. Sign in with this same account.</p>
-      <p class="hubband-go"><a href="hub.html">Get the Hub &nbsp;&rarr;</a></p>
-    </div>
-    <a class="hubband-shot" href="hub.html" aria-label="Amanorsac Hub">
-      <img src="images/apps/hub-library.webp" alt="Amanorsac Hub showing My library with the app shelf and sidebar" loading="lazy" width="1360" height="880">
-    </a>
-  </section>
-
   <!-- What is true of all four, so it does not need saying four times. -->
   <div class="traits">
     <div class="trait">
@@ -906,10 +865,11 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
   </div>
 
   <section id="access" class="close-cta">
-    <h2>Want in?</h2>
-    <p>PulseRoom and Nebula Tide are free and rolling out now, and the free <a href="hub.html">Amanorsac Hub</a> keeps them all in one place. HarmonieMD, PerformLive and SecondOut are still in development. Tell us which one fits your team and you’ll hear back within two working days.</p>
-    <div class="hero-cta" style="justify-content:center">
-      <a class="cta" href="about.html#contact">Get in touch <span class="go">→</span></a>
+    <h2>One Hub. Every app.</h2>
+    <p>Every Amanorsac app installs through Amanorsac Hub. Sign in once with your free account and the Hub downloads, activates and keeps your apps up to date — free ones and bought ones alike — from one place.</p>
+    <div class="center" data-hub-get style="margin:0 0 8px"></div>
+    <div class="hero-cta" style="justify-content:center;margin-top:28px">
+      <a class="cta ghost" href="about.html#contact">Questions? Get in touch</a>
       <a class="cta ghost" href="index.html">Back to the studio</a>
     </div>
   </section>
@@ -1305,5 +1265,6 @@ var CONFIG = {
 <script src="assets/app-reviews.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="assets/site-auth.js" defer></script>
+<script src="assets/hub-download.js" defer></script>
 </body>
 </html>

@@ -34,7 +34,7 @@
 
   const S = {
     session: null, profile: null, device: { platform: window.hub.platform, arch: window.hub.arch, os: '', hostname: '' },
-    catalog: [], owned: [], devices: [], installed: {}, jobs: {}, history: [],
+    catalog: [], hubVersion: null, owned: [], devices: [], installed: {}, jobs: {}, history: [],
     page: 'library', filter: 'all', online: true,
   };
   try { S.history = JSON.parse(localStorage.getItem('hub-history') || '[]'); } catch (e) {}
@@ -73,18 +73,47 @@
   }
 
   /* ---------- data ---------- */
+  /* GET /api/catalog is the site's own list - the same catalog.json the
+     store pages and the Worker read (docs/hub-integration.md §2). Its
+     shape is not this app's: apps are an object keyed by id, and
+     `platforms` is an array of names rather than a map with sizes. The
+     bundled copy fills in what the endpoint does not carry (artwork,
+     the longer blurb) and stands in entirely when the site cannot be
+     reached. */
+  function fromApi(json) {
+    var bundled = window.HUB_CATALOG.apps;
+    return Object.keys(json.apps || {}).map(function (id) {
+      var a = json.apps[id];
+      var local = bundled.find(function (b) { return b.id === id; }) || {};
+      var platforms = {};
+      (a.platforms || []).forEach(function (name) {
+        platforms[name] = { size: (local.platforms && local.platforms[name] || {}).size || null,
+                            version: a.version || null };
+      });
+      return {
+        id: id, name: a.name || local.name || id,
+        tagline: a.tagline || local.tagline || '',
+        blurb: local.blurb || a.tagline || '',
+        kind: a.kind || local.kind || 'app',
+        status: a.status || 'available',
+        free: !!a.free, licensed: !!a.licensed,
+        color: a.color || local.color || '#eeae61',
+        page: a.page || local.page, platforms: platforms,
+      };
+    });
+  }
+
   async function loadCatalog() {
-    const bundled = window.HUB_CATALOG.apps;
     try {
-      const r = await window.hub.site('/api/hub/catalog');
-      if (r && r.ok && r.json && Array.isArray(r.json.apps) && r.json.apps.length) {
-        // live wins; bundled fills what the Worker does not send
-        S.catalog = r.json.apps.map((live) => Object.assign({}, bundled.find((b) => b.id === live.id) || {}, live));
+      const r = await window.hub.site('/api/catalog');
+      if (r && r.ok && r.json && r.json.apps) {
+        S.catalog = fromApi(r.json);
+        S.hubVersion = (r.json.hub && r.json.hub.version) || null;
         S.online = true;
         return;
       }
     } catch (e) {}
-    S.catalog = bundled.slice();
+    S.catalog = window.HUB_CATALOG.apps.slice();
     S.online = false;
   }
 
@@ -184,6 +213,29 @@
     toast(a.name + ' removed from this computer.');
     render();
   }
+
+  /* amanorsac://install/<app> from the website: show the library with
+     that app found, and start it installing if this account owns it and
+     there is a build for this machine. Anything else - not owned, no
+     build, still to come - just puts it on screen and lets the card say
+     why, which is the same answer the person would get by looking. */
+  window.hub.onDeepLink((link) => {
+    if (!link) return;
+    navigate('library');
+    // The Hub's own page sends install/hub; there is nothing to install,
+    // the person is already looking at it. Coming to the front is the
+    // whole of what they asked for.
+    if (link.action !== 'install' || !link.app || link.app === 'hub') return;
+    const a = byId(link.app);
+    if (!a) { toast('That app is not in the catalogue yet.', true); return; }
+    $('#search').value = a.name;
+    render();
+    const st = status(a);
+    if (st.action === 'install' || st.action === 'update') install(a, st.action);
+    else if (st.action === 'open') launch(a);
+    else if (st.action === 'buy') toast(a.name + ' is not in your library yet - it is bought on the website.');
+    else toast(a.name + ' is not available for this computer yet.');
+  });
 
   window.hub.onProgress((p) => {
     const job = S.jobs[p.app]; if (!job) return;

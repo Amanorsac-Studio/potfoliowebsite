@@ -20,6 +20,7 @@ contextBridge.exposeInMainWorld('hub', {
   external: (url) => ipcRenderer.invoke('hub:external', url),
   confirm: (args) => ipcRenderer.invoke('hub:confirm', args),
   onProgress: (cb) => { ipcRenderer.on('hub:progress', (e, p) => cb(p)); },
+  onDeepLink: (cb) => { ipcRenderer.on('hub:deep-link', (e, p) => cb(p)); },
 });
 
 window.addEventListener('DOMContentLoaded', () => {

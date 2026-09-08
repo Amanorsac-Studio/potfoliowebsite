@@ -83,7 +83,17 @@
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist",
-      "notarize": true
+      "notarize": true,
+      "extendInfo": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "Amanorsac Hub",
+            "CFBundleURLSchemes": [
+              "amanorsac"
+            ]
+          }
+        ]
+      }
     },
     "dmg": {
       "title": "Amanorsac Hub",
@@ -109,7 +119,15 @@
     },
     "portable": {
       "artifactName": "${productName}-${version}-${os}-${arch}-portable.${ext}"
-    }
+    },
+    "protocols": [
+      {
+        "name": "Amanorsac Hub",
+        "schemes": [
+          "amanorsac"
+        ]
+      }
+    ]
   },
   "repository": {
     "type": "git",

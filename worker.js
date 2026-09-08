@@ -40,9 +40,6 @@ export default {
 
         if (path === '/sitemap.xml') return await sitemap();
 
-        // what the desktop Hub shows: the same installer table, read out
-        if (path === '/api/hub/catalog') return hubCatalog();
-
         /* The live page is gone. It was in the sitemap, so search engines
            were told it existed and some of them will keep asking; a
            permanent redirect to the room that covers the same work is a
@@ -62,11 +59,28 @@ export default {
           if (page) return page;
         }
 
+        // The Hub itself: no ticket, no account. It is the front door,
+        // and the account is made behind it.
+        const h = path.match(/^\/download\/hub\/([a-z0-9-]+)$/);
+        if (h) {
+          const file = await serveHub(h[1], env, request);
+          if (file) return file;
+        }
+
+        // What exists, for the Hub to draw its library from.
+        if (path === '/api/catalog') return withCors(await catalogApi(env));
+
         const d = path.match(/^\/download\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
         if (d) {
           const file = await serveInstaller(d[1], d[2], new URL(request.url), env, request);
           if (file) return file;
         }
+      }
+
+      // Preflight for the two doors the Hub uses from a desktop app.
+      if (request.method === 'OPTIONS') {
+        const p = new URL(request.url).pathname;
+        if (p === '/api/app-download' || p === '/api/catalog') return withCors(new Response(null, { status: 204 }));
       }
 
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/download') {
@@ -76,7 +90,7 @@ export default {
         return await submitReview(request, env);
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/app-download') {
-        return await appDownload(request, env);
+        return withCors(await appDownload(request, env));
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/licenses/activate') {
         return await licenseActivate(request, env);
@@ -173,121 +187,73 @@ function pageHeaders(extra) {
 }
 
 
-/* What may be asked for. A fixed map, so no amount of creativity in the
-   request can name a file that is not on this list.
-
-   Two keys each, tried in order: in a pulseroom/ folder, or loose at the
-   top of the bucket. Uploading a 179 MB file a second time because the
-   Worker wanted a folder in front of the name is not a good reason to
-   upload a 179 MB file a second time. */
-const INSTALLERS = {
-  'pulseroom:windows': { keys: ['pulseroom/PulseRoom-Windows.zip', 'PulseRoom-Windows.zip'],
-                         as: 'PulseRoom-Windows.zip', title: 'PulseRoom for Windows' },
-  'pulseroom:mac':     { keys: ['pulseroom/PulseRoom-macOS.zip', 'PulseRoom-macOS.zip'],
-                         as: 'PulseRoom-macOS.zip',   title: 'PulseRoom for Mac' },
-  /* R2 is looked up first; the Dropbox link is only a fallback for the
-     day the R2 object is missing. The bucket's nebulatide/ folder was
-     uploaded from the dashboard in September 2026, so in practice these
-     are served from R2 - a release means uploading the new zip under the
-     same name, and the Dropbox line can go once that routine is settled. */
-  'nebulatide:windows':{ keys: ['nebulatide/NebulaTide-Windows.zip', 'NebulaTide-Windows.zip'],
-                         as: 'NebulaTide-Windows.zip', title: 'Nebula Tide for Windows',
-                         dropbox: 'https://www.dropbox.com/scl/fi/mh40nxu467ouw0uka6si9/NebulaTide-Windows.zip?rlkey=ngvoa116wi7xognir4frynqwn&st=k7lhh0at&dl=0' },
-  'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
-                         as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
-                         dropbox: 'https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0' },
-  /* The desktop Hub itself (hub/ in this repository). `open` means no
-     ticket and no email gate: this is the launcher every other download
-     is reached through, and putting a form in front of it would be a
-     door in front of the door. Signed with the studio's Developer ID and
-     notarised, so macOS opens it without a warning.
-
-     Several keys each because the bucket folder is "AMANORSAC HUB" and a
-     browser that already had a file of the same name in Downloads
-     appends _2 - both names are looked for rather than depending on
-     which one happened to be uploaded. */
-  'hub:windows':   { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64.exe',
-                            'AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64_2.exe',
-                            'hub/Amanorsac.Hub-1.1.0-win-x64.exe'],
-                     as: 'Amanorsac Hub Setup.exe', title: 'Amanorsac Hub for Windows',
-                     version: '1.1.0', type: 'application/octet-stream', open: true },
-  'hub:windows-portable': { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64-portable.exe',
-                            'hub/Amanorsac.Hub-1.1.0-win-x64-portable.exe'],
-                     as: 'Amanorsac Hub Portable.exe', title: 'Amanorsac Hub for Windows (portable)',
-                     version: '1.1.0', type: 'application/octet-stream', open: true },
-  'hub:mac-arm64': { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-arm64.dmg',
-                            'hub/Amanorsac.Hub-1.1.0-mac-arm64.dmg'],
-                     as: 'Amanorsac Hub (Apple Silicon).dmg', title: 'Amanorsac Hub for Mac, Apple Silicon',
-                     version: '1.1.0', type: 'application/x-apple-diskimage', open: true },
-  'hub:mac-intel': { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-x64.dmg',
-                            'hub/Amanorsac.Hub-1.1.0-mac-x64.dmg'],
-                     as: 'Amanorsac Hub (Intel).dmg', title: 'Amanorsac Hub for Mac, Intel',
-                     version: '1.1.0', type: 'application/x-apple-diskimage', open: true },
-
-  /* The one paid app. `paid` closes the email gate to it - the only door
-     is /api/app-download, which asks the database whether the signed-in
-     account owns it. A new release means uploading the new installer to
-     the bucket and changing the file name here, nothing else. */
-  'secondout:windows': { keys: ['SecondOut-1.3.0-Setup.exe', 'secondout/SecondOut-1.3.0-Setup.exe'],
-                         as: 'SecondOut-1.3.0-Setup.exe', title: 'SecondOut for Windows',
-                         version: '1.3.0', type: 'application/octet-stream', paid: true }
-};
-
-/* ---------------------------------------------------------------------
-   The collection, for the desktop Hub (hub/ in this repository).
-
-   Availability is not repeated here: an app has a Windows or Mac build
-   exactly when INSTALLERS above has a key for it, and the version shown
-   is the one recorded there. This only adds what a launcher needs to
-   draw a shelf - names, one-line descriptions, whether the app itself
-   asks for a license key (the `licensed` flag My Apps also keeps), and
-   which apps are still on the way. Public information, all of it; the
-   page it mirrors is /apps.
-   --------------------------------------------------------------------- */
-const HUB_APPS = [
-  { id: 'nebulatide', name: 'Nebula Tide', tagline: 'An ocean of sound. In every key.',
-    blurb: 'Endless, seamless drone pads recorded in all twelve keys. Deep Current included.',
-    kind: 'app', free: true, licensed: false, color: '#4FE3FF', page: '/nebulatide.html',
-    sizes: { windows: '279 MB', mac: '289 MB' }, version: '1.2.2' },
-  { id: 'pulseroom', name: 'PulseRoom', tagline: 'Every mixing answer. One tempo.',
-    blurb: 'Your reference desk: delay and reverb times, EQ cheat sheet, compression, mix chains.',
-    kind: 'app', free: true, licensed: false, color: '#3fd3e4', page: '/pulseroom.html',
-    sizes: { windows: '78 MB', mac: '171 MB' }, version: null },
-  { id: 'secondout', name: 'SecondOut', tagline: 'One master bus. Two independent outputs.',
-    blurb: 'Send your master to a second output device, drift-corrected, without touching the mix.',
-    kind: 'plugin', free: false, licensed: true, color: '#3fe083', page: '/secondout.html',
-    sizes: {}, version: null },
-  { id: 'performlive', name: 'PerformLive', tagline: 'Live performance, perfected.',
-    blurb: 'Stem decks, scenes and warm pads laid out for a service.',
-    kind: 'app', free: false, licensed: true, color: '#7B7DF7', page: '/performlive.html', sizes: {} },
-  { id: 'harmoniemd', name: 'HarmonieMD', tagline: 'Share. Simplify. Serve.',
-    blurb: 'The choir rehearsal studio: parts, setlists and a multi-track editor.',
-    kind: 'app', free: false, licensed: true, color: '#3ED598', page: '/harmoniemd.html', sizes: {} },
-];
-
-function hubCatalog() {
-  const apps = HUB_APPS.map((a) => {
-    const platforms = {};
-    for (const platform of ['windows', 'mac']) {
-      const item = INSTALLERS[a.id + ':' + platform];
-      if (item) platforms[platform] = { size: a.sizes[platform] || null, version: item.version || a.version || null, file: item.as };
-    }
-    return {
-      id: a.id, name: a.name, tagline: a.tagline, blurb: a.blurb, kind: a.kind,
-      status: Object.keys(platforms).length ? 'available' : 'coming_soon',
-      free: a.free, licensed: a.licensed, color: a.color, page: SITE + a.page, platforms
-    };
-  });
-  return new Response(JSON.stringify({ generatedAt: new Date().toISOString(), apps }), {
-    headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300',
-               'access-control-allow-origin': '*' }
-  });
+/* What may be asked for lives in catalog.json - the one list every part
+   of the site reads: the store pages, My Apps, Amanorsac Hub through
+   /api/catalog, and this Worker. It is read through the ASSETS binding,
+   the same file server the pages come from, and kept in memory for five
+   minutes so no request waits on it twice in a row. Nothing about an
+   installer is invented here: the catalog names the R2 object, the
+   filename to hand out, its content type and whether the app is free.
+   No amount of creativity in a request can name a file the catalog does
+   not list. Adding an app is one entry there and one upload. */
+let _catalog = null, _catalogAt = 0;
+async function getCatalog(env) {
+  if (_catalog && Date.now() - _catalogAt < 5 * 60 * 1000) return _catalog;
+  try {
+    const res = await env.ASSETS.fetch(new Request(SITE + '/catalog.json'));
+    if (res && res.ok) { _catalog = await res.json(); _catalogAt = Date.now(); }
+  } catch (e) { console.error('catalog.json could not be read:', e && e.message); }
+  return _catalog || { hub: { installers: {} }, apps: {} };
 }
 
-/* Plain names for the review-invite email, decoupled from the
-   platform-specific installer titles above ("Nebula Tide for Windows"
-   reads wrong in "how's Nebula Tide for Windows working out?"). */
-const APP_TITLES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide', secondout: 'SecondOut', hub: 'Amanorsac Hub' };
+const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)' };
+
+/* One app installer, in the shape the download code below has always used. */
+function installerFor(catalog, app, platform) {
+  const a = catalog.apps && catalog.apps[app];
+  const i = a && a.installers && a.installers[platform];
+  if (!i || !i.key) return null;
+  return {
+    keys: [i.key].concat(i.alt_keys || []),
+    as: i.as || i.key.split('/').pop(),
+    type: i.type || 'application/zip',
+    title: a.name + ' for ' + (PLATFORM_LABEL[platform] || platform),
+    version: a.version || null,
+    paid: !a.free,
+    email_gate: !!a.email_gate,   // the old address-for-a-link door; no app asks for it now
+    dropbox: i.fallback_url || null
+  };
+}
+
+/* The Hub's own installer. `mac` alone means Apple silicon: the better
+   guess for any Mac sold since 2020, and the Intel link is always one
+   line below on the page. */
+function hubInstallerFor(catalog, platform) {
+  const inst = (catalog.hub && catalog.hub.installers) || {};
+  const p = platform === 'mac' ? 'mac-arm64' : platform;
+  const i = inst[p];
+  if (!i || !i.key) return null;
+  return { keys: [i.key].concat(i.alt_keys || []), as: i.as || i.key.split('/').pop(),
+           type: i.type || 'application/octet-stream',
+           title: (catalog.hub.name || 'Amanorsac Hub') + ' for ' + (i.label || PLATFORM_LABEL[p] || p) };
+}
+
+/* Plain names for the review-invite email and error messages ("Nebula
+   Tide", not "Nebula Tide for Windows"). */
+function appTitle(catalog, app) {
+  return (catalog.apps && catalog.apps[app] && catalog.apps[app].name) || app;
+}
+
+/* The Hub is a desktop app, not a page on this origin, so the two doors
+   it uses answer cross-origin. Authentication is the bearer token, not
+   the origin, so this widens nothing. */
+function withCors(res) {
+  const h = new Headers(res.headers);
+  h.set('access-control-allow-origin', '*');
+  h.set('access-control-allow-headers', 'authorization, content-type');
+  h.set('access-control-allow-methods', 'GET, POST, OPTIONS');
+  return new Response(res.body, { status: res.status, headers: h });
+}
 
 /* The only apps whose review form requires the signed link from the
    invite email. Add an app here once it has a real download history to
@@ -366,12 +332,15 @@ async function handoutDownload(request, env) {
 
   if (!looksLikeEmail(email)) return say({ error: 'That does not look like an email address.' }, 400);
   if (!body.consent)          return say({ error: 'Please tick the box to continue.' }, 400);
-  const item = INSTALLERS[app + ':' + platform];
+  const catalog = await getCatalog(env);
+  const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'No such download.' }, 404);
-  // An email address is not a receipt. Bought apps go through appDownload.
-  if (item.paid) return say({ error: 'This app is bought, not emailed - sign in to download it.' }, 403);
-  // An open download has no gate to stand in front of.
-  if (item.open) return say({ error: 'This one downloads directly - no email needed.' }, 400);
+  // Every download goes through Amanorsac Hub now. This door stays only
+  // for an app whose catalog entry explicitly asks for the old
+  // address-for-a-link gate (none does), and a bought app never had it.
+  if (!item.email_gate || item.paid) {
+    return say({ error: 'Downloads now go through Amanorsac Hub - get it free at ' + SITE + '/apps.html#access' }, 410);
+  }
 
   /* Recorded now, but not yet confirmed. An address that never gets
      clicked stays in the list marked unconfirmed and is never written
@@ -463,8 +432,14 @@ async function confirmDownload(url, env) {
   const expires = parseInt(url.searchParams.get('x') || '0', 10);
   const sig = url.searchParams.get('s') || '';
 
-  const item = INSTALLERS[app + ':' + platform];
+  const catalog = await getCatalog(env);
+  const item = installerFor(catalog, app, platform);
   if (!item || !expires) return confirmPage('That link is not one of ours.', null, null);
+  if (!item.email_gate) {
+    return confirmPage('Downloads have moved to Amanorsac Hub.',
+      'Every app now installs through the free Amanorsac Hub. Get it from the App Store page, ' +
+      'sign in with the same email, and your download is waiting inside.', null, 410);
+  }
   if (Date.now() > expires) {
     return confirmPage('That link has expired.',
       'Links last a day. Ask for the download again and a fresh one is on its way.', null);
@@ -514,7 +489,8 @@ async function appDownload(request, env) {
   try { body = await request.json(); } catch (e) {}
   const app      = String(body.app || '').toLowerCase().slice(0, 40);
   const platform = String(body.platform || '').toLowerCase().slice(0, 20);
-  const item = INSTALLERS[app + ':' + platform];
+  const catalog = await getCatalog(env);
+  const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
 
   let owned = false;
@@ -534,13 +510,70 @@ async function appDownload(request, env) {
     return say({ error: 'upstream_error', message: 'Could not check your account. Try again shortly.' }, 502);
   }
   if (!owned) {
-    return say({ error: 'not_owned', message: 'This account does not own ' + (APP_TITLES[app] || app) + ' yet.' }, 403);
+    return say({ error: 'not_owned', message: 'This account does not own ' + appTitle(catalog, app) + ' yet.' }, 403);
   }
 
   const t = Date.now() + TICKET_MINUTES * 60 * 1000;
   const path = '/download/' + app + '/' + platform;
   const ticket = path + '?e=' + t + '&s=' + (await sign(env.DOWNLOAD_SECRET, path + ':' + t));
   return say({ url: ticket, file: item.as, title: item.title, version: item.version || null });
+}
+
+/* The Hub's own installer: public, no ticket, no account - it is the
+   front door, and the account is created behind it. Served from R2 under
+   stable names so the link on every page survives a release. */
+async function serveHub(platform, env, request) {
+  const catalog = await getCatalog(env);
+  const item = hubInstallerFor(catalog, platform);
+  if (!item || !env.DOWNLOADS) return null;
+
+  let object = null;
+  for (const key of item.keys) {
+    object = await env.DOWNLOADS.get(key, { range: request.headers, onlyIf: request.headers });
+    if (object) break;
+  }
+  if (!object) {
+    return confirmPage('Amanorsac Hub isn’t here yet.',
+      'The installer for ' + (PLATFORM_LABEL[platform === 'mac' ? 'mac-arm64' : platform] || platform) +
+      ' has not been uploaded. It should be at ' + item.keys[0] + ' in the amanorsac-downloads bucket. Try again shortly.',
+      null, 503);
+  }
+
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set('etag', object.httpEtag);
+  headers.set('content-type', item.type);
+  headers.set('content-disposition', 'attachment; filename="' + item.as + '"');
+  headers.set('cache-control', 'public, max-age=300');
+  headers.set('accept-ranges', 'bytes');
+  const partial = object.range && ('body' in object);
+  return new Response(object.body, { status: partial && request.headers.has('range') ? 206 : 200, headers });
+}
+
+/* What exists, for the Hub to draw its library from: the catalog with
+   paths made absolute and the R2 keys left out - which object a file
+   lives in is the Worker's business, not the Hub's. Public and
+   cacheable; nothing here is about any one account. */
+async function catalogApi(env) {
+  const c = await getCatalog(env);
+  const abs = p => p ? (/^https?:/.test(p) ? p : SITE + '/' + String(p).replace(/^\//, '')) : null;
+  const apps = {};
+  for (const id of Object.keys(c.apps || {})) {
+    const a = c.apps[id];
+    apps[id] = {
+      name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
+      tagline: a.tagline || '', icon: abs(a.icon), page: abs(a.page), color: a.color || null,
+      free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null), licensed: !!a.licensed,
+      version: a.version || null, platforms: Object.keys(a.installers || {})
+    };
+  }
+  const hub = c.hub || {};
+  return new Response(JSON.stringify({
+    hub: { name: hub.name || 'Amanorsac Hub', version: hub.version || null, protocol: hub.protocol || 'amanorsac',
+           tagline: hub.tagline || '', platforms: Object.keys(hub.installers || {}),
+           download: SITE + '/download/hub/{platform}' },
+    apps
+  }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } });
 }
 
 function confirmPage(heading, note, ticket, status) {
@@ -570,20 +603,16 @@ function confirmPage(heading, note, ticket, status) {
 }
 
 async function serveInstaller(app, platform, url, env, request) {
-  const item = INSTALLERS[app + ':' + platform];
+  const catalog = await getCatalog(env);
+  const item = installerFor(catalog, app, platform);
   if (!item || !env.DOWNLOADS || !env.DOWNLOAD_SECRET) return null;
 
-  /* An `open` item is handed over on the strength of the request alone.
-     Everything else needs the signed, short-lived ticket that says an
-     address was confirmed, or that this account owns the app. */
-  if (!item.open) {
-    const expires = parseInt(url.searchParams.get('e') || '0', 10);
-    const sig = url.searchParams.get('s') || '';
-    if (!expires || Date.now() > expires) return null;
+  const expires = parseInt(url.searchParams.get('e') || '0', 10);
+  const sig = url.searchParams.get('s') || '';
+  if (!expires || Date.now() > expires) return null;
 
-    const want = await sign(env.DOWNLOAD_SECRET, url.pathname + ':' + expires);
-    if (!sameString(sig, want)) return null;
-  }
+  const want = await sign(env.DOWNLOAD_SECRET, url.pathname + ':' + expires);
+  if (!sameString(sig, want)) return null;
 
   let object = null;
   for (const key of item.keys) {
@@ -692,7 +721,8 @@ async function submitReview(request, env) {
   const text   = String(body.body || '').slice(0, 2000);
   const rv     = String(body.rv || '');
 
-  if (!APP_TITLES[app])             return say({ error: 'No such app.' }, 404);
+  const catalog = await getCatalog(env);
+  if (!catalog.apps[app])           return say({ error: 'No such app.' }, 404);
   if (!(rating >= 1 && rating <= 5)) return say({ error: 'Pick a rating first.' }, 400);
   if (!text.trim())                 return say({ error: 'Say a little about it.' }, 400);
 
@@ -736,6 +766,7 @@ async function sendReviewInvites(env) {
     return;
   }
 
+  const catalog = await getCatalog(env);
   for (const app of REVIEW_INVITE_APPS) {
     let candidates = [];
     try {
@@ -760,7 +791,7 @@ async function sendReviewInvites(env) {
       const sig = await sign(env.DOWNLOAD_SECRET, ['review', app, expires].join(':'));
       const link = SITE + '/' + app + '?rv=' + expires + '.' + sig;
 
-      const sent = await sendReviewInvite(env, email, APP_TITLES[app], link);
+      const sent = await sendReviewInvite(env, email, appTitle(catalog, app), link);
       if (!sent) { console.error('review invite email failed to send:', email, app); continue; }
 
       try {
@@ -1117,8 +1148,7 @@ const PAGES = [
   ['/pulseroom',   'monthly', '0.7'],
   ['/harmoniemd',  'monthly', '0.7'],
   ['/nebulatide',  'monthly', '0.7'],
-  ['/secondout',   'monthly', '0.7'],
-  ['/hub',         'monthly', '0.8']
+  ['/secondout',   'monthly', '0.7']
 ];
 
 async function sitemap() {

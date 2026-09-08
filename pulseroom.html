@@ -203,7 +203,7 @@ h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:
 .vidcap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--dim);margin:14px 0 0}
 
-/* the gate's styles live in assets/download-gate.css, shared with every page that downloads */
+/* the Hub button's styles live in assets/hub-download.css, shared with every page that offers an app */
 
 /* ---------- section headings ---------- */
 h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
@@ -355,11 +355,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   <span class="status">Free · Windows &amp; macOS</span>
   <h1>Every mixing answer. One tempo.</h1>
   <p class="sub">Drop the song in and PulseRoom finds the tempo, then turns it into delay times, reverb tails, EQ moves and compression settings — in one desktop app that opens faster than the browser tab it replaces.</p>
-  <div class="cta-row">
-    <a class="cta" data-get="pulseroom" href="/hub.html">Get PulseRoom &mdash; free</a>
-    <a class="cta ghost" href="/hub.html">What is the Hub?</a>
-  </div>
-  <p class="fine">Windows &amp; macOS · Installs from the free Amanorsac Hub · Works offline · No ads</p>
+  <div data-hub-get data-app="pulseroom" style="margin:0 0 14px"></div>
+  <p class="fine">Free · installs through Amanorsac Hub with a free account · Windows &amp; macOS · works offline once installed</p>
   <!-- filled in by app-reviews.js; hidden until there is a real number,
        because "0 downloads" under a hero is worse than nothing there -->
   <p class="dl-count" hidden></p>
@@ -553,11 +550,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 
 <section class="wrap finale">
   <h2>Your next session starts at your tempo.</h2>
-  <p class="lede">Free, offline, no account. Close six browser tabs on the way in.</p>
-  <div class="cta-row">
-    <a class="cta" data-get="pulseroom" href="/hub.html">Get PulseRoom &mdash; free</a>
-    <a class="cta ghost" href="/hub.html">What is the Hub?</a>
-  </div>
+  <p class="lede">Free, and offline once it's installed. Close six browser tabs on the way in.</p>
+  <div data-hub-get data-app="pulseroom" style="margin:0 0 14px"></div>
   <p class="fine">Values are starting points — trust your ears first.</p>
 </section>
 
@@ -572,22 +566,11 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 </footer>
 
 <script>
-/* ===========================================================
-   EDIT THIS BLOCK ONLY.
-   Paste the installer links here and every Download button on
-   this page becomes a real download. Leave them empty and the
-   buttons keep pointing at the App Store's early-access form.
-   =========================================================== */
-var CONFIG = {
-  downloadWin: "",
-  downloadMac: ""
-};
-
-/* ---------- wiring ---------- */
+/* ---------- wiring ----------
+   Downloads go through Amanorsac Hub: assets/hub-download.js fills the
+   data-hub-get slots above from catalog.json. Nothing on this page
+   knows or decides where an installer lives. */
 (function(){
-  /* Getting the app is assets/download-gate.js's job now: an account,
-     then the Hub. There is deliberately no way to point a button at a
-     file here - a second door would be a door nobody maintains. */
   /* reveal on scroll; falls back to visible when unsupported or reduced */
   if('IntersectionObserver' in window &&
      !matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -624,11 +607,11 @@ var CONFIG = {
      did not recognise the answer, and said "Something went wrong" while
      the email was in fact on its way. Bump the number whenever this file
      changes in a way the server also changed for. -->
-<link rel="stylesheet" href="/assets/download-gate.css">
+<link rel="stylesheet" href="/assets/hub-download.css">
+<script src="/assets/hub-download.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
 <script src="assets/track.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-<script src="/assets/download-gate.js?v=4" defer></script>
 <script src="assets/site-auth.js" defer></script>
 </body>
 </html>

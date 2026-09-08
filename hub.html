@@ -208,6 +208,7 @@ footer a:hover{color:var(--text)}
 }
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="assets/hub-download.css">
 </head>
 <body data-app="hub">
 
@@ -221,14 +222,11 @@ footer a:hover{color:var(--text)}
   <span class="status">Free &middot; Windows &amp; macOS</span>
   <h1>Your creative home.</h1>
   <p class="sub">Sign in once and every Amanorsac app you own is there: installed, updated and opened from one window, with your license keys, your devices and your purchases beside them.</p>
-  <div class="cta-row" id="download">
-    <a class="cta" id="primary-dl" href="/download/hub/windows" download>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>
-      <span id="primary-label">Download for Windows</span></a>
-    <a class="cta ghost" href="#what">See what it does</a>
-  </div>
-  <p class="fine" id="primary-note">Free &middot; 111 MB &middot; Version 1.1.0</p>
-  <p class="other" id="other-os"></p>
+  <!-- assets/hub-download.js fills this from catalog.json: the button for
+       this visitor's platform, the other two beneath it, and a line that
+       opens the Hub if it is already installed. One widget, used here and
+       on the App Store page, so the two can never disagree. -->
+  <div class="center" id="download" data-hub-get></div>
 
   <div class="hero-shot">
     <img src="images/apps/hub-library.webp" width="1360" height="880"
@@ -280,31 +278,13 @@ footer a:hover{color:var(--text)}
 <section class="wrap" style="padding-top:0">
   <h2>Get the Hub</h2>
   <p class="lede">Free, and signed &mdash; the Mac build is notarised by Apple, so it opens without a warning.</p>
-
-  <div class="downloads">
-    <div class="dl-row">
-      <span class="who"><strong>Windows 10 and 11</strong><small>64-bit &middot; installer &middot; 111 MB</small></span>
-      <a class="cta" href="/download/hub/windows" download>Download</a>
-    </div>
-    <div class="dl-row">
-      <span class="who"><strong>Windows, portable</strong><small>64-bit &middot; runs without installing &middot; 111 MB</small></span>
-      <a class="cta ghost" href="/download/hub/windows-portable" download>Download</a>
-    </div>
-    <div class="dl-row">
-      <span class="who"><strong>macOS, Apple Silicon</strong><small>M1 and later &middot; disk image &middot; 128 MB</small></span>
-      <a class="cta" href="/download/hub/mac-arm64" download>Download</a>
-    </div>
-    <div class="dl-row">
-      <span class="who"><strong>macOS, Intel</strong><small>Intel Macs &middot; disk image &middot; 135 MB</small></span>
-      <a class="cta ghost" href="/download/hub/mac-intel" download>Download</a>
-    </div>
-  </div>
+  <div data-hub-get style="margin:34px 0 0"></div>
 
   <dl class="req">
     <div><dt>Windows</dt><dd>Windows 10 or 11, 64-bit</dd></div>
     <div><dt>macOS</dt><dd>macOS 11 Big Sur or later</dd></div>
     <div><dt>Account</dt><dd>A free amanorsac.studio account</dd></div>
-    <div><dt>Version</dt><dd>1.1.0 &middot; signed &amp; notarised</dd></div>
+    <div><dt>Release</dt><dd>Signed &amp; notarised &middot; free</dd></div>
   </dl>
 </section>
 
@@ -316,43 +296,11 @@ footer a:hover{color:var(--text)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/site-auth.js"></script>
 <script src="assets/track.js"></script>
+<script src="assets/hub-download.js"></script>
 <script>
-/* The button names the machine it is being read on. Everything else stays
-   in the table below, because a guess is only ever a default: someone on
-   a Mac downloading for the Windows box in the studio is a normal thing
-   to want. */
-(function () {
-  var p = navigator.platform || '';
-  var ua = navigator.userAgent || '';
-  var isMac = /Mac/i.test(p) || /Mac OS X/i.test(ua);
-  if (!isMac) return;
-
-  /* Apple Silicon does not announce itself in the user agent - every Mac
-     says "Intel Mac OS X" - so ask WebGL what the GPU is. An Apple GPU
-     means Apple Silicon. If anything here is unavailable, the safer of
-     the two is Intel: it runs on both, through Rosetta. */
-  var arm = false;
-  try {
-    var gl = document.createElement('canvas').getContext('webgl');
-    var dbg = gl && gl.getExtension('WEBGL_debug_renderer_info');
-    var r = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '';
-    arm = /Apple\s*(M\d|GPU)/i.test(String(r));
-  } catch (e) {}
-
-  var link = document.getElementById('primary-dl');
-  link.setAttribute('href', arm ? '/download/hub/mac-arm64' : '/download/hub/mac-intel');
-  document.getElementById('primary-label').textContent =
-    arm ? 'Download for Mac (Apple Silicon)' : 'Download for Mac (Intel)';
-  document.getElementById('primary-note').textContent =
-    'Free \u00b7 ' + (arm ? '128 MB' : '135 MB') + ' \u00b7 Version 1.1.0 \u00b7 Signed and notarised';
-  document.getElementById('other-os').innerHTML =
-    'On the other Mac, or on Windows? <a href="#download">Every download is below.</a>';
-})();
-
-document.querySelectorAll('a[href^="/download/hub/"]').forEach(function (a) {
-  a.addEventListener('click', function () {
-    if (window.track) window.track('download_requested', 'hub / ' + a.getAttribute('href').split('/').pop());
-  });
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[href^="/download/hub/"]');
+  if (a && window.track) window.track('download_requested', 'hub / ' + a.getAttribute('href').split('/').pop());
 });
 </script>
 </body>

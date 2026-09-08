@@ -18,14 +18,50 @@ const SITE = 'https://amanorsac.studio';
 const isMac = process.platform === 'darwin';
 const isWin = process.platform === 'win32';
 
+/* The website links to amanorsac://install/<app> ("already have the Hub?
+   Open it there") - see docs/hub-integration.md §7. Registering the
+   scheme is what makes that link do anything; nothing breaks when it is
+   not registered, the person just uses the download button instead. */
+const PROTOCOL = 'amanorsac';
+if (process.defaultApp) {
+  // running from source: the argv dance is what tells Windows which
+  // executable and script to hand the link to
+  if (process.argv.length >= 2) {
+    app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, [path.resolve(process.argv[1])]);
+  }
+} else {
+  app.setAsDefaultProtocolClient(PROTOCOL);
+}
+
+/* Where a link waits until the page is up to receive it. */
+let pendingDeepLink = null;
+function handleDeepLink(url) {
+  if (!url || url.indexOf(PROTOCOL + '://') !== 0) return;
+  const rest = url.slice((PROTOCOL + '://').length).replace(/\/+$/, '');
+  const m = rest.match(/^install\/(.+)$/);
+  const payload = m ? { action: 'install', app: decodeURIComponent(m[1]).toLowerCase() } : { action: 'open' };
+  const win = BrowserWindow.getAllWindows()[0];
+  if (!win) { pendingDeepLink = payload; return; }
+  if (win.isMinimized()) win.restore();
+  win.show();
+  win.focus();
+  win.webContents.send('hub:deep-link', payload);
+}
+
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on('second-instance', () => {
+  // Windows and Linux deliver the link as an argument to the second launch
+  app.on('second-instance', (event, argv) => {
     const win = BrowserWindow.getAllWindows()[0];
     if (win) { if (win.isMinimized()) win.restore(); win.focus(); }
+    const link = argv.find((a) => a.startsWith(PROTOCOL + '://'));
+    if (link) handleDeepLink(link);
   });
 }
+
+// macOS delivers it as an event, which can arrive before the window exists
+app.on('open-url', (event, url) => { event.preventDefault(); handleDeepLink(url); });
 
 nativeTheme.themeSource = 'dark';
 
@@ -46,6 +82,10 @@ function createWindow() {
   });
   mainWindow.loadFile(path.join(__dirname, 'app', 'index.html'));
   mainWindow.once('ready-to-show', () => mainWindow.show());
+  // a link that arrived before there was a window to send it to
+  mainWindow.webContents.once('did-finish-load', () => {
+    if (pendingDeepLink) { mainWindow.webContents.send('hub:deep-link', pendingDeepLink); pendingDeepLink = null; }
+  });
   mainWindow.on('closed', () => { mainWindow = null; });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -411,6 +451,9 @@ ipcMain.handle('hub:confirm', async (event, { title, message, ok }) => {
 app.whenReady().then(() => {
   buildMenu();
   createWindow();
+  // a cold start from the link itself, on Windows and Linux
+  const link = process.argv.find((a) => a.startsWith(PROTOCOL + '://'));
+  if (link) handleDeepLink(link);
   app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
 app.on('window-all-closed', () => { if (!isMac) app.quit(); });
