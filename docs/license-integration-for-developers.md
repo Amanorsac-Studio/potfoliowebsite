@@ -138,7 +138,9 @@ algorithm above.
 ## 6. Reusing SecondOut's client — what to change
 
 `LicenseClient.h` / `LicenseCrypto.h` implement §2–§5 completely.
-For a new product change only:
+Ask the studio for both files if you don't have SecondOut's source; they
+are plain JUCE/C++ with no other dependencies. For a new product change
+only:
 
 | Constant / place                    | SecondOut value                    | New product                          |
 |-------------------------------------|------------------------------------|--------------------------------------|
