@@ -129,16 +129,29 @@ jobs:
           echo "CSC_NAME=$IDENTITY" >> "$GITHUB_ENV"
           echo "CSC_KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
 
+      # CSC_LINK must be absent, not empty: electron-builder reads a defined
+      # but empty CSC_LINK as a path and fails with "<project dir> not a file".
+      - name: Set up the Windows signing certificate
+        if: matrix.name == 'Windows'
+        shell: bash
+        env:
+          WIN_PFX: ${{ secrets.WIN_CERT_PFX }}
+          WIN_PASSWORD: ${{ secrets.WIN_CERT_PASSWORD }}
+        run: |
+          if [ -z "$WIN_PFX" ]; then
+            echo "No WIN_CERT_PFX secret: this will be an unsigned build."
+            exit 0
+          fi
+          echo "CSC_LINK=$WIN_PFX" >> "$GITHUB_ENV"
+          echo "CSC_KEY_PASSWORD=$WIN_PASSWORD" >> "$GITHUB_ENV"
+
       - name: Build installers
         run: npm run ${{ matrix.script }} -- --publish never
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS signs from the keychain set up above (CSC_NAME and
-          # CSC_KEYCHAIN are in the environment by then), so CSC_LINK is
-          # only ever the Windows certificate. Empty means unsigned, which
-          # is a plain build, never a failed one.
-          CSC_LINK: ${{ matrix.name == 'Windows' && secrets.WIN_CERT_PFX || '' }}
-          CSC_KEY_PASSWORD: ${{ matrix.name == 'Windows' && secrets.WIN_CERT_PASSWORD || '' }}
+          # Each platform's certificate reached the environment in the step
+          # above (macOS: CSC_NAME and CSC_KEYCHAIN; Windows: CSC_LINK and
+          # CSC_KEY_PASSWORD), and only when there is one to use.
           CSC_IDENTITY_AUTO_DISCOVERY: ${{ (matrix.name == 'macOS' && env.MAC_SIGNED == 'true') && 'true' || 'false' }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
