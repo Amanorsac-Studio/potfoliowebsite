@@ -36,10 +36,10 @@
       "name": "SecondOut", "vendor": "Aquarii Audio", "kind": "plugin", "status": "available",
       "tagline": "One master bus. Two independent outputs.",
       "icon": "images/apps/secondout-icon.png", "page": "secondout.html", "color": "#3fe083",
-      "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.0",
+      "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.1",
       "installers": {
-        "windows": { "key": "SecondOut-1.3.0-Setup.exe", "alt_keys": ["secondout/SecondOut-1.3.0-Setup.exe"],
-                     "as": "SecondOut-1.3.0-Setup.exe", "type": "application/octet-stream", "size": "5 MB" }
+        "windows": { "key": "SecondOut-1.3.1-Setup.exe", "alt_keys": ["secondout/SecondOut-1.3.1-Setup.exe"],
+                     "as": "SecondOut-1.3.1-Setup.exe", "type": "application/octet-stream", "size": "5 MB" }
       }
     },
     "pulseroom": {

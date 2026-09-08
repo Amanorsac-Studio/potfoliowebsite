@@ -153,7 +153,7 @@ the hourly timer, the atomic `isLicensed()` flag for the audio thread.
 
 ## 7. The UI must react to activation — a bug to not repeat
 
-SecondOut 1.3.0 shows "Activated." and then stays on the activation
+SecondOut 1.3.0 showed "Activated." and then stayed on the activation
 screen; the main interface never appears until the plugin is reopened.
 Cause: the editor decides which view to show once, when it is
 constructed, and nothing tells it to re-decide after `activate()`
