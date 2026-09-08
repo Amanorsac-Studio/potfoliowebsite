@@ -184,7 +184,7 @@ jobs:
             Amanorsac Hub desktop app.
 
             - **Windows**: `…-win-x64.exe` is the installer, `…-win-x64-portable.exe` runs without installing.
-            - **macOS**: `…-mac-arm64.dmg` for Apple Silicon, `…-mac-x64.dmg` for Intel. Unsigned: right-click the app and choose Open the first time.
+            - **macOS**: `…-mac-arm64.dmg` for Apple Silicon, `…-mac-x64.dmg` for Intel. Signed with Amanorsac Studio's Developer ID and notarised by Apple, so it opens normally.
           files: |
             hub/dist/*.dmg
             hub/dist/*.zip
