@@ -11,10 +11,11 @@
                                       account, coming straight back here
      signed in, does not own it   -> create-app-checkout hands back a
                                       Stripe Checkout URL to go to
-     signed in, already owns it   -> the same button becomes Download:
-                                      /api/app-download checks ownership
-                                      again with this session's token and
-                                      hands back a short-lived ticket
+     signed in, already owns it   -> the app is in their library, and
+                                      the Amanorsac Hub installs it. No
+                                      installer is handed over here: the
+                                      Hub asks /api/app-download itself,
+                                      with this account's token.
 
    This script never decides who owns what - has_app_access() on the
    database does, checked on load, again after returning from Stripe,
@@ -33,8 +34,6 @@
 
   var APP_NAMES = { secondout: 'SecondOut' };
   var PRICES = { secondout: 'Buy — $1' };
-  var PLATFORM = { secondout: 'windows' };
-  var DOWNLOAD_LABEL = { secondout: 'Download for Windows' };
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }
 
   function esc(s) {
@@ -60,11 +59,12 @@
       .catch(function () { return false; });
   }
 
-  var OWNED_NOTE = 'You own ' + esc(labelFor(app)) + '. Your license key is in ' +
-    '<a href="/my-apps.html">My Apps</a> — install, open the plugin, paste it in.';
+  var OWNED_NOTE = 'You own ' + esc(labelFor(app)) + '. Install it from the ' +
+    '<a href="/hub.html">Amanorsac Hub</a>, which also holds your license key, ' +
+    'your devices and this receipt.';
 
   function showOwned(thanks) {
-    setButtons(DOWNLOAD_LABEL[app] || 'Download', false, 'download');
+    setButtons('Install in the Hub', false, 'hub');
     say((thanks ? 'Thank you — you’re in. ' : '') + OWNED_NOTE);
   }
 
@@ -130,28 +130,6 @@
       });
   }
 
-  function startDownload(session) {
-    var label = DOWNLOAD_LABEL[app] || 'Download';
-    setButtons('Preparing…', true, 'download');
-    return fetch('/api/app-download', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-      body: JSON.stringify({ app: app, platform: PLATFORM[app] || 'windows' })
-    })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return r.ok && j.url ? j : Promise.reject(j); }); })
-      .then(function (j) {
-        setButtons(label, false, 'download');
-        say('Downloading ' + esc(j.file || labelFor(app)) + (j.version ? ' — version ' + esc(j.version) : '') +
-            '. ' + OWNED_NOTE);
-        if (window.track) window.track('download_requested', app + ' / ' + (PLATFORM[app] || 'windows'));
-        location.href = j.url;
-      })
-      .catch(function (j) {
-        setButtons(label, false, 'download');
-        say(esc((j && j.message) || 'Could not start the download. Try again in a moment.'), true);
-      });
-  }
-
   buttons.forEach(function (b) {
     b.addEventListener('click', function () {
       sb.auth.getSession().then(function (s) {
@@ -160,7 +138,7 @@
           location.href = '/client.html?next=' + encodeURIComponent(location.pathname);
           return;
         }
-        if (b.getAttribute('data-mode') === 'download') return startDownload(session);
+        if (b.getAttribute('data-mode') === 'hub') { location.href = '/hub.html'; return; }
         return startCheckout(session);
       });
     });

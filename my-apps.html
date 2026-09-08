@@ -19,9 +19,10 @@
 
      Nothing here decides who owns what. The list is what Row Level
      Security lets this account read from purchases, the free apps are
-     claimed through claim_license, a download goes through
-     /api/app-download which checks ownership again with this session's
-     token, and a device is removed through revoke_device.
+     claimed through claim_license, and a device is removed through
+     revoke_device. Installing is not done here: that is the Hub's job,
+     and the Hub asks /api/app-download with this same account's token,
+     which checks ownership again before a file is handed over.
      ===================================================================== -->
 
 <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -299,10 +300,11 @@ footer a:hover{color:var(--accent)}
           '<p class="since">'+(r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : '')+
             (forever ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
         '</div>'+
+        // Installing is the Hub's job. This page is the record: what you
+        // own, the keys, the devices, the receipts. One door, not two.
         (a.dl.length
-          ? '<div class="dlrow">'+ a.dl.map(([platform, label], i) =>
-              '<button class="btn '+(i ? 'ghost' : 'main')+' dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(label)+'</button>').join('')+
-              '<p class="dlnote"></p></div>'
+          ? '<div class="dlrow"><a class="btn main dl" href="hub.html">'+DL+'Install in the Hub</a>'+
+              '<p class="dlnote">Open the Amanorsac Hub and it is in your library, ready to install.</p></div>'
           : '')+
         (a.licensed
           ? '<p class="section">License key <b>paste it into the app when it asks</b></p>'+
@@ -321,7 +323,6 @@ footer a:hover{color:var(--accent)}
       '</article>';
     }).join('') + moreCard();
 
-    shelf.querySelectorAll('.dl').forEach(b => b.addEventListener('click', () => download(b)));
     shelf.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
       try { await navigator.clipboard.writeText(b.dataset.key); b.textContent = 'Copied'; b.classList.add('done'); }
       catch(e) { b.textContent = b.dataset.key; }
@@ -340,35 +341,6 @@ footer a:hover{color:var(--accent)}
       '<a href="hub.html">Get the Hub →</a></div>'+
       '<div class="more"><div><b>Looking for something new?</b>PerformLive and HarmonieMD are on the way.</div>'+
       '<a href="apps.html">Browse the App Store →</a></div>';
-  }
-
-  /* Ownership is checked again on the Worker with this session's token;
-     the button is a request, not a permission. */
-  async function download(btn){
-    const noteEl = btn.closest('.dlrow').querySelector('.dlnote');
-    const label = btn.innerHTML;
-    btn.disabled = true; btn.textContent = 'Preparing…';
-    noteEl.textContent = ''; noteEl.className = 'dlnote';
-    try {
-      const r = await fetch('/api/app-download', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-        body: JSON.stringify({ app: btn.dataset.app, platform: btn.dataset.platform })
-      });
-      const j = await r.json().catch(() => ({}));
-      if(!r.ok || !j.url){
-        noteEl.textContent = j.message || 'Could not start the download. Try again in a moment.';
-        noteEl.className = 'dlnote err';
-      } else {
-        noteEl.textContent = 'Downloading ' + (j.file || '') + (j.version ? ' — version ' + j.version : '') + '. If nothing happens, click again.';
-        if(window.track) window.track('download_requested', btn.dataset.app + ' / ' + btn.dataset.platform);
-        location.href = j.url;
-      }
-    } catch(e) {
-      noteEl.textContent = 'Could not reach the studio. Check your connection and try again.';
-      noteEl.className = 'dlnote err';
-    }
-    btn.disabled = false; btn.innerHTML = label;
   }
 
   load();
