@@ -126,7 +126,10 @@ jobs:
           fi
           echo "Signing identity: $IDENTITY"
           echo "MAC_SIGNED=true" >> "$GITHUB_ENV"
-          echo "CSC_NAME=$IDENTITY" >> "$GITHUB_ENV"
+          # electron-builder refuses a CSC_NAME carrying the type prefix
+          # ("Please remove prefix \"Developer ID Application:\"") - it adds
+          # that itself when it looks the certificate up.
+          echo "CSC_NAME=${IDENTITY#Developer ID Application: }" >> "$GITHUB_ENV"
           echo "CSC_KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
 
       # CSC_LINK must be absent, not empty: electron-builder reads a defined
