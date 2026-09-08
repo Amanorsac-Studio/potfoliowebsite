@@ -14,7 +14,11 @@
     "fetched server-side only if R2 has no such object).",
     "",
     "direct_download_fallback: true keeps a plain 'download the installer' link inside My Apps for",
-    "signed-in owners, under 'Trouble with the Hub?'. Set false once the Hub is the only door."
+    "signed-in owners, under 'Trouble with the Hub?'. Set false once the Hub is the only door.",
+    "",
+    "The Hub's alt_keys are the names the first release was uploaded under, before the stable",
+    "hub/AmanorsacHub-* names existed. They are tried after `key`, so re-uploading under the",
+    "stable name is enough to retire them - no link on the site ever changes."
   ],
 
   "hub": {
@@ -23,9 +27,9 @@
     "protocol": "amanorsac",
     "tagline": "Install, activate and update every Amanorsac app from one place.",
     "installers": {
-      "windows":   { "key": "hub/AmanorsacHub-Setup.exe",     "as": "Amanorsac Hub Setup.exe",           "type": "application/octet-stream",      "label": "Windows 10/11",      "size": "106 MB" },
-      "mac-arm64": { "key": "hub/AmanorsacHub-mac-arm64.dmg", "as": "Amanorsac Hub (Apple silicon).dmg", "type": "application/x-apple-diskimage", "label": "Mac · Apple silicon", "size": "123 MB" },
-      "mac-x64":   { "key": "hub/AmanorsacHub-mac-x64.dmg",   "as": "Amanorsac Hub (Intel).dmg",         "type": "application/x-apple-diskimage", "label": "Mac · Intel",         "size": "126 MB" }
+      "windows":   { "key": "hub/AmanorsacHub-Setup.exe",     "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64.exe", "AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64_2.exe"], "as": "Amanorsac Hub Setup.exe",           "type": "application/octet-stream",      "label": "Windows 10/11",      "size": "111 MB" },
+      "mac-arm64": { "key": "hub/AmanorsacHub-mac-arm64.dmg", "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-arm64.dmg"], "as": "Amanorsac Hub (Apple silicon).dmg", "type": "application/x-apple-diskimage", "label": "Mac · Apple silicon", "size": "128 MB" },
+      "mac-x64":   { "key": "hub/AmanorsacHub-mac-x64.dmg",   "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-x64.dmg"], "as": "Amanorsac Hub (Intel).dmg",         "type": "application/x-apple-diskimage", "label": "Mac · Intel",         "size": "135 MB" }
     }
   },
 

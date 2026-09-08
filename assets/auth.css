@@ -128,6 +128,27 @@ body.authpage{margin:0;min-height:100dvh;display:block;overflow-x:clip}
 .strength[data-s="3"] i:nth-child(-n+3){background:var(--ok)}
 .strength[data-s="4"] i{background:var(--ok)}
 .hint{font-size:12.5px;color:var(--muted);margin:0}
+/* ---------- the new-apps opt-in ----------
+   A panel rather than a line of small print, because it is an offer and
+   not a disclaimer, and because a tick box hidden under a button is a
+   tick box nobody reads. Unticked on purpose: consent that was assumed
+   is not consent, and a list of people who chose to be on it is worth
+   more than a bigger one that did not. */
+.optin{display:flex;gap:13px;align-items:flex-start;margin:18px 0 6px;padding:15px 16px;
+  border:1px solid var(--line);border-radius:12px;background:var(--surface-2);
+  cursor:pointer;transition:border-color .2s,background .2s;
+  /* portal.css dresses every label as a mono, uppercase field caption.
+     This one is a sentence, so it says so - and says it again on the
+     children, which would otherwise inherit the shouting. */
+  font-family:var(--body);text-transform:none;letter-spacing:normal}
+.optin *{font-family:var(--body);text-transform:none;letter-spacing:normal}
+.optin:hover{border-color:var(--accent);background:var(--accent-soft)}
+.optin:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.optin input{margin:2px 0 0;width:19px;height:19px;flex:0 0 auto;cursor:pointer;accent-color:var(--accent)}
+.optin b{display:block;font-size:13.5px;font-weight:600;color:var(--ink);margin:0 0 4px;letter-spacing:-.005em}
+.optin span{display:block;font-size:12.5px;line-height:1.6;color:var(--muted)}
+.optin em{font-style:normal;color:var(--ink)}
+
 
 .go{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;height:50px;
   margin-top:6px;border:0;border-radius:11px;background:var(--ink);color:var(--bg);cursor:pointer;

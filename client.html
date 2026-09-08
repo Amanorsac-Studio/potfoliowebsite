@@ -113,10 +113,17 @@
           <div class="pw"><input id="su-pw" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required>
             <button type="button" class="eye" data-eye="su-pw" aria-label="Show password" aria-pressed="false"></button></div>
           <div class="strength" id="strength" data-s="0" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>
+        <label class="optin" for="su-news">
+          <input id="su-news" type="checkbox">
+          <span><b>Tell me first when a new app is ready.</b>
+            PerformLive, HarmonieMD and whatever comes after them — you hear the day
+            it works, with the download in your hand, before it reaches the store page.
+            <em>A few emails a year, written by me.</em> One click stops them for good.</span>
+        </label>
         <button class="go" id="su-go" type="submit"><span class="spin" aria-hidden="true"></span><span>Create account</span>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <p class="note" id="su-m" role="status" aria-live="polite" hidden></p>
-        <p class="hint">By creating an account you agree to hear from the studio about the apps you own — release notes and nothing else.</p>
+        <p class="hint">Either way you'll get release notes for the apps you own — that is what the account is for.</p>
       </form>
 
       <!-- replaces the signup form once the confirmation link is away -->
@@ -337,6 +344,19 @@ $('#signup-f').addEventListener('submit', async e => {
         showSignIn(); $('#email').value = email; $('#pw').focus();
       });
   }
+  /* Ticked, and only ticked: record_subscriber is the one door into the
+     mailing list, it writes and never reads, and it stamps the date the
+     consent was given. Unticked, nothing is written at all - not a row
+     marked "no", which would still be a list of people who said no.
+     Never allowed to break the signup: the account is made either way. */
+  if($('#su-news').checked){
+    try {
+      await sb.rpc('record_subscriber', {
+        p_email: email, p_app: null, p_source: 'account signup', p_consent: true
+      });
+    } catch(err) { /* the account matters; the list can wait */ }
+  }
+
   // A project with "confirm your email" turned on hands back a user
   // but no session; one with it off signs them straight in.
   if(data.session){ goHome(); return; }

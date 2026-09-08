@@ -1,0 +1,192 @@
+# Builds the Amanorsac Hub desktop app (hub/) for Windows and macOS.
+#
+#   - every push that touches hub/ (and manual runs) builds both and
+#     tries to keep the installers as workflow artifacts for 30 days
+#     (best effort: artifacts count against the account's Actions
+#     storage quota, and a full quota must not fail the build)
+#   - pushing a tag like hub-v1.0.0 publishes them as assets on a
+#     GitHub Release of the same name. Release assets do not count
+#     against the Actions storage quota.
+#
+# macOS signing and notarisation switch on by themselves once these
+# repository secrets exist (see hub/README.md, "Signing the Mac app"):
+#   MAC_CERT_P12        base64 of the Developer ID Application .p12
+#   MAC_CERT_PASSWORD   the password that .p12 was exported with
+#   APPLE_ID            the Apple ID of the developer account
+#   APPLE_APP_PASSWORD  an app-specific password for that Apple ID
+#   APPLE_TEAM_ID       the 10-character team id
+# Without them the build is unsigned: right-click the app > Open, or
+#   xattr -dr com.apple.quarantine "/Applications/Amanorsac Hub.app"
+# Windows signing: CSC_LINK / CSC_KEY_PASSWORD, same as electron-builder documents.
+
+name: Hub desktop app
+
+on:
+  push:
+    branches: ["**"]
+    paths:
+      - "hub/**"
+      - ".github/workflows/hub-desktop.yml"
+    tags:
+      - "hub-v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Also publish a GitHub Release with this tag (e.g. hub-v1.0.0). Leave empty to only build."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    working-directory: hub
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macOS
+            script: build:mac
+          - os: windows-latest
+            name: Windows
+            script: build:win
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: hub/package-lock.json
+
+      - run: npm ci
+
+      # electron-builder reports a wrong certificate password as an opaque
+      # "SecKeychainUnlock" failure deep in the build. This says it plainly,
+      # before three minutes of packaging have been spent. (The secrets
+      # context is not allowed in an `if:`, so the check is in the script.)
+      # The certificate goes into a keychain we make ourselves rather than
+      # the temporary one electron-builder creates from CSC_LINK. On the
+      # macOS 26 runners that one fails to unlock ("SecKeychainUnlock: The
+      # user name or passphrase you entered is not correct") because macOS
+      # stores a keychain named foo.keychain as foo.keychain-db, and the
+      # later security calls no longer find it under the name they used.
+      # Importing it here also means a bad certificate is reported in
+      # seconds rather than minutes into packaging.
+      - name: Set up the signing keychain
+        if: matrix.name == 'macOS'
+        env:
+          CERT_P12: ${{ secrets.MAC_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+        run: |
+          if [ -z "$CERT_P12" ]; then
+            echo "No MAC_CERT_P12 secret: this will be an unsigned build."
+            echo "MAC_SIGNED=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          P12="$RUNNER_TEMP/cert.p12"
+          KEYCHAIN="$RUNNER_TEMP/amanorsac-signing.keychain-db"
+          KEYCHAIN_PASSWORD="$(openssl rand -base64 24)"
+
+          printf %s "$CERT_P12" | base64 --decode > "$P12" || {
+            echo "::error::MAC_CERT_P12 is not valid base64. Re-copy the whole contents of cert.b64."
+            exit 1
+          }
+          if ! openssl pkcs12 -in "$P12" -nokeys -passin env:CERT_PASSWORD -legacy > /dev/null 2>"$RUNNER_TEMP/cert.err" \
+             && ! openssl pkcs12 -in "$P12" -nokeys -passin env:CERT_PASSWORD > /dev/null 2>"$RUNNER_TEMP/cert.err"; then
+            echo "::error::MAC_CERT_PASSWORD does not open MAC_CERT_P12. They must be a matching pair: the password given to 'openssl pkcs12 -export', and the base64 of that exact .p12 file."
+            head -3 "$RUNNER_TEMP/cert.err"
+            exit 1
+          fi
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$P12" -k "$KEYCHAIN" -P "$CERT_PASSWORD" -f pkcs12 \
+            -T /usr/bin/codesign -T /usr/bin/security -T /usr/bin/productbuild
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s \
+            -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN" > /dev/null
+          # keep the runner's own keychains searchable alongside this one
+          security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d \" | xargs)
+          rm -f "$P12"
+
+          IDENTITY="$(security find-identity -v -p codesigning "$KEYCHAIN" | sed -n 's/.*"\(Developer ID Application:.*\)"/\1/p' | head -1)"
+          if [ -z "$IDENTITY" ]; then
+            echo "::error::No usable Developer ID Application identity after import - the .p12 is probably missing its private key. Re-export it with 'openssl pkcs12 -export -inkey key.pem -in cert.pem'."
+            security find-identity -v "$KEYCHAIN"
+            exit 1
+          fi
+          echo "Signing identity: $IDENTITY"
+          echo "MAC_SIGNED=true" >> "$GITHUB_ENV"
+          # electron-builder refuses a CSC_NAME carrying the type prefix
+          # ("Please remove prefix \"Developer ID Application:\"") - it adds
+          # that itself when it looks the certificate up.
+          echo "CSC_NAME=${IDENTITY#Developer ID Application: }" >> "$GITHUB_ENV"
+          echo "CSC_KEYCHAIN=$KEYCHAIN" >> "$GITHUB_ENV"
+
+      # CSC_LINK must be absent, not empty: electron-builder reads a defined
+      # but empty CSC_LINK as a path and fails with "<project dir> not a file".
+      - name: Set up the Windows signing certificate
+        if: matrix.name == 'Windows'
+        shell: bash
+        env:
+          WIN_PFX: ${{ secrets.WIN_CERT_PFX }}
+          WIN_PASSWORD: ${{ secrets.WIN_CERT_PASSWORD }}
+        run: |
+          if [ -z "$WIN_PFX" ]; then
+            echo "No WIN_CERT_PFX secret: this will be an unsigned build."
+            exit 0
+          fi
+          echo "CSC_LINK=$WIN_PFX" >> "$GITHUB_ENV"
+          echo "CSC_KEY_PASSWORD=$WIN_PASSWORD" >> "$GITHUB_ENV"
+
+      - name: Build installers
+        run: npm run ${{ matrix.script }} -- --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Each platform's certificate reached the environment in the step
+          # above (macOS: CSC_NAME and CSC_KEYCHAIN; Windows: CSC_LINK and
+          # CSC_KEY_PASSWORD), and only when there is one to use.
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ (matrix.name == 'macOS' && env.MAC_SIGNED == 'true') && 'true' || 'false' }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Keep installers
+        uses: actions/upload-artifact@v4
+        continue-on-error: true
+        with:
+          name: amanorsac-hub-${{ matrix.name }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            hub/dist/*.dmg
+            hub/dist/*.zip
+            hub/dist/*.exe
+            hub/dist/*.blockmap
+
+      - name: Publish on the GitHub Release
+        if: startsWith(github.ref, 'refs/tags/hub-v') || inputs.release_tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag || github.ref_name }}
+          target_commitish: ${{ github.sha }}
+          name: Amanorsac Hub ${{ inputs.release_tag || github.ref_name }}
+          body: |
+            Amanorsac Hub desktop app.
+
+            - **Windows**: `…-win-x64.exe` is the installer, `…-win-x64-portable.exe` runs without installing.
+            - **macOS**: `…-mac-arm64.dmg` for Apple Silicon, `…-mac-x64.dmg` for Intel. Signed with Amanorsac Studio's Developer ID and notarised by Apple, so it opens normally.
+          files: |
+            hub/dist/*.dmg
+            hub/dist/*.zip
+            hub/dist/*.exe
+            hub/dist/*.blockmap
