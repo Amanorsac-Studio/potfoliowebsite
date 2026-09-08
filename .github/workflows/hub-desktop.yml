@@ -70,20 +70,31 @@ jobs:
 
       # electron-builder reports a wrong certificate password as an opaque
       # "SecKeychainUnlock" failure deep in the build. This says it plainly,
-      # before three minutes of packaging have been spent.
+      # before three minutes of packaging have been spent. (The secrets
+      # context is not allowed in an `if:`, so the check is in the script.)
       - name: Check the signing certificate
-        if: matrix.name == 'macOS' && secrets.MAC_CERT_P12 != ''
+        if: matrix.name == 'macOS'
+        env:
+          CERT_P12: ${{ secrets.MAC_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         run: |
-          echo "${{ secrets.MAC_CERT_P12 }}" | base64 --decode > /tmp/cert.p12
-          if ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin pass:"${{ secrets.MAC_CERT_PASSWORD }}" -legacy > /tmp/cert.txt 2>/tmp/cert.err \
-             && ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin pass:"${{ secrets.MAC_CERT_PASSWORD }}" > /tmp/cert.txt 2>/tmp/cert.err; then
-            echo "::error::MAC_CERT_PASSWORD does not open MAC_CERT_P12. Re-set both secrets: the password must be the one given to 'openssl pkcs12 -export', and MAC_CERT_P12 must be the base64 of that exact .p12 file."
+          if [ -z "$CERT_P12" ]; then
+            echo "No MAC_CERT_P12 secret: this will be an unsigned build."
+            exit 0
+          fi
+          printf %s "$CERT_P12" | base64 --decode > /tmp/cert.p12 || {
+            echo "::error::MAC_CERT_P12 is not valid base64. Re-copy the whole contents of cert.b64."
+            exit 1
+          }
+          if ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin env:CERT_PASSWORD -legacy > /tmp/cert.pem 2>/tmp/cert.err \
+             && ! openssl pkcs12 -in /tmp/cert.p12 -nokeys -passin env:CERT_PASSWORD > /tmp/cert.pem 2>/tmp/cert.err; then
+            echo "::error::MAC_CERT_PASSWORD does not open MAC_CERT_P12. Both secrets must be a matching pair: the password given to 'openssl pkcs12 -export', and the base64 of that exact .p12 file."
             head -3 /tmp/cert.err
             exit 1
           fi
-          echo "Certificate opens. Identity:"
-          openssl x509 -noout -subject -enddate < /tmp/cert.txt || true
-          rm -f /tmp/cert.p12 /tmp/cert.txt
+          echo "Certificate opens:"
+          openssl x509 -noout -subject -enddate < /tmp/cert.pem
+          rm -f /tmp/cert.p12 /tmp/cert.pem
 
       - name: Build installers
         run: npm run ${{ matrix.script }} -- --publish never
