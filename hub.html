@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-6190327414594776">
+<title>Amanorsac Hub: your apps, keys and downloads in one place | Amanorsac App Store</title>
+<meta name="description" content="The free desktop companion to Amanorsac Studio. Sign in once and your apps install, update and open from one window - with your license keys, devices and purchases beside them. Windows and macOS.">
+<meta property="og:title" content="Your creative home.">
+<meta property="og:description" content="One account, one library, one place to install, update and open every Amanorsac app. Free for Windows and macOS.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/hub-library.png">
+<meta property="og:url" content="https://amanorsac.studio/hub.html">
+<link rel="canonical" href="https://amanorsac.studio/hub.html">
+<link rel="icon" href="images/apps/hub-icon.png" type="image/png">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   The Hub's own page. Same skeleton as the other product pages, wearing
+   the app's colours rather than an app-store accent: the graphite the
+   Hub itself is built from, and the amber it uses for anything you can
+   press.
+   ===================================================================== */
+:root{
+  --bg:#0D0E10; --panel:#141516; --panel-2:#1B1C1E; --line:#2B2C2F;
+  --text:#F1F1F2; --muted:#96999F; --accent:#EEAE61; --accent-soft:#2C251E;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:22px;
+  --ease:cubic-bezier(.23,1,.32,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;
+  padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+section{padding:clamp(64px,10vh,120px) 0}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 86%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;display:flex;align-items:center;gap:9px;
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name img{width:22px;height:22px;border-radius:6px}
+.top .name b{color:var(--accent);font-weight:700}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(56px,9vh,100px) 0 0;text-align:center}
+.hero .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
+  background:var(--accent-soft);border-radius:999px;padding:6px 13px;margin:0 0 22px}
+.hero h1{font-family:var(--display);font-weight:700;letter-spacing:-.035em;
+  font-size:clamp(38px,6.4vw,72px);line-height:1.02;margin:0 0 18px}
+.hero .sub{font-size:clamp(15px,1.5vw,19px);color:var(--muted);max-width:640px;margin:0 auto;line-height:1.6}
+.cta-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:32px 0 14px}
+.cta{display:inline-flex;align-items:center;gap:9px;text-decoration:none;font-weight:600;
+  font-size:15px;padding:14px 26px;border-radius:999px;background:var(--accent);color:#23190D;
+  border:1px solid var(--accent);transition:transform var(--dur) var(--ease),background var(--dur) var(--ease)}
+.cta:hover{background:#FAC081;transform:translateY(-2px)}
+.cta.ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.cta.ghost:hover{background:var(--panel-2);border-color:#45464B}
+.cta svg{width:17px;height:17px;flex:none}
+.fine{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:#71757C;margin:0}
+.fine a{color:var(--muted)}
+.other{font-size:13px;color:var(--muted);margin:14px 0 0}
+.other a{color:var(--accent);text-decoration:none}
+.other a:hover{text-decoration:underline}
+
+.hero-shot{margin:clamp(44px,6vw,72px) auto 0;max-width:1060px;border-radius:var(--r-lg);
+  overflow:hidden;border:1px solid var(--line);background:var(--panel);
+  box-shadow:0 40px 90px rgba(0,0,0,.6), 0 0 90px -50px var(--accent)}
+
+/* ---------- the three things it does ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-top:40px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px 24px}
+.card .ic{width:38px;height:38px;border-radius:11px;background:var(--accent-soft);
+  display:grid;place-items:center;margin:0 0 16px;color:var(--accent);font-size:18px}
+.card h3{font-family:var(--display);font-size:17px;font-weight:600;letter-spacing:-.01em;margin:0 0 8px}
+.card p{margin:0;font-size:14px;color:var(--muted);line-height:1.62}
+
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.03em;
+  font-size:clamp(26px,3.4vw,40px);line-height:1.14;margin:0 0 14px}
+.lede{font-size:clamp(15px,1.4vw,17.5px);color:var(--muted);max-width:660px;margin:0}
+
+/* ---------- keys and devices ---------- */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,4vw,56px);align-items:center;margin-top:44px}
+.split img{border-radius:var(--r);border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.split h3{font-family:var(--display);font-size:clamp(20px,2.2vw,27px);font-weight:700;
+  letter-spacing:-.02em;margin:0 0 12px}
+.split p{color:var(--muted);font-size:15px;margin:0 0 12px}
+.ticks{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:11px}
+.ticks li{display:flex;gap:11px;font-size:14.5px;color:var(--muted);line-height:1.5}
+.ticks li b{color:var(--text);font-weight:600}
+.ticks i{color:var(--accent);font-style:normal;flex:none}
+
+/* ---------- download table ---------- */
+.downloads{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(26px,3.4vw,42px);margin-top:40px}
+.dl-row{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:18px 0;
+  border-bottom:1px solid var(--line)}
+.dl-row:last-of-type{border-bottom:0;padding-bottom:0}
+.dl-row .who{flex:1;min-width:210px}
+.dl-row strong{display:block;font-size:15px;font-weight:600}
+.dl-row small{color:#71757C;font-size:12px;font-family:var(--mono);letter-spacing:.04em}
+.dl-row .cta{padding:11px 20px;font-size:14px}
+
+/* ---------- requirements ---------- */
+.req{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:34px}
+.req div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+.req dt{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:#71757C;margin:0 0 7px}
+.req dd{margin:0;font-size:14.5px}
+
+/* ---------- footer ---------- */
+footer{border-top:1px solid var(--line);padding:38px 0 46px;text-align:center}
+footer p{margin:0;color:#71757C;font-size:13px}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+
+@media (max-width:820px){ .split{grid-template-columns:1fr} }
+@media (prefers-reduced-motion:reduce){ *{transition:none!important;scroll-behavior:auto!important} }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Amanorsac Hub",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Windows 10, Windows 11, macOS 11 and later",
+  "url": "https://amanorsac.studio/hub.html",
+  "downloadUrl": "https://amanorsac.studio/hub.html#download",
+  "softwareVersion": "1.1.0",
+  "publisher": { "@type": "Organization", "name": "Amanorsac Studio" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+</head>
+<body data-app="hub">
+
+<div class="top">
+  <a class="back" href="apps.html">&larr; App Store</a>
+  <span class="name"><img src="images/apps/hub-icon.png" alt="">Amanorsac <b>Hub</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <span class="status">Free &middot; Windows &amp; macOS</span>
+  <h1>Your creative home.</h1>
+  <p class="sub">Sign in once and every Amanorsac app you own is there: installed, updated and opened from one window, with your license keys, your devices and your purchases beside them.</p>
+  <div class="cta-row" id="download">
+    <a class="cta" id="primary-dl" href="/download/hub/windows" download>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>
+      <span id="primary-label">Download for Windows</span></a>
+    <a class="cta ghost" href="#what">See what it does</a>
+  </div>
+  <p class="fine" id="primary-note">Free &middot; 111 MB &middot; Version 1.1.0</p>
+  <p class="other" id="other-os"></p>
+
+  <div class="hero-shot">
+    <img src="images/apps/hub-library.webp" width="1360" height="880"
+         alt="Amanorsac Hub open on My library: Nebula Tide featured, the app shelf below, and the sidebar showing Downloads, Updates, License keys, My devices and Purchases"
+         fetchpriority="high">
+  </div>
+</header>
+
+<section id="what" class="wrap">
+  <h2>One account. One library.</h2>
+  <p class="lede">The Hub is the same account you already use on this site. Whatever you buy or claim here is in the app the next time it syncs &mdash; and whatever you install there is on this computer, ready to open.</p>
+
+  <div class="grid">
+    <div class="card">
+      <span class="ic" aria-hidden="true">&#9662;</span>
+      <h3>Install and update</h3>
+      <p>Every app you own, with the current build and its size. One press downloads it, unpacks it and puts it where it belongs. When a newer build lands here, the Hub says so.</p>
+    </div>
+    <div class="card">
+      <span class="ic" aria-hidden="true">&#9919;</span>
+      <h3>Keys where you need them</h3>
+      <p>License keys are read from your account, not typed into a spreadsheet. Reveal one, copy it, paste it into the app that asked. Free apps say plainly that they need none.</p>
+    </div>
+    <div class="card">
+      <span class="ic" aria-hidden="true">&#9647;</span>
+      <h3>Your devices, your call</h3>
+      <p>See every computer a key is active on and when it was last seen. Remove one you no longer have and its slot is free again, immediately.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" style="padding-top:0">
+  <div class="split">
+    <div>
+      <h3>The paperwork, kept for you.</h3>
+      <p>Purchases and receipts are in the app: what you bought, when, for how much, and what the license covers. Nothing to dig out of an inbox.</p>
+      <ul class="ticks">
+        <li><i>&#10003;</i><span>Sign in with your <b>amanorsac.studio account</b> &mdash; the same one, no second password.</span></li>
+        <li><i>&#10003;</i><span><b>Free apps join your library</b> the first time you open the Hub.</span></li>
+        <li><i>&#10003;</i><span>Downloads are <b>verified against your account</b> before a file is handed over.</span></li>
+        <li><i>&#10003;</i><span>Upcoming apps are shown as <b>coming soon</b>, never as something to install.</span></li>
+      </ul>
+    </div>
+    <img src="images/apps/hub-licenses.webp" width="1360" height="880" loading="lazy"
+         alt="The License keys page in the Hub: SecondOut with its key hidden behind dots and a Reveal button, and the free apps listed as needing no key">
+  </div>
+</section>
+
+<section class="wrap" style="padding-top:0">
+  <h2>Get the Hub</h2>
+  <p class="lede">Free, and signed &mdash; the Mac build is notarised by Apple, so it opens without a warning.</p>
+
+  <div class="downloads">
+    <div class="dl-row">
+      <span class="who"><strong>Windows 10 and 11</strong><small>64-bit &middot; installer &middot; 111 MB</small></span>
+      <a class="cta" href="/download/hub/windows" download>Download</a>
+    </div>
+    <div class="dl-row">
+      <span class="who"><strong>Windows, portable</strong><small>64-bit &middot; runs without installing &middot; 111 MB</small></span>
+      <a class="cta ghost" href="/download/hub/windows-portable" download>Download</a>
+    </div>
+    <div class="dl-row">
+      <span class="who"><strong>macOS, Apple Silicon</strong><small>M1 and later &middot; disk image &middot; 128 MB</small></span>
+      <a class="cta" href="/download/hub/mac-arm64" download>Download</a>
+    </div>
+    <div class="dl-row">
+      <span class="who"><strong>macOS, Intel</strong><small>Intel Macs &middot; disk image &middot; 135 MB</small></span>
+      <a class="cta ghost" href="/download/hub/mac-intel" download>Download</a>
+    </div>
+  </div>
+
+  <dl class="req">
+    <div><dt>Windows</dt><dd>Windows 10 or 11, 64-bit</dd></div>
+    <div><dt>macOS</dt><dd>macOS 11 Big Sur or later</dd></div>
+    <div><dt>Account</dt><dd>A free amanorsac.studio account</dd></div>
+    <div><dt>Version</dt><dd>1.1.0 &middot; signed &amp; notarised</dd></div>
+  </dl>
+</section>
+
+<footer>
+  <p><a href="apps.html">App Store</a> &nbsp;&middot;&nbsp; <a href="/my-apps.html">My Apps</a> &nbsp;&middot;&nbsp; <a href="about.html#contact">Help &amp; support</a></p>
+  <p style="margin-top:12px">&copy; Amanorsac Studio</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/site-auth.js"></script>
+<script src="assets/track.js"></script>
+<script>
+/* The button names the machine it is being read on. Everything else stays
+   in the table below, because a guess is only ever a default: someone on
+   a Mac downloading for the Windows box in the studio is a normal thing
+   to want. */
+(function () {
+  var p = navigator.platform || '';
+  var ua = navigator.userAgent || '';
+  var isMac = /Mac/i.test(p) || /Mac OS X/i.test(ua);
+  if (!isMac) return;
+
+  /* Apple Silicon does not announce itself in the user agent - every Mac
+     says "Intel Mac OS X" - so ask WebGL what the GPU is. An Apple GPU
+     means Apple Silicon. If anything here is unavailable, the safer of
+     the two is Intel: it runs on both, through Rosetta. */
+  var arm = false;
+  try {
+    var gl = document.createElement('canvas').getContext('webgl');
+    var dbg = gl && gl.getExtension('WEBGL_debug_renderer_info');
+    var r = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : '';
+    arm = /Apple\s*(M\d|GPU)/i.test(String(r));
+  } catch (e) {}
+
+  var link = document.getElementById('primary-dl');
+  link.setAttribute('href', arm ? '/download/hub/mac-arm64' : '/download/hub/mac-intel');
+  document.getElementById('primary-label').textContent =
+    arm ? 'Download for Mac (Apple Silicon)' : 'Download for Mac (Intel)';
+  document.getElementById('primary-note').textContent =
+    'Free \u00b7 ' + (arm ? '128 MB' : '135 MB') + ' \u00b7 Version 1.1.0 \u00b7 Signed and notarised';
+  document.getElementById('other-os').innerHTML =
+    'On the other Mac, or on Windows? <a href="#download">Every download is below.</a>';
+})();
+
+document.querySelectorAll('a[href^="/download/hub/"]').forEach(function (a) {
+  a.addEventListener('click', function () {
+    if (window.track) window.track('download_requested', 'hub / ' + a.getAttribute('href').split('/').pop());
+  });
+});
+</script>
+</body>
+</html>

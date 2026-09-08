@@ -196,6 +196,34 @@ const INSTALLERS = {
   'nebulatide:mac':    { keys: ['nebulatide/NebulaTide-macOS.zip', 'NebulaTide-macOS.zip'],
                          as: 'NebulaTide-macOS.zip',   title: 'Nebula Tide for Mac',
                          dropbox: 'https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0' },
+  /* The desktop Hub itself (hub/ in this repository). `open` means no
+     ticket and no email gate: this is the launcher every other download
+     is reached through, and putting a form in front of it would be a
+     door in front of the door. Signed with the studio's Developer ID and
+     notarised, so macOS opens it without a warning.
+
+     Several keys each because the bucket folder is "AMANORSAC HUB" and a
+     browser that already had a file of the same name in Downloads
+     appends _2 - both names are looked for rather than depending on
+     which one happened to be uploaded. */
+  'hub:windows':   { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64.exe',
+                            'AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64_2.exe',
+                            'hub/Amanorsac.Hub-1.1.0-win-x64.exe'],
+                     as: 'Amanorsac Hub Setup.exe', title: 'Amanorsac Hub for Windows',
+                     version: '1.1.0', type: 'application/octet-stream', open: true },
+  'hub:windows-portable': { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64-portable.exe',
+                            'hub/Amanorsac.Hub-1.1.0-win-x64-portable.exe'],
+                     as: 'Amanorsac Hub Portable.exe', title: 'Amanorsac Hub for Windows (portable)',
+                     version: '1.1.0', type: 'application/octet-stream', open: true },
+  'hub:mac-arm64': { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-arm64.dmg',
+                            'hub/Amanorsac.Hub-1.1.0-mac-arm64.dmg'],
+                     as: 'Amanorsac Hub (Apple Silicon).dmg', title: 'Amanorsac Hub for Mac, Apple Silicon',
+                     version: '1.1.0', type: 'application/x-apple-diskimage', open: true },
+  'hub:mac-intel': { keys: ['AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-x64.dmg',
+                            'hub/Amanorsac.Hub-1.1.0-mac-x64.dmg'],
+                     as: 'Amanorsac Hub (Intel).dmg', title: 'Amanorsac Hub for Mac, Intel',
+                     version: '1.1.0', type: 'application/x-apple-diskimage', open: true },
+
   /* The one paid app. `paid` closes the email gate to it - the only door
      is /api/app-download, which asks the database whether the signed-in
      account owns it. A new release means uploading the new installer to
@@ -259,7 +287,7 @@ function hubCatalog() {
 /* Plain names for the review-invite email, decoupled from the
    platform-specific installer titles above ("Nebula Tide for Windows"
    reads wrong in "how's Nebula Tide for Windows working out?"). */
-const APP_TITLES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide', secondout: 'SecondOut' };
+const APP_TITLES = { pulseroom: 'PulseRoom', nebulatide: 'Nebula Tide', secondout: 'SecondOut', hub: 'Amanorsac Hub' };
 
 /* The only apps whose review form requires the signed link from the
    invite email. Add an app here once it has a real download history to
@@ -342,6 +370,8 @@ async function handoutDownload(request, env) {
   if (!item) return say({ error: 'No such download.' }, 404);
   // An email address is not a receipt. Bought apps go through appDownload.
   if (item.paid) return say({ error: 'This app is bought, not emailed - sign in to download it.' }, 403);
+  // An open download has no gate to stand in front of.
+  if (item.open) return say({ error: 'This one downloads directly - no email needed.' }, 400);
 
   /* Recorded now, but not yet confirmed. An address that never gets
      clicked stays in the list marked unconfirmed and is never written
@@ -543,12 +573,17 @@ async function serveInstaller(app, platform, url, env, request) {
   const item = INSTALLERS[app + ':' + platform];
   if (!item || !env.DOWNLOADS || !env.DOWNLOAD_SECRET) return null;
 
-  const expires = parseInt(url.searchParams.get('e') || '0', 10);
-  const sig = url.searchParams.get('s') || '';
-  if (!expires || Date.now() > expires) return null;
+  /* An `open` item is handed over on the strength of the request alone.
+     Everything else needs the signed, short-lived ticket that says an
+     address was confirmed, or that this account owns the app. */
+  if (!item.open) {
+    const expires = parseInt(url.searchParams.get('e') || '0', 10);
+    const sig = url.searchParams.get('s') || '';
+    if (!expires || Date.now() > expires) return null;
 
-  const want = await sign(env.DOWNLOAD_SECRET, url.pathname + ':' + expires);
-  if (!sameString(sig, want)) return null;
+    const want = await sign(env.DOWNLOAD_SECRET, url.pathname + ':' + expires);
+    if (!sameString(sig, want)) return null;
+  }
 
   let object = null;
   for (const key of item.keys) {
@@ -1082,7 +1117,8 @@ const PAGES = [
   ['/pulseroom',   'monthly', '0.7'],
   ['/harmoniemd',  'monthly', '0.7'],
   ['/nebulatide',  'monthly', '0.7'],
-  ['/secondout',   'monthly', '0.7']
+  ['/secondout',   'monthly', '0.7'],
+  ['/hub',         'monthly', '0.8']
 ];
 
 async function sitemap() {
