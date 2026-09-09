@@ -12,9 +12,13 @@
 # repository secrets exist (see hub/README.md, "Signing the Mac app"):
 #   MAC_CERT_P12        base64 of the Developer ID Application .p12
 #   MAC_CERT_PASSWORD   the password that .p12 was exported with
-#   APPLE_ID            the Apple ID of the developer account
-#   APPLE_APP_PASSWORD  an app-specific password for that Apple ID
 #   APPLE_TEAM_ID       the 10-character team id
+# and, for notarisation, either an App Store Connect API key
+#   ASC_KEY_P8          base64 of the AuthKey_<id>.p8 file
+#   ASC_KEY_ID          the key id
+#   ASC_ISSUER_ID       the issuer UUID
+# or, as a fallback, an Apple ID and app-specific password
+#   APPLE_ID / APPLE_APP_PASSWORD
 # Without them the build is unsigned: right-click the app > Open, or
 #   xattr -dr com.apple.quarantine "/Applications/Amanorsac Hub.app"
 # Windows signing: CSC_LINK / CSC_KEY_PASSWORD, same as electron-builder documents.
@@ -148,6 +152,35 @@ jobs:
           echo "CSC_LINK=$WIN_PFX" >> "$GITHUB_ENV"
           echo "CSC_KEY_PASSWORD=$WIN_PASSWORD" >> "$GITHUB_ENV"
 
+      # Notarisation credentials. The App Store Connect API key is preferred;
+      # the Apple ID pair is only exported when no key is configured, because
+      # @electron/notarize rejects both being present at once.
+      - name: Choose the notarisation credentials
+        if: matrix.name == 'macOS'
+        shell: bash
+        env:
+          ASC_KEY_P8: ${{ secrets.ASC_KEY_P8 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          if [ -n "$ASC_KEY_P8" ] && [ -n "$ASC_KEY_ID" ] && [ -n "$ASC_ISSUER_ID" ]; then
+            KEY="$RUNNER_TEMP/AuthKey_$ASC_KEY_ID.p8"
+            printf '%s' "$ASC_KEY_P8" | base64 --decode > "$KEY"
+            chmod 600 "$KEY"
+            echo "APPLE_API_KEY=$KEY" >> "$GITHUB_ENV"
+            echo "APPLE_API_KEY_ID=$ASC_KEY_ID" >> "$GITHUB_ENV"
+            echo "APPLE_API_ISSUER=$ASC_ISSUER_ID" >> "$GITHUB_ENV"
+            echo "Notarising with the App Store Connect API key."
+          elif [ -n "$APPLE_ID" ] && [ -n "$APPLE_APP_PASSWORD" ]; then
+            echo "APPLE_ID=$APPLE_ID" >> "$GITHUB_ENV"
+            echo "APPLE_APP_SPECIFIC_PASSWORD=$APPLE_APP_PASSWORD" >> "$GITHUB_ENV"
+            echo "Notarising with the Apple ID and app-specific password."
+          else
+            echo "No notarisation credentials: the build will be signed only."
+          fi
+
       - name: Build installers
         run: npm run ${{ matrix.script }} -- --publish never
         env:
@@ -156,8 +189,8 @@ jobs:
           # above (macOS: CSC_NAME and CSC_KEYCHAIN; Windows: CSC_LINK and
           # CSC_KEY_PASSWORD), and only when there is one to use.
           CSC_IDENTITY_AUTO_DISCOVERY: ${{ (matrix.name == 'macOS' && env.MAC_SIGNED == 'true') && 'true' || 'false' }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+          # APPLE_API_* or APPLE_ID/APPLE_APP_SPECIFIC_PASSWORD reached the
+          # environment in the step above, whichever is configured.
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Keep installers
