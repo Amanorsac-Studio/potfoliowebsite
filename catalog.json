@@ -44,27 +44,22 @@
 
   "news": [
     {
-      "id": "hub-1-2-0",
+      "id": "performlive-announce",
       "date": "2026-09-09",
-      "tag": "Release",
-      "title": "The Hub keeps you posted",
-      "body": "This release adds What's new, so releases and studio notes reach you here instead of only in your inbox. New apps announce themselves the moment they land in the collection - no need to go looking."
+      "tag": "Coming soon",
+      "app": "performlive",
+      "title": "PerformLive: your stems, untouched, under your fingers",
+      "body": "Performers with backing tracks have had two bad options: a DAW that is dangerous on stage, or a stereo bounce that cannot change its mind. PerformLive is the third. Every stem stays independently mutable while it plays, so a breakdown or an a cappella moment is a live decision instead of a separate bounce. Trigger a row while another is playing and the switch queues to the next bar. Twelve pads for atmosphere and one-shots, so a prayer that runs long stops being a problem. No auto-warp, no auto-trim, no fades imposed on your audio. Windows, touch-first, and no network activity at all. Not ready to download yet; the Hub will say the day it is.",
+      "url": "performlive.html"
     },
     {
-      "id": "hub-mac-signed",
-      "date": "2026-09-08",
-      "tag": "Update",
-      "title": "The Mac Hub is signed and notarised",
-      "body": "macOS now opens Amanorsac Hub with a double-click, no right-click-Open and no quarantine warning. Same app, properly introduced."
-    },
-    {
-      "id": "secondout-1-3-1",
-      "date": "2026-08-21",
-      "tag": "Release",
-      "app": "secondout",
-      "title": "SecondOut 1.3.1",
-      "body": "Drift correction holds steadier on long sessions, and the device list refreshes without a rescan when you plug something in.",
-      "url": "secondout.html"
+      "id": "harmoniemd-announce",
+      "date": "2026-09-09",
+      "tag": "Coming soon",
+      "app": "harmoniemd",
+      "title": "HarmonieMD: walk into rehearsal already knowing your part",
+      "body": "A voice note has no isolation. A YouTube link has no parts. A Drive folder has no structure. And nobody is installing a DAW to learn an alto line. HarmonieMD gives every singer their own harmony track to solo, slow to 85% without changing pitch, and loop until the bar lands. For the director it is a real multi-track studio underneath, with non-destructive takes and audio latency that is measured rather than estimated. Songs download once, so rehearsal never depends on the church WiFi. Free for teams up to five. Not ready to download yet; the Hub will say the day it is.",
+      "url": "harmoniemd.html"
     }
   ],
 
