@@ -18,12 +18,19 @@
     "",
     "The Hub's alt_keys are the names the first release was uploaded under, before the stable",
     "hub/AmanorsacHub-* names existed. They are tried after `key`, so re-uploading under the",
-    "stable name is enough to retire them - no link on the site ever changes."
+    "stable name is enough to retire them - no link on the site ever changes.",
+    "",
+    "news: what the Hub shows under What's new, newest first. One entry = one post.",
+    "Fields: id (never reused - the Hub remembers which ids a person has read), date",
+    "(YYYY-MM-DD), title, body (plain text, a short paragraph or two), and optionally app",
+    "(an id from `apps`, to show its icon and colour), url (Read more) and tag (a word like",
+    "Release, Update, Studio note). A new app added to `apps` announces itself in the Hub",
+    "without an entry here, so write one only when there is something to say."
   ],
 
   "hub": {
     "name": "Amanorsac Hub",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "protocol": "amanorsac",
     "tagline": "Install, activate and update every Amanorsac app from one place.",
     "installers": {
@@ -34,6 +41,32 @@
   },
 
   "direct_download_fallback": true,
+
+  "news": [
+    {
+      "id": "hub-1-2-0",
+      "date": "2026-09-09",
+      "tag": "Release",
+      "title": "The Hub keeps you posted",
+      "body": "This release adds What's new, so releases and studio notes reach you here instead of only in your inbox. New apps announce themselves the moment they land in the collection - no need to go looking."
+    },
+    {
+      "id": "hub-mac-signed",
+      "date": "2026-09-08",
+      "tag": "Update",
+      "title": "The Mac Hub is signed and notarised",
+      "body": "macOS now opens Amanorsac Hub with a double-click, no right-click-Open and no quarantine warning. Same app, properly introduced."
+    },
+    {
+      "id": "secondout-1-3-1",
+      "date": "2026-08-21",
+      "tag": "Release",
+      "app": "secondout",
+      "title": "SecondOut 1.3.1",
+      "body": "Drift correction holds steadier on long sessions, and the device list refreshes without a rescan when you plug something in.",
+      "url": "secondout.html"
+    }
+  ],
 
   "apps": {
     "secondout": {

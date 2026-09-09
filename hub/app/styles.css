@@ -167,3 +167,31 @@ dialog form{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
 
 @media(max-width:1000px){.app{grid-template-columns:200px 1fr}main{padding:26px 23px}.feature{grid-template-columns:1fr 42%}.feature h2{font-size:24px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- what's new ---- */
+.count.new{background:var(--accent);color:#23190d;font-weight:700}
+.post{display:flex;gap:18px;padding:22px;background:var(--panel);border:1px solid var(--line);border-radius:9px;--accent-post:var(--accent)}
+.post.fresh{border-color:#4b3a22;box-shadow:inset 3px 0 0 var(--accent, #eeae61)}
+.post-side{flex:none}
+.post-side .appicon{width:42px;height:42px;display:grid;place-items:center}
+.post-side .appicon.dot{border-radius:50%;background:#2a2b2e;border:1px solid var(--line)}
+.post-side .appicon.dot::after{content:'✦';color:var(--muted);font-size:15px}
+.post-body{min-width:0}
+.post-meta{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);
+  letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.post-meta .tag{background:#2a2b2e;border:1px solid var(--line);border-radius:4px;padding:2px 7px;letter-spacing:1px}
+.post-meta .tag.new{background:var(--accent);border-color:var(--accent);color:#23190d;font-weight:700}
+.post h3{margin:0 0 8px;font:500 17px Sora,Inter,sans-serif;letter-spacing:-.2px}
+.post p{margin:0 0 14px;font-size:13px;line-height:1.7;color:#c3c6cb;max-width:62ch}
+.post button{font-size:12px;padding:8px 14px}
+
+/* ---- usage notes ---- */
+.consent{display:flex;gap:24px;align-items:center;flex-wrap:wrap;padding:22px 24px;margin-bottom:22px;
+  background:linear-gradient(180deg,#211d17,#1b1c1e);border:1px solid #4b3a22;border-radius:11px}
+.consent>div:first-child{flex:1 1 380px;min-width:0}
+.consent h3{margin:0 0 8px;font:500 16px Sora,Inter,sans-serif}
+.consent p{margin:0;font-size:12.5px;line-height:1.7;color:#c3c6cb;max-width:70ch}
+.consent-do{display:flex;gap:10px;flex:none}
+.consent-do button{font-size:12.5px}
+.row.privacy p{line-height:1.7;max-width:66ch}
+.row.privacy .right{flex-wrap:wrap;justify-content:flex-end}

@@ -45,9 +45,28 @@ Public, no auth, CORS open. Returns:
 }
 ```
 
-Poll it on launch (and maybe hourly): a new app or a new version appears
-here the moment it is published — no Hub update needed. `hub.version`
-is the current Hub release, for a "you're on an older Hub" notice.
+It also carries `news`, newest first, capped at 30:
+
+```json
+"news": [
+  { "id": "secondout-1-3-1", "date": "2026-08-21", "tag": "Release",
+    "app": "secondout", "title": "SecondOut 1.3.1", "body": "…",
+    "url": "https://amanorsac.studio/secondout.html" }
+]
+```
+
+`app` and `url` may be null. `id` is what the Hub remembers as read, so
+an id is never reused for a different post — editing a post in place
+does not mark it unread again, which is usually what you want.
+
+Poll it on launch (and maybe hourly): a new app, a new version or a new
+post appears here the moment it is published — no Hub update needed.
+`hub.version` is the current Hub release, for a "you're on an older
+Hub" notice.
+
+The Hub compares the app ids against the ones it saw last time and
+announces anything new by itself, so an entry in `news` is only needed
+when there is something to say beyond "this exists".
 
 - `kind`: `app` (standalone) or `plugin` (VST3/standalone installer).
 - `licensed`: the app asks for a license key on first run (see §5).
@@ -159,6 +178,32 @@ for electron-updater's own auto-update; the two do not conflict.
 ## 9. Adding an app later
 
 One entry in `catalog.json` + the installer uploaded to R2. The Hub
-picks it up from `/api/catalog` on its next poll. If it is paid, its
-price must also be added to `supabase/functions/create-app-checkout`
-(that function is what actually charges the card).
+picks it up from `/api/catalog` on its next poll, announces it under
+What's new and marks the sidebar. If it is paid, its price must also be
+added to `supabase/functions/create-app-checkout` (that function is
+what actually charges the card).
+
+## 10. Usage notes — `record_hub_usage`
+
+Off until the person turns it on. The Hub asks once, on the library
+page, and `consent` stays `null` — meaning off — until they answer.
+
+What a note contains: the event (`hub_open`, `app_open`, `app_install`,
+`app_update`), which app, the app and Hub versions, `windows` or `mac`,
+the architecture and the OS release string. Nothing else is read, so
+nothing else can be sent: no file names, no folder names, no computer
+name, nothing from inside an app.
+
+Notes are written to `usage.json` in the Hub's user-data folder and sent
+in batches of up to 100 through the `record_hub_usage(p_install_id,
+p_events)` RPC. Main only forgets a note once the page confirms it
+arrived, so a month offline sends the whole month later. `install_id` is
+a UUID made on first run; it distinguishes machines, and is not derived
+from anything about the machine or the person.
+
+Turning it off empties whatever is waiting locally. `revoke_hub_usage()`
+erases everything the account has already sent, on every machine.
+
+The tables and functions are in `supabase-hub-usage.sql`. Reporting is
+admin-only: `hub_usage_summary(days)`, `hub_usage_by_app(days)`,
+`hub_usage_daily(days)`.

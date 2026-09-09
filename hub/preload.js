@@ -19,6 +19,15 @@ contextBridge.exposeInMainWorld('hub', {
   reveal: (which) => ipcRenderer.invoke('hub:reveal', which),
   external: (url) => ipcRenderer.invoke('hub:external', url),
   confirm: (args) => ipcRenderer.invoke('hub:confirm', args),
+  // Usage notes. state() says whether the person has been asked and what
+  // they said; nothing is recorded or sent until consent is true.
+  usage: {
+    state: () => ipcRenderer.invoke('hub:usage-state'),
+    consent: (yes) => ipcRenderer.invoke('hub:usage-consent', yes),
+    record: (event, app, version) => ipcRenderer.invoke('hub:usage-record', { event, app, version }),
+    take: (max) => ipcRenderer.invoke('hub:usage-take', max),
+    ack: (n) => ipcRenderer.invoke('hub:usage-ack', n),
+  },
   onProgress: (cb) => { ipcRenderer.on('hub:progress', (e, p) => cb(p)); },
   onDeepLink: (cb) => { ipcRenderer.on('hub:deep-link', (e, p) => cb(p)); },
 });

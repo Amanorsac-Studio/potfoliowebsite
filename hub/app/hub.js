@@ -35,9 +35,12 @@
   const S = {
     session: null, profile: null, device: { platform: window.hub.platform, arch: window.hub.arch, os: '', hostname: '' },
     catalog: [], hubVersion: null, owned: [], devices: [], installed: {}, jobs: {}, history: [],
+    news: [], newApps: [], readNews: [], seenApps: null, usage: null,
     page: 'library', filter: 'all', online: true,
   };
   try { S.history = JSON.parse(localStorage.getItem('hub-history') || '[]'); } catch (e) {}
+  try { S.readNews = JSON.parse(localStorage.getItem('hub-news-read') || '[]'); } catch (e) {}
+  try { var seen = localStorage.getItem('hub-seen-apps'); S.seenApps = seen ? JSON.parse(seen) : null; } catch (e) {}
 
   /* ---------- small UI ---------- */
   let toastTimer;
@@ -109,12 +112,65 @@
       if (r && r.ok && r.json && r.json.apps) {
         S.catalog = fromApi(r.json);
         S.hubVersion = (r.json.hub && r.json.hub.version) || null;
+        S.news = Array.isArray(r.json.news) ? r.json.news : [];
         S.online = true;
+        noticeNewApps();
         return;
       }
     } catch (e) {}
     S.catalog = window.HUB_CATALOG.apps.slice();
     S.online = false;
+  }
+
+  /* Anything in the collection this installation has not seen before
+     announces itself. The very first run has nothing to compare against,
+     so it only writes down what is there - otherwise a new customer
+     would be told that all five apps are new, which is true and useless. */
+  function noticeNewApps() {
+    const ids = S.catalog.map((a) => a.id);
+    if (!Array.isArray(S.seenApps)) { S.seenApps = ids; saveSeen(); return; }
+    const fresh = ids.filter((id) => S.seenApps.indexOf(id) === -1);
+    if (!fresh.length) return;
+    S.newApps = fresh;
+    S.seenApps = S.seenApps.concat(fresh);
+    saveSeen();
+    const names = fresh.map((id) => (byId(id) || {}).name).filter(Boolean);
+    if (names.length) {
+      toast(names.length === 1
+        ? names[0] + ' has joined the collection.'
+        : names.length + ' new apps have joined the collection.');
+    }
+  }
+  function saveSeen() { try { localStorage.setItem('hub-seen-apps', JSON.stringify(S.seenApps)); } catch (e) {} }
+
+  /* What's new, as one list: an app arriving is news whether or not a
+     post was written for it, and it belongs at the top of the same
+     panel rather than in a channel of its own. */
+  function feed() {
+    const written = S.news.map((n) => Object.assign({}, n, { kind: 'post' }));
+    const arrivals = S.newApps.map((id) => {
+      const a = byId(id) || { id: id, name: id };
+      const soon = a.status && a.status !== 'available';
+      return {
+        kind: 'app', id: 'app:' + id, app: id, date: new Date().toISOString().slice(0, 10),
+        tag: soon ? 'Coming soon' : 'New app',
+        title: a.name + (soon ? ' is on the way' : ' is here'),
+        body: soon
+          ? (a.tagline || '') + ' It is not ready to download yet - this is the first you will hear of it, and the Hub will say when that changes.'
+          : (a.tagline || '') + ' It is in the collection now, ready to install from your library.',
+        url: a.page || null,
+      };
+    });
+    // An arrival outranks a post, then newest first within each.
+    return arrivals.concat(written).sort((x, y) =>
+      (y.kind === 'app' ? 1 : 0) - (x.kind === 'app' ? 1 : 0) ||
+      String(y.date || '').localeCompare(String(x.date || '')));
+  }
+  function unreadNews() { return feed().filter((n) => S.readNews.indexOf(n.id) === -1); }
+  function markNewsRead() {
+    const all = feed().map((n) => n.id);
+    S.readNews = all.concat(S.readNews.filter((id) => all.indexOf(id) === -1)).slice(0, 200);
+    try { localStorage.setItem('hub-news-read', JSON.stringify(S.readNews)); } catch (e) {}
   }
 
   let claiming = false;
@@ -156,6 +212,59 @@
     $('#foot-online').classList.toggle('off', !S.online);
     $('#foot-conn').textContent = S.online ? 'Connected to amanorsac.studio' : 'amanorsac.studio unreachable · showing the last known collection';
     render();
+    flushUsage();
+  }
+
+  /* ---------- usage notes ----------
+     The Hub keeps a short note when an app is opened, installed or
+     updated, and sends the batch the next time the site answers. It
+     records nothing at all until the person has said yes; state.consent
+     stays null until they choose, and null means off.
+
+     Sending is the page's job because the page is the side holding the
+     account. Main hands over a copy of the queue and only forgets those
+     notes once this has confirmed they arrived, so a flush that fails
+     halfway costs nothing. */
+  async function loadUsage() {
+    try { S.usage = await window.hub.usage.state(); } catch (e) { S.usage = null; }
+  }
+
+  async function setUsageConsent(yes) {
+    try { S.usage = Object.assign(S.usage || {}, await window.hub.usage.consent(yes)); } catch (e) { return; }
+    if (yes) {
+      window.hub.usage.record('hub_open');
+      toast('Thank you. The Hub will send a short note when you open an app.');
+      flushUsage();
+    } else {
+      toast('Usage notes are off. Nothing waiting on this computer was sent.');
+    }
+    await loadUsage();
+    render();
+  }
+
+  async function forgetUsage() {
+    const ok = await window.hub.confirm({
+      title: 'Delete usage notes', ok: 'Delete',
+      message: 'This erases every usage note this account has already sent, on every computer. It cannot be undone.',
+    });
+    if (!ok) return;
+    const { data, error } = await sb.rpc('revoke_hub_usage');
+    if (error) { toast('Could not delete them: ' + error.message, true); return; }
+    toast((data || 0) + ' note' + (data === 1 ? '' : 's') + ' deleted.');
+  }
+
+  async function flushUsage() {
+    if (!S.online || !S.usage || S.usage.consent !== true) return;
+    try {
+      const batch = await window.hub.usage.take(100);
+      if (!batch || !batch.events || !batch.events.length) return;
+      const { error } = await sb.rpc('record_hub_usage', {
+        p_install_id: batch.installId, p_events: batch.events,
+      });
+      if (error) return; // keep them; the next sync tries again
+      await window.hub.usage.ack(batch.events.length);
+      await loadUsage();
+    } catch (e) { /* a note that cannot be sent waits, it never interrupts */ }
   }
 
   /* ---------- downloading and installing ---------- */
@@ -184,7 +293,7 @@
       return;
     }
     S.jobs[a.id].state = 'installing'; S.jobs[a.id].percent = 100; render();
-    const i = await window.hub.install({ app: a.id, name: a.name, path: r.path, version: r.version || b.version || null, kind: a.kind });
+    const i = await window.hub.install({ app: a.id, name: a.name, path: r.path, version: r.version || b.version || null, kind: a.kind, mode: mode || 'install' });
     delete S.jobs[a.id];
     S.installed = await window.hub.installed();
     if (i.error) { toast(i.message || 'Could not install ' + a.name + '.', true); }
@@ -255,6 +364,7 @@
     library: ['Your creative home.', 'All your tools. Ready when inspiration is.'],
     downloads: ['Downloads', 'Your installs and updates, all in one place.'],
     updates: ['Keep your studio current.', 'The latest improvements for the tools you use.'],
+    news: ['What\u2019s new.', 'Releases, new apps and notes from the studio.'],
     licenses: ['Your license keys.', 'Your software belongs with you.'],
     devices: ['Your connected devices.', 'Manage where your apps are activated.'],
     purchases: ['Your purchases.', 'Every app in your collection, accounted for.'],
@@ -296,6 +406,7 @@
   }
 
   function renderLibrary() {
+    $('#consent-slot').innerHTML = consentCard();
     const q = ($('#search').value || '').toLowerCase();
     const avail = S.catalog.filter((a) => a.status === 'available');
     const list = avail.filter((a) => a.name.toLowerCase().includes(q) && (S.filter === 'all' || (S.filter === 'installed' ? !!S.installed[a.id] : !S.installed[a.id])));
@@ -359,6 +470,28 @@
         return row(a, '<h3>' + esc(d.device_name || d.device_id) + (isHere ? ' <span class="badge ready">This device</span>' : '') + '</h3><p>' + esc(a.name) + ' · activated ' + esc(when(d.first_seen)) + ' · last seen ' + esc(ago(d.last_seen)) + '</p>', '<button class="danger" data-revoke="' + esc(d.id) + '">Remove</button>', 'devrow'); }).join('')
         : '<div class="empty"><h3>No device has activated a key yet.</h3><p>When an app that asks for a license key is activated on a computer, it appears here. Removing one frees its slot.</p></div>');
       html += '<p class="note">Two devices per license. Removing a device here is the only way to free a slot for a computer you no longer have.</p>';
+      html += usagePanel();
+    }
+    if (p === 'news') {
+      const items = feed();
+      const read = S.readNews;
+      html = items.length ? items.map((n) => {
+        const a = n.app ? byId(n.app) : null;
+        const fresh = read.indexOf(n.id) === -1;
+        return '<article class="post' + (fresh ? ' fresh' : '') + '"' + (a && a.color ? ' style="--accent:' + esc(a.color) + '"' : '') + '>' +
+          '<div class="post-side">' + (a ? '<span class="appicon">' + iconFor(a) + '</span>' : '<span class="appicon dot"></span>') + '</div>' +
+          '<div class="post-body"><div class="post-meta">' +
+            (n.tag ? '<span class="tag">' + esc(n.tag) + '</span>' : '') +
+            '<span>' + esc(when(n.date)) + '</span>' +
+            (fresh ? '<span class="tag new">Unread</span>' : '') +
+          '</div>' +
+          '<h3>' + esc(n.title) + '</h3><p>' + esc(n.body) + '</p>' +
+          (n.url ? '<button class="quiet" data-page-url="' + esc(n.url) + '">Read more &nbsp;\u2197</button>' : '') +
+          (n.kind === 'app' && a && a.status === 'available' ? ' <button class="primary" data-go-app="' + esc(a.id) + '">See it in my library</button>' : '') +
+          '</div></article>';
+      }).join('')
+        : '<div class="empty"><h3>Nothing new just yet.</h3><p>Releases, new apps and notes from the studio land here. You will see a mark on the sidebar when one does.</p></div>';
+      html += '<p class="note">New apps announce themselves as soon as they reach amanorsac.studio \u2014 nothing to check, nothing to subscribe to.</p>';
     }
     if (p === 'purchases') {
       const list = S.owned.slice().sort((a, b) => new Date(b.purchased_at) - new Date(a.purchased_at));
@@ -369,10 +502,40 @@
     $('#secondary').innerHTML = '<div class="rows">' + html + '</div>';
   }
 
+  /* The switch, and the plain truth beside it. It lives with the
+     devices because that is where someone goes to see what this
+     account is doing on which machine. */
+  function usagePanel() {
+    const u = S.usage;
+    if (!u) return '';
+    const on = u.consent === true;
+    return '<p class="section">Usage notes</p>' +
+      '<div class="row privacy"><span class="ico" style="font-size:22px">\u25CE</span><div>' +
+      '<h3>' + (on ? 'Sharing usage notes' : u.consent === false ? 'Not sharing usage notes' : 'Not decided yet') + '</h3>' +
+      '<p>When this is on, the Hub notes which app was opened, installed or updated, and whether the machine is Windows or Mac. Nothing else: no file names, no folder names, no computer name, nothing from inside an app. Notes wait on this computer until it is online' +
+      (u.pending ? ' \u2014 ' + u.pending + ' waiting now' : '') + '.</p></div>' +
+      '<div class="right"><button class="' + (on ? '' : 'primary') + '" data-usage="' + (on ? 'off' : 'on') + '">' +
+      (on ? 'Turn off' : 'Turn on') + '</button>' +
+      (on || u.consent === false ? ' <button class="danger" data-usage="forget">Delete what I\u2019ve sent</button>' : '') +
+      '</div></div>';
+  }
+
+  /* Asked once, on the library page, in the same voice as everything
+     else. Ignoring it is a valid answer: consent stays null and nothing
+     is recorded. */
+  function consentCard() {
+    if (!S.usage || S.usage.consent !== null) return '';
+    return '<div class="consent" id="consent"><div>' +
+      '<h3>May the Hub tell me which apps you actually use?</h3>' +
+      '<p>Which app was opened, and whether this is a Windows or a Mac \u2014 that is the whole of it. No file names, no project contents, nothing that says who you are. It is what tells me where the next build should go. You can change your mind any time under My devices.</p>' +
+      '</div><div class="consent-do"><button class="primary" data-usage="on">Yes, help future builds</button><button data-usage="off">No thanks</button></div></div>';
+  }
+
   function render() {
     if (!S.session) return;
     $('#download-count').textContent = Object.keys(S.jobs).length || '';
     $('#update-count').textContent = S.catalog.filter((a) => status(a).action === 'update').length || '';
+    $('#news-count').textContent = unreadNews().length || '';
     if (S.page === 'library') renderLibrary(); else renderSecondary();
   }
 
@@ -384,6 +547,7 @@
     $$('[data-page]').forEach((b) => { const on = b.dataset.page === p; b.classList.toggle('active', on); if (on) { b.setAttribute('aria-current', 'page'); $('#crumb').textContent = b.querySelector('.label').textContent; } else b.removeAttribute('aria-current'); });
     $('#main').scrollTop = 0;
     render();
+    if (p === 'news') { markNewsRead(); $('#news-count').textContent = ''; }
   }
 
   /* ---------- signed in / out ---------- */
@@ -397,8 +561,13 @@
     const user = S.session.user;
     const name = (S.profile && S.profile.full_name) || (user.user_metadata || {}).full_name || user.email;
     $('#avatar').textContent = initials(name); $('#who-name').textContent = name; $('#who-email').textContent = user.email || '';
+    await loadUsage();
+    // One note per session, made here rather than at startup so it
+    // belongs to a signed-in account. Dropped if consent is not yes.
+    window.hub.usage.record('hub_open');
     showApp(true);
     navigate('library');
+    flushUsage();
   }
   async function signOut(msg) {
     await sb.auth.signOut().catch(() => {});
@@ -463,6 +632,10 @@
     if (d.cancel) { window.hub.cancel(d.cancel); }
     if (d.info) { const app = byId(d.info); modal(app.name, '<p>' + esc(app.name) + ' is a plug-in. It is installed on this computer; open it inside your DAW like any other plug-in.' + (app.licensed ? ' When it asks for a license key, it is under License keys here.' : '') + '</p>'); }
     if (d.reveal) window.hub.reveal(d.reveal);
+    if (d.goApp) { navigate('library'); S.filter = 'all'; $('#search').value = (byId(d.goApp) || {}).name || ''; render(); }
+    if (d.usage === 'on') setUsageConsent(true);
+    if (d.usage === 'off') setUsageConsent(false);
+    if (d.usage === 'forget') forgetUsage();
     if (d.revealKey) { const o = S.owned.find((x) => String(x.id) === d.revealKey); const k = $('[data-key-for="' + d.revealKey + '"]'); const hidden = k.textContent.includes('•'); k.textContent = hidden ? (o.license_key || '—') : '••••-••••-••••-••••'; b.textContent = hidden ? 'Hide' : 'Reveal'; }
     if (d.copyKey) { const o = S.owned.find((x) => String(x.id) === d.copyKey); try { await navigator.clipboard.writeText(o.license_key || ''); toast('License key copied.'); } catch (err) { modal('License key', '<p class="key">' + esc(o.license_key) + '</p>'); } }
     if (d.revoke) {
