@@ -23,13 +23,13 @@
 
   "hub": {
     "name": "Amanorsac Hub",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "protocol": "amanorsac",
     "tagline": "Install, activate and update every Amanorsac app from one place.",
     "installers": {
-      "windows":   { "key": "hub/AmanorsacHub-Setup.exe",     "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64.exe", "AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64_2.exe"], "as": "Amanorsac Hub Setup.exe",           "type": "application/octet-stream",      "label": "Windows 10/11",      "size": "111 MB" },
-      "mac-arm64": { "key": "hub/AmanorsacHub-mac-arm64.dmg", "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-arm64.dmg"], "as": "Amanorsac Hub (Apple silicon).dmg", "type": "application/x-apple-diskimage", "label": "Mac · Apple silicon", "size": "128 MB" },
-      "mac-x64":   { "key": "hub/AmanorsacHub-mac-x64.dmg",   "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-x64.dmg"], "as": "Amanorsac Hub (Intel).dmg",         "type": "application/x-apple-diskimage", "label": "Mac · Intel",         "size": "135 MB" }
+      "windows":   { "key": "hub/AmanorsacHub-Setup.exe",     "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.2.0-win-x64.exe", "AMANORSAC HUB/Amanorsac.Hub-1.2.0-win-x64-portable.exe"], "as": "Amanorsac Hub Setup.exe",           "type": "application/octet-stream",      "label": "Windows 10/11",      "size": "111 MB" },
+      "mac-arm64": { "key": "hub/AmanorsacHub-mac-arm64.dmg", "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.2.0-mac-arm64.dmg"], "as": "Amanorsac Hub (Apple silicon).dmg", "type": "application/x-apple-diskimage", "label": "Mac · Apple silicon", "size": "128 MB" },
+      "mac-x64":   { "key": "hub/AmanorsacHub-mac-x64.dmg",   "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.2.0-mac-x64.dmg"], "as": "Amanorsac Hub (Intel).dmg",         "type": "application/x-apple-diskimage", "label": "Mac · Intel",         "size": "135 MB" }
     }
   },
 
