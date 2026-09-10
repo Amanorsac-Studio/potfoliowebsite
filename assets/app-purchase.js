@@ -33,8 +33,8 @@
   var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var statusEl = document.querySelector('[data-buy-status]');
 
-  var APP_NAMES = { secondout: 'SecondOut', stemsorter: 'Stem Sorter' };
-  var PRICES = { secondout: 'Buy — $19', stemsorter: 'Buy — $19' };
+  var APP_NAMES = { secondout: 'SecondOut', stemsorter: 'Stem Sorter', nebulatide2: 'Nebula Tide 2' };
+  var PRICES = { secondout: 'Buy — $19', stemsorter: 'Buy — $19', nebulatide2: 'Buy — $29' };
   var HUB_PROTOCOL = 'amanorsac';
   var OWNED_LABEL = 'Install in Amanorsac Hub';
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }

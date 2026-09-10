@@ -49,6 +49,10 @@ const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
     amount_cents: 1900,
     label: "Stem Sorter — lifetime license for two computers, one year of updates included",
   },
+  nebulatide2: {
+    amount_cents: 2900,
+    label: "Nebula Tide 2 — lifetime license for two machines, one year of updates included",
+  },
 };
 
 async function stripe(path: string, params: Record<string, string>) {
