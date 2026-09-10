@@ -45,6 +45,10 @@ const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
     amount_cents: 1900,
     label: "SecondOut — lifetime license, one year of updates included",
   },
+  stemsorter: {
+    amount_cents: 3900,
+    label: "Stem Sorter — lifetime license for two computers, one year of updates included",
+  },
 };
 
 async function stripe(path: string, params: Record<string, string>) {
