@@ -37,6 +37,21 @@ const json = (body: unknown, status = 200) =>
 
 const SITE = "https://amanorsac.studio";
 
+/** Where Stripe sends the buyer back to once they have paid.
+ *
+ *  Normally the live site. On a preview build it is that build's own
+ *  workers.dev address, so a test purchase lands back on the page it
+ *  started from instead of on a live URL that may not exist yet.
+ *
+ *  Anything else falls back to SITE and is never echoed: an unchecked
+ *  origin here would be an open redirect with a payment attached to it. */
+function returnOrigin(req: Request): string {
+  const o = req.headers.get("origin") ?? "";
+  if (o === SITE) return o;
+  if (/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+){1,2}\.workers\.dev$/.test(o)) return o;
+  return SITE;
+}
+
 /** Every app anyone can actually buy, and what it costs. A fixed map,
  *  the same reasoning worker.js's INSTALLERS map uses: no request can
  *  invent a price or a product name that is not on this list. */
@@ -50,7 +65,10 @@ const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
     label: "Stem Sorter — lifetime license for two computers, one year of updates included",
   },
   nebulatide2: {
-    amount_cents: 2900,
+    // TEMPORARY: a pound-shop price so a real purchase can be walked
+    // end to end on a preview build. Put this back to 2900 before the
+    // page goes anywhere near the live site.
+    amount_cents: 100,
     label: "Nebula Tide 2 — lifetime license for two machines, one year of updates included",
   },
 };
@@ -107,6 +125,8 @@ Deno.serve(async (req) => {
     .select("id").eq("user_id", user.id).eq("app", app).limit(1);
   if (existing && existing.length) return json({ already_owned: true });
 
+  const back = returnOrigin(req);
+
   try {
     const session = await stripe("checkout/sessions", {
       mode: "payment",
@@ -120,8 +140,8 @@ Deno.serve(async (req) => {
       "metadata[user_id]": user.id,
       // Back to the app's own page, not the portal - there is no "My
       // Apps" section there yet for this to land in usefully.
-      success_url: SITE + "/" + app + "?purchased=1",
-      cancel_url: SITE + "/" + app + "?checkout=cancelled",
+      success_url: back + "/" + app + "?purchased=1",
+      cancel_url: back + "/" + app + "?checkout=cancelled",
     });
     return json({ url: session.url });
   } catch (e) {
