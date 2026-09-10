@@ -100,6 +100,7 @@ Responses:
 | 503 | `{ "error": "licensing_unavailable", "message": "…" }` | Server not configured. | Same as 502. |
 
 Rules:
+
 - Any 2xx is success. Any other status is failure. `error` is the
   machine-readable code; `message`, when present, is safe to show.
 - Calling activate again from a device that already holds a seat is a
@@ -181,6 +182,7 @@ constexpr bool kLicenseSigningKeyConfigured = true;
 ```
 
 Platform notes:
+
 - **Windows (CNG):** import as `BCRYPT_ECCPUBLIC_BLOB` with
   `BCRYPT_ECDSA_PUBLIC_P256_MAGIC`, X and Y being bytes 1–32 and 33–64
   (skip the leading `0x04`). `BCryptVerifySignature` takes the raw 64-byte
