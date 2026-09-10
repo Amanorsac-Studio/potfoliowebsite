@@ -505,15 +505,25 @@
   /* The switch, and the plain truth beside it. It lives with the
      devices because that is where someone goes to see what this
      account is doing on which machine. */
+  /* The switch, and the reason to leave it on. It lives with the
+     devices because that is where someone goes to see what this account
+     is doing on which machine.
+
+     The copy leads with what it buys them and states the limit once. An
+     earlier draft listed four things the Hub does not collect, which
+     read as a denial and planted the doubt it was trying to answer. */
   function usagePanel() {
     const u = S.usage;
     if (!u) return '';
     const on = u.consent === true;
+    const body = on
+      ? 'You are helping decide what gets built next. The Hub notes which app you open and whether this is a Windows or a Mac \u2014 never your files, your projects or your name.'
+        + (u.pending ? ' ' + u.pending + ' note' + (u.pending === 1 ? '' : 's') + ' waiting for the next connection.' : '')
+      : 'Turn this on and the next release goes where the work actually is, instead of where I guessed it was. The Hub notes which app you open and whether this is a Windows or a Mac \u2014 never your files, your projects or your name.';
     return '<p class="section">Usage notes</p>' +
       '<div class="row privacy"><span class="ico" style="font-size:22px">\u25CE</span><div>' +
-      '<h3>' + (on ? 'Sharing usage notes' : u.consent === false ? 'Not sharing usage notes' : 'Not decided yet') + '</h3>' +
-      '<p>When this is on, the Hub notes which app was opened, installed or updated, and whether the machine is Windows or Mac. Nothing else: no file names, no folder names, no computer name, nothing from inside an app. Notes wait on this computer until it is online' +
-      (u.pending ? ' \u2014 ' + u.pending + ' waiting now' : '') + '.</p></div>' +
+      '<h3>' + (on ? 'You\u2019re helping shape the next release' : 'Help shape the next release') + '</h3>' +
+      '<p>' + body + '</p></div>' +
       '<div class="right"><button class="' + (on ? '' : 'primary') + '" data-usage="' + (on ? 'off' : 'on') + '">' +
       (on ? 'Turn off' : 'Turn on') + '</button>' +
       (on || u.consent === false ? ' <button class="danger" data-usage="forget">Delete what I\u2019ve sent</button>' : '') +
@@ -526,9 +536,13 @@
   function consentCard() {
     if (!S.usage || S.usage.consent !== null) return '';
     return '<div class="consent" id="consent"><div>' +
-      '<h3>May the Hub tell me which apps you actually use?</h3>' +
-      '<p>Which app was opened, and whether this is a Windows or a Mac \u2014 that is the whole of it. No file names, no project contents, nothing that says who you are. It is what tells me where the next build should go. You can change your mind any time under My devices.</p>' +
-      '</div><div class="consent-do"><button class="primary" data-usage="on">Yes, help future builds</button><button data-usage="off">No thanks</button></div></div>';
+      '<h3>Help decide what gets built next.</h3>' +
+      '<p>Right now I am guessing which of these apps people actually live in. ' +
+      'Let the Hub tell me which one you open and how often, and the next release goes ' +
+      'where the work really is \u2014 the features you use get deeper, and the ones nobody ' +
+      'touches stop taking up my evenings. Which app, and whether this is a Windows or a Mac. ' +
+      'Never your files, your projects or your name. Off again in one click, under My devices.</p>' +
+      '</div><div class="consent-do"><button class="primary" data-usage="on">Count me in</button><button data-usage="off">Not now</button></div></div>';
   }
 
   function render() {
