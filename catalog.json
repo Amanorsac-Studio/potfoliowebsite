@@ -48,9 +48,9 @@
     },
     "stemsorter": {
       "name": "Stem Sorter", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
-      "tagline": "Your files. Your template. One click.",
+      "tagline": "Your files. Your template. One click. Made for Studio One, on Mac and Windows.",
       "icon": "images/apps/stemsorter-logo.svg", "page": "stemsorter.html", "color": "#2ad2e8",
-      "free": false, "price_cents": 3900, "licensed": true, "version": "0.6.0",
+      "free": false, "price_cents": 1900, "licensed": true, "version": "0.6.0",
       "installers": {
         "windows": { "key": "stemsorter/StemSorter-Windows.zip", "alt_keys": ["STEMSORTER/StemSorter-Windows.zip"],
                      "as": "StemSorter-Windows.zip", "type": "application/zip", "size": "9 MB" },

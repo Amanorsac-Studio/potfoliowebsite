@@ -46,7 +46,7 @@ const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
     label: "SecondOut — lifetime license, one year of updates included",
   },
   stemsorter: {
-    amount_cents: 3900,
+    amount_cents: 1900,
     label: "Stem Sorter — lifetime license for two computers, one year of updates included",
   },
 };
