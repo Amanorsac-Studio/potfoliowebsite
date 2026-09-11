@@ -54,8 +54,18 @@ function returnOrigin(req: Request): string {
 
 /** Every app anyone can actually buy, and what it costs. A fixed map,
  *  the same reasoning worker.js's INSTALLERS map uses: no request can
- *  invent a price or a product name that is not on this list. */
-const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
+ *  invent a price or a product name that is not on this list.
+ *
+ *  An entry carries either a fixed amount_cents, or a stripe_price: the
+ *  id of a Price created in Stripe. The second form is what makes "pay
+ *  what you want" possible - a Price with "customers choose what to
+ *  pay" turned on has the minimum, maximum and suggested figure stored
+ *  on Stripe's side, and Checkout shows the buyer a box to type in.
+ *  Either way the buyer cannot name a figure this file did not allow:
+ *  with amount_cents the number is here, and with stripe_price the
+ *  bounds are on the Price. stripe-webhook records what was actually
+ *  paid, so a purchase row is always the real amount. */
+const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string; label: string }> = {
   secondout: {
     amount_cents: 1900,
     label: "SecondOut — lifetime license, one year of updates included",
@@ -113,6 +123,9 @@ Deno.serve(async (req) => {
   const app = String(body.app ?? "").toLowerCase().trim();
   const item = APP_CATALOG[app];
   if (!item) return json({ error: "No such app for sale." }, 404);
+  if (!item.stripe_price && typeof item.amount_cents !== "number") {
+    return json({ error: "That app has no price set up yet." }, 500);
+  }
 
   const admin = createClient(url, service, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -128,12 +141,19 @@ Deno.serve(async (req) => {
   const back = returnOrigin(req);
 
   try {
+    // One line item, priced one of the two ways above.
+    const priced: Record<string, string> = item.stripe_price
+      ? { "line_items[0][price]": item.stripe_price }
+      : {
+        "line_items[0][price_data][currency]": "usd",
+        "line_items[0][price_data][unit_amount]": String(item.amount_cents),
+        "line_items[0][price_data][product_data][name]": item.label,
+      };
+
     const session = await stripe("checkout/sessions", {
       mode: "payment",
       "line_items[0][quantity]": "1",
-      "line_items[0][price_data][currency]": "usd",
-      "line_items[0][price_data][unit_amount]": String(item.amount_cents),
-      "line_items[0][price_data][product_data][name]": item.label,
+      ...priced,
       customer_email: user.email ?? "",
       // This is the thread stripe-webhook follows back to this account.
       "metadata[app]": app,
