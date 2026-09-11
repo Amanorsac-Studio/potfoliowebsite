@@ -84,7 +84,12 @@
       "tagline": "Filter the trigger. Shape the tail.",
       "icon": "images/apps/afdgate/icon.svg", "page": "afdgate.html", "color": "#4A8BF0",
       "free": false, "price_cents": 1200, "licensed": false, "version": "1.3.0",
-      "installers": {}
+      "installers": {
+        "windows": { "key": "afdgate/windows-installer.zip", "alt_keys": ["AFD Gate/windows-installer.zip"],
+                     "as": "AFD-Gate-1.3.0-Windows.zip", "type": "application/zip", "size": "11 MB" },
+        "mac":     { "key": "afdgate/macos-installer.zip",   "alt_keys": ["AFD Gate/macos-installer.zip"],
+                     "as": "AFD-Gate-1.3.0-macOS.zip",   "type": "application/zip", "size": "33 MB" }
+      }
     },
     "aether": {
       "name": "AETHER", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
