@@ -84,7 +84,7 @@
     "pulseroom": {
       "name": "PulseRoom", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "Every mixing answer. One tempo.",
-      "icon": "images/apps/pulseroom-logo.svg", "page": "apps.html", "color": "#3fd3e4",
+      "icon": "images/apps/pulseroom-logo.svg", "page": "pulseroom.html", "color": "#3fd3e4",
       "free": true, "licensed": false, "version": "1.0",
       "installers": {
         "windows": { "key": "pulseroom/PulseRoom-Windows.zip", "alt_keys": ["PulseRoom-Windows.zip"], "as": "PulseRoom-Windows.zip", "type": "application/zip", "size": "78 MB" },
@@ -125,7 +125,7 @@
     "harmoniemd": {
       "name": "HarmonieMD", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
       "tagline": "The rehearsal studio for choirs.",
-      "icon": "images/apps/harmoniemd.webp", "page": "harmoniemd.html", "color": "#3ED598",
+      "icon": "images/apps/harmoniemd.webp", "page": "apps.html", "color": "#3ED598",
       "free": false, "licensed": true, "version": null,
       "installers": {}
     }

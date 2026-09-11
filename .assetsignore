@@ -49,8 +49,8 @@ hub/
 # they are simply not uploaded, so the Worker answers 404.html for
 # them the same as it would for a made-up address.
 stemsorter.html
-pulseroom.html
 performlive.html
+harmoniemd.html
 
 # The loading bay for pictures, and the button that sends them. Both
 # are how the site gets made, not part of the site.
