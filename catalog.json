@@ -79,6 +79,18 @@
                      "as": "AMB-Analog-macOS.zip", "type": "application/zip", "size": "745 MB" }
       }
     },
+    "alignpro": {
+      "name": "Align Pro", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "tagline": "Align every mic. Hear exactly how much.",
+      "icon": "images/apps/alignpro/icon.svg", "page": "alignpro.html", "color": "#2E9BF0",
+      "free": false, "licensed": true, "version": "1.0.0",
+      "installers": {
+        "windows": { "key": "alignpro/AlignPro-1.0.0-windows.zip", "alt_keys": ["Align Pro/AlignPro-1.0.0-windows.zip"],
+                     "as": "AlignPro-1.0.0-Windows.zip", "type": "application/zip", "size": "7 MB" },
+        "mac":     { "key": "alignpro/AlignPro-1.0.0-macOS.zip",   "alt_keys": ["Align Pro/AlignPro-1.0.0-macOS.zip"],
+                     "as": "AlignPro-1.0.0-macOS.zip",   "type": "application/zip", "size": "14 MB" }
+      }
+    },
     "afdgate": {
       "name": "AFD Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon", "preview_status": "available",
       "tagline": "Filter the trigger. Shape the tail.",
