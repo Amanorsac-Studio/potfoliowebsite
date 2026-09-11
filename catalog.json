@@ -65,15 +65,15 @@
                      "as": "StemSorter-macOS.zip",   "type": "application/zip", "size": "12 MB" }
       }
     },
-    "amanorsacanalog": {
-      "name": "Amanorsac Analog", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+    "ambanalog": {
+      "name": "AMB Analog", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
       "tagline": "Ten analog machines, built from the ground up.",
-      "icon": "images/apps/analog/icon.svg", "page": "amanorsacanalog.html", "color": "#D4A24C",
+      "icon": "images/apps/analog/icon.svg", "page": "ambanalog.html", "color": "#D4A24C",
       "free": false, "price_cents": 3900, "licensed": true, "version": "1.0.0",
       "installers": {}
     },
     "afdgate": {
-      "name": "AFD Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "name": "AFD Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon", "preview_status": "available",
       "tagline": "Filter the trigger. Shape the tail.",
       "icon": "images/apps/afdgate/icon.svg", "page": "afdgate.html", "color": "#4A8BF0",
       "free": false, "licensed": false, "version": "1.3.0",
