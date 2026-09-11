@@ -313,7 +313,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
   <p class="sub">Tunable presence and air bands, a real harmonic exciter, and a sibilance-aware limiter that keeps the sparkle and drops the harshness. Point the air at the centre for a lead vocal, or out to the sides for a choir.</p>
   <div class="cta-row">
     <button class="cta" id="aether-primary" data-buy type="button">Buy — $12</button>
-    <a class="cta ghost" href="#hear">Hear it</a>
+    <a class="cta ghost" href="#controls">See the controls</a>
   </div>
   <p class="fine">$12 once · one key covers two computers · Windows &amp; macOS · installs through Amanorsac Hub</p>
   <p class="buy-status" data-buy-status hidden></p>
@@ -326,15 +326,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
   <p class="shot-cap" id="ae-shot-cap">The interface, at rest · the analyser draws the boost curve once audio is running through it</p>
 </header>
 
-<section id="hear" class="wrap">
-  <p class="eyebrow">Hear it first</p>
-  <h2>Nobody buys an air plugin from a screenshot.</h2>
-  <p class="lede">The same three seconds, off and on, switching the instant you press it — no reload, no download, and level-matched so that brighter never gets to masquerade as better. Space or Enter plays; the arrow keys switch.</p>
-  <div class="abs" id="ab-grid"></div>
-  <p class="demo-fine">Every pair is RMS-matched · recorded through AETHER 1.0.0 · no other processing</p>
-</section>
-
-<section class="wrap">
+<section id="controls" class="wrap">
   <p class="eyebrow">The five controls</p>
   <h2>Five things to turn, and each one does a job you can name.</h2>
   <div class="five">
@@ -454,7 +446,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
       <h2>One purchase. Two computers. No subscription.</h2>
       <p>A single perpetual licence, activated from inside the plugin and moved between machines by you whenever you need to. A year of updates is included, and the version you have keeps working after that.</p>
       <button class="cta" data-buy type="button">Buy — $12</button>
-      <a class="cta ghost" href="#hear">Hear it again</a>
+      <a class="cta ghost" href="#controls">See the controls</a>
     </div>
   </div>
 </section>
@@ -486,105 +478,10 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 </footer>
 
 <script>
-/* ---------------------------------------------------------------------
-   The A/B demo.
-
-   Two audio elements per source, both loaded, both playing, and only
-   one audible. Switching is a mute flag rather than a src change, so it
-   happens on the frame you press it instead of after a network round
-   trip - which is the whole point of an A/B, and the thing the mixing
-   page's simpler player cannot do.
-
-   If the files are not there yet the card says so plainly rather than
-   presenting a player that does nothing.
-   --------------------------------------------------------------------- */
+/* The A/B demo section is out until the clips exist - see
+   audio/aether/README.md. Its styles are left in place so it can come
+   back whole. */
 (function(){
-  var SOURCES = [
-    { id:'vocal',  title:'Lead vocal',  src:'Close-mic, no other processing' },
-    { id:'choir',  title:'Choir',       src:'Wide room pair' },
-    { id:'piano',  title:'Piano',       src:'Room recording' },
-    { id:'mix',    title:'Full mix',    src:'Two-bus' }
-  ];
-  var grid = document.getElementById('ab-grid');
-  if(!grid) return;
-
-  SOURCES.forEach(function(s){
-    var off = 'audio/aether/' + s.id + '-off.mp3';
-    var on  = 'audio/aether/' + s.id + '-on.mp3';
-
-    var box = document.createElement('div');
-    box.className = 'ab rise';
-    box.innerHTML =
-      '<h3>' + s.title + '</h3><p class="src">' + s.src + '</p>' +
-      '<div class="ab-row">' +
-        '<button class="ab-play" type="button" aria-label="Play ' + s.title + '">&#9654;</button>' +
-        '<div class="ab-sw" role="group" aria-label="' + s.title + ': bypassed or through AETHER">' +
-          '<button type="button" class="on" data-k="off">Off</button>' +
-          '<button type="button" data-k="on">AETHER</button>' +
-        '</div>' +
-        '<span class="ab-bar"><i></i></span>' +
-      '</div><p class="ab-note"></p>';
-
-    var a = new Audio(off), b = new Audio(on);
-    a.preload = b.preload = 'auto';
-    b.muted = true;                       // both run; one is heard
-    var play = box.querySelector('.ab-play'),
-        sw   = box.querySelectorAll('.ab-sw button'),
-        bar  = box.querySelector('.ab-bar i'),
-        note = box.querySelector('.ab-note'),
-        dead = false;
-
-    function fail(){
-      if(dead) return; dead = true;
-      note.className = 'ab-note';
-      note.textContent = 'Demo coming — add ' + off + ' and ' + on + ' to the audio folder.';
-      play.disabled = true;
-      sw.forEach(function(x){ x.disabled = true; });
-    }
-    a.addEventListener('error', fail);
-    b.addEventListener('error', fail);
-
-    function both(fn){ fn(a); fn(b); }
-    function sync(){ if(Math.abs(a.currentTime - b.currentTime) > 0.04) b.currentTime = a.currentTime; }
-
-    a.addEventListener('timeupdate', function(){
-      sync();
-      bar.style.width = a.duration ? (a.currentTime / a.duration * 100) + '%' : '0';
-    });
-    a.addEventListener('ended', function(){
-      both(function(x){ x.currentTime = 0; });
-      play.innerHTML = '&#9654;'; bar.style.width = '0';
-    });
-
-    play.addEventListener('click', function(){
-      if(dead) return;
-      if(a.paused){
-        b.currentTime = a.currentTime;
-        Promise.all([a.play(), b.play()]).catch(fail);
-        play.innerHTML = '&#10073;&#10073;';
-      } else {
-        both(function(x){ x.pause(); });
-        play.innerHTML = '&#9654;';
-      }
-    });
-
-    function pick(k){
-      sw.forEach(function(x){ x.classList.toggle('on', x.getAttribute('data-k') === k); });
-      a.muted = (k !== 'off');
-      b.muted = (k === 'off');
-      sync();
-    }
-    sw.forEach(function(x){
-      x.addEventListener('click', function(){ pick(x.getAttribute('data-k')); });
-    });
-    box.addEventListener('keydown', function(e){
-      if(e.key === 'ArrowRight'){ pick('on'); e.preventDefault(); }
-      if(e.key === 'ArrowLeft'){ pick('off'); e.preventDefault(); }
-    });
-
-    grid.appendChild(box);
-  });
-
   /* reveal on scroll, and never in the way of anyone who asked for less motion */
   if('IntersectionObserver' in window &&
      !matchMedia('(prefers-reduced-motion: reduce)').matches){
