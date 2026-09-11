@@ -34,9 +34,9 @@
   var statusEl = document.querySelector('[data-buy-status]');
 
   var APP_NAMES = { secondout: 'SecondOut', stemsorter: 'Stem Sorter', nebulatide2: 'Nebula Tide 2',
-                    amanorsacanalog: 'Amanorsac Analog', aether: 'AETHER' };
+                    ambanalog: 'AMB Analog', aether: 'AETHER' };
   var PRICES = { secondout: 'Buy — $19', stemsorter: 'Buy — $19', nebulatide2: 'Name your price',
-                 amanorsacanalog: 'Buy — $39', aether: 'Buy — $12' };
+                 ambanalog: 'Buy — $39', aether: 'Buy — $12' };
   var HUB_PROTOCOL = 'amanorsac';
   var OWNED_LABEL = 'Install in Amanorsac Hub';
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }

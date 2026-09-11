@@ -78,9 +78,9 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     amount_cents: 1200,
     label: "AETHER — lifetime licence for two computers, one year of updates included",
   },
-  amanorsacanalog: {
+  ambanalog: {
     amount_cents: 3900,
-    label: "Amanorsac Analog — ten plug-ins, lifetime licence for two computers",
+    label: "AMB Analog — ten plug-ins, lifetime licence for two computers",
   },
   nebulatide2: {
     // Pay what you want. The figures live on the Price in Stripe -
