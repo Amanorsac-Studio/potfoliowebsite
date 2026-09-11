@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Stem Sorter">
+  <!-- Five bars of different heights: the incoming channels, sorted. -->
+  <rect x="1.2"  y="8.5"  width="3.2" height="7"  rx="1.6" fill="#2ad2e8" opacity=".55"/>
+  <rect x="6"    y="5.5"  width="3.2" height="13" rx="1.6" fill="#2ad2e8" opacity=".8"/>
+  <rect x="10.8" y="2"    width="3.2" height="20" rx="1.6" fill="#2ad2e8"/>
+  <rect x="15.6" y="5.5"  width="3.2" height="13" rx="1.6" fill="#2ad2e8" opacity=".8"/>
+  <rect x="20.4" y="8.5"  width="2.4" height="7"  rx="1.2" fill="#2ad2e8" opacity=".55"/>
+</svg>

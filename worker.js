@@ -206,7 +206,8 @@ async function getCatalog(env) {
   return _catalog || { hub: { installers: {} }, apps: {} };
 }
 
-const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)' };
+const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)',
+                         'mac-x64': 'Mac (Intel)', android: 'Android' };
 
 /* One app installer, in the shape the download code below has always used. */
 function installerFor(catalog, app, platform) {

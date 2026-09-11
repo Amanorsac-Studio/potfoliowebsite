@@ -4,3 +4,6 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# supabase CLI scratch state - machine-local, not the project
+supabase/.temp/

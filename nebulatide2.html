@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-6190327414594776">
+<title>Nebula Tide 2: shimmer, your own presets, and a drag to the timeline | Amanorsac App Store</title>
+<meta name="description" content="Nebula Tide 2 puts a shimmer reverb in the signal path, adds a Studio page for building presets from your own recordings, and drags a MIDI clip straight onto your DAW timeline. Real drone pad recordings in all twelve keys, never pitch-shifted. Windows and macOS.">
+<meta property="og:title" content="The pad rises as it fades.">
+<meta property="og:description" content="Nebula Tide 2: a shimmer the pads run through, your own presets built in the app, and a drag straight to your timeline.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/nt2/stage.png">
+<meta property="og:url" content="https://amanorsac.studio/nebulatide2.html">
+<link rel="icon" href="images/apps/nt-logo.webp" type="image/webp">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   Nebula Tide 2 product page. The same skeleton every product page
+   here uses, wearing the instrument's own colours: deep space, one
+   ice-blue accent, and a violet reserved for the shimmer - the thing
+   version 2 is actually about.
+
+   There are no screenshots on this page on purpose. Version 2's
+   interface is not the one every existing picture shows, and a page
+   that illustrates a shimmer with a photograph of the version without
+   it would be lying. The artwork here is drawn, and reads as drawn.
+   ===================================================================== */
+:root{
+  --bg:#050a14; --panel:#0d1726; --panel-2:#122033; --line:rgba(255,255,255,.09);
+  --text:#e6eef6; --muted:#a2b3c6; --dim:#7f92a8;
+  --accent:#4FE3FF; --accent-soft:#062430;
+  --sh:#9d8bfa; --go:#4fd58f;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:22px;
+  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:1120px;margin:0 auto;
+  padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+section{padding:clamp(64px,10vh,120px) 0}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 86%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;display:flex;align-items:center;gap:9px;
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name img{width:18px;height:18px}
+.top .name b{color:var(--accent);font-weight:700}
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#031420}
+
+/* ---------- hero ---------- */
+.hero{padding:clamp(56px,9vh,100px) 0 0}
+.hero .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
+  border-radius:999px;padding:6px 14px;margin:0 0 26px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;
+  font-size:clamp(34px,5.6vw,64px);margin:0 0 22px;max-width:15ch}
+.hero .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:58ch;margin:0 0 30px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
+  text-decoration:none;border:0;cursor:pointer;border-radius:999px;padding:14px 28px;
+  background:var(--accent);color:#03212b;transition:transform var(--dur) var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:translateY(0) scale(.98)}
+.cta[disabled]{opacity:.65;cursor:default;transform:none}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.hero .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0}
+.buy-status{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:56ch}
+.buy-status.bad{color:#f27c8f}
+.buy-status a{color:var(--accent)}
+.hero-shot{margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.55)}
+.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:14px 0 0}
+
+/* ---------- reviews ---------- */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+.star{font-size:16px;line-height:1;color:var(--line)}
+.star.on{color:var(--accent)}
+.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
+.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
+.rv-list{list-style:none;margin:0 0 40px;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+.rv-head .star{font-size:13px}
+.rv-who{font-size:12.5px;color:var(--dim)}
+.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
+.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
+.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px)}
+.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px}
+.rv-pick{display:flex;gap:6px;margin:0 0 20px}
+.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
+.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
+.rv-pick .star.on{color:var(--accent)}
+.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
+.rv-lbl span{text-transform:none;letter-spacing:0}
+.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
+  font-size:14.5px;resize:vertical;margin:0 0 16px}
+.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent)}
+.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
+.rv-go[disabled]{opacity:.6;cursor:default}
+.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
+.rv-msg.bad{color:#f27c8f}
+.rv-done{text-align:center;padding:6px 0 4px}
+.rv-done[hidden]{display:none}
+.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+  display:grid;place-items:center;font-size:20px;color:var(--accent);background:var(--accent-soft)}
+.rv-done h3{font-size:19px;margin:0 0 8px}
+.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+
+/* ---------- section headings ---------- */
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
+  font-size:clamp(25px,3.2vw,38px);margin:0 0 14px}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 40px;font-size:17px}
+.lede code{font-family:var(--mono);font-size:.86em;color:var(--text);
+  background:var(--panel-2);border-radius:5px;padding:2px 6px}
+
+/* ---------- feature rows ---------- */
+.feat{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,4vw,56px);
+  align-items:center;margin-bottom:clamp(48px,8vh,84px)}
+.feat.flip{grid-template-columns:1.15fr 1fr}
+.feat.flip .feat-copy{order:2}
+.feat .kicker,.feat-wide .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--k,var(--accent));margin:0 0 10px}
+.feat h3,.feat-wide h3{font-family:var(--display);font-weight:700;
+  font-size:clamp(20px,2.2vw,26px);letter-spacing:-.015em;margin:0 0 12px}
+.feat p{color:var(--muted);margin:0;max-width:46ch}
+.feat .shot,.feat-wide .shot{border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;box-shadow:0 14px 48px rgba(0,0,0,.45)}
+.feat-wide{margin-bottom:clamp(48px,8vh,84px)}
+.feat-wide p{color:var(--muted);max-width:60ch;margin:0 0 26px}
+.feat code,.feat-wide code,.trio code,details code,.guide code{font-family:var(--mono);
+  font-size:.85em;color:var(--text);background:var(--panel-2);border-radius:5px;padding:2px 6px}
+
+/* the quiet ones */
+.trio{border-top:1px solid var(--line)}
+.trio > div{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:18px;
+  padding:26px 0;border-bottom:1px solid var(--line)}
+.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.trio p{margin:0;color:var(--muted);max-width:62ch}
+@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
+
+/* ---------- workflow ---------- */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:step}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px 20px;counter-increment:step}
+.step::before{content:counter(step,decimal-leading-zero);display:block;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px}
+.step b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:6px}
+.step p{margin:0;font-size:14px;color:var(--muted)}
+@media (max-width:980px){ .steps{grid-template-columns:1fr 1fr 1fr} }
+@media (max-width:640px){ .steps{grid-template-columns:1fr 1fr} }
+@media (max-width:420px){ .steps{grid-template-columns:1fr} }
+
+/* ---------- compatibility ---------- */
+.compat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.compat div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px}
+.compat b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 10px;font-weight:500}
+.compat p{margin:0;font-size:14.5px;color:var(--muted)}
+@media (max-width:860px){ .compat{grid-template-columns:1fr 1fr} }
+@media (max-width:480px){ .compat{grid-template-columns:1fr} }
+
+/* ---------- the template guideline ---------- */
+.guide{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(26px,4vw,40px)}
+.guide h2{margin:0 0 12px}
+.guide > p{color:var(--muted);max-width:64ch;margin:0 0 22px}
+.guide ul{margin:0;padding:0;list-style:none;display:grid;gap:16px}
+.guide li{display:grid;grid-template-columns:22px 1fr;gap:12px;color:var(--muted);max-width:70ch}
+.guide li::before{content:"→";font-family:var(--mono);color:var(--accent);line-height:1.7}
+
+/* ---------- the price ---------- */
+.price{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(20px,4vw,48px);align-items:center}
+.price .big{font-family:var(--display);font-weight:800;font-size:clamp(40px,5.4vw,64px);
+  letter-spacing:-.03em;line-height:.98;color:var(--accent);margin:0}
+.price h2{margin:0 0 8px}
+.price p{margin:0 0 18px;color:var(--muted);max-width:52ch}
+@media (max-width:700px){ .price{grid-template-columns:1fr;gap:14px} }
+
+/* ---------- faq ---------- */
+details{border-bottom:1px solid var(--line)}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted);
+  font-size:18px;transition:transform var(--dur) var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+
+.finale{border-top:1px solid var(--line)}
+.finale h2{max-width:22ch}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;
+  display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- motion ---------- */
+.rise{opacity:0;transform:translateY(18px);
+  transition:opacity 640ms var(--ease),transform 640ms var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rise{opacity:1;transform:none}
+}
+@media (max-width:820px){
+  .feat,.feat.flip{grid-template-columns:1fr}
+  .feat.flip .feat-copy{order:0}
+}
+
+/* ---------- what stays the same ---------- */
+.keep{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(26px,4vw,40px)}
+.keep h2{margin:0 0 12px}
+.keep > p{color:var(--muted);max-width:64ch;margin:0 0 22px}
+.keep ul{margin:0;padding:0;list-style:none;display:grid;gap:14px}
+.keep li{display:grid;grid-template-columns:22px 1fr;gap:12px;color:var(--muted);max-width:70ch}
+.keep li::before{content:"✓";font-family:var(--mono);color:var(--go);line-height:1.7}
+
+/* ---------- platforms ---------- */
+.plats{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+.plats div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px}
+.plats b{display:block;font-family:var(--display);font-weight:600;font-size:17px;margin:0 0 6px}
+.plats p{margin:0;font-size:14.5px;color:var(--muted)}
+.plats .soon b{color:var(--muted)}
+.plats .soon{border-style:dashed}
+
+
+/* the shimmer sections borrow the violet */
+.feat.sh .kicker,.feat-wide.sh .kicker{color:var(--sh)}
+.v1{display:flex;gap:14px;flex-wrap:wrap;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px 22px;margin:0 0 8px}
+.v1 p{margin:0;color:var(--muted);font-size:14.5px}
+.v1 a{color:var(--accent)}
+</style>
+<link rel="canonical" href="https://amanorsac.studio/nebulatide2">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Nebula Tide 2",
+  "url": "https://amanorsac.studio/nebulatide2",
+  "description": "Endless ambient drone pads in all twelve keys, with a shimmer reverb in the signal path, a Studio page for building presets from your own recordings, and a drag that puts a MIDI clip on your DAW timeline.",
+  "operatingSystem": "Windows, macOS",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Audio software",
+  "softwareVersion": "2.0",
+  "image": "https://amanorsac.studio/images/apps/nt2/stage.png",
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" },
+  "offers": { "@type": "Offer", "price": "5", "priceCurrency": "USD", "priceSpecification": { "@type": "PriceSpecification", "minPrice": "5", "maxPrice": "100", "priceCurrency": "USD" } }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+</head>
+<body data-app="nebulatide2">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name"><img src="images/apps/nt-logo.webp" alt="">Nebula <b>Tide 2</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <span class="status">Pay what you want · Windows &amp; macOS</span>
+  <h1>The pad rises as it fades.</h1>
+  <p class="sub">Version 1 gave you a pad. Version 2 gives you somewhere to put it. A shimmer the pads run <em>through</em>, your own presets built inside the app, and a drag that lands a MIDI clip on your timeline. The twelve real key recordings underneath are exactly as they were.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Name your price</button>
+    <a class="cta ghost" href="#new">What's new</a>
+  </div>
+  <p class="fine">From $5, $29 suggested · one purchase covers two machines · Windows &amp; macOS · installs through Amanorsac Hub</p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <div class="hero-shot rise">
+    <img src="images/apps/nt2/stage.webp" width="1100" height="802"
+         alt="Nebula Tide 2's stage: the twelve keys in orbit, the shimmer knob at the right, and the space controls below" fetchpriority="high">
+  </div>
+</header>
+
+<section id="new" class="wrap">
+  <h2>What version 2 adds.</h2>
+  <p class="lede">Everything that made Nebula Tide worth opening is untouched: real recordings in all twelve keys, never pitch-shifted, looping without a seam. What is new is depth, ownership and reach.</p>
+
+  <div class="feat-wide sh rise">
+    <p class="kicker">Shimmer · the hero</p>
+    <h3>In the path, not beside it.</h3>
+    <p>Most shimmer plugins put the effect alongside the sound, so the pad and the shimmer arrive as two separate things sitting next to each other. Nebula Tide puts it in the path. The pad goes in, the shimmer comes out, and what you hear is one sound that grows rather than two sounds stacked.</p>
+    <p>One control does the work. At the bottom of its travel it is a hint of air. At the top it is a room with no ceiling. Turning it moves five things at once, each on its own curve: how much, how close, how bright, how dense, and how far it regenerates. A full set of controls waits in Settings for anyone who wants them, and nobody has to touch them.</p>
+    <p>The pitch shifting is splice-aligned rather than fixed-interval — the difference between a shimmer that sounds smooth and one that sounds granular.</p>
+    <div class="shot"><img src="images/apps/nt2/settings.webp" width="612" height="620" loading="lazy"
+      alt="The shimmer's own controls in Settings: bloom, tone, size, density and pitch, above the license and sound library sections"></div>
+  </div>
+
+  <div class="feat-wide rise">
+    <p class="kicker">Studio</p>
+    <h3>Your recordings, our engine.</h3>
+    <p>Twelve slots, one per key. Drop your own recordings onto the key you recorded them in and the slot fills. Name it, save it, give it a colour, and it appears on the stage beside the presets we made. No folder structure to learn, no manifest to write, no restart. Share a preset with someone else and they import it in one click.</p>
+    <div class="shot"><img src="images/apps/nt2/studio.webp" width="1097" height="803" loading="lazy"
+      alt="The Studio page: twelve key slots waiting for audio, a preset name, a colour, and the reverb defaults underneath"></div>
+  </div>
+
+  <div class="feat-wide rise">
+    <p class="kicker">Timeline</p>
+    <h3>From the instrument to the timeline, in one drag.</h3>
+    <p>Drag from the app onto a DAW track and a MIDI clip lands, already in the right key. The clip carries the pad on one channel and the effects and textures on another, so a single drag reproduces what you were just hearing.</p>
+  </div>
+
+  <div class="feat-wide rise">
+    <p class="kicker">Playable</p>
+    <h3>Three zones on one keyboard.</h3>
+    <p>The keyboard splits into three: effects low down, the twelve keys in the middle, textures at the top. One note plays a sound, the pitch picks the key, and the zones are drawn on screen so you can see where you are. Any knob can be learned to a controller — press learn, move the knob, done.</p>
+    <div class="shot"><img src="images/apps/nt2/keys.webp" width="1100" height="805" loading="lazy"
+      alt="The stage with the keyboard map open: the FX, KEYS and TEXTURES zones coloured across the range"></div>
+  </div>
+
+  <div class="trio">
+    <div><h3>Choose where the sounds live</h3>
+      <p>The installer shows you the path before it writes anything and lets you change it. Settings has the same control afterwards, so the library can move to another drive without a reinstall.</p></div>
+    <div><h3>A protected library</h3>
+      <p>The recordings ship in a single encrypted container and are never written to disk in the clear. Invisible if you bought it. The reason it can stay a product rather than a folder of files.</p></div>
+    <div><h3>Two machines, moved by you</h3>
+      <p>One purchase covers the studio machine and the one that travels. Move a seat yourself, from the app or from your account here. No support ticket, no waiting.</p></div>
+    <div><h3>An About screen</h3>
+      <p>Version, credits and licences, one click from Settings. Small, and the first thing you want when something needs reporting.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>One instrument, more than one machine.</h2>
+  <p class="lede">Windows and macOS ship the sound library with the app. The mobile builds download it on first launch, so the store download stays small — same instrument, same presets, same sound.</p>
+  <div class="plats">
+    <div><b>Windows</b><p>Windows 10 and 11, 64-bit. Standalone and VST3.</p></div>
+    <div><b>macOS</b><p>macOS 11 and later, Apple silicon and Intel.</p></div>
+    <div class="soon"><b>Android</b><p>Built and being tested. It appears here the day the build is ready to hand out, not before.</p></div>
+    <div class="soon"><b>iPhone and iPad</b><p>In build. They arrive as App Store releases, and this page will say so the day they do.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="keep rise">
+    <h2>And what stays exactly the same.</h2>
+    <p>If you have version 1, none of what you already like about it has moved.</p>
+    <ul>
+      <li>Twelve real key recordings, never pitch-shifted from one another.</li>
+      <li>Seamless loops that go on as long as you leave them.</li>
+      <li>The same living interface: tap a planet, pick a key, the room fills.</li>
+      <li>It still runs offline once it is installed.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="v1">
+    <p><b>Version 1 is not going anywhere.</b> It stays free, it stays downloadable, and it keeps working. <a href="nebulatide.html">See version 1 →</a></p>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="price rise">
+    <p class="big">You<br>choose</p>
+    <div>
+      <h2>Pay what it is worth to you.</h2>
+      <p>Anything from $5 to $100, and $29 is what I would ask if I were asking. Whatever you pay, you get the same thing: one license key covering the studio machine and the one that travels, a seat you can move yourself, and a year of updates. The version you have keeps working after that.</p>
+      <p>If money is the thing stopping you, pay the five. I would rather it was being played.</p>
+      <button class="cta" data-buy type="button">Name your price</button>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Questions, answered.</h2>
+  <details><summary>Does my version 1 licence still work?</summary>
+    <div>Version 1 is free and needs no licence at all, and nothing about it changes. Version 2 is a separate, paid release with its own key — installing it leaves version 1 alone.</div></details>
+  <details><summary>Do my presets carry over?</summary>
+    <div>The twelve key recordings are the same library, so everything you know still sounds like itself. The Studio page is new in version 2, so presets you build there are version 2's.</div></details>
+  <details><summary>Where do the sounds install?</summary>
+    <div>Wherever you choose. The installer shows the path before it writes anything, and Settings lets you move the library to another drive later without reinstalling.</div></details>
+  <details><summary>How many machines?</summary>
+    <div>Two at a time. You can free a slot from inside the app or from <a href="/my-apps.html">My Apps</a> when you change computers.</div></details>
+  <details><summary>Do I need the internet?</summary>
+    <div>Only to activate the first time, and for a quiet check now and then. After that it works offline for a month at a stretch.</div></details>
+  <details><summary>Is it a plugin?</summary>
+    <div>It runs standalone and as a VST3, so it sits in a session or beside one. The drag handle puts a MIDI clip on your timeline either way.</div></details>
+</section>
+
+<section id="reviews" class="wrap">
+  <p class="eyebrow">From people who use it</p>
+  <h2>What players are saying.</h2>
+  <div class="rv-stats" hidden></div>
+  <ul class="rv-list"></ul>
+  <p class="rv-empty" hidden>Be the first to leave one.</p>
+  <div class="rv-panel">
+    <form class="rv-form" novalidate>
+      <p class="rv-legend">Used it? Rate it.</p>
+      <div class="rv-pick" role="group" aria-label="Rating">
+        <span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span>
+        <span class="star">&#9733;</span><span class="star">&#9733;</span>
+      </div>
+      <label class="rv-lbl" for="rv-body">Your review</label>
+      <textarea class="rv-body-in" id="rv-body" rows="3"
+        placeholder="What did the shimmer do to your track?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
+      <button class="cta rv-go" type="submit">Post review</button>
+      <p class="rv-msg" role="status"></p>
+    </form>
+    <div class="rv-done" hidden>
+      <p class="rv-tick" aria-hidden="true">&#10003;</p>
+      <h3>Thank you.</h3>
+      <p>It goes up once I've actually read it — usually within a day or two.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap finale">
+  <h2>Build your own. Take it anywhere.</h2>
+  <p class="lede">The pads you know, a shimmer they run through, and twelve slots waiting for your own recordings.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Name your price</button>
+    <a class="cta ghost" href="nebulatide.html">Version 1, free</a>
+  </div>
+  <p class="fine">From $5 · one purchase covers two machines · installs through Amanorsac Hub</p>
+</section>
+
+<footer>
+  <a href="apps.html">App Store</a>
+  <a href="nebulatide.html">Nebula Tide 1</a>
+  <a href="stemsorter.html">Stem Sorter</a>
+  <a href="pulseroom.html">PulseRoom</a>
+  <a href="index.html">Studio</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+(function(){
+  if('IntersectionObserver' in window &&
+     !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+    }, { threshold:.15 });
+    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+  }else{
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+<link rel="stylesheet" href="/assets/hub-download.css">
+<script src="/assets/hub-download.js" defer></script>
+<script src="assets/app-reviews.js" defer></script>
+<script src="assets/track.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+</body>
+</html>

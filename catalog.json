@@ -40,10 +40,26 @@
       "name": "SecondOut", "vendor": "Aquarii Audio", "kind": "plugin", "status": "available",
       "tagline": "One master bus. Two independent outputs.",
       "icon": "images/apps/secondout-icon.png", "page": "secondout.html", "color": "#3fe083",
-      "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.1",
+      "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.2",
       "installers": {
-        "windows": { "key": "SecondOut-1.3.1-Setup.exe", "alt_keys": ["secondout/SecondOut-1.3.1-Setup.exe"],
-                     "as": "SecondOut-1.3.1-Setup.exe", "type": "application/octet-stream", "size": "5 MB" }
+        "windows": { "key": "secondout/SecondOut-1.3.2-Setup.exe",
+                     "alt_keys": ["SECOND OUT/SecondOut-1.3.2-Setup.exe", "SecondOut-1.3.2-Setup.exe"],
+                     "as": "SecondOut-1.3.2-Setup.exe", "type": "application/octet-stream", "size": "5 MB" },
+        "mac":     { "key": "secondout/SecondOut-1.3.2-macOS.zip",
+                     "alt_keys": ["SECOND OUT/SecondOut-1.3.2-macOS.zip"],
+                     "as": "SecondOut-1.3.2-macOS.zip", "type": "application/zip", "size": "12 MB" }
+      }
+    },
+    "stemsorter": {
+      "name": "Stem Sorter", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
+      "tagline": "Your files. Your template. One click. Made for Studio One, on Mac and Windows.",
+      "icon": "images/apps/stemsorter-logo.svg", "page": "stemsorter.html", "color": "#2ad2e8",
+      "free": false, "price_cents": 1900, "licensed": true, "version": "0.6.0",
+      "installers": {
+        "windows": { "key": "stemsorter/StemSorter-Windows.zip", "alt_keys": ["STEMSORTER/StemSorter-Windows.zip"],
+                     "as": "StemSorter-Windows.zip", "type": "application/zip", "size": "9 MB" },
+        "mac":     { "key": "stemsorter/StemSorter-macOS.zip",   "alt_keys": ["STEMSORTER/StemSorter-macOS.zip"],
+                     "as": "StemSorter-macOS.zip",   "type": "application/zip", "size": "12 MB" }
       }
     },
     "pulseroom": {
@@ -54,6 +70,18 @@
       "installers": {
         "windows": { "key": "pulseroom/PulseRoom-Windows.zip", "alt_keys": ["PulseRoom-Windows.zip"], "as": "PulseRoom-Windows.zip", "type": "application/zip", "size": "78 MB" },
         "mac":     { "key": "pulseroom/PulseRoom-macOS.zip",   "alt_keys": ["PulseRoom-macOS.zip"],   "as": "PulseRoom-macOS.zip",   "type": "application/zip", "size": "171 MB" }
+      }
+    },
+    "nebulatide2": {
+      "name": "Nebula Tide 2", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
+      "tagline": "The pad rises as it fades. Shimmer, your own presets, and a drag to the timeline.",
+      "icon": "images/apps/nt-logo.webp", "page": "nebulatide2.html", "color": "#4FE3FF",
+      "free": false, "price_cents": 2900, "price_min_cents": 500, "pay_what_you_want": true, "licensed": true, "version": "2.0",
+      "installers": {
+        "windows": { "key": "nebulatide2/NebulaTide-Windows.zip", "alt_keys": ["Nebula Tide V2/NebulaTide-Windows.zip"],
+                     "as": "NebulaTide2-Windows.zip", "type": "application/zip" },
+        "mac":     { "key": "nebulatide2/NebulaTide-macOS.zip",   "alt_keys": ["Nebula Tide V2/NebulaTide-macOS.zip"],
+                     "as": "NebulaTide2-macOS.zip",   "type": "application/zip" }
       }
     },
     "nebulatide": {
