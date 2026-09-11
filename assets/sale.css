@@ -29,36 +29,27 @@
 .sale-strip a{color:inherit; text-decoration:underline; text-underline-offset:3px}
 @media (max-width:600px){ .sale-strip{font-size:12.5px; padding:8px 12px; gap:6px 10px} }
 
-/* ---------- the banner that opens the store ---------- */
+/* ---------- the line that sits over the shelf ---------- */
+/* It used to be a slab across the top of the page. The red now lives
+   where the buying happens - on the price of each card - and this is
+   one line above them saying why they are low. */
 .sale-banner{
-  position:relative; overflow:hidden; border-radius:16px; margin:0 0 42px;
-  padding:clamp(20px,3vw,30px) clamp(20px,3.4vw,36px);
-  background:linear-gradient(118deg,#8E0B17 0%,var(--sale-red) 46%,#FF4A55 100%);
-  color:var(--sale-ink); box-shadow:0 18px 46px -22px rgba(225,29,46,.75);
-  display:flex; align-items:center; justify-content:space-between; gap:22px; flex-wrap:wrap;
-  text-align:left;
+  display:flex; align-items:center; gap:12px 16px; flex-wrap:wrap;
+  margin:0 0 6px; padding:12px 18px; border-radius:12px;
+  background:linear-gradient(90deg,#B3111F,var(--sale-red) 58%,#FF3D4A);
+  color:var(--sale-ink); box-shadow:0 12px 34px -22px rgba(225,29,46,.95);
+  font:500 14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
-.sale-banner::after{content:""; position:absolute; inset:0; pointer-events:none;
-  background:radial-gradient(120% 180% at 88% -30%,rgba(255,255,255,.28),transparent 60%)}
-.sale-banner > *{position:relative; z-index:1}
-.sale-banner .big{
-  font:800 clamp(30px,4.6vw,52px)/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  letter-spacing:-.02em; margin:0 0 6px;
-}
-.sale-banner .sub{margin:0; font:500 15.5px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; opacity:.95; max-width:46ch}
-.sale-banner .ends{flex:none; text-align:right; padding-left:18px;
-  border-left:1px solid rgba(255,255,255,.28)}
-.sale-banner .ends .lab{margin:0; font:600 11px/1 system-ui,sans-serif;
-  letter-spacing:.14em; text-transform:uppercase; opacity:.8}
-.sale-banner .ends .clock{display:block; margin:9px 0 0;
-  font:800 clamp(22px,2.6vw,30px)/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  font-variant-numeric:tabular-nums; letter-spacing:-.01em}
-.sale-banner .ends .when{margin:8px 0 0; font:500 12px/1.4 system-ui,sans-serif; opacity:.8}
-@media (max-width:760px){
-  .sale-banner{padding:20px; border-radius:14px; margin-bottom:32px}
-  .sale-banner .ends{text-align:left; padding:14px 0 0; border-left:0;
-    border-top:1px solid rgba(255,255,255,.28); width:100%}
-  .sale-banner .ends .clock{margin-top:6px}
+.sale-banner .tag{flex:none; background:rgba(0,0,0,.26); border-radius:999px;
+  padding:4px 11px; font-weight:800; font-size:11.5px; letter-spacing:.1em;
+  text-transform:uppercase}
+.sale-banner .sub{margin:0; flex:1 1 260px}
+.sale-banner .ends{margin:0 0 0 auto; flex:none; display:flex; align-items:baseline; gap:8px}
+.sale-banner .ends .lab{font-size:11px; letter-spacing:.12em; text-transform:uppercase; opacity:.78}
+.sale-banner .ends .clock{font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:.01em}
+@media (max-width:640px){
+  .sale-banner{padding:12px 14px; font-size:13.5px}
+  .sale-banner .ends{margin-left:0; width:100%}
 }
 
 /* ---------- the line under a buy button ---------- */
@@ -75,17 +66,9 @@
   white-space:nowrap; opacity:.85}
 .promo-line .clock[hidden]{display:none}
 
-/* ---------- the red flag on a store tile ---------- */
-.app-shot{position:relative}
-.sale-flag{
-  position:absolute; top:10px; left:10px; z-index:3;
-  background:var(--sale-red); color:#fff; border-radius:8px; padding:5px 9px;
-  font:800 11.5px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  letter-spacing:.06em; box-shadow:0 6px 18px -6px rgba(0,0,0,.8);
-}
-.app-price{margin:10px 0 0; font:700 15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.app-price s{opacity:.55; font-weight:500; margin-left:7px}
-.app-price .free{opacity:.85}
+/* The store's own price row is styled in apps.html, next to the rest of
+   the shelf. The red pill on it is the only red the store needs - there
+   was a flag over the picture as well, and two of them was one too many. */
 
 /* ---------- what you actually get, under the buy button ---------- */
 .assure{list-style:none; display:grid; gap:9px 26px; grid-template-columns:repeat(auto-fit,minmax(272px,1fr));

@@ -391,7 +391,7 @@ body[data-room="apps"] .wrap{max-width:1280px}
   background:#EAE4FF;box-shadow:0 0 18px 4px rgba(160,140,255,.7)}
 
 /* ---------- the four columns ---------- */
-.shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(14px,2vw,26px);
+.shelf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2.1vw,28px);
   padding:clamp(38px,6vh,68px) 0 0}
 .app{display:flex;flex-direction:column;text-decoration:none;color:inherit;
   transition:transform var(--dur) var(--ease-out)}
@@ -406,8 +406,8 @@ body[data-room="apps"] .wrap{max-width:1280px}
 .app.nolink .app-shot{filter:saturate(.55) brightness(.9)}
 
 /* name row: the mark, then the two-tone wordmark and its line */
-.app-id{display:flex;align-items:flex-start;gap:13px;margin:0 0 18px;
-  min-height:clamp(72px,6.4vw,88px)}
+.app-id{display:flex;align-items:center;gap:13px;margin:0 0 16px;
+  min-height:clamp(46px,4.4vw,60px)}
 .mark{flex:none;width:clamp(46px,4.4vw,60px);aspect-ratio:1;border-radius:15px;
   display:grid;place-items:center;
   box-shadow:inset 0 1px 1px rgba(255,255,255,.16), 0 8px 22px rgba(0,0,0,.5);
@@ -416,10 +416,8 @@ body[data-room="apps"] .wrap{max-width:1280px}
   0 10px 30px color-mix(in srgb,var(--k) 34%,transparent)}
 .mark svg{width:58%;height:58%;display:block;overflow:visible}
 .app-name{font-family:var(--display);font-weight:700;letter-spacing:-.03em;
-  font-size:clamp(18px,1.85vw,24px);line-height:1.12;margin:0 0 5px;color:#fff}
+  font-size:clamp(18px,1.85vw,24px);line-height:1.12;margin:0;color:#fff}
 .app-name em{font-style:normal;color:var(--k)}
-.app-say{font-family:var(--body);font-size:clamp(12.5px,1.05vw,14.5px);line-height:1.35;
-  color:#A9A2C8;margin:0}
 
 /* the capture */
 .app-shot{position:relative;border-radius:14px;overflow:hidden;background:#05040B;
@@ -433,10 +431,26 @@ body[data-room="apps"] .wrap{max-width:1280px}
    controls off and, on a phone, left a meaningless slice. The frame
    keeps a fixed shape so the grid stays even, and the picture sits
    inside it complete. */
-.app-shot{aspect-ratio:4/3;display:grid;place-items:center;padding:10px}
-.app-shot img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;border-radius:6px}
+/* The frame keeps one shape so the shelf stays level; the picture
+   fills it and object-fit decides what to do with the leftover -
+   never a crop, never a stretch. place-items:center left the image
+   sizing itself from its own width, which made the frame taller
+   than 4:3 and knocked the prices out of line. */
+.app-shot{aspect-ratio:4/3;display:block;min-height:0}
+/* The picture is laid into the frame rather than flowed through it:
+   inset on all four sides gives it a definite box whatever its own
+   proportions are, so a portrait screenshot cannot make one card
+   taller than the four beside it. */
+/* width and height are spelled out rather than left to the four insets:
+   an absolutely positioned image with auto height falls back to its own
+   intrinsic height and ignores `bottom`, which is what was cropping the
+   tall screenshots. */
+.app-shot img{position:absolute;top:10px;left:10px;
+  width:calc(100% - 20px);height:calc(100% - 20px);
+  object-fit:contain;object-position:center;display:block;border-radius:6px}
 @media (max-width:720px){
-  .app-shot{aspect-ratio:16/10;padding:8px}
+  .app-shot{aspect-ratio:16/10}
+  .app-shot img{top:8px;left:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
 }
 
 /* Still real screenshots, not mockups - dimmed and labelled rather than
@@ -448,20 +462,40 @@ body[data-room="apps"] .wrap{max-width:1280px}
   text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.4);
   border-radius:999px;padding:9px 20px;backdrop-filter:blur(2px)}
 
-.app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.6;
-  text-align:center;margin:20px 0 0;padding:0 4px}
+/* One sentence, two lines, never three - so the row of prices under a
+   shelf of cards is a straight line rather than a staircase. Each row
+   below the picture holds its height whether it has anything in it or
+   not, which is what keeps the columns level. */
+.app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.55;
+  text-align:center;margin:18px 0 0;padding:0 4px;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+  min-height:calc(2 * 1.55em)}
 .app-badge{text-align:center;margin:12px 0 0;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.06em;color:var(--k);min-height:1px}
-.app-badge:empty{margin:0}
+  font-size:10.5px;letter-spacing:.06em;color:var(--k);min-height:14px}
 .app-dot{margin:0 7px;opacity:.5}
+
+/* the price, the way a shop writes one: what it was, then what it is */
+.app-price{text-align:center;margin:12px 0 0;min-height:46px;
+  font-family:var(--body);color:#fff}
+.app-price s{display:block;font-size:12.5px;line-height:1.35;color:#8C85AC;
+  text-decoration-thickness:1px;margin:0 0 1px}
+.app-price b{font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-.02em;
+  vertical-align:middle}
+.app-price .free{font-size:clamp(15px,1.3vw,17px);font-weight:600;color:#A9A2C8;
+  letter-spacing:.01em}
+.app-price .save{display:inline-block;margin-left:8px;vertical-align:middle;
+  background:#E11D2E;color:#fff;border-radius:999px;padding:3px 9px;
+  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase}
+
 .app-go{margin-top:auto;padding-top:16px;text-align:center;
   font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--k);opacity:.72;transition:opacity var(--dur) var(--ease-out)}
 .app:hover .app-go{opacity:1}
 
-@media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,1fr)} }
-@media (max-width:700px){ .shelf{grid-template-columns:1fr 1fr;gap:26px} }
-@media (max-width:480px){ .shelf{grid-template-columns:1fr;gap:38px} }
+@media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:700px){ .shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px} }
+@media (max-width:480px){ .shelf{grid-template-columns:minmax(0,1fr);gap:38px} }
 
 /* ---------- what they all have in common ---------- */
 .traits{display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;
@@ -723,9 +757,6 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
 <main id="main"><div class="wrap">
 
-  <!-- filled by assets/promo.js while a sale is on, empty otherwise -->
-  <div data-sale-banner></div>
-
   <header class="marquee">
     <p class="suite">A suite of</p>
     <h1>Powerful audio apps</h1>
@@ -741,6 +772,9 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
   <!-- Four columns, four doors. Each app's own mark, its own colour, and
        a real capture of the thing running. -->
+  <!-- filled by assets/promo.js while a sale is on, empty otherwise -->
+  <div data-sale-banner></div>
+
   <section id="store" class="shelf" aria-label="The apps">
 
     <a class="app" href="nebulatide2.html" style="--k:#9D8BFA">
@@ -750,12 +784,12 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Nebula <em>Tide 2</em></h2>
-          <p class="app-say">The pad rises as it fades.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/nt2/stage.webp" alt="Nebula Tide 2: the stage, with the shimmer knob and the twelve keys in orbit" loading="lazy"></div>
-      <p class="app-note">Version 2 adds a shimmer the pads run through, a Studio page for your own presets, and a drag straight onto your timeline. Pay what you want, from $5. Windows and macOS.</p>
+      <p class="app-note">Drone pads with shimmer, presets and drag-to-timeline.</p>
       <p class="app-badge" data-badge-app="nebulatide2"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -773,12 +807,12 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Second<em>Out</em></h2>
-          <p class="app-say">One master bus. Two outputs.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window showing an active stream to a second output device, buffer health, and drift correction" loading="lazy"></div>
-      <p class="app-note">Mirrors your DAW’s master bus to a second output device — feed a switcher, stream, or record a safety copy, without touching your main interface. $19, Windows and macOS.</p>
+      <p class="app-note">Mirrors your master bus to a second device.</p>
       <p class="app-badge" data-badge-app="secondout"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -796,11 +830,12 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Pulse<em>Room</em></h2>
-          <p class="app-say">Mix smarter. Sound better.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="PulseRoom: the EQ cheat sheet, boost and cut zones painted across the spectrum" loading="lazy"></div>
-      <p class="app-note">The producer’s reference desk. Drop a song in and it finds the tempo, then answers for delay, reverb, EQ and compression follow.</p>
+      <p class="app-note">Drop a song in, get tempo, delay, reverb and EQ.</p>
+      <p class="app-badge" data-badge-app="pulseroom"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -816,15 +851,15 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Nebula <em>Tide</em></h2>
-          <p class="app-say">Cinematic. Immersive.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/nt-idle.webp" alt="Nebula Tide: a glowing pad on stage with the twelve key planets in orbit below" loading="lazy"></div>
-      <p class="app-note">Endless drone pads in all twelve keys, recorded rather than stretched, for producers and the stage. Version 1, free, and staying that way.</p>
+      <p class="app-note">Endless drone pads in all twelve keys.</p>
       <!-- filled in by assets/app-reviews.js; empty until there is a
            real number, so a brand-new app shows nothing rather than
            a zero -->
       <p class="app-badge" data-badge-app="nebulatide"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -843,12 +878,13 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">AMB <em>Analog</em></h2>
-          <p class="app-say">Ten analog machines.</p>
         </span>
       </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#2A1E0C 0%,#181005 60%,#0B0703 100%);min-height:180px"><img src="images/apps/analog/A01.webp" alt="Heritage EQ, the five-band equaliser of the AMB Analog bundle" loading="lazy" onerror="this.remove()">
+      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#2A1E0C 0%,#181005 60%,#0B0703 100%)"><img src="images/apps/analog/A01.webp" alt="Heritage EQ, the five-band equaliser of the AMB Analog bundle" loading="lazy" onerror="this.remove()">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Ten analog processors with their own engines and their own banks: two equalisers, three compressors, a preamp, a console channel, tape, valve and plate. 187 presets, one key. Windows and macOS. $39.</p>
+      <p class="app-note">Ten analog processors, each with its own engine.</p>
+      <p class="app-badge" data-badge-app="ambanalog"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -865,12 +901,13 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Align <em>Pro</em></h2>
-          <p class="app-say">Align every mic. Hear exactly how much.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/alignpro/auto.png" alt="Align Pro: eight drum mics grouped into four sources, correlation 0.32 before and 0.96 after" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multi-mic time and phase alignment, with a dial for how far to take the correction. Every mic scored against every other, not just against its reference. Windows and macOS. $49.</p>
+      <p class="app-note">Multi-mic time and phase alignment, with a dial.</p>
+      <p class="app-badge" data-badge-app="alignpro"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -886,12 +923,13 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">AFD <em>Gate</em></h2>
-          <p class="app-say">Filter the trigger. Shape the tail.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/afdgate/ui.webp" alt="AFD Gate: the detector trace above the trigger and gated band selectors" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">The Amanorsac Frequency Dependent Gate. A linear-phase gate for close-miked drums. One band decides when it opens, another decides what gets turned down, so a snare can open a gate that only cuts cymbal wash.</p>
+      <p class="app-note">A linear-phase gate for close-miked drums.</p>
+      <p class="app-badge" data-badge-app="afdgate"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -907,11 +945,12 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">AE<em>THER</em></h2>
-          <p class="app-say">Air you can aim.</p>
         </span>
       </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0E313A 0%,#08191F 60%,#050B0F 100%);min-height:180px"><img src="images/apps/aether/ui.webp" alt="AETHER's interface: analyser, presence and air knobs, glow, guard and focus" loading="lazy" onerror="this.remove()"></div>
-      <p class="app-note">A dynamic air exciter. Tunable presence and air, a real harmonic exciter, and a limiter that drops the harshness while the sparkle stays.</p>
+      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0E313A 0%,#08191F 60%,#050B0F 100%)"><img src="images/apps/aether/ui.webp" alt="AETHER's interface: analyser, presence and air knobs, glow, guard and focus" loading="lazy" onerror="this.remove()"></div>
+      <p class="app-note">A dynamic air exciter you can aim.</p>
+      <p class="app-badge" data-badge-app="aether"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -927,12 +966,14 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Perform<em>Live</em></h2>
-          <p class="app-say">Live performance, perfected.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multitrack playback and stem performance for worship teams, bands and artists on stage.</p>
+      <p class="app-note">Multitrack playback and stem performance for the stage.</p>
+      <p class="app-badge"></p>
+      <p class="app-price"></p>
+      <p class="app-go" aria-hidden="true"></p>
     </div>
 
     <div class="app nolink" style="--k:#3ED598">
@@ -950,12 +991,14 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Harmonie<em>MD</em></h2>
-          <p class="app-say">Share. Simplify. Serve.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">The rehearsal studio for choirs. Every singer gets their own harmony part to practise at home.</p>
+      <p class="app-note">The rehearsal studio for choirs.</p>
+      <p class="app-badge"></p>
+      <p class="app-price"></p>
+      <p class="app-go" aria-hidden="true"></p>
     </div>
 
     <div class="app nolink" style="--k:#2AD2E8">
@@ -967,12 +1010,14 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Something <em>big</em></h2>
-          <p class="app-say">Coming.</p>
         </span>
       </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C2A33 0%,#07161C 60%,#050C10 100%);min-height:180px">
+      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C2A33 0%,#07161C 60%,#050C10 100%)">
         <span class="soon"><span>Something big coming</span></span></div>
-      <p class="app-note">Something the studio has been building for a while. More when it is ready.</p>
+      <p class="app-note">Something the studio has been building.</p>
+      <p class="app-badge"></p>
+      <p class="app-price"></p>
+      <p class="app-go" aria-hidden="true"></p>
     </div>
 
   </section>
@@ -1419,27 +1464,19 @@ var CONFIG = {
      catalog entry the page is already reading, so a tile can never
      advertise a figure the checkout does not charge. */
   function price(tile, shot, app, promo){
-    if(tile.querySelector('.app-price')) return;
+    var p = tile.querySelector('.app-price');
+    if(!p || p.innerHTML) return;
     var on = !!promo && !app.free && !app.pay_what_you_want && app.list_price_cents > app.price_cents;
     if(on && promo.ends){ var t = Date.parse(promo.ends); if(!isFinite(t) || t <= Date.now()) on = false; }
 
-    var p = document.createElement('p');
-    p.className = 'app-price';
-    if(app.free){ p.innerHTML = '<span class="free">Free</span>'; }
-    else if(app.pay_what_you_want){ p.innerHTML = 'From ' + money(app.price_min_cents || app.price_cents); }
-    else if(!app.price_cents){ return; }
-    else {
-      p.innerHTML = money(app.price_cents) + (on ? '<s>' + money(app.list_price_cents) + '</s>' : '');
-    }
-    var go = tile.querySelector('.app-go');
-    if(go) go.parentNode.insertBefore(p, go); else tile.appendChild(p);
+    if(app.free){ p.innerHTML = '<span class="free">Free</span>'; return; }
+    if(app.pay_what_you_want){ p.innerHTML = '<b>From ' + money(app.price_min_cents || app.price_cents) + '</b>'; return; }
+    if(!app.price_cents) return;
 
-    if(on && !shot.querySelector('.sale-flag')){
-      var f = document.createElement('span');
-      f.className = 'sale-flag';
-      f.textContent = '\u2212' + Math.round((1 - app.price_cents / app.list_price_cents) * 100) + '%';
-      shot.appendChild(f);
-    }
+    p.innerHTML = (on ? '<s>' + money(app.list_price_cents) + '</s>' : '') +
+      '<b>' + money(app.price_cents) + '</b>' +
+      (on ? '<span class="save">Save ' +
+            Math.round((1 - app.price_cents / app.list_price_cents) * 100) + '%</span>' : '');
   }
 
   function apply(){

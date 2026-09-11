@@ -126,7 +126,8 @@
         if (n.hasAttribute('data-promo')) { n.innerHTML = ''; n.hidden = true; }
         else if (n.parentNode) n.parentNode.removeChild(n);
       });
-      document.querySelectorAll('.sale-flag, .app-price s, .sale-dock .flag, .sale-dock .cost s')
+      document.querySelectorAll('.app-price s, .app-price .save, ' +
+                                '.sale-dock .flag, .sale-dock .cost s')
         .forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); });
       dispatchEvent(new Event('sale:over'));
     }
@@ -135,20 +136,14 @@
     var host = document.querySelector('[data-sale-banner]');
     if (host) {
       var banner = el('div', 'sale-banner');
-      var say = el('div');
-      say.appendChild(el('p', 'big', pct ? pct + '% off' : note));
-      say.appendChild(el('p', 'sub', esc(note) +
-        '. Every price below already has it taken off — one purchase, no ' +
-        'subscription, and the licence stays yours afterwards.'));
-      banner.appendChild(say);
+      if (pct) banner.appendChild(el('span', 'tag', pct + '% off'));
+      banner.appendChild(el('p', 'sub', esc(note) +
+        '. Every price below already has it taken off.'));
 
       if (ends) {
-        var right = el('div', 'ends');
-        right.appendChild(el('p', 'lab', 'Sale ends in'));
-        var big = clock('');
-        big.className = 'clock';
-        right.appendChild(big);
-        right.appendChild(el('p', 'when', esc(byline.replace(/^Sale ends /, ''))));
+        var right = el('p', 'ends');
+        right.appendChild(el('span', 'lab', 'Ends in'));
+        right.appendChild(clock(''));
         banner.appendChild(right);
       }
       host.appendChild(banner);
