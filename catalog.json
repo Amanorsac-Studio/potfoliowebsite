@@ -72,7 +72,7 @@
       "name": "Nebula Tide 2", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "The pad rises as it fades. Shimmer, your own presets, and a drag to the timeline.",
       "icon": "images/apps/nt-logo.webp", "page": "nebulatide2.html", "color": "#4FE3FF",
-      "free": false, "price_cents": 100, "licensed": true, "version": "2.0",
+      "free": false, "price_cents": 2900, "price_min_cents": 500, "pay_what_you_want": true, "licensed": true, "version": "2.0",
       "installers": {
         "windows": { "key": "nebulatide2/NebulaTide-Windows.zip", "alt_keys": ["Nebula Tide V2/NebulaTide-Windows.zip"],
                      "as": "NebulaTide2-Windows.zip", "type": "application/zip" },

@@ -259,8 +259,8 @@ h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:
 .price{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
   gap:clamp(20px,4vw,48px);align-items:center}
-.price .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,7vw,84px);
-  letter-spacing:-.04em;line-height:1;color:var(--accent);margin:0}
+.price .big{font-family:var(--display);font-weight:800;font-size:clamp(40px,5.4vw,64px);
+  letter-spacing:-.03em;line-height:.98;color:var(--accent);margin:0}
 .price h2{margin:0 0 8px}
 .price p{margin:0 0 18px;color:var(--muted);max-width:52ch}
 @media (max-width:700px){ .price{grid-template-columns:1fr;gap:14px} }
@@ -362,7 +362,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   "image": "https://amanorsac.studio/images/apps/nt-planets.png",
   "author": { "@id": "https://amanorsac.studio/#studio" },
   "publisher": { "@id": "https://amanorsac.studio/#studio" },
-  "offers": { "@type": "Offer", "price": "1", "priceCurrency": "USD" }
+  "offers": { "@type": "Offer", "price": "5", "priceCurrency": "USD", "priceSpecification": { "@type": "PriceSpecification", "minPrice": "5", "maxPrice": "100", "priceCurrency": "USD" } }
 }
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
@@ -376,14 +376,14 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 </div>
 
 <header class="hero wrap">
-  <span class="status">Testing · $1 · Windows, macOS &amp; Android</span>
+  <span class="status">Pay what you want · Windows, macOS &amp; Android</span>
   <h1>The pad rises as it fades.</h1>
   <p class="sub">Version 1 gave you a pad. Version 2 gives you somewhere to put it. A shimmer the pads run <em>through</em>, your own presets built inside the app, and a drag that lands a MIDI clip on your timeline. The twelve real key recordings underneath are exactly as they were.</p>
   <div class="cta-row">
-    <button class="cta" data-buy type="button">Buy — $1</button>
+    <button class="cta" data-buy type="button">Name your price</button>
     <a class="cta ghost" href="#new">What's new</a>
   </div>
-  <p class="fine">One purchase covers two machines · Windows, macOS &amp; Android · installs through Amanorsac Hub</p>
+  <p class="fine">From $5, $29 suggested · one purchase covers two machines · Windows, macOS &amp; Android · installs through Amanorsac Hub</p>
   <p class="buy-status" data-buy-status hidden></p>
   <div class="orb rise">
     <svg viewBox="0 0 1280 620" role="img" aria-label="Twelve keys in orbit above a pad rising through the shimmer">
@@ -522,11 +522,12 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 
 <section class="wrap">
   <div class="price rise">
-    <p class="big">$1</p>
+    <p class="big">You<br>choose</p>
     <div>
-      <h2>Bought once. Yours on two machines.</h2>
-      <p>One license key covers the studio machine and the one that travels, and you move a seat yourself whenever you need to. A year of updates is included, and the version you have keeps working after that.</p>
-      <button class="cta" data-buy type="button">Buy — $1</button>
+      <h2>Pay what it is worth to you.</h2>
+      <p>Anything from $5 to $100, and $29 is what I would ask if I were asking. Whatever you pay, you get the same thing: one license key covering the studio machine and the one that travels, a seat you can move yourself, and a year of updates. The version you have keeps working after that.</p>
+      <p>If money is the thing stopping you, pay the five. I would rather it was being played.</p>
+      <button class="cta" data-buy type="button">Name your price</button>
     </div>
   </div>
 </section>
@@ -580,10 +581,10 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   <h2>Build your own. Take it anywhere.</h2>
   <p class="lede">The pads you know, a shimmer they run through, and twelve slots waiting for your own recordings.</p>
   <div class="cta-row">
-    <button class="cta" data-buy type="button">Buy — $1</button>
+    <button class="cta" data-buy type="button">Name your price</button>
     <a class="cta ghost" href="nebulatide.html">Version 1, free</a>
   </div>
-  <p class="fine">One purchase covers two machines · installs through Amanorsac Hub</p>
+  <p class="fine">From $5 · one purchase covers two machines · installs through Amanorsac Hub</p>
 </section>
 
 <footer>

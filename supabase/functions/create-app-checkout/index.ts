@@ -75,10 +75,10 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     label: "Stem Sorter — lifetime license for two computers, one year of updates included",
   },
   nebulatide2: {
-    // TEMPORARY: a pound-shop price so a real purchase can be walked
-    // end to end on a preview build. Put this back to 2900 before the
-    // page goes anywhere near the live site.
-    amount_cents: 100,
+    // Pay what you want. The figures live on the Price in Stripe -
+    // $5 minimum, $100 maximum, $29 suggested - so changing what people
+    // may pay is done there and needs no deploy here.
+    stripe_price: "price_1UEF1E06LBP0UxjsM9VMPGux",
     label: "Nebula Tide 2 — lifetime license for two machines, one year of updates included",
   },
 };
