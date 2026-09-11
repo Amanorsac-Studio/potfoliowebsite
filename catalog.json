@@ -73,7 +73,10 @@
       "installers": {
         "windows": { "key": "ambanalog/analog-bundle-windows.zip",
                      "alt_keys": ["AMB Analog/analog-bundle-windows.zip"],
-                     "as": "AMB-Analog-Windows.zip", "type": "application/zip", "size": "297 MB" }
+                     "as": "AMB-Analog-Windows.zip", "type": "application/zip", "size": "297 MB" },
+        "mac":     { "key": "ambanalog/analog-bundle-macos.zip",
+                     "alt_keys": ["AMB Analog/analog-bundle-macos.zip"],
+                     "as": "AMB-Analog-macOS.zip", "type": "application/zip", "size": "745 MB" }
       }
     },
     "afdgate": {
