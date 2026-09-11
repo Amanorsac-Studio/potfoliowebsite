@@ -77,7 +77,7 @@
       "installers": {}
     },
     "aether": {
-      "name": "AETHER", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "name": "AETHER", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "Air you can aim. A dynamic air exciter for vocals, choir and the mix bus.",
       "icon": "images/apps/aether/icon.svg", "page": "aether.html", "color": "#35E0F0",
       "free": false, "licensed": true, "version": "1.0.0",
