@@ -34,7 +34,7 @@ Public, no auth, CORS open. Returns:
   "hub":  { "name": "Amanorsac Hub", "version": "1.1.0", "protocol": "amanorsac",
             "platforms": ["windows","mac-arm64","mac-x64"] },
   "apps": {
-    "secondout": { "name": "SecondOut", "vendor": "Aquarii Audio", "kind": "plugin",
+    "secondout": { "name": "SecondOut", "vendor": "Amanorsac Studio", "kind": "plugin",
                    "status": "available", "tagline": "…", "icon": "https://amanorsac.studio/images/apps/secondout-icon.png",
                    "page": "https://amanorsac.studio/secondout.html", "color": "#3fe083",
                    "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.0",

@@ -43,3 +43,16 @@ images/apps/Pulse Room Carasol Background.jpg
 # the desktop app source; built separately, not a page
 hub/
 .github/
+
+# Pages that are deliberately not reachable. The files stay in the
+# repository because they are finished work waiting on a decision -
+# they are simply not uploaded, so the Worker answers 404.html for
+# them the same as it would for a made-up address.
+stemsorter.html
+pulseroom.html
+performlive.html
+
+# The loading bay for pictures, and the button that sends them. Both
+# are how the site gets made, not part of the site.
+images/incoming/
+send-pictures.bat

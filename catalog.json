@@ -37,7 +37,7 @@
 
   "apps": {
     "secondout": {
-      "name": "SecondOut", "vendor": "Aquarii Audio", "kind": "plugin", "status": "available",
+      "name": "SecondOut", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "One master bus. Two independent outputs.",
       "icon": "images/apps/secondout-icon.png", "page": "secondout.html", "color": "#3fe083",
       "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.2",
@@ -51,9 +51,9 @@
       }
     },
     "stemsorter": {
-      "name": "Stem Sorter", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
-      "tagline": "Your files. Your template. One click. Made for Studio One, on Mac and Windows.",
-      "icon": "images/apps/stemsorter-logo.svg", "page": "stemsorter.html", "color": "#2ad2e8",
+      "name": "Something big coming", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
+      "tagline": "More when it is ready.",
+      "icon": "images/apps/stemsorter-logo.svg", "page": "apps.html", "color": "#2ad2e8",
       "free": false, "price_cents": 1900, "licensed": true, "version": "0.6.0",
       "installers": {
         "windows": { "key": "stemsorter/StemSorter-Windows.zip", "alt_keys": ["STEMSORTER/StemSorter-Windows.zip"],
@@ -62,10 +62,29 @@
                      "as": "StemSorter-macOS.zip",   "type": "application/zip", "size": "12 MB" }
       }
     },
+    "drumgate": {
+      "name": "Drum Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "tagline": "Filter the trigger. Shape the tail.",
+      "icon": "images/apps/drumgate/icon.svg", "page": "drumgate.html", "color": "#4A8BF0",
+      "free": false, "licensed": false, "version": "1.2.0",
+      "installers": {}
+    },
+    "aether": {
+      "name": "AETHER", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "tagline": "Air you can aim. A dynamic air exciter for vocals, choir and the mix bus.",
+      "icon": "images/apps/aether/icon.svg", "page": "aether.html", "color": "#35E0F0",
+      "free": false, "licensed": true, "version": "1.0.0",
+      "installers": {
+        "windows": { "key": "aether/AETHER-windows.zip", "alt_keys": ["AETHER/AETHER-windows.zip"],
+                     "as": "AETHER-1.0.0-Windows.zip", "type": "application/zip", "size": "4 MB" },
+        "mac":     { "key": "aether/AETHER-macos.zip",   "alt_keys": ["AETHER/AETHER-macos.zip"],
+                     "as": "AETHER-1.0.0-macOS.zip",   "type": "application/zip", "size": "10 MB" }
+      }
+    },
     "pulseroom": {
       "name": "PulseRoom", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "Every mixing answer. One tempo.",
-      "icon": "images/apps/pulseroom-logo.svg", "page": "pulseroom.html", "color": "#3fd3e4",
+      "icon": "images/apps/pulseroom-logo.svg", "page": "apps.html", "color": "#3fd3e4",
       "free": true, "licensed": false, "version": "1.0",
       "installers": {
         "windows": { "key": "pulseroom/PulseRoom-Windows.zip", "alt_keys": ["PulseRoom-Windows.zip"], "as": "PulseRoom-Windows.zip", "type": "application/zip", "size": "78 MB" },
@@ -99,7 +118,7 @@
     "performlive": {
       "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
       "tagline": "Live performance, perfected.",
-      "icon": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
+      "icon": "images/apps/performlive.webp", "page": "apps.html", "color": "#7B7DF7",
       "free": false, "licensed": true, "version": null,
       "installers": {}
     },
