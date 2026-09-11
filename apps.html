@@ -481,8 +481,8 @@ body[data-room="apps"] .wrap{max-width:1280px}
   text-decoration-thickness:1px;margin:0 0 1px}
 .app-price b{font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-.02em;
   vertical-align:middle}
-.app-price .free{font-size:clamp(15px,1.3vw,17px);font-weight:600;color:#A9A2C8;
-  letter-spacing:.01em}
+.app-price .free,.app-price .pwyw{font-size:clamp(15px,1.3vw,17px);font-weight:600;
+  color:#A9A2C8;letter-spacing:.01em}
 .app-price .save{display:inline-block;margin-left:8px;vertical-align:middle;
   background:#E11D2E;color:#fff;border-radius:999px;padding:3px 9px;
   font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;
@@ -1470,7 +1470,7 @@ var CONFIG = {
     if(on && promo.ends){ var t = Date.parse(promo.ends); if(!isFinite(t) || t <= Date.now()) on = false; }
 
     if(app.free){ p.innerHTML = '<span class="free">Free</span>'; return; }
-    if(app.pay_what_you_want){ p.innerHTML = '<b>From ' + money(app.price_min_cents || app.price_cents) + '</b>'; return; }
+    if(app.pay_what_you_want){ p.innerHTML = '<span class="pwyw">Name your price</span>'; return; }
     if(!app.price_cents) return;
 
     p.innerHTML = (on ? '<s>' + money(app.list_price_cents) + '</s>' : '') +

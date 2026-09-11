@@ -92,6 +92,7 @@
 .sale-dock .who{font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .sale-dock .cost{margin-left:auto; display:flex; align-items:baseline; gap:8px; white-space:nowrap}
 .sale-dock .cost b{font-size:17px}
+.sale-dock .cost .pwyw{font-weight:700}
 .sale-dock .cost s{opacity:.55}
 .sale-dock .flag{background:var(--sale-red); color:#fff; border-radius:6px; padding:3px 7px;
   font:800 10.5px/1 system-ui,sans-serif; letter-spacing:.06em}

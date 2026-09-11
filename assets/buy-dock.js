@@ -37,13 +37,11 @@
     var a = (c.apps || {})[app];
     if (!a) return;
 
-    /* Pay what you want has no one price to show, so the bar says the
-       floor rather than the suggested figure - the button next to it
-       already says "Name your price". */
-    var now = a.free ? 'Free'
-            : a.pay_what_you_want ? ('From ' + (money(a.price_min_cents) || money(a.price_cents)))
-            : money(a.price_cents);
-    var sale = c.promo && !a.free && !a.pay_what_you_want &&
+    /* Pay what you want has no price to put here, and a floor figure
+       reads like one. It says what the button says instead. */
+    var pwyw = !!a.pay_what_you_want;
+    var now = a.free ? 'Free' : pwyw ? 'Name your price' : money(a.price_cents);
+    var sale = c.promo && !a.free && !pwyw &&
                a.list_price_cents > a.price_cents &&
                window.StoreState.stateOf(a) === 'available';
     if (sale && c.promo.ends) {
@@ -58,7 +56,8 @@
       '<span class="who">' + esc(a.name || app) + '</span>' +
       '<span class="cost">' +
         (sale ? '<span class="flag">' + pct + '% OFF</span>' : '') +
-        (now ? '<b>' + now + '</b>' : '') +
+        (now ? (pwyw ? '<span class="pwyw">' + now + '</span>'
+                     : '<b>' + now + '</b>') : '') +
         (sale ? '<s>' + money(a.list_price_cents) + '</s>' : '') +
       '</span>';
 
