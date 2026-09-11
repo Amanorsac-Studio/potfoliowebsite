@@ -51,3 +51,8 @@ hub/
 stemsorter.html
 pulseroom.html
 performlive.html
+
+# The loading bay for pictures, and the button that sends them. Both
+# are how the site gets made, not part of the site.
+images/incoming/
+send-pictures.bat
