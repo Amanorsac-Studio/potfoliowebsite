@@ -727,6 +727,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
     <h1>Powerful audio apps</h1>
     <p class="said">Built in the studio, not in a product meeting. Open it and you&rsquo;ll know what to do.</p>
     <div class="hairline"></div><div class="glowdot"></div>
+    <p class="promo-line" data-promo="store" hidden></p>
   </header>
 
   <!-- shown by site-auth.js only when someone is signed in -->
@@ -866,7 +867,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       </div>
       <div class="app-shot"><img src="images/apps/alignpro/auto.png" alt="Align Pro: eight drum mics grouped into four sources, correlation 0.32 before and 0.96 after" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multi-mic time and phase alignment, with a dial for how far to take the correction. Every mic scored against every other, not just against its reference. Windows and macOS.</p>
+      <p class="app-note">Multi-mic time and phase alignment, with a dial for how far to take the correction. Every mic scored against every other, not just against its reference. Windows and macOS. $49.</p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -1400,6 +1401,7 @@ var CONFIG = {
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/hub-download.js" defer></script>
 <script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
 <script>
 /* A tile says "coming soon" when the catalog says the app is not on
    sale on this site. The badge is added here rather than typed into
