@@ -76,7 +76,9 @@
       "free": false, "licensed": true, "version": "1.0.0",
       "installers": {
         "windows": { "key": "aether/AETHER-windows.zip", "alt_keys": ["AETHER/AETHER-windows.zip"],
-                     "as": "AETHER-1.0.0-Windows.zip", "type": "application/zip", "size": "4 MB" }
+                     "as": "AETHER-1.0.0-Windows.zip", "type": "application/zip", "size": "4 MB" },
+        "mac":     { "key": "aether/AETHER-macos.zip",   "alt_keys": ["AETHER/AETHER-macos.zip"],
+                     "as": "AETHER-1.0.0-macOS.zip",   "type": "application/zip", "size": "10 MB" }
       }
     },
     "pulseroom": {
