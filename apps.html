@@ -400,7 +400,7 @@ body[data-room="apps"] .wrap{max-width:1280px}
 /* A tile whose page is not being served. It keeps its place in the
    shelf and loses everything that implies you can go there: no lift on
    hover, no pointer, no "Explore" line. */
-.app.nolink{cursor:default}
+.app.nolink{cursor:default;pointer-events:none}
 .app.nolink:hover,.app.nolink:active{transform:none}
 .app.nolink:hover .mark{box-shadow:none}
 .app.nolink .app-shot{filter:saturate(.55) brightness(.9)}
@@ -848,24 +848,24 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-go">Explore →</p>
     </a>
 
-    <a class="app" href="drumgate.html" style="--k:#4A8BF0">
+    <a class="app" href="afdgate.html" style="--k:#4A8BF0">
       <div class="app-id">
         <span class="mark" aria-hidden="true"
               style="background:radial-gradient(130% 130% at 50% 4%,#16233B 0%,#0C1626 58%,#060B13 100%)">
-          <!-- Drum Gate: the band that listens, and the band that moves -->
+          <!-- AFD Gate: the band that listens, and the band that moves -->
           <svg viewBox="0 0 24 24">
             <rect x="4" y="5.5" width="16" height="4.4" rx="2.2" fill="#4A8BF0"/>
             <rect x="7" y="14.1" width="13" height="4.4" rx="2.2" fill="#C9A227" opacity=".92"/>
             <path d="M2 3.2v17.6" stroke="#7387A0" stroke-width="1.4" stroke-linecap="round"/></svg>
         </span>
         <span>
-          <h2 class="app-name">Drum <em>Gate</em></h2>
+          <h2 class="app-name">AFD <em>Gate</em></h2>
           <p class="app-say">Filter the trigger. Shape the tail.</p>
         </span>
       </div>
-      <div class="app-shot"><img src="images/apps/drumgate/card.png" alt="Drum Gate: the detector trace above the trigger and gated band selectors" loading="lazy">
+      <div class="app-shot"><img src="images/apps/afdgate/ui.webp" alt="AFD Gate: the detector trace above the trigger and gated band selectors" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">A linear-phase gate for close-miked drums. One band decides when it opens, another decides what gets turned down, so a snare can open a gate that only cuts cymbal wash.</p>
+      <p class="app-note">The Amanorsac Frequency Dependent Gate. A linear-phase gate for close-miked drums. One band decides when it opens, another decides what gets turned down, so a snare can open a gate that only cuts cymbal wash.</p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -1389,18 +1389,34 @@ var CONFIG = {
     window.StoreState.catalog().then(function(c){
       Object.keys(c.apps || {}).forEach(function(id){
         var app = c.apps[id];
-        var tile = document.querySelector('#store [href="' + (app.page || '') + '"]');
+        var page = app.page || '';
+        var tile = document.querySelector('#store [href="' + page + '"]') ||
+                   document.querySelector('#store [data-href="' + page + '"]');
         if(!tile) return;
         var shot = tile.querySelector('.app-shot');
         if(!shot) return;
         var soon = shot.querySelector('.soon');
         var state = window.StoreState.stateOf(app);
-        if(state === 'available'){ if(soon) soon.remove(); return; }
-        if(soon) return;                       // already says it in the markup
-        var el = document.createElement('span');
-        el.className = 'soon';
-        el.innerHTML = '<span>Coming soon</span>';
-        shot.appendChild(el);
+        if(state === 'available'){
+          if(soon) soon.remove();
+          tile.classList.remove('nolink');
+          if(tile.dataset.href){ tile.setAttribute('href', tile.dataset.href); delete tile.dataset.href; }
+          return;
+        }
+        /* Not on sale here, so the tile is not a door. Keep the address
+           on the element so the same script can put it back when the
+           state says available - a preview build reads the same markup. */
+        if(!soon){
+          var el = document.createElement('span');
+          el.className = 'soon';
+          el.innerHTML = '<span>Coming soon</span>';
+          shot.appendChild(el);
+        }
+        tile.classList.add('nolink');
+        if(tile.hasAttribute('href')){
+          tile.dataset.href = tile.getAttribute('href');
+          tile.removeAttribute('href');
+        }
       });
     });
   }

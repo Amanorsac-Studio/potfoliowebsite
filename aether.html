@@ -287,6 +287,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Audio plugin",
   "softwareVersion": "1.0.0",
+  "offers": { "@type": "Offer", "price": "12", "priceCurrency": "USD" },
   "image": "https://amanorsac.studio/images/apps/aether/ui.png",
   "author": { "@id": "https://amanorsac.studio/#studio" },
   "publisher": { "@id": "https://amanorsac.studio/#studio" }
@@ -304,17 +305,17 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 
 <header class="hero wrap">
   <div class="badges">
-    <span>VST3</span><span>AU</span><span>Windows</span><span>macOS</span>
+    <span>$12</span><span>VST3</span><span>AU</span><span>Windows</span><span>macOS</span>
   </div>
   <h1>AETHER</h1>
   <p class="kicker">Dynamic Air Exciter</p>
   <p class="one">Air you can aim.</p>
   <p class="sub">Tunable presence and air bands, a real harmonic exciter, and a sibilance-aware limiter that keeps the sparkle and drops the harshness. Point the air at the centre for a lead vocal, or out to the sides for a choir.</p>
   <div class="cta-row">
-    <a class="cta" id="aether-primary" href="/client.html?next=%2Faether.html">Create an account</a>
+    <button class="cta" id="aether-primary" data-buy type="button">Buy — $12</button>
     <a class="cta ghost" href="#hear">Hear it</a>
   </div>
-  <p class="fine">Windows and macOS · price announced shortly · make an account now and it lands in My Apps the day it goes on sale</p>
+  <p class="fine">$12 once · one key covers two computers · Windows &amp; macOS · installs through Amanorsac Hub</p>
   <p class="buy-status" data-buy-status hidden></p>
 
   <div class="shot rise" id="ae-shot">
@@ -448,11 +449,11 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 
 <section class="wrap">
   <div class="buy rise">
-    <p class="slot">Coming<br>shortly<small>Price announced soon</small></p>
+    <p class="slot">$12<small>Once, for both machines</small></p>
     <div>
       <h2>One purchase. Two computers. No subscription.</h2>
-      <p>A single perpetual licence, activated from inside the plugin, moved between machines by you whenever you need to. Make an account now and AETHER appears in your My Apps the day it goes on sale — with the key already waiting.</p>
-      <a class="cta" href="/client.html?next=%2Faether.html">Create an account</a>
+      <p>A single perpetual licence, activated from inside the plugin and moved between machines by you whenever you need to. A year of updates is included, and the version you have keeps working after that.</p>
+      <button class="cta" data-buy type="button">Buy — $12</button>
       <a class="cta ghost" href="#hear">Hear it again</a>
     </div>
   </div>
@@ -469,7 +470,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
   <details><summary>Is there a Mac version?</summary>
     <div>Yes. Signed by us and notarised by Apple, so it opens without a fight. VST3 and AU, Intel and Apple silicon from the one universal build.</div></details>
   <details><summary>Is there a trial?</summary>
-    <div>Being decided. If there is one it will be on this page, with the same activation flow and a clear end date rather than a silent expiry.</div></details>
+    <div>Not at the moment. Twelve dollars was set low enough that a trial would cost more to build than it would save anyone.</div></details>
   <details><summary>Does it phone home while I work?</summary>
     <div>No. It checks a key on activation and quietly now and then afterwards. It does not send your audio anywhere, and it has no analytics in it. The <a href="/legal#privacy">privacy policy</a> says exactly what is stored.</div></details>
 </section>
@@ -598,6 +599,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 </script>
 <script src="assets/track.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/store-state.js" defer></script>
 <script src="assets/site-auth.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
 </body>
 </html>
