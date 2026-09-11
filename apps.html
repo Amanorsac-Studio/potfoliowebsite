@@ -428,7 +428,16 @@ body[data-room="apps"] .wrap{max-width:1280px}
   transition:border-color var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
 .app:hover .app-shot{border-color:color-mix(in srgb,var(--k) 58%,transparent);
   box-shadow:0 20px 54px rgba(0,0,0,.6), 0 0 44px -18px var(--k)}
-.app-shot img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center top;display:block}
+/* The whole interface, not a crop of its top-left corner. These are
+   wide screenshots of software; cropping them to a 4:3 tile cut the
+   controls off and, on a phone, left a meaningless slice. The frame
+   keeps a fixed shape so the grid stays even, and the picture sits
+   inside it complete. */
+.app-shot{aspect-ratio:4/3;display:grid;place-items:center;padding:10px}
+.app-shot img{width:100%;height:100%;object-fit:contain;object-position:center;display:block;border-radius:6px}
+@media (max-width:720px){
+  .app-shot{aspect-ratio:16/10;padding:8px}
+}
 
 /* Still real screenshots, not mockups - dimmed and labelled rather than
    swapped out, so the capture keeps proving the app is real work in
@@ -1368,5 +1377,36 @@ var CONFIG = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/hub-download.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script>
+/* A tile says "coming soon" when the catalog says the app is not on
+   sale on this site. The badge is added here rather than typed into
+   the markup so the live site and a preview build can disagree without
+   the file being edited - see assets/store-state.js. */
+(function(){
+  function apply(){
+    if(!window.StoreState) return;
+    window.StoreState.catalog().then(function(c){
+      Object.keys(c.apps || {}).forEach(function(id){
+        var app = c.apps[id];
+        var tile = document.querySelector('#store [href="' + (app.page || '') + '"]');
+        if(!tile) return;
+        var shot = tile.querySelector('.app-shot');
+        if(!shot) return;
+        var soon = shot.querySelector('.soon');
+        var state = window.StoreState.stateOf(app);
+        if(state === 'available'){ if(soon) soon.remove(); return; }
+        if(soon) return;                       // already says it in the markup
+        var el = document.createElement('span');
+        el.className = 'soon';
+        el.innerHTML = '<span>Coming soon</span>';
+        shot.appendChild(el);
+      });
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+})();
+</script>
 </body>
 </html>
