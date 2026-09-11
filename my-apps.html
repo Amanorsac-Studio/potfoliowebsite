@@ -358,7 +358,9 @@ footer a:hover{color:var(--accent)}
                       ' <button class="revoke" type="button" data-id="'+esc(d.id)+'">Remove</button></span>'+
                   '</div>').join('')
               : '<p class="nodev">No device has activated this key yet — it’s ready whenever the app asks for it.</p>')
-          : '<p class="free"><i aria-hidden="true"></i>Free — no key needed. Install it and go.</p>')+
+          : '<p class="free"><i aria-hidden="true"></i>'+(a.free
+              ? 'Free — no key needed. Install it and go.'
+              : 'No key needed — this one has no activation at all. Install it and go.')+'</p>')+
       '</article>';
     }).join('') + moreCard();
 
