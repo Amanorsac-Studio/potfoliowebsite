@@ -83,7 +83,7 @@
       "name": "AFD Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon", "preview_status": "available",
       "tagline": "Filter the trigger. Shape the tail.",
       "icon": "images/apps/afdgate/icon.svg", "page": "afdgate.html", "color": "#4A8BF0",
-      "free": false, "licensed": false, "version": "1.3.0",
+      "free": false, "price_cents": 1200, "licensed": false, "version": "1.3.0",
       "installers": {}
     },
     "aether": {

@@ -74,6 +74,10 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     amount_cents: 1900,
     label: "Stem Sorter — lifetime license for two computers, one year of updates included",
   },
+  afdgate: {
+    amount_cents: 1200,
+    label: "AFD Gate — lifetime licence, no activation",
+  },
   aether: {
     amount_cents: 1200,
     label: "AETHER — lifetime licence for two computers, one year of updates included",
