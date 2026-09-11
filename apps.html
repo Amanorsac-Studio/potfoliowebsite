@@ -690,6 +690,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
 <link rel="stylesheet" href="assets/hub-download.css">
+<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-room="apps">
 
@@ -722,12 +723,14 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
 <main id="main"><div class="wrap">
 
+  <!-- filled by assets/promo.js while a sale is on, empty otherwise -->
+  <div data-sale-banner></div>
+
   <header class="marquee">
     <p class="suite">A suite of</p>
     <h1>Powerful audio apps</h1>
     <p class="said">Built in the studio, not in a product meeting. Open it and you&rsquo;ll know what to do.</p>
     <div class="hairline"></div><div class="glowdot"></div>
-    <p class="promo-line" data-promo="store" hidden></p>
   </header>
 
   <!-- shown by site-auth.js only when someone is signed in -->
@@ -1409,6 +1412,36 @@ var CONFIG = {
    the markup so the live site and a preview build can disagree without
    the file being edited - see assets/store-state.js. */
 (function(){
+  function money(c){ return (c % 100 === 0) ? ('$' + c/100) : ('$' + (c/100).toFixed(2)); }
+
+  /* What a tile costs, and - while a sale is really on - the red flag
+     and the price it is down from. Everything comes off the same
+     catalog entry the page is already reading, so a tile can never
+     advertise a figure the checkout does not charge. */
+  function price(tile, shot, app, promo){
+    if(tile.querySelector('.app-price')) return;
+    var on = !!promo && !app.free && !app.pay_what_you_want && app.list_price_cents > app.price_cents;
+    if(on && promo.ends){ var t = Date.parse(promo.ends); if(!isFinite(t) || t <= Date.now()) on = false; }
+
+    var p = document.createElement('p');
+    p.className = 'app-price';
+    if(app.free){ p.innerHTML = '<span class="free">Free</span>'; }
+    else if(app.pay_what_you_want){ p.innerHTML = 'From ' + money(app.price_min_cents || app.price_cents); }
+    else if(!app.price_cents){ return; }
+    else {
+      p.innerHTML = money(app.price_cents) + (on ? '<s>' + money(app.list_price_cents) + '</s>' : '');
+    }
+    var go = tile.querySelector('.app-go');
+    if(go) go.parentNode.insertBefore(p, go); else tile.appendChild(p);
+
+    if(on && !shot.querySelector('.sale-flag')){
+      var f = document.createElement('span');
+      f.className = 'sale-flag';
+      f.textContent = '\u2212' + Math.round((1 - app.price_cents / app.list_price_cents) * 100) + '%';
+      shot.appendChild(f);
+    }
+  }
+
   function apply(){
     if(!window.StoreState) return;
     window.StoreState.catalog().then(function(c){
@@ -1426,6 +1459,7 @@ var CONFIG = {
           if(soon) soon.remove();
           tile.classList.remove('nolink');
           if(tile.dataset.href){ tile.setAttribute('href', tile.dataset.href); delete tile.dataset.href; }
+          price(tile, shot, app, c.promo);
           return;
         }
         /* Not on sale here, so the tile is not a door. Keep the address

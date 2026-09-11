@@ -45,8 +45,16 @@
     "_": "Delete this whole block to end the sale. Nothing else needs editing:",
     "_2": "every price on the site reads list_price_cents against price_cents and",
     "_3": "says nothing at all when this is absent.",
+    "_4": "ends is a REAL deadline, not decoration. The countdown on the site is",
+    "_5": "drawn from it, and the whole sale - banner, badges, struck-out prices -",
+    "_6": "vanishes by itself the moment it passes, on a page already open too.",
+    "_7": "Move the date to run the sale longer. Never let it pass and restart:",
+    "_8": "a clock that resets is the one thing that would make this dishonest.",
+    "_9": "When it does end, put each price_cents back up to its list_price_cents,",
+    "_10": "or the old price stops being a price the app was really sold at.",
     "percent": 50,
-    "note": "Half price for a limited time"
+    "note": "Half price for a limited time",
+    "ends": "2026-09-30T23:59:59Z"
   },
 
   "apps": {

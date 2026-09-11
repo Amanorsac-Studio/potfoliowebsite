@@ -575,9 +575,23 @@ async function serveHub(platform, env, request) {
    paths made absolute and the R2 keys left out - which object a file
    lives in is the Worker's business, not the Hub's. Public and
    cacheable; nothing here is about any one account. */
+/* The sale, if one is actually on. `ends` is honoured here rather than
+   trusted to whoever is reading: a promo whose deadline has passed is
+   no promo at all, and is never handed out. */
+function salePromo(c) {
+  const p = c && c.promo;
+  if (!p) return null;
+  if (p.ends) {
+    const t = Date.parse(p.ends);
+    if (!isFinite(t) || t <= Date.now()) return null;
+  }
+  return { percent: p.percent || null, note: p.note || '', ends: p.ends || null };
+}
+
 async function catalogApi(env) {
   const c = await getCatalog(env);
   const abs = p => p ? (/^https?:/.test(p) ? p : SITE + '/' + String(p).replace(/^\//, '')) : null;
+  const sale = !!salePromo(c);
   const apps = {};
   for (const id of Object.keys(c.apps || {})) {
     const a = c.apps[id];
@@ -585,7 +599,7 @@ async function catalogApi(env) {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
       tagline: a.tagline || '', icon: abs(a.icon), page: abs(a.page), color: a.color || null,
       free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null),
-      list_price_cents: (!a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
+      list_price_cents: (sale && !a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
       licensed: !!a.licensed,
       version: a.version || null, platforms: Object.keys(a.installers || {})
     };
@@ -596,8 +610,11 @@ async function catalogApi(env) {
            tagline: hub.tagline || '', platforms: Object.keys(hub.installers || {}),
            download: SITE + '/download/hub/{platform}' },
     /* Present only while a sale is on, so the Hub can say "was X" the
-       same way the site does. Absent means full price, everywhere. */
-    promo: c.promo ? { percent: c.promo.percent || null, note: c.promo.note || '' } : null,
+       same way the site does. Absent means full price, everywhere -
+       including the moment `ends` passes, which is a real deadline and
+       is allowed to make the offer disappear without anyone editing
+       anything. */
+    promo: salePromo(c),
     apps
   }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } });
 }
