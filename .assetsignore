@@ -56,3 +56,4 @@ harmoniemd.html
 # are how the site gets made, not part of the site.
 images/incoming/
 send-pictures.bat
+deploy-prices.bat
