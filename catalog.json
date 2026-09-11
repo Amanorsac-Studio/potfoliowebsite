@@ -72,18 +72,18 @@
       "free": false, "price_cents": 3900, "licensed": true, "version": "1.0.0",
       "installers": {}
     },
-    "drumgate": {
-      "name": "Drum Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+    "afdgate": {
+      "name": "AFD Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
       "tagline": "Filter the trigger. Shape the tail.",
-      "icon": "images/apps/drumgate/icon.svg", "page": "drumgate.html", "color": "#4A8BF0",
-      "free": false, "licensed": false, "version": "1.2.0",
+      "icon": "images/apps/afdgate/icon.svg", "page": "afdgate.html", "color": "#4A8BF0",
+      "free": false, "licensed": false, "version": "1.3.0",
       "installers": {}
     },
     "aether": {
       "name": "AETHER", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "Air you can aim. A dynamic air exciter for vocals, choir and the mix bus.",
       "icon": "images/apps/aether/icon.svg", "page": "aether.html", "color": "#35E0F0",
-      "free": false, "licensed": true, "version": "1.0.0",
+      "free": false, "price_cents": 1200, "licensed": true, "version": "1.0.0",
       "installers": {
         "windows": { "key": "aether/AETHER-windows.zip", "alt_keys": ["AETHER/AETHER-windows.zip"],
                      "as": "AETHER-1.0.0-Windows.zip", "type": "application/zip", "size": "4 MB" },
