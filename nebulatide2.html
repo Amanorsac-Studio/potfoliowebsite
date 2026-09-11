@@ -8,7 +8,7 @@
 <meta name="description" content="Nebula Tide 2 puts a shimmer reverb in the signal path, adds a Studio page for building presets from your own recordings, and drags a MIDI clip straight onto your DAW timeline. Real drone pad recordings in all twelve keys, never pitch-shifted. Windows and macOS.">
 <meta property="og:title" content="The pad rises as it fades.">
 <meta property="og:description" content="Nebula Tide 2: a shimmer the pads run through, your own presets built in the app, and a drag straight to your timeline.">
-<meta property="og:image" content="https://amanorsac.studio/images/apps/nt-planets.png">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/nt2/stage.png">
 <meta property="og:url" content="https://amanorsac.studio/nebulatide2.html">
 <link rel="icon" href="images/apps/nt-logo.webp" type="image/webp">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
@@ -301,25 +301,6 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   .feat.flip .feat-copy{order:0}
 }
 
-/* ---------- the drawn hero ----------
-   Twelve keys in orbit and a pad rising through the shimmer. Drawn,
-   not photographed: version 2's interface is not the one the existing
-   screenshots show, and an illustration is honest where a stale
-   screenshot would not be. */
-.orb{position:relative;margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
-  border-radius:var(--r-lg);overflow:hidden;background:
-    radial-gradient(120% 90% at 50% 118%, #10314a 0%, #081a2c 44%, var(--bg) 100%);
-  box-shadow:0 40px 100px rgba(0,0,0,.6)}
-.orb svg{display:block;width:100%;height:auto}
-.orb .glow{position:absolute;inset:auto 0 -30% 0;height:60%;pointer-events:none;
-  background:radial-gradient(60% 100% at 50% 100%,color-mix(in srgb,var(--accent) 26%,transparent) 0%,transparent 70%)}
-@media (prefers-reduced-motion:no-preference){
-  .orb .rise-1{animation:swell 7s ease-in-out infinite}
-  .orb .rise-2{animation:swell 9s ease-in-out infinite .8s}
-  .orb .rise-3{animation:swell 11s ease-in-out infinite 1.7s}
-  @keyframes swell{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:.7;transform:translateY(-10px)}}
-}
-
 /* ---------- what stays the same ---------- */
 .keep{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:clamp(26px,4vw,40px)}
@@ -355,11 +336,11 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   "name": "Nebula Tide 2",
   "url": "https://amanorsac.studio/nebulatide2",
   "description": "Endless ambient drone pads in all twelve keys, with a shimmer reverb in the signal path, a Studio page for building presets from your own recordings, and a drag that puts a MIDI clip on your DAW timeline.",
-  "operatingSystem": "Windows, macOS, Android",
+  "operatingSystem": "Windows, macOS",
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Audio software",
   "softwareVersion": "2.0",
-  "image": "https://amanorsac.studio/images/apps/nt-planets.png",
+  "image": "https://amanorsac.studio/images/apps/nt2/stage.png",
   "author": { "@id": "https://amanorsac.studio/#studio" },
   "publisher": { "@id": "https://amanorsac.studio/#studio" },
   "offers": { "@type": "Offer", "price": "5", "priceCurrency": "USD", "priceSpecification": { "@type": "PriceSpecification", "minPrice": "5", "maxPrice": "100", "priceCurrency": "USD" } }
@@ -376,82 +357,19 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 </div>
 
 <header class="hero wrap">
-  <span class="status">Pay what you want · Windows, macOS &amp; Android</span>
+  <span class="status">Pay what you want · Windows &amp; macOS</span>
   <h1>The pad rises as it fades.</h1>
   <p class="sub">Version 1 gave you a pad. Version 2 gives you somewhere to put it. A shimmer the pads run <em>through</em>, your own presets built inside the app, and a drag that lands a MIDI clip on your timeline. The twelve real key recordings underneath are exactly as they were.</p>
   <div class="cta-row">
     <button class="cta" data-buy type="button">Name your price</button>
     <a class="cta ghost" href="#new">What's new</a>
   </div>
-  <p class="fine">From $5, $29 suggested · one purchase covers two machines · Windows, macOS &amp; Android · installs through Amanorsac Hub</p>
+  <p class="fine">From $5, $29 suggested · one purchase covers two machines · Windows &amp; macOS · installs through Amanorsac Hub</p>
   <p class="buy-status" data-buy-status hidden></p>
-  <div class="orb rise">
-    <svg viewBox="0 0 1280 620" role="img" aria-label="Twelve keys in orbit above a pad rising through the shimmer">
-      <defs>
-        <linearGradient id="plume" x1="0" y1="1" x2="0" y2="0">
-          <stop offset="0%"   stop-color="#7FEBFF" stop-opacity=".85"/>
-          <stop offset="45%"  stop-color="#4FE3FF" stop-opacity=".45"/>
-          <stop offset="100%" stop-color="#9d8bfa" stop-opacity="0"/>
-        </linearGradient>
-        <radialGradient id="core" cx="50%" cy="100%" r="72%">
-          <stop offset="0%"   stop-color="#D8F7FF" stop-opacity=".95"/>
-          <stop offset="42%"  stop-color="#4FE3FF" stop-opacity=".35"/>
-          <stop offset="100%" stop-color="#4FE3FF" stop-opacity="0"/>
-        </radialGradient>
-        <filter id="soft" x="-60%" y="-40%" width="220%" height="200%">
-          <feGaussianBlur stdDeviation="18"/>
-        </filter>
-        <filter id="softer" x="-60%" y="-40%" width="220%" height="200%">
-          <feGaussianBlur stdDeviation="7"/>
-        </filter>
-      </defs>
-
-      <g fill="#CFEFFF">
-        <circle cx="118" cy="88"  r="1.7" opacity=".75"/><circle cx="298" cy="54"  r="1.2" opacity=".5"/>
-        <circle cx="523" cy="118" r="1.6" opacity=".65"/><circle cx="757" cy="70"  r="1.3" opacity=".55"/>
-        <circle cx="980" cy="140" r="1.7" opacity=".7"/> <circle cx="1162" cy="62" r="1.2" opacity=".5"/>
-        <circle cx="212" cy="198" r="1.1" opacity=".45"/><circle cx="1081" cy="228" r="1.4" opacity=".6"/>
-        <circle cx="642" cy="38"  r="1.1" opacity=".45"/><circle cx="392" cy="150" r="1.2" opacity=".5"/>
-        <circle cx="860" cy="182" r="1.1" opacity=".45"/><circle cx="60"  cy="250" r="1.3" opacity=".5"/>
-      </g>
-
-      <!-- the shimmer: three plumes lifting out of the pad, blurred into light -->
-      <g filter="url(#soft)">
-        <path class="rise-1" d="M470 560 C444 430 452 356 470 236 C492 356 500 430 470 560Z" fill="url(#plume)" opacity=".55"/>
-        <path class="rise-2" d="M640 580 C602 402 616 306 640 150 C670 306 682 402 640 580Z" fill="url(#plume)" opacity=".8"/>
-        <path class="rise-3" d="M812 560 C786 430 794 356 812 236 C834 356 842 430 812 560Z" fill="url(#plume)" opacity=".55"/>
-      </g>
-      <g filter="url(#softer)" opacity=".7">
-        <path d="M640 570 C628 420 634 340 640 214 C650 340 656 420 640 570Z" fill="#CFF6FF" opacity=".35"/>
-      </g>
-
-      <ellipse cx="640" cy="600" rx="470" ry="132" fill="url(#core)"/>
-
-      <!-- twelve keys in orbit -->
-      <ellipse cx="640" cy="470" rx="520" ry="130" fill="none" stroke="#4FE3FF" stroke-opacity=".3"/>
-      <g filter="url(#softer)" opacity=".8">
-        <circle cx="724" cy="592" r="20" fill="#BDF3FF" opacity=".55"/>
-        <circle cx="396" cy="570" r="15" fill="#4FE3FF" opacity=".4"/>
-        <circle cx="1028" cy="530" r="14" fill="#9d8bfa" opacity=".4"/>
-      </g>
-      <g>
-        <circle cx="140"  cy="470" r="9"  fill="#4FE3FF" opacity=".8"/>
-        <circle cx="252"  cy="530" r="7"  fill="#CFEFFF" opacity=".7"/>
-        <circle cx="396"  cy="570" r="11" fill="#5FE9FF" opacity=".95"/>
-        <circle cx="556"  cy="592" r="8"  fill="#9d8bfa" opacity=".9"/>
-        <circle cx="724"  cy="592" r="13" fill="#EAFBFF" opacity="1"/>
-        <circle cx="884"  cy="570" r="8"  fill="#5FE9FF" opacity=".9"/>
-        <circle cx="1028" cy="530" r="10" fill="#9d8bfa" opacity=".85"/>
-        <circle cx="1140" cy="470" r="7"  fill="#4FE3FF" opacity=".75"/>
-        <circle cx="1080" cy="405" r="6"  fill="#CFEFFF" opacity=".6"/>
-        <circle cx="900"  cy="368" r="8"  fill="#4FE3FF" opacity=".62"/>
-        <circle cx="400"  cy="368" r="7"  fill="#9d8bfa" opacity=".6"/>
-        <circle cx="205"  cy="405" r="6"  fill="#4FE3FF" opacity=".6"/>
-      </g>
-    </svg>
-    <span class="glow" aria-hidden="true"></span>
+  <div class="hero-shot rise">
+    <img src="images/apps/nt2/stage.webp" width="1100" height="802"
+         alt="Nebula Tide 2's stage: the twelve keys in orbit, the shimmer knob at the right, and the space controls below" fetchpriority="high">
   </div>
-  <p class="fine" style="margin-top:14px">Artwork, not a screenshot — version 2's own pictures are being shot now</p>
 </header>
 
 <section id="new" class="wrap">
@@ -464,18 +382,30 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
     <p>Most shimmer plugins put the effect alongside the sound, so the pad and the shimmer arrive as two separate things sitting next to each other. Nebula Tide puts it in the path. The pad goes in, the shimmer comes out, and what you hear is one sound that grows rather than two sounds stacked.</p>
     <p>One control does the work. At the bottom of its travel it is a hint of air. At the top it is a room with no ceiling. Turning it moves five things at once, each on its own curve: how much, how close, how bright, how dense, and how far it regenerates. A full set of controls waits in Settings for anyone who wants them, and nobody has to touch them.</p>
     <p>The pitch shifting is splice-aligned rather than fixed-interval — the difference between a shimmer that sounds smooth and one that sounds granular.</p>
+    <div class="shot"><img src="images/apps/nt2/settings.webp" width="612" height="620" loading="lazy"
+      alt="The shimmer's own controls in Settings: bloom, tone, size, density and pitch, above the license and sound library sections"></div>
   </div>
 
   <div class="feat-wide rise">
     <p class="kicker">Studio</p>
     <h3>Your recordings, our engine.</h3>
-    <p>Twelve slots, one per key. Drop your own recordings onto the key you recorded them in and the slot fills. Name it, save it, and it appears on the stage beside the presets we made. No folder structure to learn, no manifest to write, no restart.</p>
+    <p>Twelve slots, one per key. Drop your own recordings onto the key you recorded them in and the slot fills. Name it, save it, give it a colour, and it appears on the stage beside the presets we made. No folder structure to learn, no manifest to write, no restart. Share a preset with someone else and they import it in one click.</p>
+    <div class="shot"><img src="images/apps/nt2/studio.webp" width="1097" height="803" loading="lazy"
+      alt="The Studio page: twelve key slots waiting for audio, a preset name, a colour, and the reverb defaults underneath"></div>
   </div>
 
   <div class="feat-wide rise">
     <p class="kicker">Timeline</p>
     <h3>From the instrument to the timeline, in one drag.</h3>
     <p>Drag from the app onto a DAW track and a MIDI clip lands, already in the right key. The clip carries the pad on one channel and the effects and textures on another, so a single drag reproduces what you were just hearing.</p>
+  </div>
+
+  <div class="feat-wide rise">
+    <p class="kicker">Playable</p>
+    <h3>Three zones on one keyboard.</h3>
+    <p>The keyboard splits into three: effects low down, the twelve keys in the middle, textures at the top. One note plays a sound, the pitch picks the key, and the zones are drawn on screen so you can see where you are. Any knob can be learned to a controller — press learn, move the knob, done.</p>
+    <div class="shot"><img src="images/apps/nt2/keys.webp" width="1100" height="805" loading="lazy"
+      alt="The stage with the keyboard map open: the FX, KEYS and TEXTURES zones coloured across the range"></div>
   </div>
 
   <div class="trio">
@@ -492,12 +422,12 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 
 <section class="wrap">
   <h2>One instrument, more than one machine.</h2>
-  <p class="lede">Windows and macOS ship the sound library with the app. Android downloads it on first launch, so the download stays small — same instrument, same presets, same sound.</p>
+  <p class="lede">Windows and macOS ship the sound library with the app. The mobile builds download it on first launch, so the store download stays small — same instrument, same presets, same sound.</p>
   <div class="plats">
     <div><b>Windows</b><p>Windows 10 and 11, 64-bit. Standalone and VST3.</p></div>
     <div><b>macOS</b><p>macOS 11 and later, Apple silicon and Intel.</p></div>
-    <div><b>Android</b><p>Phones and tablets. The app downloads the sound library on first launch, so the download stays small.</p></div>
-    <div class="soon"><b>iPhone and iPad</b><p>In build. They arrive as App Store releases, and this page will say so the day they do — not before.</p></div>
+    <div class="soon"><b>Android</b><p>Built and being tested. It appears here the day the build is ready to hand out, not before.</p></div>
+    <div class="soon"><b>iPhone and iPad</b><p>In build. They arrive as App Store releases, and this page will say so the day they do.</p></div>
   </div>
 </section>
 
