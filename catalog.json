@@ -74,7 +74,10 @@
       "tagline": "Air you can aim. A dynamic air exciter for vocals, choir and the mix bus.",
       "icon": "images/apps/aether/icon.svg", "page": "aether.html", "color": "#35E0F0",
       "free": false, "licensed": true, "version": "1.0.0",
-      "installers": {}
+      "installers": {
+        "windows": { "key": "aether/AETHER-windows.zip", "alt_keys": ["AETHER/AETHER-windows.zip"],
+                     "as": "AETHER-1.0.0-Windows.zip", "type": "application/zip", "size": "4 MB" }
+      }
     },
     "pulseroom": {
       "name": "PulseRoom", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
