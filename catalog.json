@@ -62,6 +62,13 @@
                      "as": "StemSorter-macOS.zip",   "type": "application/zip", "size": "12 MB" }
       }
     },
+    "drumgate": {
+      "name": "Drum Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "tagline": "Filter the trigger. Shape the tail.",
+      "icon": "images/apps/drumgate/icon.svg", "page": "drumgate.html", "color": "#4A8BF0",
+      "free": false, "licensed": false, "version": "1.2.0",
+      "installers": {}
+    },
     "aether": {
       "name": "AETHER", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
       "tagline": "Air you can aim. A dynamic air exciter for vocals, choir and the mix bus.",
