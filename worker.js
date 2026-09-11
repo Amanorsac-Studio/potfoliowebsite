@@ -564,7 +564,9 @@ async function catalogApi(env) {
     apps[id] = {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
       tagline: a.tagline || '', icon: abs(a.icon), page: abs(a.page), color: a.color || null,
-      free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null), licensed: !!a.licensed,
+      free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null),
+      list_price_cents: (!a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
+      licensed: !!a.licensed,
       version: a.version || null, platforms: Object.keys(a.installers || {})
     };
   }
@@ -573,6 +575,9 @@ async function catalogApi(env) {
     hub: { name: hub.name || 'Amanorsac Hub', version: hub.version || null, protocol: hub.protocol || 'amanorsac',
            tagline: hub.tagline || '', platforms: Object.keys(hub.installers || {}),
            download: SITE + '/download/hub/{platform}' },
+    /* Present only while a sale is on, so the Hub can say "was X" the
+       same way the site does. Absent means full price, everywhere. */
+    promo: c.promo ? { percent: c.promo.percent || null, note: c.promo.note || '' } : null,
     apps
   }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } });
 }

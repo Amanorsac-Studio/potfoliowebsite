@@ -256,6 +256,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
   "applicationSubCategory": "Audio plugin",
   "softwareVersion": "1.0.0",
   "image": "https://amanorsac.studio/images/apps/alignpro/auto.png",
+  "offers": { "@type": "Offer", "price": "49", "priceCurrency": "USD" },
   "author": { "@id": "https://amanorsac.studio/#studio" },
   "publisher": { "@id": "https://amanorsac.studio/#studio" }
 }
@@ -277,10 +278,11 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
   <h1>Align every mic. Hear <em>exactly how much</em>.</h1>
   <p class="sub">Align Pro finds the delay, the polarity flip and the frequency-dependent phase drift between any two mics on one source — and gives you a dial for how far to take the correction, so the kit doesn't shrink.</p>
   <div class="cta-row">
-    <a class="cta" href="/client.html?next=%2Falignpro.html">Create an account</a>
+    <button class="cta" data-buy type="button">Buy — $49</button>
     <a class="cta ghost" href="#how">How it works</a>
   </div>
-  <p class="fine">Version 1.0.0 · price announced shortly · Windows &amp; macOS, signed and notarised</p>
+  <p class="fine">$49 once · version 1.0.0 · one key, two computers · Windows &amp; macOS, signed and notarised</p>
+  <p class="promo-line" data-promo hidden></p>
   <p class="buy-status" data-buy-status hidden></p>
   <div class="shot rise">
     <img src="images/apps/alignpro/auto.png" width="1536" height="1024" fetchpriority="high"
@@ -370,12 +372,13 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 
 <section class="wrap">
   <div class="buy rise">
-    <p class="slot">Coming<br>shortly<small>Price announced soon</small></p>
+    <p class="slot">$49<small>Once, for both machines</small></p>
     <div>
       <h2>One key, two computers, no dongle.</h2>
-      <p>Activation is a key you type into the plug-in — no account manager to install, nothing to plug in, and a Deactivate button for when you change machines. Make an account here and Align Pro appears in your My Apps the day it goes on sale.</p>
-      <a class="cta" href="/client.html?next=%2Falignpro.html">Create an account</a>
+      <p>Activation is a key you type into the plug-in — no account manager to install, nothing to plug in, and a Deactivate button for when you change machines. A year of updates is included, and the version you have keeps working after that.</p>
+      <button class="cta" data-buy type="button">Buy — $49</button>
       <a class="cta ghost" href="#how">How it works</a>
+      <p class="promo-line" data-promo hidden></p>
     </div>
   </div>
 </section>
@@ -420,6 +423,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 <script src="assets/track.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/app-purchase.js" defer></script>
 </body>

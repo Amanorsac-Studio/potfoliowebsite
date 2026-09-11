@@ -411,6 +411,7 @@
       <a class="btn btn-ghost" href="#how">See how it works</a>
     </div>
     <p class="buy-status" data-buy-status hidden></p>
+    <p class="promo-line" data-promo hidden></p>
     <p class="meta">$19, once &nbsp;·&nbsp; lifetime license &nbsp;·&nbsp; 1 year of updates included &nbsp;·&nbsp; version 1.3.2 for Windows and macOS &nbsp;·&nbsp; signed and notarised &nbsp;·&nbsp; installs through Amanorsac Hub</p>
 
     <div class="diagram">
@@ -588,6 +589,7 @@
         <h2>$19, once.<br>Windows &amp; macOS.</h2>
         <p class="meta">VST3 · Standalone · signed on Windows, notarised on macOS</p>
         <button class="btn btn-primary buy-btn" data-buy type="button" style="margin-top:22px;">Buy — $19</button>
+        <p class="promo-line" data-promo hidden></p>
         <p class="fineprint">Lifetime license, one year of updates included. Buy it, install it through Amanorsac Hub, and paste the license key from your account into the plugin — one key, up to two devices, managed from <a href="/my-apps.html">My Apps</a>.</p>
       </div>
       <div class="power">
@@ -635,8 +637,9 @@ if('IntersectionObserver' in window &&
 <script src="/assets/hub-download.js" defer></script>
 <script src="assets/track.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="assets/store-state.js" defer></script>
+<script src="assets/store-state.js"></script>
 <script src="assets/app-purchase.js"></script>
+<script src="assets/promo.js" defer></script>
 <script src="assets/site-auth.js"></script>
 </body>
 </html>
