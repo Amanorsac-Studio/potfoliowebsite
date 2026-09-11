@@ -66,11 +66,15 @@
       }
     },
     "ambanalog": {
-      "name": "AMB Analog", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon",
+      "name": "AMB Analog", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "Ten analog machines, built from the ground up.",
       "icon": "images/apps/analog/icon.svg", "page": "ambanalog.html", "color": "#D4A24C",
       "free": false, "price_cents": 3900, "licensed": true, "version": "1.0.0",
-      "installers": {}
+      "installers": {
+        "windows": { "key": "ambanalog/analog-bundle-windows.zip",
+                     "alt_keys": ["AMB Analog/analog-bundle-windows.zip"],
+                     "as": "AMB-Analog-Windows.zip", "type": "application/zip", "size": "297 MB" }
+      }
     },
     "afdgate": {
       "name": "AFD Gate", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "coming_soon", "preview_status": "available",
