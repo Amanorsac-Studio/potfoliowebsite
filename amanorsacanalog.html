@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amanorsac Analog: ten analog processors, one licence | Amanorsac Studio</title>
+<meta name="description" content="Ten analog processors — equalisers, compressors, preamp, tape, valve, console and plate — each with its own engine and its own factory bank. 187 presets, one key for the whole bundle, VST3 and Standalone on Windows. $39.">
+<meta property="og:title" content="Amanorsac Analog — ten analog machines, built from the ground up">
+<meta property="og:description" content="Preamps that push, equalisers that flatter, compressors that hold a vocal still, tape and plate that put a record in a room. Every control does something.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/analog/A01.png">
+<meta property="og:url" content="https://amanorsac.studio/amanorsacanalog.html">
+<link rel="icon" href="images/apps/analog/icon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   Amanorsac Analog. Ten products on one page.
+
+   Warm metal rather than the cold blue the rest of the store wears,
+   because that is what the faceplates are - but the same skeleton
+   underneath, so it still reads as one shop.
+   ===================================================================== */
+:root{
+  --bg:#0C0A08; --panel:#16120E; --panel-2:#1E1813; --line:rgba(255,255,255,.09);
+  --text:#F0E9E0; --muted:#B5A796; --dim:#8D8073;
+  --brass:#D4A24C; --brass-soft:#241A0D; --copper:#C4744A;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:20px;
+  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+section{padding:clamp(58px,9vh,110px) 0}
+
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:13px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 90%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name b{color:var(--brass);font-weight:700}
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#1a1206}
+
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;
+  border-radius:999px;padding:14px 28px;min-height:50px;
+  background:var(--brass);color:#1B1204;transition:transform var(--dur) var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:translateY(0) scale(.985)}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.cta[disabled]{opacity:.6;cursor:default;transform:none}
+
+.hero{padding:clamp(52px,8vh,92px) 0 0}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.badges span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brass);border:1px solid color-mix(in srgb,var(--brass) 38%,transparent);
+  background:color-mix(in srgb,var(--brass) 9%,transparent);border-radius:999px;padding:5px 12px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1;
+  font-size:clamp(40px,7vw,84px);margin:0 0 16px}
+h1 em{font-style:normal;color:var(--brass)}
+.hero .one{font-family:var(--display);font-weight:700;font-size:clamp(19px,2.4vw,27px);
+  letter-spacing:-.02em;margin:0 0 18px;max-width:26ch}
+.hero .sub{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);max-width:62ch;margin:0 0 30px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:0}
+.buy-status{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:56ch}
+.buy-status.bad{color:var(--copper)}
+.buy-status a{color:var(--brass)}
+.shot{margin-top:clamp(34px,6vh,60px);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.65)}
+.shot-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:12px 0 0}
+
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
+  font-size:clamp(26px,3.4vw,40px);margin:0 0 14px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--brass);margin:0 0 12px}
+.lede{color:var(--muted);max-width:66ch;margin:0 0 40px;font-size:17px}
+p.body{color:var(--muted);max-width:66ch;margin:0 0 18px}
+p.body b{color:var(--text);font-weight:600}
+
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.pillar{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:24px 22px}
+.pillar b{display:block;font-family:var(--display);font-weight:700;font-size:17.5px;margin:0 0 9px}
+.pillar p{margin:0;font-size:14.5px;color:var(--muted)}
+.pillar svg{display:block;margin:0 0 16px}
+
+/* the ten */
+.ten{display:grid;gap:clamp(20px,3vw,28px)}
+.unit{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+.unit .pic{border-bottom:1px solid var(--line);background:#0A0806}
+.unit .pic img{width:100%;height:auto}
+.unit .txt{padding:clamp(22px,3vw,30px)}
+.unit .no{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--dim);margin:0 0 8px}
+.unit h3{font-family:var(--display);font-weight:800;font-size:clamp(22px,2.6vw,30px);
+  letter-spacing:-.01em;margin:0 0 4px}
+.unit .role{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--brass);margin:0 0 16px}
+.unit .hook{font-family:var(--display);font-weight:600;font-size:18px;margin:0 0 14px;max-width:40ch}
+.unit .what{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.unit ul{margin:0 0 18px;padding:0;list-style:none;display:grid;gap:9px}
+.unit li{display:grid;grid-template-columns:16px 1fr;gap:11px;color:var(--muted);font-size:14.5px;max-width:70ch}
+.unit li::before{content:"·";color:var(--brass);font-weight:700;text-align:center;line-height:1.6}
+.unit .count{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);margin:0}
+@media (min-width:900px){
+  .unit{display:grid;grid-template-columns:1.05fr 1fr;align-items:stretch}
+  .unit .pic{border-bottom:0;border-right:1px solid var(--line);display:grid;align-items:center}
+  .unit:nth-child(even) .pic{order:2;border-right:0;border-left:1px solid var(--line)}
+}
+
+.cats{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 26px}
+.cats span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text);background:var(--panel-2);border:1px solid var(--line);
+  border-radius:999px;padding:8px 15px}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:560px;background:var(--panel)}
+th,td{text-align:left;padding:13px 18px;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--body);font-weight:500;color:var(--muted);width:34%}
+td{color:var(--text)}
+td code{font-family:var(--mono);font-size:.9em}
+tr:last-child th,tr:last-child td{border-bottom:0}
+
+.buy{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(20px,4vw,48px);align-items:center}
+.buy .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,7vw,84px);
+  letter-spacing:-.04em;line-height:1;color:var(--brass);margin:0}
+.buy .big small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;margin-top:10px}
+.buy h2{margin:0 0 8px}
+.buy p{margin:0 0 18px;color:var(--muted);max-width:54ch}
+@media (max-width:700px){ .buy{grid-template-columns:1fr;gap:16px} }
+
+details{border-bottom:1px solid var(--line)}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted);font-size:18px;
+  transition:transform var(--dur) var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+details code{font-family:var(--mono);font-size:.88em;color:var(--text)}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+
+.rise{opacity:0;transform:translateY(16px);
+  transition:opacity 620ms var(--ease),transform 620ms var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rise{opacity:1;transform:none}
+}
+</style>
+<link rel="canonical" href="https://amanorsac.studio/amanorsacanalog">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Amanorsac Analog",
+  "url": "https://amanorsac.studio/amanorsacanalog",
+  "description": "Ten analog processors: two equalisers, three compressors and levellers, a transformer preamp, a console channel, a tape machine, a valve saturator and a plate reverb. 187 factory presets, one licence for the whole bundle.",
+  "operatingSystem": "Windows",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Audio plugin bundle",
+  "image": "https://amanorsac.studio/images/apps/analog/A01.png",
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" },
+  "offers": { "@type": "Offer", "price": "39", "priceCurrency": "USD" }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+</head>
+<body data-app="amanorsacanalog">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name">Amanorsac <b>Analog</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <div class="badges">
+    <span>Ten plug-ins</span><span>187 presets</span><span>VST3</span><span>Standalone</span><span>Windows</span>
+  </div>
+  <h1>Amanorsac <em>Analog</em></h1>
+  <p class="one">Ten analog machines, built from the ground up, that behave like the desk you wish you owned.</p>
+  <p class="sub">Ten analog processors for the work that actually fills your day: preamps that push, equalisers that flatter, compressors that hold a vocal still, tape and plate that put a record in a room. Every control does something. Nothing is decoration.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $39</button>
+    <a class="cta ghost" href="#ten">See the ten</a>
+  </div>
+  <p class="fine">$39 once · one key unlocks all ten · two computers per licence · Windows 10/11</p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <div class="shot rise" id="an-hero">
+    <img width="1280" height="853" onerror="document.getElementById('an-hero').hidden=true;document.getElementById('an-cap').hidden=true" src="images/apps/analog/A01.webp" fetchpriority="high"
+         alt="HERITAGE EQ, the five-band equaliser that opens the Amanorsac Analog bundle">
+  </div>
+  <p class="shot-cap" id="an-cap">A01 Heritage EQ · hardware proportion, printed scales, machined switches</p>
+</header>
+
+<section class="wrap">
+  <p class="eyebrow">What it is</p>
+  <h2>Ten separate plug-ins, not one plug-in with ten skins.</h2>
+  <p class="body">Each has its own engine, its own faceplate and its own factory bank, and each was measured before it shipped: every parameter proven audible, every output proven finite from 44.1 to 192 kHz, silence proven silent, bypass proven to return exactly what went in. The panels are drawn to hardware proportion, the type is set to be read across a room, and 187 presets are sorted by source so the first five minutes are productive rather than exploratory.</p>
+</section>
+
+<section class="wrap">
+  <div class="pillars">
+    <div class="pillar rise">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 20h18M6 20V9m6 11V4m6 16v-7"/></svg>
+      <b>Built, not modelled from a picture.</b>
+      <p>Every engine is written for the job it does: real RBJ shelves and bells, real Butterworth filter slopes, real oversampling with the latency reported to the host and the dry path delayed to match. Where a control exists on the panel, it is wired to the engine.</p>
+    </div>
+    <div class="pillar rise">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 12h4l3 7 4-14 3 7h4"/></svg>
+      <b>Measured before it ships.</b>
+      <p>An automated audit drives all ten at 44.1, 48, 96 and 192 kHz, at block sizes from 16 to 2048 samples, with every control at its extremes. It proves every parameter changes the sound, the output stays finite and bounded, silence in gives silence out, bypass and mix at nothing return the input, and every factory preset loads and does something.</p>
+    </div>
+    <div class="pillar rise">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+        <circle cx="8" cy="12" r="4"/><path d="M12 12h9M17 12v4M20 12v3"/></svg>
+      <b>One key, ten plug-ins.</b>
+      <p>Buy once, type the key into whichever plug-in you open first, and the whole bundle is licensed on that machine. Two computers per licence, and a Deactivate button when you move to a new one. It keeps working for thirty days without an internet connection.</p>
+    </div>
+    <div class="pillar rise">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#D4A24C" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 9v11"/></svg>
+      <b>Presets that are a starting point, not a maze.</b>
+      <p>187 presets across the bundle, grouped by source, so you open the drawer you need. They ship inside the plug-in: nothing to install, nothing to copy.</p>
+    </div>
+  </div>
+</section>
+
+<section id="ten" class="wrap">
+  <p class="eyebrow">The ten</p>
+  <h2>Every one of them, and what it is for.</h2>
+  <p class="lede">Ten machines, each with its own engine and its own bank. Nothing here is a re-skin of anything else here.</p>
+  <div class="ten">
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="853" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A01.webp" loading="lazy"
+             alt="HERITAGE EQ, the class-a musical equalizer of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A01</p>
+          <h3>HERITAGE EQ</h3>
+          <p class="role">Class-A Musical Equalizer</p>
+          <p class="hook">Five bands that flatter before they correct.</p>
+          <p class="what">A five-band equaliser with true shelves at each end and musical bells between, built for the moves you make on every song: lift the air, take out the box, put the weight back. Sweepable high-pass and low-pass with 18 or 24 dB slopes, four colour characters from clean to tape, and 2x/4x oversampling when you drive it.</p>
+          <ul>
+          <li>Five bands: shelving low and high with adjustable slope, three bells with variable Q, each switchable in and out</li>
+          <li>Clean, Console, Tube and Tape character with a drive control and auto gain</li>
+          <li>L/R or M/S processing, wet/dry mix, 18 or 24 dB filter slopes, oversampling to 4x</li>
+          </ul>
+          <p class="count">21 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="853" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A06.webp" loading="lazy"
+             alt="STRIKE FET, the fet compressor of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A06</p>
+          <h3>STRIKE FET</h3>
+          <p class="role">FET Compressor</p>
+          <p class="hook">Fast enough to hurt, and an all-buttons mode when it should.</p>
+          <p class="what">The compressor for attitude: microsecond attack, six ratios including the all-buttons setting, and a saturation control on the way out. Sidechain high-pass and an external key input for when the low end is driving the detector.</p>
+          <ul>
+          <li>Ratios from 2:1 to 20:1 plus All Buttons</li>
+          <li>Attack from 0.02 ms, release to 1.5 s, sidechain high-pass and external key</li>
+          <li>Saturation, wet/dry mix and a live gain-reduction VU</li>
+          </ul>
+          <p class="count">18 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="853" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A04.webp" loading="lazy"
+             alt="REELSAT, the tape machine of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A04</p>
+          <h3>REELSAT</h3>
+          <p class="role">Tape Machine</p>
+          <p class="hook">Three formulas, three speeds, and the head bump that sells it.</p>
+          <p class="what">A tape machine with the controls that matter: the formula, the speed, and how hard you hit it. Head bump for the weight, HF roll-off for the top, wow and flutter for the movement, and hiss when the track needs the room noise.</p>
+          <ul>
+          <li>Three tape formulas at 7.5, 15 or 30 ips</li>
+          <li>Bias, saturation, head bump and HF roll-off shaped per speed</li>
+          <li>Wow, flutter and optional hiss, with wet/dry mix for parallel tape</li>
+          </ul>
+          <p class="count">19 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="801" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A09.webp" loading="lazy"
+             alt="SILK PASSIVE EQ, the passive program equalizer of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A09</p>
+          <h3>SILK PASSIVE EQ</h3>
+          <p class="role">Passive Program Equalizer</p>
+          <p class="hook">Boost and cut at once, the way the passive design intended.</p>
+          <p class="what">A passive program equaliser where boost and cut are separate networks sharing a frequency selector — so boosting and cutting the same band does not cancel, it carves the curve everyone loves. Tube or solid-state output stage with an input drive.</p>
+          <ul>
+          <li>Low boost and cut on separate curves, sweepable mid presence, high boost and cut</li>
+          <li>Tube or solid-state output stage with input drive</li>
+          <li>Switchable high-pass, wet/dry mix, full-range frequency selectors</li>
+          </ul>
+          <p class="count">18 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="853" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A02.webp" loading="lazy"
+             alt="IRON PRE, the transformer preamp of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A02</p>
+          <h3>IRON PRE</h3>
+          <p class="role">Transformer Preamp</p>
+          <p class="hook">Three transformers, one honest gain stage.</p>
+          <p class="what">The front end of a good desk: a transformer you choose, an impedance that changes how the source loads it, and a saturation control that goes from a whisper of iron to a broken radio. Pad, polarity, high-pass and a tone pair for the corrections you make while tracking.</p>
+          <ul>
+          <li>Three transformer characters and three input impedances</li>
+          <li>Drive and saturation, low and high tone, switchable high-pass, pad and polarity</li>
+          <li>Wet/dry mix and L/R or M/S link for parallel colour on a bus</li>
+          </ul>
+          <p class="count">19 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="801" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A08.webp" loading="lazy"
+             alt="BUSFORGE VCA, the vca bus compressor of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A08</p>
+          <h3>BUSFORGE VCA</h3>
+          <p class="role">VCA Bus Compressor</p>
+          <p class="hook">Glue, in the amount you ask for.</p>
+          <p class="what">The bus compressor: four ratios, a knee you choose, auto release for programme material, and a sidechain high-pass so the kick stops pulling the whole mix down. Two decibels of this across a mix is usually the whole job.</p>
+          <ul>
+          <li>Threshold, four ratios, attack from 0.1 ms, release with optional auto mode</li>
+          <li>Soft or hard knee, sidechain high-pass, stereo link</li>
+          <li>Make-up gain, wet/dry mix for parallel glue, gain-reduction meter</li>
+          </ul>
+          <p class="count">18 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="802" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A10.webp" loading="lazy"
+             alt="PLATE FOUR, the electro-mechanical plate reverb of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A10</p>
+          <h3>PLATE FOUR</h3>
+          <p class="role">Electro-Mechanical Plate Reverb</p>
+          <p class="hook">Four plates, two eras, and a tension control you can hear.</p>
+          <p class="what">A plate reverb with the mechanics exposed: four plate characters, a tension setting that changes how long and how bright the plate rings, and a modern or vintage transducer era. Bass cut and treble shelf shape the tail, crosstalk and width place it.</p>
+          <ul>
+          <li>Four plate characters, Low/Standard/High tension, Modern or Vintage era</li>
+          <li>Pre-delay to 500 ms, decay to 8 s, damping, bass cut and treble shelf</li>
+          <li>Drive, crosstalk, analog noise and width, with wet/dry mix and input trim</li>
+          </ul>
+          <p class="count">19 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="801" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A03.webp" loading="lazy"
+             alt="CONSOLE ONE, the console channel color of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A03</p>
+          <h3>CONSOLE ONE</h3>
+          <p class="role">Console Channel Color</p>
+          <p class="hook">A channel strip that sounds like the desk it came from.</p>
+          <p class="what">Preamp, three-band EQ, high-pass and bus colour in the order a console puts them. Push the drive for the harmonic signature, use the EQ for the shape, and add as much or as little of the bus stage as the mix wants.</p>
+          <ul>
+          <li>Preamp drive plus a three-band EQ with sweepable mid, switchable in and out</li>
+          <li>Bus colour stage with optional analog noise for period-correct grit</li>
+          <li>Stereo, Dual Mono or M/S operation with a wet/dry mix</li>
+          </ul>
+          <p class="count">18 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="801" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A05.webp" loading="lazy"
+             alt="VALVE DRIVE, the tube harmonic saturator of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A05</p>
+          <h3>VALVE DRIVE</h3>
+          <p class="role">Tube Harmonic Saturator</p>
+          <p class="hook">Choose the valve, then choose the harmonics.</p>
+          <p class="what">Three valve topologies and a balance control that sets how far off centre the stage runs, which is what decides whether you hear even or odd harmonics. Pre and post emphasis put the drive where you want it in the spectrum.</p>
+          <ul>
+          <li>Triode, Pentode and Cascade topologies</li>
+          <li>Even/odd balance, bias and density for the shape of the distortion</li>
+          <li>Pre and post emphasis, soft clip, high-pass and wet/dry mix</li>
+          </ul>
+          <p class="count">19 presets</p>
+        </div>
+      </article>
+
+      <article class="unit rise">
+        <div class="pic"><img width="1280" height="854" onerror="this.closest('.pic').hidden=true" src="images/apps/analog/A07.webp" loading="lazy"
+             alt="LUMEN OPTO, the optical leveler of the Amanorsac Analog bundle"></div>
+        <div class="txt">
+          <p class="no">A07</p>
+          <h3>LUMEN OPTO</h3>
+          <p class="role">Optical Leveler</p>
+          <p class="hook">The one you leave on the vocal.</p>
+          <p class="what">An optical leveller with the program-dependent release that makes a vocal sit still without sounding held. Fast and slow response, a release you can set, a tube colour stage and stereo link for busses.</p>
+          <ul>
+          <li>Optical detector with Fast or Slow response and adjustable release</li>
+          <li>Peak reduction and make-up gain in the classic arrangement</li>
+          <li>Sidechain high-pass, tube colour, stereo link and wet/dry mix</li>
+          </ul>
+          <p class="count">18 presets</p>
+        </div>
+      </article>  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Presets</p>
+  <h2>187 of them, filed by what you are working on.</h2>
+  <p class="lede">Open the drawer for the source in front of you rather than scrolling a list. Every preset also carries tags for source, intent, genre, intensity and character.</p>
+  <div class="cats">
+    <span>Vocals</span><span>Drums</span><span>Bass</span><span>Guitars</span><span>Keys</span>
+    <span>Strings &amp; Horns</span><span>Mix Bus</span><span>Master</span><span>Creative</span><span>Utility</span>
+  </div>
+  <p class="body">Your own presets save alongside the factory ones, as plain XML you can copy between machines. They live in <code>%APPDATA%\Amanorsac Studio\Presets\</code> under the product's own name.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">How it was tested</p>
+  <h2>Every claim on this page was measured, not assumed.</h2>
+  <p class="body">An automated audit drives all ten products at 44.1, 48, 96 and 192 kHz, at block sizes from 16 to 2048 samples, with every control at its extremes. It proves every parameter changes the sound, the output stays finite and bounded, silence in gives silence out, bypass and a mix of nothing return the input untouched, and every factory preset loads and does something.</p>
+  <p class="body">That last one matters more than it sounds. A bank of presets that load but do nothing is the most common thing wrong with a bundle this size, and it is the kind of thing only a machine will check three hundred times without getting bored.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Specifications</p>
+  <h2>What it needs, and what it does.</h2>
+  <div class="tablewrap">
+    <table>
+      <tbody>
+        <tr><th>Formats</th><td>VST3 and Standalone</td></tr>
+        <tr><th>Platform</th><td>Windows 10 and 11, 64-bit</td></tr>
+        <tr><th>Sample rates</th><td>44.1 kHz to 192 kHz</td></tr>
+        <tr><th>Channels</th><td>Mono and stereo. Sidechain input on Strike FET.</td></tr>
+        <tr><th>Interface</th><td>Resizable from 1024 to 1920 px wide, fixed aspect</td></tr>
+        <tr><th>Presets</th><td>187 factory presets across the bundle, grouped by source</td></tr>
+        <tr><th>Preset location</th><td><code>%APPDATA%\Amanorsac Studio\Presets\&lt;product&gt;\</code></td></tr>
+        <tr><th>Preset format</th><td><code>.amanorsacpreset</code>, plain XML, portable between machines</td></tr>
+        <tr><th>Shared across all ten</th><td>A/B snapshots, copy and paste between instances, full undo and redo, type a value on any knob, host bypass, host automation, full session recall</td></tr>
+        <tr><th>Licence</th><td>One key unlocks the whole bundle. Two computers per licence, thirty days offline.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="body" style="margin-top:20px">macOS and AAX are not part of this release.</p>
+</section>
+
+<section class="wrap">
+  <div class="buy rise">
+    <p class="big">$39<small>Once, for all ten</small></p>
+    <div>
+      <h2>Ten machines, one key, two computers.</h2>
+      <p>Everything on this page for thirty-nine dollars: ten plug-ins, 187 presets, and a licence you move yourself when you change machines. A year of updates is included, and the version you have keeps working after that.</p>
+      <button class="cta" data-buy type="button">Buy — $39</button>
+      <a class="cta ghost" href="#ten">See the ten again</a>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Questions, answered.</h2>
+  <details><summary>Is this one plug-in with ten presets?</summary>
+    <div>No. Ten separate plug-ins, each with its own engine, its own faceplate and its own factory bank. They install together and they appear in your host as ten.</div></details>
+  <details><summary>How does one key unlock ten?</summary>
+    <div>Type it into whichever one you open first and the whole bundle is licensed on that machine. Two computers at a time, and each plug-in has a Deactivate button for when you move to a new one.</div></details>
+  <details><summary>Does it need the internet?</summary>
+    <div>Once, to activate, and quietly now and then afterwards. Between checks it runs offline for thirty days at a stretch.</div></details>
+  <details><summary>Where do my presets go?</summary>
+    <div>Into <code>%APPDATA%\Amanorsac Studio\Presets\</code>, as plain XML you can copy to another machine or send to someone else.</div></details>
+  <details><summary>Mac? AAX?</summary>
+    <div>Not in this release. VST3 and Standalone on Windows is what exists, and anything else will be announced here when it is built and tested rather than promised now.</div></details>
+  <details><summary>What does "measured before it ships" actually mean?</summary>
+    <div>An automated audit runs all ten at four sample rates and a range of block sizes with every control at its extremes, and checks that each parameter is audible, the output stays finite, silence stays silent, bypass returns the input exactly, and every preset loads and changes something.</div></details>
+</section>
+
+<footer>
+  <a href="apps.html">App Store</a>
+  <a href="secondout.html">SecondOut</a>
+  <a href="aether.html">AETHER</a>
+  <a href="drumgate.html">Drum Gate</a>
+  <a href="legal.html">Legal</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+(function(){
+  if('IntersectionObserver' in window &&
+     !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+    }, { threshold:.12 });
+    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+  } else {
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+<script src="assets/track.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+</body>
+</html>
