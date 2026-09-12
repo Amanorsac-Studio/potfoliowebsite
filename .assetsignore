@@ -57,3 +57,6 @@ harmoniemd.html
 images/incoming/
 send-pictures.bat
 deploy-prices.bat
+
+# the button that sends installers up to R2; not part of the site
+send-installers.bat
