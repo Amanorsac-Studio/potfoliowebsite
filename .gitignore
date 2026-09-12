@@ -7,3 +7,4 @@
 
 # supabase CLI scratch state - machine-local, not the project
 supabase/.temp/
+docs/standards/

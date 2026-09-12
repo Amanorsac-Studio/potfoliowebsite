@@ -61,6 +61,9 @@ deploy-prices.bat
 # the button that sends installers up to R2; not part of the site
 send-installers.bat
 
-# The standards pack sent to developers. Internal: it describes unreleased
-# products and open engineering gaps, and is not part of the website.
-docs/standards/
+# Notes for developers and for the studio: the licensing spec, the Hub
+# integration notes, the Supabase email templates, the one-page briefs.
+# Every one of them was being served as a file at /docs/... simply because
+# the assets directory is the repository root. None is linked from a page
+# and none is a page, so none of them should ever have been fetchable.
+docs/
