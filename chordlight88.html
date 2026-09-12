@@ -97,7 +97,7 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
-.wrap{max-width:1100px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+.wrap{max-width:1100px;margin:0 auto;padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
 section{padding:clamp(58px,9vh,108px) 0}
 
 .top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
@@ -308,10 +308,11 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   <p class="buy-status" data-buy-status hidden></p>
   <ul class="assure" data-assure hidden></ul>
   <div class="shot rise" id="cl-hero">
-    <img src="images/apps/chordlight88/notes.png" alt="Chordlight 88 in notes mode: six notes lit across the 88-key display, named Fmaj9, numbered 4maj9 in the key of C, with IVmaj9 and Fa underneath"
+    <img src="images/apps/chordlight88/notes.webp" width="2880" height="1184" fetchpriority="high"
+         alt="Chordlight 88 in notes mode: six notes lit across the 88-key display, named Fmaj9, numbered 4maj9 in the key of C, with IVmaj9 and Fa underneath"
          onerror="document.getElementById('cl-hero').hidden=true;document.getElementById('cl-hero-cap').hidden=true">
   </div>
-  <p class="shot-cap" id="cl-hero-cap">Six notes down, named <code>Fmaj9</code>, numbered <code>4maj9</code> in the key of C, with <code>IVmaj9 · Fa</code> underneath. The keys are lit by velocity.</p>
+  <p class="shot-cap" id="cl-hero-cap">Six notes down &middot; <code>Fmaj9</code> &middot; <code>4maj9</code> in the key of C &middot; lit by velocity</p>
 </header>
 
 <section class="wrap" id="midi">
@@ -330,10 +331,11 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   <h2>Not everyone thinks in letters.</h2>
   <p class="body">Chord displays name chords in letters. A large part of the keyboard-playing world — worship, gospel, choral, most of the teaching world — works in numbers and in sol-fa. Chordlight reads all three at once, from the same hands.</p>
   <div class="shot rise" id="cl-solfa">
-    <img src="images/apps/chordlight88/solfa.png" alt="Chordlight 88 in sol-fa mode: the key labels read Do, Mi, So and Ti, and the big readout reads Do maj7 for a Cmaj7 in the key of C"
+    <img src="images/apps/chordlight88/solfa.webp" width="2880" height="1184" loading="lazy"
+         alt="Chordlight 88 in sol-fa mode: the key labels read Do, Mi, So and Ti, and the big readout reads Do maj7 for a Cmaj7 in the key of C"
          onerror="document.getElementById('cl-solfa').hidden=true;document.getElementById('cl-solfa-cap').hidden=true">
   </div>
-  <p class="shot-cap" id="cl-solfa-cap">One switch and the key labels and the big readout both change language. <code>Cmaj7</code> in the key of C reads <b>Do maj7</b>; a plain triad on 4 reads <b>Fa major</b>.</p>
+  <p class="shot-cap" id="cl-solfa-cap">One switch &middot; <code>Cmaj7</code> in C reads <b>Do maj7</b> &middot; a triad on 4 reads <b>Fa major</b></p>
   <div class="grid">
     <div class="card">
       <h3>Set the key once</h3>
