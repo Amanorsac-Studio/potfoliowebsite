@@ -60,3 +60,7 @@ deploy-prices.bat
 
 # the button that sends installers up to R2; not part of the site
 send-installers.bat
+
+# The standards pack sent to developers. Internal: it describes unreleased
+# products and open engineering gaps, and is not part of the website.
+docs/standards/
