@@ -652,42 +652,43 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 .gallery .shot:first-child{grid-column:span 2}
 @media (max-width:640px){ .gallery .shot:first-child{grid-column:span 1} }
 
+/* ---------- the holding page ----------
+   The shelf is not on the live site yet, so this stands in its place.
+   Nothing here is shared with the store above it: when the store comes
+   back this block and the section it draws go together. */
+.soonpage{min-height:calc(100vh - 220px);display:flex;flex-direction:column;
+  justify-content:center;padding:clamp(40px,9vh,110px) 0}
+.soon-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.34em;
+  text-transform:uppercase;color:#9C95BC;margin:0 0 clamp(18px,3vh,30px)}
+.soon-big{font-family:var(--display);font-weight:800;letter-spacing:-.045em;
+  font-size:clamp(56px,15.5vw,190px);line-height:.87;margin:0;color:#fff;
+  text-wrap:balance}
+.soon-big em{font-style:normal;
+  background:linear-gradient(96deg,#C4A6FF 0%,#8B7BFF 44%,#4FC3FF 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.soon-say{color:#A9A2C8;font-size:clamp(16px,1.9vw,21px);line-height:1.65;
+  max-width:44ch;margin:clamp(26px,4vh,42px) 0 0}
+.soon-cta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;
+  margin:clamp(28px,4vh,44px) 0 0}
+.soon-btn{display:inline-block;text-decoration:none;border-radius:999px;
+  padding:15px 30px;font-family:var(--body);font-weight:600;font-size:15.5px;
+  color:#0B0A14;background:linear-gradient(96deg,#C4A6FF,#8B7BFF 52%,#4FC3FF);
+  box-shadow:0 16px 40px -18px rgba(139,123,255,.95);
+  transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
+.soon-btn:hover{transform:translateY(-2px);box-shadow:0 22px 52px -18px rgba(139,123,255,1)}
+.soon-link{font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:#A9A2C8;text-decoration:none}
+.soon-link:hover{color:#fff}
+.soon-fine{color:#7E779C;font-size:13.5px;margin:clamp(24px,3.5vh,38px) 0 0}
+.soon-fine a{color:#A9A2C8}
+@media (max-width:640px){ .soonpage{min-height:auto;padding:clamp(34px,7vh,64px) 0 clamp(48px,9vh,90px)} }
+
 </style>
 <link rel="canonical" href="https://amanorsac.studio/apps">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "ItemList",
-  "name": "Amanorsac Studio software",
-  "itemListElement": [
-    {
-      "@type": "ListItem",
-      "position": 1,
-      "url": "https://amanorsac.studio/performlive"
-    },
-    {
-      "@type": "ListItem",
-      "position": 2,
-      "url": "https://amanorsac.studio/harmoniemd"
-    },
-    {
-      "@type": "ListItem",
-      "position": 3,
-      "url": "https://amanorsac.studio/nebulatide"
-    },
-    {
-      "@type": "ListItem",
-      "position": 4,
-      "url": "https://amanorsac.studio/pulseroom"
-    },
-    {
-      "@type": "ListItem",
-      "position": 5,
-      "url": "https://amanorsac.studio/secondout"
-    }
-  ]
-}
-</script>
+<!-- The ItemList that was here described the shelf. There is no shelf
+     on this page while it is a holding page, and two of its entries
+     pointed at pages that are no longer served. It comes back with
+     the store. -->
 <link rel="stylesheet" href="assets/site-auth.css">
 <link rel="stylesheet" href="assets/hub-download.css">
 </head>
@@ -722,295 +723,21 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
 <main id="main"><div class="wrap">
 
-  <header class="marquee">
-    <p class="suite">A suite of</p>
-    <h1>Powerful audio apps</h1>
-    <p class="said">Built in the studio, not in a product meeting. Open it and you&rsquo;ll know what to do.</p>
-    <div class="hairline"></div><div class="glowdot"></div>
-    <p class="promo-line" data-promo="store" hidden></p>
-  </header>
-
-  <!-- shown by site-auth.js only when someone is signed in -->
-  <p class="mine" data-auth-banner>
-    <span>Signed in as <b data-auth-name></b> — your license keys, devices and downloads are in one place.</span>
-    <a href="/my-apps.html">Open My Apps <span aria-hidden="true">→</span></a>
-  </p>
-
-  <!-- Four columns, four doors. Each app's own mark, its own colour, and
-       a real capture of the thing running. -->
-  <section id="store" class="shelf" aria-label="The apps">
-
-    <a class="app" href="nebulatide2.html" style="--k:#9D8BFA">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true" style="padding:0;overflow:hidden">
-          <img src="images/apps/nt-logo.webp" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
-        </span>
-        <span>
-          <h2 class="app-name">Nebula <em>Tide 2</em></h2>
-          <p class="app-say">The pad rises as it fades.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/nt2/stage.webp" alt="Nebula Tide 2: the stage, with the shimmer knob and the twelve keys in orbit" loading="lazy"></div>
-      <p class="app-note">Version 2 adds a shimmer the pads run through, a Studio page for your own presets, and a drag straight onto your timeline. Pay what you want, from $5. Windows and macOS.</p>
-      <p class="app-badge" data-badge-app="nebulatide2"></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="secondout.html" style="--k:#3fe083">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 0%,#12351F 0%,#0A1F14 58%,#05100B 100%)">
-          <!-- SecondOut: one source splitting into an unchanged path and a new one -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <rect x="1" y="9" width="7" height="6" rx="1.6" fill="#3fe083" opacity=".9"/>
-            <path d="M8 12 H12 M12 12 V6 H17 M12 12 V18 H17" stroke="#3fe083" stroke-width="1.8" opacity=".5"/>
-            <rect x="17" y="3" width="6" height="6" rx="1.6" fill="#3fe083" opacity=".28"/>
-            <rect x="17" y="15" width="6" height="6" rx="1.6" fill="#3fe083" opacity=".95"/>
-          </svg>
-        </span>
-        <span>
-          <h2 class="app-name">Second<em>Out</em></h2>
-          <p class="app-say">One master bus. Two outputs.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window showing an active stream to a second output device, buffer health, and drift correction" loading="lazy"></div>
-      <p class="app-note">Mirrors your DAW’s master bus to a second output device — feed a switcher, stream, or record a safety copy, without touching your main interface. $19, Windows and macOS.</p>
-      <p class="app-badge" data-badge-app="secondout"></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="pulseroom.html" style="--k:#F25C7F">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 15% 8%,#1D2230 0%,#0F1218 62%,#08090D 100%)">
-          <!-- PulseRoom: its own five-accent equalizer -->
-          <svg viewBox="0 0 24 24">
-            <rect x="1"    y="8"   width="3.4" height="8"  rx="1.7" fill="#3fd3e4"/>
-            <rect x="6.15" y="4.5" width="3.4" height="15" rx="1.7" fill="#a48bfa"/>
-            <rect x="11.3" y="1.5" width="3.4" height="21" rx="1.7" fill="#f2b13c"/>
-            <rect x="16.45" y="6"  width="3.4" height="12" rx="1.7" fill="#f25c7f"/>
-            <rect x="21.6" y="9.5" width="2.4" height="5"  rx="1.2" fill="#4fd58f"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Pulse<em>Room</em></h2>
-          <p class="app-say">Mix smarter. Sound better.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="PulseRoom: the EQ cheat sheet, boost and cut zones painted across the spectrum" loading="lazy"></div>
-      <p class="app-note">The producer’s reference desk. Drop a song in and it finds the tempo, then answers for delay, reverb, EQ and compression follow.</p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="nebulatide.html" style="--k:#4FE3FF">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 140% at 50% 118%,#0A3B54 0%,#04283F 46%,#020C16 100%)">
-          <!-- Nebula Tide: a star over the tide -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
-            <path d="M12 1.5c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5z" fill="#BDF3FF" stroke="none"/>
-            <path d="M2 16.5c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#4FE3FF" opacity=".9"/>
-            <path d="M2 21c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#16B8D8" opacity=".6"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Nebula <em>Tide</em></h2>
-          <p class="app-say">Cinematic. Immersive.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/nt-idle.webp" alt="Nebula Tide: a glowing pad on stage with the twelve key planets in orbit below" loading="lazy"></div>
-      <p class="app-note">Endless drone pads in all twelve keys, recorded rather than stretched, for producers and the stage. Version 1, free, and staying that way.</p>
-      <!-- filled in by assets/app-reviews.js; empty until there is a
-           real number, so a brand-new app shows nothing rather than
-           a zero -->
-      <p class="app-badge" data-badge-app="nebulatide"></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="ambanalog.html" style="--k:#D4A24C">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#3A2A12 0%,#211708 58%,#0E0A05 100%)">
-          <!-- AMB Analog: a rack of machines -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <rect x="2" y="3.5" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6"/>
-            <rect x="2" y="9.6" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6" opacity=".72"/>
-            <rect x="2" y="15.7" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6" opacity=".5"/>
-            <circle cx="6" cy="6" r="1.2" fill="#D4A24C" stroke="none"/>
-            <circle cx="6" cy="12.1" r="1.2" fill="#D4A24C" stroke="none" opacity=".72"/>
-            <circle cx="6" cy="18.2" r="1.2" fill="#D4A24C" stroke="none" opacity=".5"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AMB <em>Analog</em></h2>
-          <p class="app-say">Ten analog machines.</p>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#2A1E0C 0%,#181005 60%,#0B0703 100%);min-height:180px"><img src="images/apps/analog/A01.webp" alt="Heritage EQ, the five-band equaliser of the AMB Analog bundle" loading="lazy" onerror="this.remove()">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Ten analog processors with their own engines and their own banks: two equalisers, three compressors, a preamp, a console channel, tape, valve and plate. 187 presets, one key. Windows and macOS. $39.</p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="alignpro.html" style="--k:#2E9BF0">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 6%,#10314C 0%,#0A1C2C 58%,#050B12 100%)">
-          <!-- Align Pro: two arrivals brought onto one instant -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <circle cx="12" cy="12" r="9.2" stroke="#2E9BF0" stroke-width="1.6" opacity=".45"/>
-            <circle cx="12" cy="12" r="4.4" stroke="#2E9BF0" stroke-width="1.6"/>
-            <path d="M12 1.6v4.2M12 18.2v4.2M1.6 12h4.2M18.2 12h4.2" stroke="#2E9BF0" stroke-width="1.7"/>
-            <circle cx="12" cy="12" r="1.7" fill="#4ADE80" stroke="none"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Align <em>Pro</em></h2>
-          <p class="app-say">Align every mic. Hear exactly how much.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/alignpro/auto.png" alt="Align Pro: eight drum mics grouped into four sources, correlation 0.32 before and 0.96 after" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multi-mic time and phase alignment, with a dial for how far to take the correction. Every mic scored against every other, not just against its reference. Windows and macOS. $49.</p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="afdgate.html" style="--k:#4A8BF0">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#16233B 0%,#0C1626 58%,#060B13 100%)">
-          <!-- AFD Gate: the band that listens, and the band that moves -->
-          <svg viewBox="0 0 24 24">
-            <rect x="4" y="5.5" width="16" height="4.4" rx="2.2" fill="#4A8BF0"/>
-            <rect x="7" y="14.1" width="13" height="4.4" rx="2.2" fill="#C9A227" opacity=".92"/>
-            <path d="M2 3.2v17.6" stroke="#7387A0" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AFD <em>Gate</em></h2>
-          <p class="app-say">Filter the trigger. Shape the tail.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/afdgate/ui.webp" alt="AFD Gate: the detector trace above the trigger and gated band selectors" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">The Amanorsac Frequency Dependent Gate. A linear-phase gate for close-miked drums. One band decides when it opens, another decides what gets turned down, so a snare can open a gate that only cuts cymbal wash.</p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="aether.html" style="--k:#35E0F0">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#123A44 0%,#0A222B 58%,#070E14 100%)">
-          <!-- AETHER: the air shelf it draws -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <path d="M1.5 17.5 H10 C14.5 17.5 14.5 7 19 6.5 H22.5" stroke="#35E0F0" stroke-width="2.2"/>
-            <path d="M1.5 17.5 H22.5" stroke="#5B6B78" stroke-width="1.1" opacity=".8"/>
-            <circle cx="19" cy="6.5" r="2.1" fill="#A9F4FA" stroke="none"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AE<em>THER</em></h2>
-          <p class="app-say">Air you can aim.</p>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0E313A 0%,#08191F 60%,#050B0F 100%);min-height:180px"><img src="images/apps/aether/ui.webp" alt="AETHER's interface: analyser, presence and air knobs, glow, guard and focus" loading="lazy" onerror="this.remove()"></div>
-      <p class="app-note">A dynamic air exciter. Tunable presence and air, a real harmonic exciter, and a limiter that drops the harshness while the sparkle stays.</p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <div class="app nolink" style="--k:#7B7DF7">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 78% 0%,#2B2260 0%,#140F30 58%,#0B0820 100%)">
-          <!-- PerformLive: the pad grid, one pad live -->
-          <svg viewBox="0 0 24 24"><g fill="#7B7DF7" opacity=".34">
-            <rect x="1" y="1" width="9" height="9" rx="2.4"/><rect x="14" y="1" width="9" height="9" rx="2.4"/>
-            <rect x="1" y="14" width="9" height="9" rx="2.4"/></g>
-            <rect x="14" y="14" width="9" height="9" rx="2.4" fill="#9B9DFF"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Perform<em>Live</em></h2>
-          <p class="app-say">Live performance, perfected.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multitrack playback and stem performance for worship teams, bands and artists on stage.</p>
+  <!-- The App Store is not open on the live site yet. Everything that
+       was here - the shelf, the eleven apps, the prices - is still in
+       this file's history and on the working branch, and comes back the
+       day it is published. This is deliberately one sentence: a holding
+       page that says less is a holding page people believe. -->
+  <section class="soonpage">
+    <p class="soon-eyebrow">Amanorsac Studio</p>
+    <h1 class="soon-big">Something<br><em>big</em><br>is coming.</h1>
+    <p class="soon-say">A suite of audio apps, built in the studio rather than in a product meeting. Not long now.</p>
+    <div class="soon-cta">
+      <a class="soon-btn" href="/client.html?next=%2Fapps.html">Make an account</a>
+      <a class="soon-link" href="about.html#contact">Talk to the studio <span aria-hidden="true">→</span></a>
     </div>
-
-    <div class="app nolink" style="--k:#3ED598">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 20% 0%,#123B2E 0%,#0A1F19 58%,#06110D 100%)">
-          <!-- HarmonieMD: three harmony lanes -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2.4">
-            <path d="M2 5h20" stroke="#7BE3B4" opacity=".45"/>
-            <path d="M2 12h20" stroke="#3ED598"/>
-            <path d="M2 19h20" stroke="#7BE3B4" opacity=".45"/>
-            <circle cx="7" cy="5" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/>
-            <circle cx="15" cy="12" r="2.9" fill="#3ED598" stroke="none"/>
-            <circle cx="10" cy="19" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Harmonie<em>MD</em></h2>
-          <p class="app-say">Share. Simplify. Serve.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">The rehearsal studio for choirs. Every singer gets their own harmony part to practise at home.</p>
-    </div>
-
-    <div class="app nolink" style="--k:#2AD2E8">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 6%,#0C3742 0%,#07222B 58%,#040F14 100%)">
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
-            <path d="M12 4v16M6 8v8M18 8v8" stroke="#2AD2E8" opacity=".55"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Something <em>big</em></h2>
-          <p class="app-say">Coming.</p>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C2A33 0%,#07161C 60%,#050C10 100%);min-height:180px">
-        <span class="soon"><span>Something big coming</span></span></div>
-      <p class="app-note">Something the studio has been building for a while. More when it is ready.</p>
-    </div>
-
+    <p class="soon-fine">Make an account today and everything lands in <a href="/my-apps.html">My Apps</a> the day it opens.</p>
   </section>
-
-  <!-- What is true of all four, so it does not need saying four times. -->
-  <div class="traits">
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
-      <b>Proven on Sundays</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6M8 5v14M12 8v8M16 4v16M20 10v4"/></svg>
-      <b>Audio engine first</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.6 15.2A5 5 0 0 1 21 20"/></svg>
-      <b>Volunteer-ready</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1 .6-8 5.5 5.5 0 0 1 10.6 1.4A3.6 3.6 0 0 1 17.5 18z"/></svg>
-      <b>Works offline</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2.5" width="8" height="19" rx="2"/><path d="M11 18.6h2"/></svg>
-      <b>More on the way</b>
-    </div>
-  </div>
-
-  <section id="access" class="close-cta">
-    <h2>One Hub. Every app.</h2>
-    <p>Every Amanorsac app installs through Amanorsac Hub. Sign in once with your free account and the Hub downloads, activates and keeps your apps up to date — free ones and bought ones alike — from one place.</p>
-    <div class="center" data-hub-get style="margin:0 0 8px"></div>
-    <div class="hero-cta" style="justify-content:center;margin-top:28px">
-      <a class="cta ghost" href="about.html#contact">Questions? Get in touch</a>
-      <a class="cta ghost" href="index.html">Back to the studio</a>
-    </div>
-  </section>
-
-  <div class="signoff">
-    <img src="images/logo-dark.svg" alt="Amanorsac Studio">
-  </div>
 
 </div></main>
 
@@ -1397,57 +1124,8 @@ var CONFIG = {
 
 </script>
 <script src="assets/track.js" defer></script>
-<script src="assets/app-reviews.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script src="assets/site-auth.js" defer></script>
-<script src="assets/hub-download.js" defer></script>
-<script src="assets/store-state.js" defer></script>
-<script src="assets/promo.js" defer></script>
-<script>
-/* A tile says "coming soon" when the catalog says the app is not on
-   sale on this site. The badge is added here rather than typed into
-   the markup so the live site and a preview build can disagree without
-   the file being edited - see assets/store-state.js. */
-(function(){
-  function apply(){
-    if(!window.StoreState) return;
-    window.StoreState.catalog().then(function(c){
-      Object.keys(c.apps || {}).forEach(function(id){
-        var app = c.apps[id];
-        var page = app.page || '';
-        var tile = document.querySelector('#store [href="' + page + '"]') ||
-                   document.querySelector('#store [data-href="' + page + '"]');
-        if(!tile) return;
-        var shot = tile.querySelector('.app-shot');
-        if(!shot) return;
-        var soon = shot.querySelector('.soon');
-        var state = window.StoreState.stateOf(app);
-        if(state === 'available'){
-          if(soon) soon.remove();
-          tile.classList.remove('nolink');
-          if(tile.dataset.href){ tile.setAttribute('href', tile.dataset.href); delete tile.dataset.href; }
-          return;
-        }
-        /* Not on sale here, so the tile is not a door. Keep the address
-           on the element so the same script can put it back when the
-           state says available - a preview build reads the same markup. */
-        if(!soon){
-          var el = document.createElement('span');
-          el.className = 'soon';
-          el.innerHTML = '<span>Coming soon</span>';
-          shot.appendChild(el);
-        }
-        tile.classList.add('nolink');
-        if(tile.hasAttribute('href')){
-          tile.dataset.href = tile.getAttribute('href');
-          tile.removeAttribute('href');
-        }
-      });
-    });
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
-  else apply();
-})();
-</script>
+
 </body>
 </html>
