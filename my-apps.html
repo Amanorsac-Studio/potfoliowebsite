@@ -321,11 +321,31 @@ footer a:hover{color:var(--accent)}
     const byLicense = {};
     (devices||[]).forEach(d => { (byLicense[d.license_id] = byLicense[d.license_id] || []).push(d); });
 
-    owned.sort((a,b) => (ORDER.indexOf(a.app) + 99) % 99 - (ORDER.indexOf(b.app) + 99) % 99);
+    /* One card per app, whatever the database hands back.
+       (user_id, app) is supposed to be unique on purchases, so a second
+       row for the same app is a fault rather than a second licence -
+       and until that fault is cleaned up this page must not multiply
+       it into a wall of identical cards. The oldest row wins, because
+       that is the licence the key was minted on, and any devices sitting
+       against the duplicates are folded into it so nobody's machine
+       disappears from the list while the rows are being sorted out. */
+    const oneEach = new Map();
+    (owned || []).forEach(r => {
+      const kept = oneEach.get(r.app);
+      if (!kept) { oneEach.set(r.app, r); return; }
+      const older = (kept.purchased_at || '') <= (r.purchased_at || '') ? kept : r;
+      const spare = older === kept ? r : kept;
+      older.alsoLicenses = (older.alsoLicenses || []).concat(spare.id, spare.alsoLicenses || []);
+      oneEach.set(r.app, older);
+    });
+    const rows = [...oneEach.values()];
 
-    shelf.innerHTML = owned.map(r => {
+    rows.sort((a,b) => (ORDER.indexOf(a.app) + 99) % 99 - (ORDER.indexOf(b.app) + 99) % 99);
+
+    shelf.innerHTML = rows.map(r => {
       const a = APPS[r.app] || { name: r.app, say: '', icon: '', k: '#8B7BFF', page: 'apps.html', platforms: [], licensed: false };
-      const devs = byLicense[r.id] || [];
+      const devs = [r.id].concat(r.alsoLicenses || [])
+        .reduce((all, id) => all.concat(byLicense[id] || []), []);
       const forever = !r.update_eligible_until || r.update_eligible_until.slice(0,4) > '9000';
       return '<article class="card" style="--k:'+esc(a.k)+'" data-id="'+esc(r.id)+'">'+
         '<div class="id">'+
