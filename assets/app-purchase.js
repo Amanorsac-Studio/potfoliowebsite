@@ -38,7 +38,7 @@
                     alignpro: 'Align Pro' };
   var PRICES = { secondout: 'Buy — $19', stemsorter: 'Buy — $19', nebulatide2: 'Name your price',
                  ambanalog: 'Buy — $39', aether: 'Buy — $12', afdgate: 'Buy — $12',
-                 alignpro: 'Buy — $49' };
+                 alignpro: 'Buy — $39' };
   var HUB_PROTOCOL = 'amanorsac';
   var OWNED_LABEL = 'Install in Amanorsac Hub';
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }

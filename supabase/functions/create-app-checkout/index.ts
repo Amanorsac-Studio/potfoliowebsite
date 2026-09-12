@@ -87,7 +87,7 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     label: "AMB Analog — ten plug-ins, lifetime licence for two computers",
   },
   alignpro: {
-    amount_cents: 4900,
+    amount_cents: 3900,
     label: "Align Pro — lifetime licence for two computers, one year of updates included",
   },
   nebulatide2: {

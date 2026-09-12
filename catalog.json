@@ -102,7 +102,7 @@
       "name": "Align Pro", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "Align every mic. Hear exactly how much.",
       "icon": "images/apps/alignpro/icon.svg", "page": "alignpro.html", "color": "#2E9BF0",
-      "free": false, "price_cents": 4900, "list_price_cents": 9800, "licensed": true, "version": "1.0.0",
+      "free": false, "price_cents": 3900, "list_price_cents": 7800, "licensed": true, "version": "1.0.0",
       "installers": {
         "windows": { "key": "alignpro/AlignPro-1.0.0-windows.zip", "alt_keys": ["Align Pro/AlignPro-1.0.0-windows.zip"],
                      "as": "AlignPro-1.0.0-Windows.zip", "type": "application/zip", "size": "7 MB" },
