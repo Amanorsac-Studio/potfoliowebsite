@@ -48,6 +48,26 @@ export default {
           return Response.redirect(SITE + '/mixing.html', 301);
         }
 
+        /* The privacy policy, at exactly this address and no other.
+
+           It is the URL handed to Apple and to Google Play, and a
+           policy link that 404s when a reviewer opens it is a rejected
+           app - so this one address is not left to a setting. The asset
+           layer already maps /privacy to privacy.html and answers first,
+           which means this line normally never runs; it is here so that
+           the day html_handling changes, or the file is renamed, the one
+           link that must never break still does not. */
+        if (path === '/privacy' || path === '/privacy/') {
+          const doc = await env.ASSETS.fetch(new Request(new URL('/privacy.html', request.url)));
+          if (doc && doc.ok) {
+            return new Response(doc.body, {
+              status: 200,
+              headers: { 'content-type': 'text/html; charset=utf-8',
+                         'cache-control': 'public, max-age=600' }
+            });
+          }
+        }
+
         const m = path.match(/^\/blog\/([^/]+)\/?$/);
         if (m) return await postPage(decodeURIComponent(m[1]), env, request,
                                      new URL(request.url).searchParams.has('diag'));
@@ -1144,17 +1164,25 @@ async function postPage(slug, env, request, diag) {
    load is an error in Search Console.
    --------------------------------------------------------------------- */
 
+/* Only pages that are actually served. /performlive and /harmoniemd were
+   in here after their files were taken out of the upload, so the sitemap
+   was sending search engines at two 404s. */
 const PAGES = [
   ['/',            'weekly',  '1.0'],
   ['/mixing',      'monthly', '0.9'],
   ['/apps',        'monthly', '0.9'],
   ['/blog',        'weekly',  '0.9'],
   ['/about',       'monthly', '0.8'],
-  ['/performlive', 'monthly', '0.7'],
+  ['/nebulatide2', 'monthly', '0.7'],
+  ['/secondout',   'monthly', '0.7'],
+  ['/ambanalog',   'monthly', '0.7'],
+  ['/alignpro',    'monthly', '0.7'],
+  ['/afdgate',     'monthly', '0.7'],
+  ['/aether',      'monthly', '0.7'],
   ['/pulseroom',   'monthly', '0.7'],
-  ['/harmoniemd',  'monthly', '0.7'],
   ['/nebulatide',  'monthly', '0.7'],
-  ['/secondout',   'monthly', '0.7']
+  ['/legal',       'yearly',  '0.3'],
+  ['/privacy',     'yearly',  '0.3']
 ];
 
 async function sitemap() {
