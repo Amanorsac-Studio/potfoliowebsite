@@ -90,6 +90,10 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     amount_cents: 3900,
     label: "Align Pro — lifetime licence for two computers, one year of updates included",
   },
+  chordlight88: {
+    amount_cents: 1400,
+    label: "Chordlight 88 — lifetime licence, no activation",
+  },
   nebulatide2: {
     // Pay what you want. The figures live on the Price in Stripe -
     // $5 minimum, $100 maximum, $29 suggested - so changing what people

@@ -58,6 +58,18 @@
   },
 
   "apps": {
+    "chordlight88": {
+      "name": "Chordlight 88", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon", "preview_status": "available",
+      "tagline": "What your hands just played, in the language you think in.",
+      "icon": "images/apps/chordlight88/icon.svg", "page": "chordlight88.html", "color": "#9A7CFF",
+      "free": false, "price_cents": 1400, "list_price_cents": 2800, "licensed": false, "version": "1.0.0",
+      "installers": {
+        "windows": { "key": "chordlight88/Chordlight88-Setup.exe",
+                     "as": "Chordlight 88 Setup.exe", "type": "application/octet-stream", "label": "Windows 10/11" },
+        "mac":     { "key": "chordlight88/Chordlight88-macOS.dmg",
+                     "as": "Chordlight 88.dmg",       "type": "application/x-apple-diskimage", "label": "macOS 11+" }
+      }
+    },
     "secondout": {
       "name": "SecondOut", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "One master bus. Two independent outputs.",

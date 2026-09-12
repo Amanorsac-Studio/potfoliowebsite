@@ -35,10 +35,10 @@
 
   var APP_NAMES = { secondout: 'SecondOut', stemsorter: 'Stem Sorter', nebulatide2: 'Nebula Tide 2',
                     ambanalog: 'AMB Analog', aether: 'AETHER', afdgate: 'AFD Gate',
-                    alignpro: 'Align Pro' };
+                    alignpro: 'Align Pro', chordlight88: 'Chordlight 88' };
   var PRICES = { secondout: 'Buy — $19', stemsorter: 'Buy — $19', nebulatide2: 'Name your price',
                  ambanalog: 'Buy — $39', aether: 'Buy — $12', afdgate: 'Buy — $12',
-                 alignpro: 'Buy — $39' };
+                 alignpro: 'Buy — $39', chordlight88: 'Buy — $14' };
   var HUB_PROTOCOL = 'amanorsac';
   var OWNED_LABEL = 'Install in Amanorsac Hub';
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }

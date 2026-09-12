@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chordlight 88 — the chord and number display that shares your MIDI port | Amanorsac Studio</title>
+<meta name="description" content="Chordlight 88 shows what your hands just played: 88 keys lit by velocity, the chord named, and the same chord as a Nashville number in your key — or in sol-fa. It never takes your MIDI port, so your DAW and Kontakt keep the same controller. $14, Windows and macOS.">
+<link rel="icon" href="images/apps/afdgate/icon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   AFD Gate product page.
+
+   The plugin's own colours: a deep navy chassis, one blue for the
+   things the detector does, and the amber it uses for the gated band -
+   which is the whole idea of the product, so the page keeps the two
+   colours doing exactly the two jobs they do in the software.
+   ===================================================================== */
+:root{
+  --bg:#0A0912; --panel:#141225; --panel-2:#1A1733A8; --line:rgba(255,255,255,.09);
+  --text:#EDEAF7; --muted:#ADA6C6; --dim:#8C84A6;
+  --blue:#9A7CFF; --blue-soft:#161232; --amber:#C4B0FF;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:20px;
+  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+section{padding:clamp(58px,9vh,108px) 0}
+
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:13px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name b{color:var(--blue);font-weight:700}
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#120C25}
+
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;
+  border-radius:999px;padding:14px 28px;min-height:50px;
+  background:var(--blue);color:#120C25;transition:transform var(--dur) var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:translateY(0) scale(.985)}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+
+.hero{padding:clamp(52px,8vh,92px) 0 0}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.badges span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--blue);border:1px solid color-mix(in srgb,var(--blue) 36%,transparent);
+  background:color-mix(in srgb,var(--blue) 10%,transparent);border-radius:999px;padding:5px 12px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1;
+  font-size:clamp(44px,8vw,96px);margin:0 0 14px}
+.hero .one{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.8vw,30px);
+  letter-spacing:-.02em;color:var(--blue);margin:0 0 18px}
+.hero .sub{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);max-width:62ch;margin:0 0 30px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:0}
+.shot{margin-top:clamp(34px,6vh,60px);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.shot-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:12px 0 0}
+
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
+  font-size:clamp(26px,3.4vw,40px);margin:0 0 14px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--blue);margin:0 0 12px}
+.lede{color:var(--muted);max-width:66ch;margin:0 0 40px;font-size:17px}
+.lede b{color:var(--text);font-weight:600}
+p.body{color:var(--muted);max-width:66ch;margin:0 0 18px}
+p.body b{color:var(--text);font-weight:600}
+
+/* a feature: a wide picture with its claim under it */
+.feat{margin:0 0 clamp(44px,7vh,80px)}
+.feat h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);
+  letter-spacing:-.015em;margin:0 0 10px}
+.feat p{color:var(--muted);max-width:64ch;margin:0 0 22px}
+.feat .pic{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 18px 54px rgba(0,0,0,.5)}
+.amber{color:var(--amber)}
+.bluetext{color:var(--blue)}
+
+.trio{border-top:1px solid var(--line)}
+.trio > div{display:grid;grid-template-columns:minmax(180px,250px) 1fr;gap:18px;
+  padding:24px 0;border-bottom:1px solid var(--line)}
+.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.trio p{margin:0;color:var(--muted);max-width:62ch}
+@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
+
+.gal{display:grid;grid-auto-flow:column;grid-auto-columns:min(560px,86vw);gap:16px;
+  overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:14px}
+.gal figure{margin:0;scroll-snap-align:start}
+.gal .pic{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.gal figcaption{font-size:13.5px;color:var(--muted);padding:10px 4px 0}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:560px;background:var(--panel)}
+th,td{text-align:left;padding:13px 18px;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--body);font-weight:500;color:var(--muted);width:34%}
+td{color:var(--text)}
+td code{font-family:var(--mono);font-size:.9em}
+tr:last-child th,tr:last-child td{border-bottom:0}
+
+.warn{margin-top:22px;background:#1A1510;border:1px solid color-mix(in srgb,var(--amber) 38%,transparent);
+  border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:18px 22px}
+.warn b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 7px}
+.warn p{margin:0 0 8px;color:var(--muted);font-size:14.5px}
+.warn p:last-child{margin:0}
+.warn code{font-family:var(--mono);font-size:.88em;color:var(--text);background:#241E15;border-radius:4px;padding:2px 6px}
+
+.buy{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(20px,4vw,48px);align-items:center}
+.buy .slot{font-family:var(--display);font-weight:800;font-size:clamp(32px,4.6vw,52px);
+  letter-spacing:-.03em;line-height:1.04;color:var(--blue);margin:0}
+.buy .slot small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;margin-top:10px}
+.buy h2{margin:0 0 8px}
+.buy p{margin:0 0 18px;color:var(--muted);max-width:52ch}
+@media (max-width:700px){ .buy{grid-template-columns:1fr;gap:16px} }
+
+details{border-bottom:1px solid var(--line)}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted);font-size:18px;
+  transition:transform var(--dur) var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+details code{font-family:var(--mono);font-size:.88em;color:var(--text)}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+
+.rise{opacity:0;transform:translateY(16px);
+  transition:opacity 620ms var(--ease),transform 620ms var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rise{opacity:1;transform:none}
+}
+/* ---------- the blocks this page adds ----------
+   Lifted from Align Pro's figure and the house card so the shelf and the
+   product pages keep one vocabulary; the only change is the accent the
+   "after" number is drawn in. */
+.figure{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(26px,4vw,42px);display:grid;gap:clamp(18px,3vw,36px);
+  grid-template-columns:auto 1fr;align-items:center;margin:0 0 26px}
+.figure .n{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1;
+  font-size:clamp(40px,6vw,72px);margin:0;white-space:nowrap}
+.figure .n .was{color:var(--dim)}
+.figure .n .arrow{color:var(--dim);padding:0 .18em}
+.figure .n .now{color:var(--blue)}
+.figure .n small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;margin-top:12px}
+.figure p{margin:0;color:var(--muted);max-width:56ch}
+@media (max-width:700px){ .figure{grid-template-columns:1fr;gap:16px} }
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));
+  gap:clamp(14px,1.8vw,22px);margin:clamp(24px,4vh,40px) 0 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:clamp(18px,2.2vw,26px)}
+.card h3{font-family:var(--display);font-weight:600;font-size:16.5px;letter-spacing:-.01em;
+  margin:0 0 8px;color:var(--text)}
+.card p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.6}
+.card code{font-family:var(--mono);font-size:.88em;color:var(--blue)}
+
+table.spec{width:100%;border-collapse:collapse;background:var(--panel);
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin:24px 0 0}
+table.spec th,table.spec td{text-align:left;vertical-align:top;padding:13px 18px;
+  border-top:1px solid var(--line);font-size:14.5px}
+table.spec tr:first-child th,table.spec tr:first-child td{border-top:0}
+table.spec th{width:clamp(120px,22%,190px);font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:500;
+  white-space:nowrap}
+table.spec td{color:var(--muted)}
+table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-break:break-all}
+@media (max-width:600px){
+  table.spec th,table.spec td{display:block;width:auto;padding:12px 16px}
+  table.spec td{border-top:0;padding-top:0}
+}
+
+</style>
+<link rel="canonical" href="https://amanorsac.studio/chordlight88">
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+<meta property="og:type" content="product">
+<meta property="og:title" content="Chordlight 88 — what your hands just played">
+<meta property="og:description" content="88 keys lit by velocity, the chord named, the Nashville number in your key, and sol-fa. It shares your MIDI port instead of stealing it.">
+<meta property="og:url" content="https://amanorsac.studio/chordlight88">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Chordlight 88",
+  "url": "https://amanorsac.studio/chordlight88",
+  "description": "An 88-key MIDI display that lights the notes, names the chord and reads the Nashville number in your key, in note names or in sol-fa. It opens no MIDI port exclusively, so a DAW and a sampler keep the same controller.",
+  "operatingSystem": "Windows 10, macOS 11",
+  "applicationCategory": "MultimediaApplication",
+  "softwareVersion": "1.0.0",
+  "offers": { "@type": "Offer", "price": "14", "priceCurrency": "USD" },
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" }
+}
+</script>
+</head>
+<body data-app="chordlight88">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name">Chord<b>light 88</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <div class="badges"><span>$14</span><span>Standalone</span><span>Windows</span><span>macOS</span><span>Shared MIDI</span></div>
+  <h1>What your hands<br><em>just played</em>.</h1>
+  <p class="one">In the language you think in.</p>
+  <p class="sub">Chordlight 88 is an 88-key display for keyboard players. Play, and the keys light — brighter the harder you hit them — the chord is named as you play it, and the same chord is read as a number in whatever key you set. One switch puts all of it into sol-fa. And it never takes your MIDI port, so your DAW and your sampler keep the same controller.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $14</button>
+    <a class="cta ghost" href="#midi">Why it shares the port</a>
+  </div>
+  <p class="fine">$14 once · version 1.0.0 · Windows &amp; macOS · no account, no activation, no network</p>
+  <p class="promo-line" data-promo hidden></p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <ul class="assure" data-assure hidden></ul>
+  <div class="shot rise" id="cl-hero">
+    <img src="images/apps/chordlight88/notes.png" alt="Chordlight 88 in notes mode: six notes lit across the 88-key display, named Fmaj9, numbered 4maj9 in the key of C, with IVmaj9 and Fa underneath"
+         onerror="document.getElementById('cl-hero').hidden=true;document.getElementById('cl-hero-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-hero-cap">Six notes down, named <code>Fmaj9</code>, numbered <code>4maj9</code> in the key of C, with <code>IVmaj9 · Fa</code> underneath. The keys are lit by velocity.</p>
+</header>
+
+<section class="wrap" id="midi">
+  <p class="eyebrow">The problem</p>
+  <h2>Every other chord display takes your keyboard away from you.</h2>
+  <div class="figure rise">
+    <p class="n"><span class="was">1</span><span class="arrow">→</span><span class="now">3</span><small>apps on one controller at once</small></p>
+    <p>Open a chord tool on Windows and it claims the MIDI port for itself. Kontakt goes quiet, or the DAW stops receiving, or the app reports the device as busy — so the thing that was meant to help you play stops you playing.</p>
+  </div>
+  <p class="body">Chordlight opens no port exclusively. It listens alongside whatever else is holding the controller: your DAW, your sampler and Chordlight all hear the same keyboard at the same time. Virtual cables — loopMIDI, LoopBe, IAC — appear like any hardware port, and a keyboard plugged in mid-session shows up without a restart.</p>
+  <p class="body"><b>That is the whole reason it exists.</b> Everything else on this page is what it does once it is out of your way.</p>
+</section>
+
+<section class="wrap" id="solfa">
+  <p class="eyebrow">Numbers and sol-fa</p>
+  <h2>Not everyone thinks in letters.</h2>
+  <p class="body">Chord displays name chords in letters. A large part of the keyboard-playing world — worship, gospel, choral, most of the teaching world — works in numbers and in sol-fa. Chordlight reads all three at once, from the same hands.</p>
+  <div class="shot rise" id="cl-solfa">
+    <img src="images/apps/chordlight88/solfa.png" alt="Chordlight 88 in sol-fa mode: the key labels read Do, Mi, So and Ti, and the big readout reads Do maj7 for a Cmaj7 in the key of C"
+         onerror="document.getElementById('cl-solfa').hidden=true;document.getElementById('cl-solfa-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-solfa-cap">One switch and the key labels and the big readout both change language. <code>Cmaj7</code> in the key of C reads <b>Do maj7</b>; a plain triad on 4 reads <b>Fa major</b>.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Set the key once</h3>
+      <p>Every chord after that reads as a number in that key. <code>Fmaj9</code> in C is <code>4maj9</code>, with the Roman numeral under it.</p>
+    </div>
+    <div class="card">
+      <h3>The full ladder</h3>
+      <p>Do Di Re Mo Mi Fa Fi So Si La Ta Ti. Chromatic syllables included, not just the seven.</p>
+    </div>
+    <div class="card">
+      <h3>Letters too</h3>
+      <p>Root, quality, slash bass and the notes sounding — with the bass note marked on the keybed.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="camera">
+  <p class="eyebrow">Built for a camera</p>
+  <h2>Three windows that stay where you put them.</h2>
+  <p class="body">The chord, the number and the keys each detach into their own always-on-top window, and each docks back on its own. On macOS they float over full-screen apps. Nothing is left duplicated in the main window.</p>
+  <div class="figure rise">
+    <p class="n"><span class="now">0</span><small>pixels of movement when the chord changes</small></p>
+    <p>The readout geometry is fixed, so a two-character name and a nine-character name occupy the same space. A recording does not jump when the chord does. That was designed in, not patched on afterwards.</p>
+  </div>
+  <div class="shot rise" id="cl-pop">
+    <img src="images/apps/chordlight88/popouts.png" alt="The chord, number and keys windows detached and floating over another application"
+         onerror="document.getElementById('cl-pop').hidden=true;document.getElementById('cl-pop-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-pop-cap">Each readout is its own window. Put them where the frame needs them.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Appearance</p>
+  <h2>Six accents, light and dark.</h2>
+  <p class="body">The whole interface retints from the accent — panels, borders, text, and the velocity glow on the keys. Key height is yours to set, from a strip along the bottom of a stream to a keybed that fills a projector.</p>
+  <div class="shot rise" id="cl-light">
+    <img src="images/apps/chordlight88/light.png" alt="Chordlight 88 in light mode with an amber accent"
+         onerror="document.getElementById('cl-light').hidden=true;document.getElementById('cl-light-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-light-cap">Light mode, amber accent. The same interface, retinted.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Who it is for</p>
+  <h2>Four rooms it was built in.</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Worship and gospel keyboardists</h3>
+      <p>The number readout and the sol-fa. You think in 1–4–5 and Do–Re–Mi, and every other chord display speaks only letters.</p>
+    </div>
+    <div class="card">
+      <h3>Teachers and music directors</h3>
+      <p>A projector-sized readout of what the player at the keyboard is actually doing, in the notation the room uses.</p>
+    </div>
+    <div class="card">
+      <h3>Producers and session players</h3>
+      <p>Name a voicing you found by ear, mid-take, without stopping the DAW or reaching for a plug-in.</p>
+    </div>
+    <div class="card">
+      <h3>Streamers and teachers on camera</h3>
+      <p>Three detachable always-on-top windows that sit over a screen recording and do not move when the chord changes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="buy rise">
+    <p class="slot">$14<small>Once, and that is all</small></p>
+    <div>
+      <h2>No account. No activation. No network.</h2>
+      <p>Fourteen dollars, and once it is yours it simply runs: offline, with no key to type, no server to reach and nothing phoning home. It reads your MIDI input and nothing else on your machine. You buy it here because that is where the download lives, not because the app will ever ask who you are.</p>
+      <button class="cta" data-buy type="button">Buy — $14</button>
+      <a class="cta ghost" href="#specs">See the specification</a>
+      <p class="promo-line" data-promo hidden></p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="specs">
+  <h2>Specification.</h2>
+  <table class="spec">
+    <tr><th>Platforms</th><td>Windows 10 and later (x64) · macOS 11 and later (Apple silicon and Intel, universal)</td></tr>
+    <tr><th>Format</th><td>Standalone application. Windows: installer and portable build. macOS: disk image.</td></tr>
+    <tr><th>Range</th><td>88 keys, A0 – C8</td></tr>
+    <tr><th>MIDI</th><td>Non-exclusive input, every port including virtual cables, per-channel or omni, hot-plug, sustain-aware</td></tr>
+    <tr><th>Readouts</th><td>Chord name · Nashville number · Roman numeral · sol-fa</td></tr>
+    <tr><th>Windows</th><td>Main window plus three detachable always-on-top pop-outs</td></tr>
+    <tr><th>Appearance</th><td>Six accents, light and dark, adjustable key height</td></tr>
+    <tr><th>Network</th><td>None. No account, no activation, no telemetry.</td></tr>
+    <tr><th>Preferences</th><td><code>Documents\Amanorsac Studio\Chordlight 88\preferences.json</code></td></tr>
+    <tr><th>Updates</th><td>Amanorsac Hub</td></tr>
+  </table>
+</section>
+
+<section class="wrap">
+  <h2>What it is not.</h2>
+  <p class="body">Being straight about this is what keeps the reviews honest.</p>
+  <details><summary>Is it a transcription or notation tool?</summary>
+    <div>No. It names what is sounding now. It writes nothing down and exports nothing.</div></details>
+  <details><summary>Does it listen to audio?</summary>
+    <div>No. MIDI in, and nothing else. It cannot hear a recording, a microphone or a track.</div></details>
+  <details><summary>Is there a plug-in version?</summary>
+    <div>No. It is a standalone window, not a VST3 or an AU. A plug-in would be a different product, and this page is not promising one.</div></details>
+  <details><summary>Will it really share any keyboard?</summary>
+    <div>Almost any. There is one exception: a controller whose manufacturer ships an exclusive-access driver cannot be shared by anything at all. Route it through loopMIDI in that case and everything downstream works normally.</div></details>
+  <details><summary>Do my settings sync between machines?</summary>
+    <div>No, because there is no cloud to sync them through. Preferences live in a file on the machine, at the path in the specification above.</div></details>
+  <details><summary>What does activation involve?</summary>
+    <div>Nothing. Buying puts the download in your <a href="/my-apps.html">My Apps</a>, and after that the app has nothing to check and no way to check it. Install it on every machine you own.</div></details>
+</section>
+
+<footer>
+  <a href="apps.html">App Store</a>
+  <a href="alignpro.html">Align Pro</a>
+  <a href="aether.html">AETHER</a>
+  <a href="secondout.html">SecondOut</a>
+  <a href="legal.html">Legal</a>
+  <a href="/privacy">Privacy</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+(function(){
+  if('IntersectionObserver' in window &&
+     !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+    }, { threshold:.15 });
+    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+  } else {
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+<script src="assets/track.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
+<script src="assets/assure.js" defer></script>
+<script src="assets/buy-dock.js" defer></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+</body>
+</html>
