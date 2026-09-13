@@ -32,7 +32,7 @@
 
   "apps": {
     "chordlight88": {
-      "name": "Chordlight 88", "vendor": "Amanorsac Studio", "kind": "app", "status": "hidden", "preview_status": "available",
+      "name": "Chordlight 88", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "What your hands just played, in the language you think in.",
       "icon": "images/apps/chordlight88/icon.svg", "page": "chordlight88.html", "color": "#9A7CFF",
       "free": false, "price_cents": 1400, "list_price_cents": 2800, "licensed": false, "version": "1.0.0",
@@ -154,7 +154,7 @@
       }
     },
     "performlive": {
-      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon", "preview_status": "available",
+      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "Live performance, perfected.",
       "icon": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
       "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",
