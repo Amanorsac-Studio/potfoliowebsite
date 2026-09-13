@@ -64,10 +64,10 @@
       "icon": "images/apps/chordlight88/icon.svg", "page": "chordlight88.html", "color": "#9A7CFF",
       "free": false, "price_cents": 1400, "list_price_cents": 2800, "licensed": false, "version": "1.0.0",
       "installers": {
-        "windows": { "key": "chordlight88/Chordlight88-Setup.exe",
-                     "as": "Chordlight 88 Setup.exe", "type": "application/octet-stream", "label": "Windows 10/11" },
-        "mac":     { "key": "chordlight88/Chordlight88-macOS.dmg",
-                     "as": "Chordlight 88.dmg",       "type": "application/x-apple-diskimage", "label": "macOS 11+" }
+        "windows": { "key": "chordlight88/chordlight-Windows_4.zip", "alt_keys": ["chordlight88/Chordlight88-Windows.zip"],
+                     "as": "Chordlight88-Windows.zip", "type": "application/zip", "label": "Windows 10/11", "size": "156 MB" },
+        "mac":     { "key": "chordlight88/chordlight-macOS_3.zip",   "alt_keys": ["chordlight88/Chordlight88-macOS.zip"],
+                     "as": "Chordlight88-macOS.zip",   "type": "application/zip", "label": "macOS 11+",    "size": "339 MB" }
       }
     },
     "secondout": {

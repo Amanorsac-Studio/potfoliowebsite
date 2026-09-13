@@ -58,6 +58,7 @@ echo     6   AFD Gate             afdgate/
 echo     7   AETHER               aether/
 echo     8   PulseRoom            pulseroom/
 echo     9   Stem Sorter          stemsorter/
+echo    10   Chordlight 88        chordlight88/
 echo.
 set "PICK="
 set /p "PICK=  Number: "
@@ -71,6 +72,7 @@ if "%PICK%"=="6" ( set "NAME=AFD Gate"      & set "PREFIX=afdgate"     & set "WI
 if "%PICK%"=="7" ( set "NAME=AETHER"        & set "PREFIX=aether"      & set "WINAS=AETHER-windows.zip"          & set "MACAS=AETHER-macos.zip" )
 if "%PICK%"=="8" ( set "NAME=PulseRoom"     & set "PREFIX=pulseroom"   & set "WINAS=PulseRoom-Windows.zip"       & set "MACAS=PulseRoom-macOS.zip" )
 if "%PICK%"=="9" ( set "NAME=Stem Sorter"   & set "PREFIX=stemsorter"  & set "WINAS=StemSorter-Windows.zip"      & set "MACAS=StemSorter-macOS.zip" )
+if "%PICK%"=="10" ( set "NAME=Chordlight 88" & set "PREFIX=chordlight88" & set "WINAS=Chordlight88-Windows.zip"   & set "MACAS=Chordlight88-macOS.zip" )
 
 if not defined PREFIX (
   echo.
