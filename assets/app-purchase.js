@@ -30,7 +30,8 @@
   var buttons = document.querySelectorAll('[data-buy]');
   if (!app || !buttons.length) return;
 
-  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  var sb = window.amanorsacClient ? window.amanorsacClient()
+                                  : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var statusEl = document.querySelector('[data-buy-status]');
 
   var APP_NAMES = { secondout: 'SecondOut', stemsorter: 'Stem Sorter', nebulatide2: 'Nebula Tide 2',

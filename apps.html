@@ -488,9 +488,12 @@ body[data-room="apps"] .wrap{max-width:1280px}
   font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;
   text-transform:uppercase}
 
+/* Measured, not guessed: at 10px and .72 opacity this read 4.15:1 against
+   the shelf, under the 4.5:1 the Build Standard requires of body text.
+   A point larger and less transparent clears it on every tile colour. */
 .app-go{margin-top:auto;padding-top:16px;text-align:center;
-  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--k);opacity:.72;transition:opacity var(--dur) var(--ease-out)}
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--k);opacity:.92;transition:opacity var(--dur) var(--ease-out)}
 .app:hover .app-go{opacity:1}
 
 @media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,minmax(0,1fr))} }
@@ -1472,7 +1475,8 @@ var CONFIG = {
 </script>
 <script src="assets/track.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js" defer></script>
+<script src="assets/supabase-client.js" defer></script>
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/hub-download.js" defer></script>
 <script src="assets/store-state.js" defer></script>

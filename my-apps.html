@@ -243,14 +243,16 @@ footer a:hover{color:var(--accent)}
   <span><a href="/privacy">Privacy</a> · <a href="legal.html">Licence &amp; terms</a></span>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
 <script src="assets/site-auth.js"></script>
 <script src="assets/hub-download.js"></script>
 <script>
 (async () => {
   const SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_PlVBmRgFdhTkVMurXLiBFQ_NjiVssQp';
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const sb = window.amanorsacClient ? window.amanorsacClient()
+                                    : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   const when = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
