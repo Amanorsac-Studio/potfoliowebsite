@@ -1029,7 +1029,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-go" aria-hidden="true"></p>
     </div>
 
-    <div class="app nolink" style="--k:#2AD2E8">
+    <div class="app nolink" data-hide-app="stemsorter" style="--k:#2AD2E8">
       <div class="app-id">
         <span class="mark" aria-hidden="true"
               style="background:radial-gradient(130% 130% at 50% 6%,#0C3742 0%,#07222B 58%,#040F14 100%)">
@@ -1548,6 +1548,15 @@ var CONFIG = {
           tile.dataset.href = tile.getAttribute('href');
           tile.removeAttribute('href');
         }
+      });
+
+      /* The teaser tile - an app the studio is building but is not
+         naming yet. It has no address, so the loop above cannot find
+         it by one. It leaves the shelf when the catalog says hidden
+         and stands there as a teaser the rest of the time. */
+      document.querySelectorAll('#store [data-hide-app]').forEach(function(el){
+        var a = (c.apps || {})[el.getAttribute('data-hide-app')];
+        if(a && window.StoreState.stateOf(a) === 'hidden') el.remove();
       });
     });
   }
