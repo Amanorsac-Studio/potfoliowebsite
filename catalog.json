@@ -160,11 +160,14 @@
       "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",
       "_beta2": "asks claim_beta_license for at the moment of download, and what",
       "_beta3": "My Apps counts down. Delete beta_days to make it free forever.",
-      "free": true, "licensed": true, "beta_days": 30, "version": "1.0.0-beta",
+      "free": true, "licensed": true, "beta_days": 30, "version": "0.4.0",
       "installers": {
-        "windows": { "key": "PERFORMLIVE/PerformLive-Windows.zip",
-                     "alt_keys": ["performlive/PerformLive-Windows.zip", "PERFORMLIVE/PerformLive-Setup.exe"],
-                     "as": "PerformLive-Windows.zip", "type": "application/zip", "label": "Windows 10/11" }
+        "windows": { "key": "PERFORMLIVE/PerformLive-0.4.0-Windows.exe",
+                     "as": "PerformLive-0.4.0-Windows.exe", "type": "application/octet-stream",
+                     "label": "Windows 10/11", "size": "5.7 MB" },
+        "mac":     { "key": "PERFORMLIVE/PerformLive-0.4.0-macOS.zip",
+                     "as": "PerformLive-0.4.0-macOS.zip",   "type": "application/zip",
+                     "label": "macOS 11+",    "size": "7.3 MB" }
       }
     },
     "harmoniemd": {

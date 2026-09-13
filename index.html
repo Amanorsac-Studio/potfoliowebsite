@@ -956,8 +956,33 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
            new one takes the front. The screenshots float the way the App
            Store slide's do - same classes, same drift - so the launch
            reads as a member of the same family, just louder. -->
-      <article class="hc-slide on launch" data-app="nebulatide2" style="--room:#4FE3FF;--room-ink:#0F6E8A" aria-roledescription="slide" aria-label="Nebula Tide 2">
-        <div class="hc-media"><img src="images/apps/pulseroom-hero.webp" alt="" fetchpriority="high"></div>
+      <!-- The flagship leads. PerformLive first, Nebula Tide 2 behind it;
+           both carry data-app, so either drops out of the carousel on a
+           site where it is not yet on sale. -->
+      <!-- room-ink is normally the dark end of the slide's hue, because
+           most of these photographs are dark. This one is stage-lit and
+           bright, so the eyebrow takes the light end instead - it is the
+           only text on the slide small enough to lose. -->
+      <article class="hc-slide on launch" data-app="performlive" style="--room:#A99CFF;--room-ink:#EDE9FF" aria-roledescription="slide" aria-label="PerformLive">
+        <div class="hc-media"><img src="images/hero-mixing.webp" alt="" fetchpriority="high"></div>
+        <div class="hc-float">
+          <a class="fa" href="performlive.html" aria-label="PerformLive, the perform workspace"
+             style="--x:0%;--y:16%;--w:96%;--rot:-2deg;--z:1;--i:0">
+            <span class="fa-in"><img src="images/PL-perform-workspace.webp" alt=""></span></a>
+        </div>
+        <div class="hc-body">
+          <p class="hc-eyebrow">Open beta &middot; free for 30 days</p>
+          <h1>Your stems.<br><em>Under your fingers</em>.</h1>
+          <p class="hero-thesis">Multitrack playback and stem performance for the stage. Mute a layer mid-song, switch sections on the bar, hold a pad between moments &mdash; with the mix your producer built untouched underneath.</p>
+          <div class="hero-cta">
+            <a class="cta" href="performlive.html">Get the beta</a>
+          </div>
+          <div class="wave" aria-hidden="true"></div>
+        </div>
+      </article>
+
+      <article class="hc-slide launch" data-app="nebulatide2" style="--room:#4FE3FF;--room-ink:#0F6E8A" aria-roledescription="slide" aria-label="Nebula Tide 2" hidden>
+        <div class="hc-media"><img src="images/apps/pulseroom-hero.webp" alt="" loading="lazy"></div>
         <div class="hc-float">
           <!-- One card, the whole instrument. The store slide crops its
                tiles to a common shape, which is right for a shelf of four
@@ -1021,6 +1046,8 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
              positions are handed to whoever is left, so the arrangement
              never has a hole in it. -->
         <div class="hc-float" data-hero-apps="hero">
+          <a class="fa" data-app="performlive" href="performlive.html">
+            <span class="fa-in"><img src="images/PL-perform-workspace.webp" alt="" loading="lazy"><b>PerformLive</b></span></a>
           <a class="fa" data-app="ambanalog" href="ambanalog.html">
             <span class="fa-in"><img src="images/apps/analog/A01.webp" alt="" loading="lazy"><b>AMB Analog</b></span></a>
           <a class="fa" data-app="alignpro" href="alignpro.html">
@@ -1078,6 +1105,8 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <a class="arr rise" href="apps.html" style="--room:#8B7BFF;--room-ink:#6459B8">
         <div class="arr-media apps">
           <span class="arr-float" aria-hidden="true" data-hero-apps="door">
+            <span class="fa" data-app="performlive">
+              <span class="fa-in"><img src="images/PL-perform-workspace.webp" alt="" loading="lazy"><b>PerformLive</b></span></span>
             <span class="fa" data-app="ambanalog">
               <span class="fa-in"><img src="images/apps/analog/A01.webp" alt="" loading="lazy"><b>AMB Analog</b></span></span>
             <span class="fa" data-app="alignpro">
