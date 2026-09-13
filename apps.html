@@ -1521,6 +1521,12 @@ var CONFIG = {
         if(!shot) return;
         var soon = shot.querySelector('.soon');
         var state = window.StoreState.stateOf(app);
+        /* "hidden" is an app that is finished but is not to be named in
+           public yet - a name still going through clearance, say. It is
+           not a badge: the tile leaves the shelf altogether here, while
+           a preview build, whose preview_status says available, still
+           shows it. Nothing else on the page needs to know. */
+        if(state === 'hidden'){ tile.remove(); return; }
         if(state === 'available'){
           if(soon) soon.remove();
           tile.classList.remove('nolink');

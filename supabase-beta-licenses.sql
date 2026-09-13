@@ -138,13 +138,23 @@ begin
       'expires_at', v_row.expires_at, 'new', false);
   end if;
 
-  insert into public.purchases (user_id, app, amount_cents, license_key,
-                                update_eligible_until, expires_at)
-  values (auth.uid(), v_app, 0, public.generate_license_key(v_app),
-          now() + (v_days || ' days')::interval,
-          now() + (v_days || ' days')::interval)
-  on conflict (user_id, app) do update set license_key = public.purchases.license_key
-  returning id, license_key, expires_at into v_row;
+  /* No ON CONFLICT here. It would need the (user_id, app) unique
+     constraint, and that constraint is not on every database yet - see
+     supabase-dedupe-purchases.sql. The select above handles the ordinary
+     case; this catches the race, and works either way. */
+  begin
+    insert into public.purchases (user_id, app, amount_cents, license_key,
+                                  update_eligible_until, expires_at)
+    values (auth.uid(), v_app, 0, public.generate_license_key(v_app),
+            now() + (v_days || ' days')::interval,
+            now() + (v_days || ' days')::interval)
+    returning id, license_key, expires_at into v_row;
+  exception when unique_violation then
+    select id, license_key, expires_at into v_row
+      from public.purchases where user_id = auth.uid() and app = v_app;
+    return jsonb_build_object('ok', true, 'license_key', v_row.license_key,
+      'expires_at', v_row.expires_at, 'new', false);
+  end;
 
   return jsonb_build_object('ok', true, 'license_key', v_row.license_key,
     'expires_at', v_row.expires_at, 'new', true);

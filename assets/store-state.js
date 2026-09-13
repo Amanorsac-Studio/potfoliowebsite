@@ -10,6 +10,10 @@
    Everything that cares - the store's badges, the buy button - asks
    this file rather than reading status directly, so there is one rule
    in one place.
+
+   Three states are in use: "available", "coming_soon", and "hidden",
+   which takes the app off the shelf entirely rather than badging it -
+   for a product that is finished but is not to be named in public yet.
    ===================================================================== */
 (function () {
   var PREVIEW = /\.workers\.dev$/i.test(location.hostname);

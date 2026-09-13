@@ -22,12 +22,16 @@
 
 
 -- ---------------------------------------------------------------------
---  1 · Mark where a licence came from
+--  1 · The two columns this needs
 --
---  Null on every existing row, which is what a real purchase looks like.
+--  granted_reason is new here. expires_at belongs to
+--  supabase-beta-licenses.sql, and is added again because "run this
+--  file after that one" is not a property a script should have. Both
+--  are if-not-exists, so whichever order they are run in, they work.
 -- ---------------------------------------------------------------------
 
 alter table public.purchases add column if not exists granted_reason text;
+alter table public.purchases add column if not exists expires_at timestamptz;
 
 comment on column public.purchases.granted_reason is
   'Why this licence exists when no money changed hands: tester, press, refund replacement. Null for a real purchase.';
@@ -73,12 +77,18 @@ begin
 
     v_added := 0;
     foreach v_app in array v_apps loop
-      insert into public.purchases (user_id, app, amount_cents, license_key,
-                                    update_eligible_until, expires_at, granted_reason)
-      values (v_uid, v_app, 0, public.generate_license_key(v_app),
-              'infinity', null, 'tester')
-      on conflict (user_id, app) do nothing;
-      if found then v_added := v_added + 1; end if;
+      /* Checked rather than ON CONFLICT, because ON CONFLICT (user_id, app)
+         needs that unique constraint to exist - and on this database it may
+         not yet, which is the whole subject of supabase-dedupe-purchases.sql.
+         A tester grant should not fail over somebody else's missing index. */
+      if not exists (select 1 from public.purchases
+                      where user_id = v_uid and app = v_app) then
+        insert into public.purchases (user_id, app, amount_cents, license_key,
+                                      update_eligible_until, expires_at, granted_reason)
+        values (v_uid, v_app, 0, public.generate_license_key(v_app),
+                'infinity', null, 'tester');
+        v_added := v_added + 1;
+      end if;
     end loop;
 
     v_total := v_total + v_added;
