@@ -272,22 +272,24 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 }
 </script>
 </head>
-<body>
+<body data-app="performlive">
 
 <div class="top">
   <a class="back" href="apps.html">← App Store</a>
   <span class="name">Perform<b>Live</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
 </div>
 
 <header class="hero wrap">
-  <span class="status">In development · early access</span>
+  <span class="status">Open beta · free for 30 days</span>
   <h1>Your stems. Untouched. Under your fingers.</h1>
   <p class="sub">PerformLive is a multitrack playback and stem performance instrument for the stage. Mute a layer mid-song, switch sections on the bar, hold a pad between moments — with the mix your producer built untouched underneath.</p>
+  <div data-hub-get data-app="performlive" style="margin:0 0 14px"></div>
   <div class="cta-row">
-    <a class="cta" href="apps.html#access">Get early access</a>
     <a class="cta ghost" href="#features">See the features</a>
   </div>
-  <p class="fine">Windows. Touch-first. No account, no network activity.</p>
+  <p class="fine">Windows · touch-first · free for thirty days from the day you download it</p>
+  <ul class="assure" data-assure hidden></ul>
   <div class="hero-shot rise">
     <img src="images/PL-perform-workspace.webp" alt="The PerformLive perform workspace: four decks of stems, scenes, transport, and twelve pads" fetchpriority="high">
   </div>
@@ -466,6 +468,13 @@ if('IntersectionObserver' in window &&
   vids.forEach(function(v){ vo.observe(v); });
 })();
 </script>
+<link rel="stylesheet" href="/assets/hub-download.css">
 <script src="assets/track.js" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js" defer></script>
+<script src="assets/supabase-client.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script src="/assets/hub-download.js" defer></script>
+<script src="assets/assure.js" defer></script>
+<script src="assets/site-auth.js" defer></script>
 </body>
 </html>

@@ -154,11 +154,18 @@
       }
     },
     "performlive": {
-      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
+      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon", "preview_status": "available",
       "tagline": "Live performance, perfected.",
-      "icon": "images/apps/performlive.webp", "page": "apps.html", "color": "#7B7DF7",
-      "free": false, "licensed": true, "version": null,
-      "installers": {}
+      "icon": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
+      "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",
+      "_beta2": "asks claim_beta_license for at the moment of download, and what",
+      "_beta3": "My Apps counts down. Delete beta_days to make it free forever.",
+      "free": true, "licensed": true, "beta_days": 30, "version": "1.0.0-beta",
+      "installers": {
+        "windows": { "key": "PERFORMLIVE/PerformLive-Windows.zip",
+                     "alt_keys": ["performlive/PerformLive-Windows.zip", "PERFORMLIVE/PerformLive-Setup.exe"],
+                     "as": "PerformLive-Windows.zip", "type": "application/zip", "label": "Windows 10/11" }
+      }
     },
     "harmoniemd": {
       "name": "HarmonieMD", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",

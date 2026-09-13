@@ -116,6 +116,11 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);lin
 .id .say{color:var(--muted);font-size:14px;margin:0}
 .since{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);text-align:right;white-space:nowrap}
 .since b{display:block;color:var(--muted);font-weight:500}
+/* the beta clock, in the corner a purchase date would occupy */
+.beta{display:inline-block}
+.beta b{display:block;color:var(--k);font-weight:600;font-size:12px;letter-spacing:.02em}
+.beta.over{opacity:.8}
+.beta.over b{color:var(--muted)}
 
 .section{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 10px;
   display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -294,7 +299,7 @@ footer a:hover{color:var(--accent)}
 
   async function load(){
     const { data: owned, error } = await sb.from('purchases')
-      .select('id, app, license_key, max_devices, purchased_at, update_eligible_until')
+      .select('id, app, license_key, max_devices, purchased_at, update_eligible_until, expires_at')
       .order('purchased_at', { ascending: true });
     if(error){ shelf.innerHTML = '<p class="note">Could not load your apps: '+esc(error.message)+'</p>'; return; }
 
@@ -349,12 +354,21 @@ footer a:hover{color:var(--accent)}
       const devs = [r.id].concat(r.alsoLicenses || [])
         .reduce((all, id) => all.concat(byLicense[id] || []), []);
       const forever = !r.update_eligible_until || r.update_eligible_until.slice(0,4) > '9000';
+      /* A beta licence has an end. Saying "Yours since" and nothing else
+         would be true and useless; the number of days left is the only
+         thing the person actually wants to know. */
+      const ends = r.expires_at ? new Date(r.expires_at) : null;
+      const daysLeft = ends ? Math.ceil((ends - Date.now()) / 86400000) : null;
+      const over = ends && daysLeft <= 0;
       return '<article class="card" style="--k:'+esc(a.k)+'" data-id="'+esc(r.id)+'">'+
         '<div class="id">'+
           '<span class="mark">'+(a.icon ? '<img src="'+esc(a.icon)+'" alt="">' : '')+'</span>'+
           '<div><h2><a href="'+esc(a.page)+'">'+esc(a.name)+'</a></h2><p class="say">'+esc(a.say)+'</p></div>'+
-          '<p class="since">'+(r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : '')+
-            (forever ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
+          '<p class="since">'+(ends
+              ? (over ? '<span class="beta over">Beta ended<b>'+when(r.expires_at)+'</b></span>'
+                      : '<span class="beta">Beta<b>'+daysLeft+(daysLeft===1?' day left':' days left')+'</b></span>')
+              : (r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : ''))+
+            ((forever || ends) ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
         '</div>'+
         (a.platforms.length
           ? '<div class="dlrow">'+

@@ -10,6 +10,14 @@ from it will not be accepted.
 The words **MUST** and **MUST NOT** mark requirements. Everything else is
 explanation.
 
+**A licence may be time-limited.** An open beta is free, licensed, and
+ends on a date - PerformLive is the first. The key is minted when the
+beta is downloaded, so the clock starts then, and the server refuses to
+activate it afterwards with `license_expired` (§4.1). Nothing in the app
+changes for this: the expiry is enforced where the private key is, never
+by reading a clock on the customer's machine. Build to this document and
+a beta needs no special case.
+
 ---
 
 ## 1. How it works
@@ -94,6 +102,7 @@ Responses:
 |--------|------|---------|-------------------|
 | 200 | `{ "proof": "<body>.<signature>" }` | Licensed. | Verify the proof (§5), store it, unlock. |
 | 400 | `{ "error": "invalid_request", "message": "…" }` | Missing key or device id. | Programming error; fix the request. |
+| 403 | `{ "error": "license_expired", "expires_at": "…" }` | A time-limited licence - a beta - has run out. | Say so, with the date, and point at the product page. Delete the stored proof; do not keep retrying. |
 | 404 | `{ "error": "no_such_license" }` | The key is not one of ours. | Tell the customer to check the key in *My Apps*. |
 | 409 | `{ "error": "device_limit_reached", "max_devices": 2, "devices": [ { "device_name": "STUDIO-PC", "last_seen": "…" } ] }` | All seats used. | Show the device names; tell the customer to remove one in *My Apps* or deactivate on the other machine. |
 | 502 | `{ "error": "upstream_error", "message": "…" }` | Server could not reach the database. | Show `message`; keep any stored proof; retry later. |
@@ -103,6 +112,11 @@ Rules:
 
 - Any 2xx is success. Any other status is failure. `error` is the
   machine-readable code; `message`, when present, is safe to show.
+- **Treat an unrecognised code as a plain failure** and show a general
+  message. Codes are added over time - `license_expired` was added for
+  the first open beta - and a build that crashes, or claims success, on a
+  code it has not seen is a build that breaks the next time the server
+  learns a word.
 - Calling activate again from a device that already holds a seat is a
   **heartbeat**: it refreshes the proof and does not use another seat.
 - A device that was removed in *My Apps* and calls activate again simply
@@ -371,4 +385,4 @@ Both were fixed in 1.3.1, which activates correctly against the live server.
 | Proof fields | `deviceKey`, `licenseKey`, `issuedAt`, `expiresAt` (+48 h), `graceUntil` (+30 d), all ms |
 | Seats | 2 devices per key (server-side, can be set per product) |
 | Heartbeat | hourly while open; at startup if key but no proof |
-| Error codes | `invalid_request`, `no_such_license`, `device_limit_reached`, `upstream_error`, `licensing_unavailable` |
+| Error codes | `invalid_request`, `no_such_license`, `license_expired`, `device_limit_reached`, `upstream_error`, `licensing_unavailable` |

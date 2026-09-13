@@ -27,17 +27,28 @@
 
     var lines = [];
 
-    lines.push(a.free
+    /* A beta is free but not forever, and saying only "free" would be
+       the kind of half-truth the privacy policy exists to stop. */
+    var beta = a.free && a.licensed && a.beta_days;
+
+    lines.push(beta
+      ? ('Free for ' + a.beta_days + ' days. The clock starts the day you download it, not today.')
+      : a.free
       ? 'Free. Sign in and it is yours.'
       : 'Secure checkout. Your card details go to Stripe, never to us.');
 
-    lines.push(a.licensed
+    lines.push(beta
+      ? 'Your key is made when you download, and it is waiting in My Apps.'
+      : a.licensed
       ? 'One key, two computers. Yours to keep, with no subscription.'
       : 'No activation, ever. It runs offline and never asks who you are.');
 
     lines.push('Instant download. It installs and updates through Amanorsac Hub.');
 
-    if (!a.free) {
+    if (beta) {
+      lines.push('Tell us what breaks. That is what a beta is for — ' +
+                 '<a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a>.');
+    } else if (!a.free) {
       lines.push('Will not run on a system we list? Tell us within thirty days and ' +
                  'we refund it — <a href="/legal.html#terms">the terms say so</a>.');
     }

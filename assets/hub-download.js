@@ -81,7 +81,13 @@
       var a = app && cat.apps && cat.apps[app];
       var appName = a ? a.name : '';
       var free = a ? !!a.free : false;
-      var status = a ? a.status : 'available';
+      /* Ask store-state.js rather than reading status directly, so this
+         button agrees with the tile, the buy button and the sale strip
+         about whether an app is on sale HERE - a preview build and the
+         live site are allowed to disagree, and they did. */
+      var status = a
+        ? ((window.StoreState && window.StoreState.stateOf) ? window.StoreState.stateOf(a) : a.status)
+        : 'available';
 
       el.classList.add('hub-get');
 

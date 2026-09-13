@@ -514,6 +514,26 @@ async function appDownload(request, env) {
   const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
 
+  /* An open beta has no purchase to grant access, so the licence is
+     minted here - at the moment somebody actually downloads it, which is
+     when the clock should start. claim_beta_license is idempotent and
+     never extends, so a second download returns the same key with the
+     same end date. If it fails the ownership check below simply says no,
+     which is the right answer rather than a broken download. */
+  const entry = (catalog.apps || {})[app];
+  if (entry && entry.free && entry.licensed && entry.beta_days) {
+    try {
+      const c = await fetch(SUPABASE_URL + '/rest/v1/rpc/claim_beta_license', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY, Authorization: 'Bearer ' + jwt },
+        body: JSON.stringify({ p_app: app })
+      });
+      if (!c.ok) console.error('claim_beta_license refused:', c.status, await c.text());
+    } catch (e) {
+      console.error('claim_beta_license failed:', e && e.message);
+    }
+  }
+
   let owned = false;
   try {
     const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/has_app_access', {
@@ -989,6 +1009,12 @@ async function licenseActivate(request, env) {
     const code = (result && result.error) || 'no_such_license';
     if (code === 'device_limit_reached') {
       return say({ error: code, max_devices: result.max_devices, devices: result.devices }, 409);
+    }
+    /* A beta that has run out. 403 rather than 404: the key is real and
+       was ours, it simply no longer entitles anyone to a proof. The date
+       goes with it so the app can say when it ended instead of guessing. */
+    if (code === 'license_expired') {
+      return say({ error: code, expires_at: result.expires_at || null }, 403);
     }
     return say({ error: code }, 404);
   }
