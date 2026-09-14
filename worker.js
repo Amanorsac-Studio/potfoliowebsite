@@ -90,6 +90,9 @@ export default {
         // What exists, for the Hub to draw its library from.
         if (path === '/api/catalog') return withCors(await catalogApi(env));
 
+        // Which checkout this visitor should be shown, and for how much.
+        if (path === '/api/pay-options') return withCors(await payOptions(request, env));
+
         const d = path.match(/^\/download\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
         if (d) {
           const file = await serveInstaller(d[1], d[2], new URL(request.url), env, request);
@@ -644,6 +647,97 @@ function announcement(c, abs) {
     action: button(a.action), link: button(a.link),
     dismissible: a.dismissible !== false, ends: a.ends || null
   };
+}
+
+/* ---------------------------------------------------------------------
+   Which checkout to offer, and what it will cost in what.
+
+   Cloudflare puts the visitor's country on every request it forwards,
+   worked out from the connection itself. That is the whole geography
+   here: no third-party lookup, no browser permission prompt, nothing
+   that can be blocked by a privacy extension, and nothing leaves the
+   edge. A VPN gets whatever country it exits in, which is the honest
+   answer to "where is this connection from" and is why both checkouts
+   are always offered rather than one being chosen for anybody.
+
+   The price is computed here rather than sent by the page. The page
+   uses this to LABEL a button; the edge function works the figure out
+   again from the same catalog before it charges anyone, so a request
+   that lies about its country or its total gets a correct bill either
+   way. Nothing below is a secret: it is the shop window.
+   --------------------------------------------------------------------- */
+const CURRENCY_SYMBOL = { GHS: '\u20b5', NGN: '\u20a6', ZAR: 'R', KES: 'KSh', USD: '$', XOF: 'CFA', EGP: 'E\u00a3' };
+
+/* What Paystack should charge for one app, in the smallest unit of the
+   account's currency - pesewas, kobo, cents. Either the app names its
+   own local figure, or the dollar price is converted at the one rate in
+   the catalog and rounded up to something that reads like a price. */
+function paystackAmount(pay, app) {
+  if (!pay || !app) return null;
+  if (typeof app.paystack_price === 'number') return app.paystack_price;
+  const usd = app.free ? 0 : (app.price_cents || 0);
+  if (!usd) return null;
+  const rate = Number(pay.rate_per_usd);
+  if (!isFinite(rate) || rate <= 0) return null;
+  const step = Number(pay.round_to) > 0 ? Number(pay.round_to) : 1;
+  return Math.ceil((usd / 100) * rate * 100 / step) * step;
+}
+
+function money(currency, minor) {
+  const sym = CURRENCY_SYMBOL[currency] || (currency + ' ');
+  const whole = minor / 100;
+  return sym + (whole % 1 === 0 ? String(whole) : whole.toFixed(2));
+}
+
+/* GET /api/pay-options?app=<id>
+   Answers: where this connection is, which checkouts to show and in
+   what order, and - for Paystack - the exact figure and currency the
+   button should say. Never cached: two visitors on the same page get
+   different answers, and a cached one would be somebody else's. */
+async function payOptions(request, env) {
+  const c = await getCatalog(env);
+  const url = new URL(request.url);
+  const id = String(url.searchParams.get('app') || '').toLowerCase().slice(0, 40);
+  const app = (c.apps || {})[id] || null;
+  const pay = c.paystack || null;
+  const country = (request.headers.get('cf-ipcountry') || '').toUpperCase();
+
+  const local = (pay && pay.live) ? paystackAmount(pay, app) : null;
+  const known = !!country && country !== 'XX' && country !== 'T1';
+  const here = !!(pay && pay.live && known && (pay.countries || []).includes(country));
+  /* Paystack is offered where Paystack's rails actually reach. Outside
+     those countries it is not a second option, it is a dead end: a
+     card in London cannot pay a Ghanaian mobile money charge, and
+     showing the button would only be a way to fail slowly. Inside
+     them, both are there - somebody in Accra with an international
+     card should not have to hunt for the card. */
+  const offer = [];
+  if (here && local) offer.push('paystack');
+  if (app && !app.free) offer.push('stripe');
+
+  return new Response(JSON.stringify({
+    country: known ? country : null,
+    /* Which one leads. Where Paystack works it leads and the card is
+       the quiet second door; everywhere else there is only the card. */
+    first: (here && local) ? 'paystack' : 'stripe',
+    offer,
+    paystack: local ? {
+      currency: pay.currency, amount: local, display: money(pay.currency, local),
+      /* A name-your-price app keeps naming its price here. The figure
+         above is the suggested one; minimum is the floor, and the edge
+         function clamps whatever is actually sent to the same pair, so
+         the box on the page is a convenience rather than the rule. */
+      choose: !!app.pay_what_you_want,
+      minimum: app.pay_what_you_want ? paystackAmount(pay, { price_cents: app.price_min_cents || 0 }) : null,
+      /* The dollar figure this was converted from. The page needs it:
+         every one of these pages has its price written into the prose
+         in dollars, and a button reading in cedis beside fine print
+         reading in dollars is a contradiction the buyer has to resolve
+         themselves. Better to say outright which is which. */
+      usd_display: money('USD', app.price_cents || 0),
+      note: pay.wallet_note || 'Mobile money, bank transfer or a local card.'
+    } : null
+  }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 }
 
 async function catalogApi(env) {

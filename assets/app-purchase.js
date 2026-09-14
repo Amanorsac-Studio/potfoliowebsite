@@ -9,8 +9,15 @@
 
      not signed in                -> off to sign in or create an
                                       account, coming straight back here
-     signed in, does not own it   -> create-app-checkout hands back a
-                                      Stripe Checkout URL to go to
+     signed in, does not own it   -> a checkout. Two are wired up:
+                                      Stripe, and Paystack for mobile
+                                      money and local cards. Which one
+                                      leads is /api/pay-options' answer,
+                                      from the country Cloudflare put on
+                                      the request. Where Paystack's
+                                      rails reach it leads and the card
+                                      is the second door; everywhere
+                                      else there is only the card
      signed in, already owns it   -> the same button opens the app in
                                       Amanorsac Hub (amanorsac://), which
                                       installs it; the note underneath
@@ -98,21 +105,72 @@
         ' lands in <a href="/my-apps.html">My Apps</a> the day it does.');
   }
 
+  /* What the main button says. When Paystack leads, it says the local
+     figure - a Ghanaian buyer should see cedis on the button, not a
+     dollar price that turns into cedis on the next screen. */
+  function buyLabel() {
+    if (pay && pay.first === 'paystack' && pay.paystack) {
+      return pay.paystack.choose ? 'Name your price \u00b7 ' + pay.paystack.display
+                                 : 'Buy \u2014 ' + pay.paystack.display;
+    }
+    return PRICES[app] || 'Buy';
+  }
+  function showBuy() { setButtons(buyLabel(), false); renderAlt(); }
+
   function render() {
-    return checkOnSale().then(function (sale) {
+    return Promise.all([checkOnSale(), loadPayOptions()]).then(function (both) {
+      var sale = both[0];
       return sb.auth.getSession().then(function (s) {
         var signedIn = !!(s && s.data && s.data.session);
         if (signedIn) {
           return checkAccess().then(function (owns) {
             if (owns) return showOwned(false);          // owners always get their door
             if (!sale) return showComingSoon();
-            setButtons(PRICES[app] || 'Buy', false);
+            showBuy();
           });
         }
         if (!sale) return showComingSoon();
-        setButtons(PRICES[app] || 'Buy', false);
+        showBuy();
       });
     });
+  }
+
+  /* Where this connection is, and therefore which checkout to put
+     first and what Paystack would charge. Answered at the edge from
+     the country Cloudflare already knows - no lookup service, no
+     permission prompt, nothing a blocker can break. If it does not
+     answer, Stripe leads and nothing is lost. */
+  var pay = null;
+  function loadPayOptions() {
+    return fetch('/api/pay-options?app=' + encodeURIComponent(app), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { pay = j; return j; })
+      .catch(function () { return null; });
+  }
+
+  /* The second door, under the button. Drawn only when there is one:
+     an app that is free, or a site with Paystack switched off, gets
+     nothing here and the markup is untouched. */
+  function renderAlt() {
+    var slot = document.querySelector('[data-pay-alt]');
+    if (!slot) return;
+    if (!pay || !pay.paystack || (pay.offer || []).indexOf('paystack') < 0) {
+      slot.innerHTML = ''; slot.hidden = true; return;
+    }
+    var ps = pay.paystack;
+    /* Every one of these pages writes its price into the prose in
+       dollars. When the button is in cedis, say which is which rather
+       than leaving the buyer to work out why two figures disagree. */
+    var fx = '<span class="pay-alt-fx">' + esc(ps.display) + ' is ' + esc(ps.usd_display) +
+             ' at today\u2019s rate.</span>';
+    slot.innerHTML = pay.first === 'paystack'
+      ? fx +
+        '<button type="button" class="pay-alt" data-pay="stripe">Pay by card instead</button>' +
+        '<span class="pay-alt-note">Visa, Mastercard, Apple&nbsp;Pay \u00b7 charged in US dollars</span>'
+      : '<button type="button" class="pay-alt" data-pay="paystack">Pay with mobile money \u2014 ' +
+        esc(ps.display) + '</button>' +
+        '<span class="pay-alt-note">' + esc(ps.note) + '</span>';
+    slot.hidden = false;
   }
 
   var params = new URLSearchParams(location.search);
@@ -142,17 +200,24 @@
     render();
   }
 
-  function startCheckout(session) {
-    setButtons('Redirecting to checkout…', true);
+  /* Two checkouts, one shape. Each function answers { url } and the
+     browser goes there; neither is told what to charge - the price is
+     read from the catalog on the server both times, so a button that
+     has been edited in a console still produces a correct bill. */
+  var FUNCTIONS = { stripe: 'create-app-checkout', paystack: 'create-app-paystack' };
+
+  function startCheckout(session, how, amount) {
+    var fn = FUNCTIONS[how] || FUNCTIONS.stripe;
+    setButtons(how === 'paystack' ? 'Opening Paystack…' : 'Redirecting to checkout…', true);
     say('');
-    return fetch(SUPABASE_URL + '/functions/v1/create-app-checkout', {
+    return fetch(SUPABASE_URL + '/functions/v1/' + fn, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
         'apikey': SUPABASE_KEY,
         'Authorization': 'Bearer ' + session.access_token
       },
-      body: JSON.stringify({ app: app })
+      body: JSON.stringify(amount ? { app: app, amount: amount } : { app: app })
     })
       .then(function (r) { return r.json().then(function (j) { return r.ok ? j : Promise.reject(j); }); })
       .then(function (j) {
@@ -161,7 +226,7 @@
         return Promise.reject(j);
       })
       .catch(function (j) {
-        setButtons(PRICES[app] || 'Buy', false);
+        showBuy();
         say(esc((j && j.error) || 'Could not start checkout. Try again in a moment.'), true);
       });
   }
@@ -178,18 +243,68 @@
     else location.href = HUB_PROTOCOL + '://install/' + encodeURIComponent(app);
   }
 
+  /* Naming your price, on Paystack.
+
+     Stripe does this for us - its Checkout page has the box, and the
+     bounds live on the Price - but Paystack is told a figure up front,
+     so the box has to be here. It is asked for before the redirect
+     rather than after, and the edge function clamps whatever arrives to
+     the same minimum and ceiling anyway: this is a courtesy, not the
+     rule. A button that says "name your price" and then charges a
+     figure nobody named would be a small lie. */
+  function askAmount() {
+    var ps = pay && pay.paystack;
+    if (!ps) return Promise.resolve(null);
+    var min = ps.minimum || 0;
+    return new Promise(function (done) {
+      say('<span class="pwyw">' +
+          '<label for="pwyw-amt">What would you like to pay?</label>' +
+          '<span class="pwyw-in"><i>' + esc(ps.currency) + '</i>' +
+          '<input id="pwyw-amt" type="number" inputmode="decimal" step="1" ' +
+          'min="' + (min / 100) + '" value="' + (ps.amount / 100) + '"></span>' +
+          '<button type="button" class="pay-alt" id="pwyw-go">Continue</button>' +
+          '<small>Minimum ' + esc(ps.currency) + ' ' + (min / 100) + '.</small></span>');
+      var input = document.getElementById('pwyw-amt');
+      var goBtn = document.getElementById('pwyw-go');
+      if (!input || !goBtn) return done(ps.amount);
+      input.focus(); input.select();
+      function submit() {
+        var v = Math.round(parseFloat(input.value) * 100);
+        if (!isFinite(v) || v < min) { input.value = (min / 100); input.focus(); return; }
+        done(v);
+      }
+      goBtn.addEventListener('click', submit);
+      input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+    });
+  }
+
+  function go(how) {
+    return sb.auth.getSession().then(function (s) {
+      var session = s && s.data && s.data.session;
+      if (!session) {
+        location.href = '/client.html?next=' + encodeURIComponent(location.pathname);
+        return;
+      }
+      var wantsAmount = how === 'paystack' && pay && pay.paystack && pay.paystack.choose;
+      return (wantsAmount ? askAmount() : Promise.resolve(null))
+        .then(function (amount) { return startCheckout(session, how, amount); });
+    });
+  }
+
   buttons.forEach(function (b) {
     b.addEventListener('click', function () {
-      sb.auth.getSession().then(function (s) {
-        var session = s && s.data && s.data.session;
-        if (!session) {
-          location.href = '/client.html?next=' + encodeURIComponent(location.pathname);
-          return;
-        }
-        if (b.getAttribute('data-mode') === 'hub') return openInHub();
-        if (b.getAttribute('data-mode') === 'soon') return;
-        return startCheckout(session);
-      });
+      if (b.getAttribute('data-mode') === 'hub') return openInHub();
+      if (b.getAttribute('data-mode') === 'soon') return;
+      go((pay && pay.first) || 'stripe');
     });
+  });
+
+  /* The other door. Delegated, because it is drawn and redrawn as the
+     answer arrives rather than being in the markup. */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-pay]');
+    if (!b) return;
+    e.preventDefault();
+    go(b.getAttribute('data-pay'));
   });
 })();
