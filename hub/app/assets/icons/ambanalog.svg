@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="Amanorsac Analog">
+  <!-- a row of machines on a rack -->
+  <rect x="2" y="3.5" width="20" height="5" rx="1.6" fill="none" stroke="#D4A24C" stroke-width="1.6"/>
+  <rect x="2" y="9.6" width="20" height="5" rx="1.6" fill="none" stroke="#D4A24C" stroke-width="1.6" opacity=".72"/>
+  <rect x="2" y="15.7" width="20" height="5" rx="1.6" fill="none" stroke="#D4A24C" stroke-width="1.6" opacity=".5"/>
+  <circle cx="6" cy="6" r="1.2" fill="#D4A24C"/>
+  <circle cx="6" cy="12.1" r="1.2" fill="#D4A24C" opacity=".72"/>
+  <circle cx="6" cy="18.2" r="1.2" fill="#D4A24C" opacity=".5"/>
+</svg>

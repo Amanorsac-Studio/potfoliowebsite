@@ -614,6 +614,30 @@ function salePromo(c) {
   return { percent: p.percent || null, note: p.note || '', ends: p.ends || null };
 }
 
+/* The notice across the top of the Hub's library, if one is running.
+   Same discipline as the sale: `live`, `starts` and `ends` are decided
+   here rather than in the Hub, so a notice that is switched off or out
+   of its dates is not sent at all and cannot be shown by a copy of the
+   Hub that reads the field wrongly. Absent means the Hub falls back to
+   choosing its own panel. */
+function announcement(c, abs) {
+  const a = c && c.announcement;
+  if (!a || a.live === false) return null;
+  const now = Date.now();
+  if (a.starts) { const t = Date.parse(a.starts); if (isFinite(t) && t > now) return null; }
+  if (a.ends)   { const t = Date.parse(a.ends);   if (!isFinite(t) || t <= now) return null; }
+  if (!a.headline) return null;
+  const button = b => (b && b.label && (b.app || b.url))
+    ? { label: String(b.label), app: b.app || null, url: b.url ? abs(b.url) : null } : null;
+  return {
+    id: a.id || String(Date.parse(a.starts || '') || 0) || 'notice',
+    eyebrow: a.eyebrow || '', headline: a.headline, body: a.body || '',
+    art: abs(a.art), accent: a.accent || null,
+    action: button(a.action), link: button(a.link),
+    dismissible: a.dismissible !== false, ends: a.ends || null
+  };
+}
+
 async function catalogApi(env) {
   const c = await getCatalog(env);
   const abs = p => p ? (/^https?:/.test(p) ? p : SITE + '/' + String(p).replace(/^\//, '')) : null;
@@ -623,7 +647,10 @@ async function catalogApi(env) {
     const a = c.apps[id];
     apps[id] = {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
-      tagline: a.tagline || '', icon: abs(a.icon), screenshot: abs(a.screenshot),
+      // `art` is the wide picture of the app running; `screenshot` was the
+      // same idea under an earlier name, so an entry written either way
+      // still reaches the Hub.
+      tagline: a.tagline || '', icon: abs(a.icon), art: abs(a.art || a.screenshot),
       page: abs(a.page), color: a.color || null,
       free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null),
       list_price_cents: (sale && !a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
@@ -653,6 +680,10 @@ async function catalogApi(env) {
        is allowed to make the offer disappear without anyone editing
        anything. */
     promo: salePromo(c),
+    /* Null unless a notice is running. The Hub redraws its own panel
+       when this changes, which is how a message reaches every open
+       window without anybody shipping a Hub. */
+    announcement: announcement(c, abs),
     apps
   }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } });
 }
