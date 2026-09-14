@@ -162,6 +162,13 @@ function siteRequest(pathname, { method = 'GET', token, body } = {}) {
   return new Promise((resolve) => {
     const req = net.request({ method, url: SITE + pathname });
     req.setHeader('accept', 'application/json');
+    /* The catalog is sent with a five-minute max-age so browsers and
+       the CDN can hold it, which is right for a website and wrong for a
+       window that stays open for days: it would answer from Chromium's
+       own cache and the studio's notice would arrive whenever the cache
+       happened to expire. Asking for a revalidation costs one
+       conditional request and makes "reload the collection" mean it. */
+    req.setHeader('cache-control', 'no-cache');
     req.setHeader('user-agent', 'AmanorsacHub/' + app.getVersion() + ' (' + process.platform + ')');
     if (token) req.setHeader('authorization', 'Bearer ' + token);
     if (body !== undefined) req.setHeader('content-type', 'application/json');

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-label="AETHER">
+  <!-- air: a rising shelf, the shape the plugin draws when you turn it up -->
+  <path d="M1.5 17.5 H10 C14.5 17.5 14.5 7 19 6.5 H22.5" fill="none" stroke="#35E0F0" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M1.5 17.5 H22.5" fill="none" stroke="#5B6B78" stroke-width="1.1" opacity=".8"/>
+  <circle cx="19" cy="6.5" r="2.1" fill="#A9F4FA"/>
+</svg>

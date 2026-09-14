@@ -34,7 +34,8 @@
 
   const S = {
     session: null, profile: null, device: { platform: window.hub.platform, arch: window.hub.arch, os: '', hostname: '' },
-    catalog: [], hubVersion: null, owned: [], devices: [], installed: {}, jobs: {}, history: [],
+    catalog: [], hubVersion: null, announce: null, noticeShown: null,
+    owned: [], devices: [], installed: {}, jobs: {}, history: [],
     page: 'library', filter: 'all', online: true,
   };
   try { S.history = JSON.parse(localStorage.getItem('hub-history') || '[]'); } catch (e) {}
@@ -98,22 +99,41 @@
         status: a.status || 'available',
         free: !!a.free, licensed: !!a.licensed,
         color: a.color || local.color || '#eeae61',
+        /* The website's own artwork, absolute and already public. It is
+           what the store shows, so the Hub and the site cannot drift:
+           adding an app to catalog.json gives it a picture here too,
+           with no Hub release and nothing bundled. The local map below
+           is only the fallback for the five apps that shipped with
+           this build, and initials are the fallback to that. */
+        icon: a.icon || null, art: a.art || null,
         page: a.page || local.page, platforms: platforms,
       };
     });
   }
 
+  /* An app the studio is holding back - finished, but not to be named
+     in public yet. The store drops those tiles and so does this: a
+     "coming soon" card for something with no name is not a tease, it
+     is a question nobody can answer. */
+  const shown = (list) => list.filter((a) => a.status !== 'hidden');
+
   async function loadCatalog() {
     try {
       const r = await window.hub.site('/api/catalog');
       if (r && r.ok && r.json && r.json.apps) {
-        S.catalog = fromApi(r.json);
+        S.catalog = shown(fromApi(r.json));
         S.hubVersion = (r.json.hub && r.json.hub.version) || null;
+        /* Whatever the studio is announcing, if anything. The site has
+           already decided: it sends nothing at all unless the notice is
+           switched on and inside its dates, so there is no date
+           arithmetic on this side to get wrong. */
+        S.announce = r.json.announcement || null;
         S.online = true;
         return;
       }
     } catch (e) {}
-    S.catalog = window.HUB_CATALOG.apps.slice();
+    S.catalog = shown(window.HUB_CATALOG.apps.slice());
+    S.announce = null;          // an unreachable site announces nothing
     S.online = false;
   }
 
@@ -157,6 +177,48 @@
     $('#foot-conn').textContent = S.online ? 'Connected to amanorsac.studio' : 'amanorsac.studio unreachable · showing the last known collection';
     render();
   }
+
+  /* Listening for the studio.
+
+     The library is not a page somebody reloads, so on its own it would
+     show whatever was true when the window opened - possibly days ago,
+     on a machine that never sleeps. This keeps it current without
+     anyone pressing Sync: the catalog is re-read every few minutes, and
+     again the moment the window comes back to the front or the machine
+     finds the network, which is when somebody is actually looking.
+
+     Only the collection is re-read, never the account: purchases and
+     devices change because of something this person did, and they are
+     already reloaded when that happens. A notice or a new build is the
+     other way round - it changes because the studio did something, and
+     nothing here would otherwise ever hear about it.
+
+     A download in progress is left alone. Re-rendering a card mid-
+     install would throw away its progress bar, and the panel is not
+     worth that. */
+  const WATCH_EVERY = 4 * 60 * 1000;
+  let lastListen = Date.now();
+
+  function noticeKey(n) {
+    return n ? [n.id, n.headline, n.body, n.art, n.accent,
+                n.action && n.action.label, n.link && n.link.label].join('\u0000') : '';
+  }
+
+  async function listen() {
+    if (!S.session || Object.keys(S.jobs).length) return;
+    const before = noticeKey(S.announce) + '|' + S.catalog.map((a) => a.id + a.status + (a.platforms[S.device.platform] || {}).version).join(',');
+    await loadCatalog();
+    const after = noticeKey(S.announce) + '|' + S.catalog.map((a) => a.id + a.status + (a.platforms[S.device.platform] || {}).version).join(',');
+    $('#online').classList.toggle('off', !S.online);
+    $('#foot-online').classList.toggle('off', !S.online);
+    if (before !== after) render();
+  }
+
+  setInterval(() => { lastListen = Date.now(); listen(); }, WATCH_EVERY);
+  /* Coming back to the window is throttled: alt-tabbing between the Hub
+     and a DAW should not be a request each time. */
+  window.addEventListener('focus', () => { if (Date.now() - lastListen > 30000) { lastListen = Date.now(); listen(); } });
+  window.addEventListener('online', () => { lastListen = Date.now(); listen(); });
 
   /* ---------- downloading and installing ---------- */
   async function freshToken() {
@@ -260,14 +322,50 @@
     purchases: ['Your purchases.', 'Every app in your collection, accounted for.'],
   };
 
-  function iconFor(a, big) {
-    const map = { nebulatide: 'assets/nt-logo.webp', pulseroom: 'assets/pulseroom-logo.svg', secondout: 'assets/secondout-icon.png', performlive: 'assets/performlive.webp', harmoniemd: 'assets/harmoniemd.png' };
-    return map[a.id] ? '<img src="' + map[a.id] + '" alt="">' : esc(a.name.slice(0, 2).toUpperCase());
+  /* Artwork, in the order it should be trusted: what the site sent for
+     this app, then what this build happens to have bundled, then the
+     app's initials. A picture that fails to load - offline, or a file
+     renamed on the site - steps aside for the next thing down the list,
+     because an empty grey rectangle is worse than two letters. That is
+     handled by one listener rather than an onerror attribute on each
+     image: this window runs under script-src 'self', which blocks
+     inline handlers, and an onerror that never fires is the same as no
+     fallback at all. */
+  const LOCAL_ICON = { nebulatide: 'assets/nt-logo.webp', pulseroom: 'assets/pulseroom-logo.svg', secondout: 'assets/secondout-icon.png', performlive: 'assets/performlive.webp', harmoniemd: 'assets/harmoniemd.png' };
+  const LOCAL_SHOT = { nebulatide: 'assets/nebulatide-shot.webp', pulseroom: 'assets/pulseroom-shot.webp', secondout: 'assets/secondout-screenshot.png' };
+
+  function initialsFor(a) { return esc(String(a.name || a.id).slice(0, 2).toUpperCase()); }
+  function iconFor(a) {
+    const src = a.icon || LOCAL_ICON[a.id];
+    if (!src) return initialsFor(a);
+    return '<img src="' + esc(src) + '" alt="" loading="lazy" data-initials="' + initialsFor(a) + '">';
   }
-  function shotFor(a) {
-    const map = { nebulatide: 'assets/nebulatide-shot.webp', pulseroom: 'assets/pulseroom-shot.webp', secondout: 'assets/secondout-screenshot.png' };
-    return map[a.id] || null;
-  }
+  function shotFor(a) { return a.art || LOCAL_SHOT[a.id] || null; }
+
+  /* One listener for every broken picture in the window. The error
+     event does not bubble, so this is registered in the capture phase,
+     where it is seen on the way down and works for markup written long
+     after this line runs. */
+  document.addEventListener('error', (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== 'IMG' || img.dataset.gone) return;
+    img.dataset.gone = '1';
+    const box = img.parentNode;
+    if (!box) return;
+    if (img.dataset.artFor) {
+      /* A screenshot that will not load. The app still has an icon, and
+         if that icon will not load either this same listener catches it
+         and leaves the initials - one step down the list at a time. */
+      const a = byId(img.dataset.artFor);
+      box.classList.add('icon');
+      box.style.background = '#1d2124';
+      box.innerHTML = a ? iconFor(a) : '';
+    } else if (img.dataset.initials) {
+      box.textContent = img.dataset.initials;
+    } else {
+      img.remove();
+    }
+  }, true);
 
   function card(a) {
     const st = status(a), b = build(a), inst = S.installed[a.id], shot = shotFor(a);
@@ -289,7 +387,9 @@
     const bar = st.action === 'busy' ? '<div class="progress' + (st.job.total ? '' : ' indet') + '" role="progressbar" aria-label="Installing ' + esc(a.name) + '"><i data-bar="' + a.id + '" style="width:' + (st.job.percent || 0) + '%"></i></div><p class="meta" style="margin:8px 0 0" data-pct="' + a.id + '">' + esc(progressText(st.job)) + '</p>' : '';
 
     return '<article class="card" data-app="' + a.id + '">' +
-      '<div class="art' + (shot ? '' : ' icon') + '" style="background:' + (shot ? '#23202e' : '#1d2124') + '">' + (shot ? '<img src="' + shot + '" alt="' + esc(a.name) + ' interface">' : iconFor(a)) + '</div>' +
+      '<div class="art' + (shot ? '' : ' icon') + '" style="background:' + (shot ? '#23202e' : '#1d2124') + '">' +
+        (shot ? '<img src="' + esc(shot) + '" alt="' + esc(a.name) + ' interface" loading="lazy" data-art-for="' + esc(a.id) + '">'
+              : iconFor(a)) + '</div>' +
       '<div class="card-content"><div class="cardtitle"><h3>' + esc(a.name) + '</h3><span class="badge' + (st.ready ? ' ready' : st.dim ? ' dim' : '') + '">' + esc(st.badge) + '</span></div>' +
       '<p>' + esc(a.tagline) + '</p>' +
       '<div class="cardfoot"><div class="meta">' + meta.join('<br>') + '</div><div class="btns">' + btn + '</div></div>' + bar + '</div></article>';
@@ -304,6 +404,11 @@
     $('#installed-count').textContent = avail.filter((a) => S.installed[a.id]).length;
     $('#available-count').textContent = avail.filter((a) => !S.installed[a.id]).length;
 
+    /* The panel across the top. A notice from the studio takes it
+       whenever one is running and this person has not closed it;
+       otherwise it goes back to being useful about the library. */
+    if (renderNotice()) return renderSoon();
+
     // The feature: an update if one is waiting, else something not yet installed, else the newest thing
     const upd = avail.find((a) => status(a).action === 'update');
     const next = avail.find((a) => status(a).action === 'install');
@@ -315,8 +420,79 @@
         '<button class="ghost" data-page-url="' + esc(f.page) + '">Explore ' + esc(f.name) + ' &nbsp; ↗</button></div></div>' +
         '<div class="feature-art">' + (shotFor(f) ? '<img src="' + shotFor(f) + '" alt="">' : '') + '</div>';
     }
+    renderSoon();
+  }
+
+  function renderSoon() {
     const soon = S.catalog.filter((a) => a.status !== 'available');
     $('#soon').innerHTML = soon.map((a) => '<a class="soon" data-page-url="' + esc(a.page) + '"><span class="appicon">' + iconFor(a) + '</span><div><strong>' + esc(a.name) + '</strong><p>' + esc(a.tagline) + '</p></div><small>COMING SOON</small></a>').join('') || '<p class="note">Everything in the collection is available.</p>';
+  }
+
+  /* ---------- the studio's notice ----------------------------------
+     Written in catalog.json on the website and handed over by
+     /api/catalog, which has already decided whether it is running: the
+     Hub draws what it is given and nothing else. Everything is text
+     from a file the studio controls, and it still goes through esc() -
+     a notice is copy, not markup, and one stray angle bracket should
+     never be able to rearrange this window.
+
+     A closed notice is remembered by its id, so a new notice is seen by
+     everyone even if they closed the last one. */
+  function noticeClosed(id) {
+    try { return (JSON.parse(localStorage.getItem('hub-notice-closed') || '[]')).indexOf(id) >= 0; }
+    catch (e) { return false; }
+  }
+  function closeNotice(id) {
+    let seen = [];
+    try { seen = JSON.parse(localStorage.getItem('hub-notice-closed') || '[]'); } catch (e) {}
+    if (seen.indexOf(id) < 0) seen.push(id);
+    try { localStorage.setItem('hub-notice-closed', JSON.stringify(seen.slice(-20))); } catch (e) {}
+    S.noticeShown = null;
+    renderLibrary();
+  }
+
+  function renderNotice() {
+    const n = S.announce;
+    if (!n || !n.headline || (n.dismissible && noticeClosed(n.id))) {
+      S.noticeShown = null;
+      $('#feature').className = 'feature';      // undo a notice drawn a moment ago
+      return false;
+    }
+
+    /* A button that names an app does whatever that app needs on this
+       computer - install it, update it, open it - and says so. If the
+       app is not in the library, or has no build for this platform,
+       the button becomes the link to its page rather than a dead end. */
+    let act = '';
+    if (n.action) {
+      const a = n.action.app && byId(n.action.app);
+      const st = a && status(a);
+      if (st && (st.action === 'install' || st.action === 'update'))
+        act = '<button data-' + st.action + '="' + esc(a.id) + '">' + esc(n.action.label) + '</button>';
+      else if (st && st.action === 'open' && a.kind !== 'plugin')
+        act = '<button data-open="' + esc(a.id) + '">Open ' + esc(a.name) + '</button>';
+      else if (n.action.url)
+        act = '<button data-page-url="' + esc(n.action.url) + '">' + esc(n.action.label) + '</button>';
+      else if (a)
+        act = '<button data-page-url="' + esc(a.page) + '">' + esc(n.action.label) + '</button>';
+    }
+    const link = n.link && n.link.url
+      ? '<button class="ghost" data-page-url="' + esc(n.link.url) + '">' + esc(n.link.label) + ' &nbsp; ↗</button>' : '';
+
+    const el = $('#feature');
+    el.className = 'feature notice';
+    el.style.setProperty('--accent', n.accent || '#A99CFF');
+    el.innerHTML =
+      '<div class="feature-copy">' +
+        '<div class="eyebrow">' + esc(n.eyebrow || 'FROM THE STUDIO') + '</div>' +
+        '<h2>' + esc(n.headline) + '</h2>' +
+        (n.body ? '<p>' + esc(n.body) + '</p>' : '') +
+        (act || link ? '<div class="actions">' + act + link + '</div>' : '') +
+      '</div>' +
+      '<div class="feature-art">' + (n.art ? '<img src="' + esc(n.art) + '" alt="">' : '') + '</div>' +
+      (n.dismissible ? '<button class="notice-x" data-close-notice="' + esc(n.id) + '" title="Dismiss" aria-label="Dismiss this notice">✕</button>' : '');
+    S.noticeShown = n.id;
+    return true;
   }
 
   function row(a, body, action, cls) {
@@ -461,6 +637,7 @@
     if (d.open) launch(byId(d.open));
     if (d.remove) uninstall(byId(d.remove));
     if (d.cancel) { window.hub.cancel(d.cancel); }
+    if (d.closeNotice) closeNotice(d.closeNotice);
     if (d.info) { const app = byId(d.info); modal(app.name, '<p>' + esc(app.name) + ' is a plug-in. It is installed on this computer; open it inside your DAW like any other plug-in.' + (app.licensed ? ' When it asks for a license key, it is under License keys here.' : '') + '</p>'); }
     if (d.reveal) window.hub.reveal(d.reveal);
     if (d.revealKey) { const o = S.owned.find((x) => String(x.id) === d.revealKey); const k = $('[data-key-for="' + d.revealKey + '"]'); const hidden = k.textContent.includes('•'); k.textContent = hidden ? (o.license_key || '—') : '••••-••••-••••-••••'; b.textContent = hidden ? 'Hide' : 'Reveal'; }
