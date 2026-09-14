@@ -193,13 +193,20 @@ jobs:
           # environment in the step above, whichever is configured.
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
+      # Artifacts count against the account's Actions storage, and a macOS
+      # run is half a gigabyte of them. A release keeps the same files as
+      # release assets, which do not count, so there is nothing to gain by
+      # storing both - and everything to lose, because a full quota stops
+      # jobs before they start, with no log to say why. So: no artifact on
+      # a release run, and a week rather than a month on the others.
       - name: Keep installers
+        if: inputs.release_tag == '' && !startsWith(github.ref, 'refs/tags/hub-v')
         uses: actions/upload-artifact@v4
         continue-on-error: true
         with:
           name: amanorsac-hub-${{ matrix.name }}
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 7
           path: |
             hub/dist/*.dmg
             hub/dist/*.zip
