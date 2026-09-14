@@ -1538,11 +1538,16 @@ var CONFIG = {
            on the element so the same script can put it back when the
            state says available - a preview build reads the same markup. */
         if(!soon){
-          var el = document.createElement('span');
-          el.className = 'soon';
-          el.innerHTML = '<span>Coming soon</span>';
-          shot.appendChild(el);
+          soon = document.createElement('span');
+          soon.className = 'soon';
+          soon.appendChild(document.createElement('span'));
+          shot.appendChild(soon);
         }
+        /* Written every time, not only when the badge is made: a tile
+           that was on sale a moment ago already carries the flag from
+           the markup, and the catalog's own wording has to win over the
+           "Coming soon" typed into the page. */
+        soon.firstChild.textContent = app.soon_note || 'Coming soon';
         tile.classList.add('nolink');
         if(tile.hasAttribute('href')){
           tile.dataset.href = tile.getAttribute('href');

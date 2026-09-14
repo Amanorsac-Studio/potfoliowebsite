@@ -514,6 +514,20 @@ async function appDownload(request, env) {
   const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
 
+  /* An app the studio has taken off the shelf hands out nothing, to
+     anybody, however they got here. The buttons on the site already
+     know - but the buttons are not the lock, this is: a paused app
+     still has its files in the bucket and its address is still a
+     sentence anybody can type. Refused before the beta licence below,
+     so a paused beta does not quietly start somebody's thirty days on a
+     build they cannot have. */
+  const state = (catalog.apps || {})[app];
+  if (state && state.status && state.status !== 'available') {
+    return say({ error: 'not_available',
+                 message: state.soon_note ||
+                   appTitle(catalog, app) + ' is not available to download right now.' }, 403);
+  }
+
   /* An open beta has no purchase to grant access, so the licence is
      minted here - at the moment somebody actually downloads it, which is
      when the clock should start. claim_beta_license is idempotent and
@@ -642,6 +656,7 @@ async function catalogApi(env) {
     apps[id] = {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
       tagline: a.tagline || '', icon: abs(a.icon), art: abs(a.art), page: abs(a.page), color: a.color || null,
+      soon_note: a.soon_note || null,
       free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null),
       list_price_cents: (sale && !a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
       licensed: !!a.licensed,

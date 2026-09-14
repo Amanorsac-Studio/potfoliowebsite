@@ -190,7 +190,8 @@
       }
     },
     "performlive": {
-      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
+      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
+      "soon_note": "Downloads paused — check again tomorrow.",
       "tagline": "Live performance, perfected.",
       "icon": "images/apps/performlive.webp", "art": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
       "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",

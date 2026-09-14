@@ -43,7 +43,12 @@
       ? 'One key, two computers. Yours to keep, with no subscription.'
       : 'No activation, ever. It runs offline and never asks who you are.');
 
-    lines.push('Instant download. It installs and updates through Amanorsac Hub.');
+    /* "Instant download" has to stop being said the moment it stops
+       being true. A paused app says why instead. */
+    var here = window.StoreState.stateOf(a);
+    lines.push(here === 'available'
+      ? 'Instant download. It installs and updates through Amanorsac Hub.'
+      : (a.soon_note || 'Not available to download yet. It arrives in Amanorsac Hub the day it ships.'));
 
     if (beta) {
       lines.push('Tell us what breaks. That is what a beta is for — ' +

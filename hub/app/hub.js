@@ -62,7 +62,7 @@
   function status(a) {
     const job = S.jobs[a.id], inst = S.installed[a.id], own = ownedRow(a.id), b = build(a);
     if (job) return { action: 'busy', badge: job.state === 'installing' ? 'Installing' : job.state === 'preparing' ? 'Preparing' : 'Downloading', job };
-    if (a.status !== 'available') return { action: 'soon', badge: 'Coming soon' };
+    if (a.status !== 'available') return { action: 'soon', badge: a.soon_note || 'Coming soon' };
     if (!own && !a.free) return { action: 'buy', badge: 'Not in your library', dim: true };
     if (!b) return { action: 'none', badge: otherPlatformNote(a), dim: true };
     if (inst) {
@@ -105,7 +105,7 @@
            with no Hub release and nothing bundled. The local map below
            is only the fallback for the five apps that shipped with
            this build, and initials are the fallback to that. */
-        icon: a.icon || null, art: a.art || null,
+        icon: a.icon || null, art: a.art || null, soon_note: a.soon_note || null,
         page: a.page || local.page, platforms: platforms,
       };
     });
@@ -425,7 +425,7 @@
 
   function renderSoon() {
     const soon = S.catalog.filter((a) => a.status !== 'available');
-    $('#soon').innerHTML = soon.map((a) => '<a class="soon" data-page-url="' + esc(a.page) + '"><span class="appicon">' + iconFor(a) + '</span><div><strong>' + esc(a.name) + '</strong><p>' + esc(a.tagline) + '</p></div><small>COMING SOON</small></a>').join('') || '<p class="note">Everything in the collection is available.</p>';
+    $('#soon').innerHTML = soon.map((a) => '<a class="soon" data-page-url="' + esc(a.page) + '"><span class="appicon">' + iconFor(a) + '</span><div><strong>' + esc(a.name) + '</strong><p>' + esc(a.tagline) + '</p></div><small>' + esc(a.soon_note || 'Coming soon').toUpperCase() + '</small></a>').join('') || '<p class="note">Everything in the collection is available.</p>';
   }
 
   /* ---------- the studio's notice ----------------------------------

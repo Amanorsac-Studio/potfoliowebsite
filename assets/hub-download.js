@@ -93,7 +93,12 @@
 
       // Coming soon: no installer to get yet, say so instead of a dead button.
       if (a && status === 'coming_soon') {
-        el.innerHTML = '<p class="hub-note">' + esc(appName) + ' is still in development. It will arrive in ' + esc(hubName) + ' the day it ships.</p>';
+        /* soon_note is the studio's own wording for why this one is not
+           here today - a paused build reads differently from a thing
+           that was never finished, and only the catalog knows which. */
+        el.innerHTML = '<p class="hub-note">' + (a.soon_note
+          ? esc(a.soon_note)
+          : esc(appName) + ' is still in development. It will arrive in ' + esc(hubName) + ' the day it ships.') + '</p>';
         return;
       }
 
