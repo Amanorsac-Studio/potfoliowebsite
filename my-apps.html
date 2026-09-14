@@ -269,7 +269,8 @@ footer a:hover{color:var(--accent)}
   Object.keys(catalog.apps || {}).forEach(id => {
     const a = catalog.apps[id];
     APPS[id] = { name: a.name, say: a.tagline || '', icon: a.icon || '', k: a.color || '#8B7BFF', page: a.page || 'apps.html',
-                 licensed: !!a.licensed, free: !!a.free, platforms: Object.keys(a.installers || {}), version: a.version || null };
+                 licensed: !!a.licensed, free: !!a.free, platforms: Object.keys(a.installers || {}), version: a.version || null,
+                 status: a.status || 'available' };
   });
   const FREE_APPS = Object.keys(APPS).filter(id => APPS[id].free && APPS[id].platforms.length);
   const ORDER = Object.keys(APPS);   // the catalog's own order
@@ -333,7 +334,10 @@ footer a:hover{color:var(--accent)}
           '<p class="since">'+(r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : '')+
             (forever ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
         '</div>'+
-        (a.platforms.length
+        (a.status !== 'available'
+          ? '<div class="dlrow"><p class="dlnote">This build has been withdrawn while a problem is fixed. '+
+            'It stays in your library and the download returns here as soon as it is sorted.</p></div>'
+        : a.platforms.length
           ? '<div class="dlrow">'+
               '<a class="btn main hubopen" href="'+esc(PROTO+'://install/'+r.app)+'" data-app="'+esc(r.app)+'">'+HUB+'Install in Amanorsac Hub</a>'+
               (FALLBACK

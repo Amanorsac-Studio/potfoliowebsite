@@ -64,6 +64,7 @@
   function status(a) {
     const job = S.jobs[a.id], inst = S.installed[a.id], own = ownedRow(a.id), b = build(a);
     if (job) return { action: 'busy', badge: job.state === 'installing' ? 'Installing' : job.state === 'preparing' ? 'Preparing' : 'Downloading', job };
+    if (a.status === 'unavailable') return { action: 'pulled', badge: 'Temporarily unavailable', dim: true };
     if (a.status !== 'available') return { action: 'soon', badge: 'Coming soon' };
     if (!own && !a.free) return { action: 'buy', badge: 'Not in your library', dim: true };
     if (!b) return { action: 'none', badge: otherPlatformNote(a), dim: true };
@@ -101,6 +102,7 @@
         status: a.status || 'available',
         free: !!a.free, licensed: !!a.licensed,
         color: a.color || local.color || '#eeae61',
+        icon: a.icon || null, screenshot: a.screenshot || null,
         page: a.page || local.page, platforms: platforms,
       };
     });
@@ -370,16 +372,37 @@
     purchases: ['Your purchases.', 'Every app in your collection, accounted for.'],
   };
 
-  function iconFor(a, big) {
-    const map = { nebulatide: 'assets/nt-logo.webp', pulseroom: 'assets/pulseroom-logo.svg', secondout: 'assets/secondout-icon.png', performlive: 'assets/performlive.webp', harmoniemd: 'assets/harmoniemd.png' };
-    return map[a.id] ? '<img src="' + map[a.id] + '" alt="">' : esc(a.name.slice(0, 2).toUpperCase());
-  }
-  function shotFor(a) {
-    const map = { nebulatide: 'assets/nebulatide-shot.webp', pulseroom: 'assets/pulseroom-shot.webp', secondout: 'assets/secondout-screenshot.png' };
-    return map[a.id] || null;
+/* Artwork. The five apps that shipped with the Hub carry their own
+     files, so they draw instantly and still draw with no network. Anything
+     added to the collection since is drawn from the URL the catalog hands
+     over, which is what lets a new app arrive complete without a Hub
+     release. If that image cannot be fetched the initials take over, so a
+     moved file is a plain-looking card rather than a broken one. */
+  const BUNDLED_ICONS = {
+    nebulatide: 'assets/nt-logo.webp', pulseroom: 'assets/pulseroom-logo.svg',
+    secondout: 'assets/secondout-icon.png', performlive: 'assets/performlive.webp',
+    harmoniemd: 'assets/harmoniemd.png',
+  };
+  const BUNDLED_SHOTS = {
+    nebulatide: 'assets/nebulatide-shot.webp', pulseroom: 'assets/pulseroom-shot.webp',
+    secondout: 'assets/secondout-screenshot.png',
+  };
+
+  function letterMark(id, name) { return esc(String(name || id).slice(0, 2).toUpperCase()); }
+
+  function iconFor(a) {
+    const src = BUNDLED_ICONS[a.id] || a.icon;
+    if (!src) return letterMark(a.id, a.name);
+    // The fallback cannot be an onerror attribute: the page's own policy
+    // forbids inline handlers, so one would be dropped without a word and
+    // a moved file would leave a broken-image glyph on the card. The
+    // listener below does the same job from here.
+    return '<img src="' + esc(src) + '" alt="" data-mark="' + letterMark(a.id, a.name) + '">';
   }
 
-  function card(a) {
+  function shotFor(a) { return BUNDLED_SHOTS[a.id] || a.screenshot || null; }
+
+    function card(a) {
     const st = status(a), b = build(a), inst = S.installed[a.id], shot = shotFor(a);
     const meta = [];
     if (inst) meta.push('On this computer' + (inst.version ? ' · v' + inst.version : ''));
@@ -393,13 +416,14 @@
     else if (st.action === 'update') btn = '<button class="primary" data-update="' + a.id + '">↻ &nbsp; Update</button><button class="icon" data-open="' + a.id + '" title="Open">↗</button>';
     else if (st.action === 'open') btn = (a.kind === 'plugin' ? '<button data-info="' + a.id + '">In your DAW</button>' : '<button data-open="' + a.id + '">Open app ↗</button>') + '<button class="icon" data-remove="' + a.id + '" title="Remove from this computer">🗑</button>';
     else if (st.action === 'buy') btn = '<button class="primary" data-page-url="' + esc(a.page) + '">Buy on the site ↗</button>';
+    else if (st.action === 'pulled') btn = '<button disabled title="This build has been withdrawn while a problem is fixed">Unavailable</button>';
     else if (st.action === 'soon') btn = '<button data-page-url="' + esc(a.page) + '">Learn more ↗</button>';
     else btn = '<button data-page-url="' + esc(a.page) + '">Details ↗</button>';
 
     const bar = st.action === 'busy' ? '<div class="progress' + (st.job.total ? '' : ' indet') + '" role="progressbar" aria-label="Installing ' + esc(a.name) + '"><i data-bar="' + a.id + '" style="width:' + (st.job.percent || 0) + '%"></i></div><p class="meta" style="margin:8px 0 0" data-pct="' + a.id + '">' + esc(progressText(st.job)) + '</p>' : '';
 
     return '<article class="card" data-app="' + a.id + '">' +
-      '<div class="art' + (shot ? '' : ' icon') + '" style="background:' + (shot ? '#23202e' : '#1d2124') + '">' + (shot ? '<img src="' + shot + '" alt="' + esc(a.name) + ' interface">' : iconFor(a)) + '</div>' +
+      '<div class="art' + (shot ? '' : ' icon') + '" style="background:' + (shot ? '#23202e' : '#1d2124') + '">' + (shot ? '<img src="' + esc(shot) + '" alt="" data-mark="' + letterMark(a.id, a.name) + '">' : iconFor(a)) + '</div>' +
       '<div class="card-content"><div class="cardtitle"><h3>' + esc(a.name) + '</h3><span class="badge' + (st.ready ? ' ready' : st.dim ? ' dim' : '') + '">' + esc(st.badge) + '</span></div>' +
       '<p>' + esc(a.tagline) + '</p>' +
       '<div class="cardfoot"><div class="meta">' + meta.join('<br>') + '</div><div class="btns">' + btn + '</div></div>' + bar + '</div></article>';
@@ -408,7 +432,10 @@
   function renderLibrary() {
     $('#consent-slot').innerHTML = consentCard();
     const q = ($('#search').value || '').toLowerCase();
-    const avail = S.catalog.filter((a) => a.status === 'available');
+    // A withdrawn build stays on the shelf, greyed, rather than vanishing:
+    // someone who owns it and has it installed should not have to wonder
+    // whether it was deleted out from under them.
+    const avail = S.catalog.filter((a) => a.status === 'available' || a.status === 'unavailable');
     const list = avail.filter((a) => a.name.toLowerCase().includes(q) && (S.filter === 'all' || (S.filter === 'installed' ? !!S.installed[a.id] : !S.installed[a.id])));
     $('#cards').innerHTML = list.length ? list.map(card).join('') : '<div class="empty" style="grid-column:1/-1"><h3>No matching apps</h3><p>Try another search or choose All apps.</p></div>';
     $('#all-count').textContent = avail.length;
@@ -418,7 +445,7 @@
     // The feature: an update if one is waiting, else something not yet installed, else the newest thing
     const upd = avail.find((a) => status(a).action === 'update');
     const next = avail.find((a) => status(a).action === 'install');
-    const f = upd || next || avail[0];
+    const f = upd || next || avail.find((a) => a.status === 'available');
     if (f) {
       const st = status(f);
       $('#feature').innerHTML = '<div class="feature-copy"><div class="eyebrow">' + (upd ? 'UPDATE READY' : next ? 'IN YOUR LIBRARY' : 'IN YOUR COLLECTION') + '</div><h2>' + esc(f.id === 'nebulatide' ? 'A little space. Infinite atmosphere.' : f.tagline) + '</h2><p>' + esc(f.blurb || f.tagline) + '</p>' +
@@ -426,7 +453,7 @@
         '<button class="ghost" data-page-url="' + esc(f.page) + '">Explore ' + esc(f.name) + ' &nbsp; ↗</button></div></div>' +
         '<div class="feature-art">' + (shotFor(f) ? '<img src="' + shotFor(f) + '" alt="">' : '') + '</div>';
     }
-    const soon = S.catalog.filter((a) => a.status !== 'available');
+    const soon = S.catalog.filter((a) => a.status !== 'available' && a.status !== 'unavailable');
     $('#soon').innerHTML = soon.map((a) => '<a class="soon" data-page-url="' + esc(a.page) + '"><span class="appicon">' + iconFor(a) + '</span><div><strong>' + esc(a.name) + '</strong><p>' + esc(a.tagline) + '</p></div><small>COMING SOON</small></a>').join('') || '<p class="note">Everything in the collection is available.</p>';
   }
 
@@ -563,6 +590,21 @@
     render();
     if (p === 'news') { markNewsRead(); $('#news-count').textContent = ''; }
   }
+
+  /* An image that will not load becomes the letters it stood in for. */
+  document.addEventListener('error', (e) => {
+    const img = e.target;
+    if (!img || img.tagName !== 'IMG' || !img.dataset || !img.dataset.mark) return;
+    const holder = img.parentNode;
+    if (!holder) return;
+    holder.textContent = img.dataset.mark;
+    // A card's wide artwork slot has to become the small mark's slot too,
+    // or the letters sit alone in a picture-sized hole.
+    if (holder.classList && holder.classList.contains('art')) {
+      holder.classList.add('icon');
+      holder.style.background = '#1d2124';
+    }
+  }, true);
 
   /* ---------- signed in / out ---------- */
   function initials(name) { const p = String(name || '').trim().split(/\s+/).filter(Boolean); return p.length ? (p[0][0] + (p.length > 1 ? p[p.length - 1][0] : '')).toUpperCase() : '?'; }

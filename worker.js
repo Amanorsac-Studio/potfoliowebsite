@@ -211,7 +211,12 @@ const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Appl
 /* One app installer, in the shape the download code below has always used. */
 function installerFor(catalog, app, platform) {
   const a = catalog.apps && catalog.apps[app];
-  const i = a && a.installers && a.installers[platform];
+  // A build can be pulled without deleting anything: set the app's status
+  // to something other than "available" and every door closes at once -
+  // the Hub, My Apps, the store page and the direct link all come through
+  // here. The installer entry stays put, so putting it back is one word.
+  if (!a || (a.status && a.status !== 'available')) return null;
+  const i = a.installers && a.installers[platform];
   if (!i || !i.key) return null;
   return {
     keys: [i.key].concat(i.alt_keys || []),
@@ -562,7 +567,8 @@ async function catalogApi(env) {
     const a = c.apps[id];
     apps[id] = {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
-      tagline: a.tagline || '', icon: abs(a.icon), page: abs(a.page), color: a.color || null,
+      tagline: a.tagline || '', icon: abs(a.icon), screenshot: abs(a.screenshot),
+      page: abs(a.page), color: a.color || null,
       free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null), licensed: !!a.licensed,
       version: a.version || null, platforms: Object.keys(a.installers || {})
     };

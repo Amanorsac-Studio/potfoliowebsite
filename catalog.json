@@ -5,6 +5,11 @@
     "Adding an app = one entry here + uploading its installer to the amanorsac-downloads R2 bucket.",
     "A new release = upload the new file under the same key, bump `version`. Nothing else changes.",
     "",
+    "icon is the app's square mark and screenshot is a wide picture of it running. Both are",
+    "paths on this site, and both are handed to the Hub by /api/catalog as full URLs, so an app",
+    "added here shows its artwork in the Hub with no Hub release. screenshot is optional; an app",
+    "without one is shown with its icon on a plain ground.",
+    "",
     "Per app: free (true = anyone signed in owns it; false = must be bought, price shown from",
     "price_cents but CHARGED by supabase/functions/create-app-checkout - keep the two in step),",
     "licensed (true = the app itself asks for a license key), kind (app | plugin), status",
@@ -30,7 +35,7 @@
 
   "hub": {
     "name": "Amanorsac Hub",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "protocol": "amanorsac",
     "tagline": "Install, activate and update every Amanorsac app from one place.",
     "installers": {
@@ -43,6 +48,15 @@
   "direct_download_fallback": true,
 
   "news": [
+    {
+      "id": "pulseroom-withdrawn-2026-09",
+      "date": "2026-09-14",
+      "tag": "Notice",
+      "app": "pulseroom",
+      "title": "PulseRoom is off the shelf for a moment",
+      "body": "A problem with the current build means I have pulled it rather than let anyone else download it. It stays in your library, your license is untouched, and a copy already installed keeps working. The download returns here the moment the fix is out.",
+      "url": "pulseroom.html"
+    },
     {
       "id": "performlive-announce",
       "date": "2026-09-09",
@@ -67,7 +81,7 @@
     "secondout": {
       "name": "SecondOut", "vendor": "Aquarii Audio", "kind": "plugin", "status": "available",
       "tagline": "One master bus. Two independent outputs.",
-      "icon": "images/apps/secondout-icon.png", "page": "secondout.html", "color": "#3fe083",
+      "icon": "images/apps/secondout-icon.png", "screenshot": "images/apps/secondout-screenshot.png", "page": "secondout.html", "color": "#3fe083",
       "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.1",
       "installers": {
         "windows": { "key": "SecondOut-1.3.1-Setup.exe", "alt_keys": ["secondout/SecondOut-1.3.1-Setup.exe"],
@@ -75,9 +89,9 @@
       }
     },
     "pulseroom": {
-      "name": "PulseRoom", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
+      "name": "PulseRoom", "vendor": "Amanorsac Studio", "kind": "app", "status": "unavailable",
       "tagline": "Every mixing answer. One tempo.",
-      "icon": "images/apps/pulseroom-logo.svg", "page": "pulseroom.html", "color": "#3fd3e4",
+      "icon": "images/apps/pulseroom-logo.svg", "screenshot": "images/apps/S1-hero-delay-essentials.webp", "page": "pulseroom.html", "color": "#3fd3e4",
       "free": true, "licensed": false, "version": "1.0",
       "installers": {
         "windows": { "key": "pulseroom/PulseRoom-Windows.zip", "alt_keys": ["PulseRoom-Windows.zip"], "as": "PulseRoom-Windows.zip", "type": "application/zip", "size": "78 MB" },
@@ -87,7 +101,7 @@
     "nebulatide": {
       "name": "Nebula Tide", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "An ocean of sound. In every key.",
-      "icon": "images/apps/nt-logo.webp", "page": "nebulatide.html", "color": "#4FE3FF",
+      "icon": "images/apps/nt-logo.webp", "screenshot": "images/apps/nt-playing.webp", "page": "nebulatide.html", "color": "#4FE3FF",
       "free": true, "licensed": false, "version": "1.2.2",
       "installers": {
         "windows": { "key": "nebulatide/NebulaTide-Windows.zip", "alt_keys": ["NebulaTide-Windows.zip"], "as": "NebulaTide-Windows.zip", "type": "application/zip", "size": "279 MB",
@@ -106,7 +120,7 @@
     "harmoniemd": {
       "name": "HarmonieMD", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
       "tagline": "The rehearsal studio for choirs.",
-      "icon": "images/apps/harmoniemd.webp", "page": "harmoniemd.html", "color": "#3ED598",
+      "icon": "images/apps/harmoniemd.png", "page": "harmoniemd.html", "color": "#3ED598",
       "free": false, "licensed": true, "version": null,
       "installers": {}
     }
