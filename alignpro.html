@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Align Pro: multi-mic time and phase alignment, with a correction amount | Amanorsac Studio</title>
+<meta name="description" content="Align Pro finds the sub-sample delay, polarity flip and frequency-dependent phase drift between any two microphones on one source, and gives you a dial for how far to take the correction. VST3, AU, ARA2 and standalone, Windows and macOS.">
+<meta property="og:title" content="Align Pro — align every mic, hear exactly how much">
+<meta property="og:description" content="Sub-sample delay, polarity and phase between every pair of mics on a source, with an Amount dial that decides how far the correction goes.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/alignpro/auto.png">
+<meta property="og:url" content="https://amanorsac.studio/alignpro.html">
+<link rel="icon" href="images/apps/alignpro/icon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   Align Pro product page.
+
+   The plug-in's own colours, and its own manner: it shows a number
+   before and a number after rather than an adjective. The page does the
+   same. Blue is the instrument, green is the improved figure, amber is
+   the figure you started with - exactly as they are on screen.
+   ===================================================================== */
+:root{
+  --bg:#0A111B; --panel:#111C2B; --panel-2:#16233440; --line:rgba(255,255,255,.09);
+  --text:#E7EFF8; --muted:#9EB2C7; --dim:#7589A0;
+  --blue:#2E9BF0; --blue-soft:#0A2036; --green:#4ADE80; --amber:#E8A13C;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:20px;
+  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1100px;margin:0 auto;padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+section{padding:clamp(58px,9vh,108px) 0}
+
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:13px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name b{color:var(--blue);font-weight:700}
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#05141f}
+
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;
+  border-radius:999px;padding:14px 28px;min-height:50px;
+  background:var(--blue);color:#04131f;transition:transform var(--dur) var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:translateY(0) scale(.985)}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+
+.hero{padding-top:clamp(52px,8vh,92px)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.badges span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--blue);border:1px solid color-mix(in srgb,var(--blue) 38%,transparent);
+  background:color-mix(in srgb,var(--blue) 10%,transparent);border-radius:999px;padding:5px 12px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.02;
+  font-size:clamp(34px,5.4vw,62px);margin:0 0 18px;max-width:18ch}
+h1 em{font-style:normal;color:var(--blue)}
+.hero .sub{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);max-width:62ch;margin:0 0 30px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:0}
+.buy-status{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:56ch}
+.buy-status a{color:var(--blue)}
+.shot{margin-top:clamp(34px,6vh,60px);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.62)}
+.shot-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:12px 0 0}
+
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
+  font-size:clamp(26px,3.4vw,40px);margin:0 0 14px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--blue);margin:0 0 12px}
+.lede{color:var(--muted);max-width:66ch;margin:0 0 40px;font-size:17px}
+p.body{color:var(--muted);max-width:66ch;margin:0 0 18px}
+p.body b{color:var(--text);font-weight:600}
+code{font-family:var(--mono);font-size:.88em;color:var(--text);background:var(--panel);
+  border-radius:5px;padding:2px 6px}
+
+/* the number that is the whole argument */
+.figure{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(26px,4vw,42px);display:grid;gap:clamp(18px,3vw,36px);
+  grid-template-columns:auto 1fr;align-items:center}
+.figure .n{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1;
+  font-size:clamp(40px,6vw,72px);margin:0;white-space:nowrap}
+.figure .n .was{color:var(--amber)}
+.figure .n .arrow{color:var(--dim);padding:0 .18em}
+.figure .n .now{color:var(--green)}
+.figure .n small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;margin-top:12px}
+.figure p{margin:0;color:var(--muted);max-width:56ch}
+@media (max-width:700px){ .figure{grid-template-columns:1fr;gap:16px} }
+
+.feat{margin:0 0 clamp(44px,7vh,80px)}
+.feat h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);
+  letter-spacing:-.015em;margin:0 0 10px}
+.feat p{color:var(--muted);max-width:64ch;margin:0 0 22px}
+.feat .pic{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  box-shadow:0 18px 54px rgba(0,0,0,.5)}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:step}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px 20px;counter-increment:step}
+.step::before{content:counter(step,decimal-leading-zero);display:block;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--blue);margin-bottom:12px}
+.step b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:6px}
+.step p{margin:0;font-size:14px;color:var(--muted)}
+@media (max-width:760px){ .steps{grid-template-columns:1fr} }
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:640px;background:var(--panel)}
+th,td{text-align:left;padding:14px 18px;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:#16222F;font-family:var(--display);font-weight:600;font-size:14px}
+thead th.us{color:var(--blue)}
+tbody th{font-weight:500;color:var(--muted);font-family:var(--body);width:30%}
+td.us{color:var(--text)}
+td.them{color:var(--dim)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+.tick{color:var(--green);font-family:var(--mono)}
+.dash{color:var(--dim);font-family:var(--mono)}
+
+.proof{display:grid;gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.proof div{display:grid;grid-template-columns:1fr auto;gap:16px;padding:14px 18px;
+  border-bottom:1px solid var(--line);background:var(--panel);align-items:baseline}
+.proof div:last-child{border-bottom:0}
+.proof b{font-weight:500;color:var(--text);font-size:14.5px}
+.proof span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--green);white-space:nowrap}
+.proof span.soft{color:var(--amber)}
+.proof span.no{color:var(--dim)}
+.proof p{grid-column:1/-1;margin:4px 0 0;color:var(--muted);font-size:14px}
+
+.buy{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(20px,4vw,48px);align-items:center}
+.buy .slot{font-family:var(--display);font-weight:800;font-size:clamp(32px,4.6vw,52px);
+  letter-spacing:-.03em;line-height:1.04;color:var(--blue);margin:0}
+.buy .slot small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--dim);font-weight:500;margin-top:10px}
+.buy h2{margin:0 0 8px}
+.buy p{margin:0 0 18px;color:var(--muted);max-width:54ch}
+@media (max-width:700px){ .buy{grid-template-columns:1fr;gap:16px} }
+
+details{border-bottom:1px solid var(--line)}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted);font-size:18px;
+  transition:transform var(--dur) var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+
+.rise{opacity:0;transform:translateY(16px);
+  transition:opacity 620ms var(--ease),transform 620ms var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rise{opacity:1;transform:none}
+}
+</style>
+<link rel="canonical" href="https://amanorsac.studio/alignpro">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Align Pro",
+  "url": "https://amanorsac.studio/alignpro",
+  "description": "Multi-microphone time and phase alignment. Finds the sub-sample delay, polarity flip and frequency-dependent phase drift between any two mics on one source, with an adjustable correction amount.",
+  "operatingSystem": "Windows, macOS",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Audio plugin",
+  "softwareVersion": "1.0.0",
+  "image": "https://amanorsac.studio/images/apps/alignpro/auto.png",
+  "offers": { "@type": "Offer", "price": "39", "priceCurrency": "USD" },
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+</head>
+<body data-app="alignpro">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name">Align <b>Pro</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <div class="badges">
+    <span>VST3</span><span>AU</span><span>ARA2</span><span>Standalone</span><span>Windows</span><span>macOS</span>
+  </div>
+  <h1>Align every mic. Hear <em>exactly how much</em>.</h1>
+  <p class="sub">Align Pro finds the delay, the polarity flip and the frequency-dependent phase drift between any two mics on one source — and gives you a dial for how far to take the correction, so the kit doesn't shrink.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $39</button>
+    <a class="cta ghost" href="#how">How it works</a>
+  </div>
+  <p class="fine">$39 once · version 1.0.0 · one key, two computers · Windows &amp; macOS, signed and notarised</p>
+  <p class="promo-line" data-promo hidden></p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <ul class="assure" data-assure hidden></ul>
+  <div class="shot rise">
+    <img src="images/apps/alignpro/auto.png" width="1536" height="1024" fetchpriority="high"
+         alt="Align Pro in Auto view: eight drum mics grouped into four sources, global correlation 0.32 before and 0.96 after, with the Amount dial at 80 per cent">
+  </div>
+  <p class="shot-cap">Eight drum mics, auto-grouped into four sources · global correlation 0.32 → 0.96 after one click of Align All</p>
+</header>
+
+<section class="wrap">
+  <p class="eyebrow">The problem</p>
+  <h2>One millisecond is all it takes.</h2>
+  <div class="figure rise">
+    <p class="n"><span class="was">1 ms</span><span class="arrow">=</span><span class="now">48</span><small>samples at 48 kHz</small></p>
+    <p>A one millisecond offset between two mics cancels the frequencies near <code>1000 / (2 × t)</code> — around 500 Hz and its odd harmonics. That is why a kick sounds hollow, a mic'd cab blended with a DI loses its body, and a choir array feels thin the moment everything is summed. It happens long before anyone reaches for an EQ.</p>
+  </div>
+</section>
+
+<section id="how" class="wrap">
+  <p class="eyebrow">How it works</p>
+  <h2>Insert, play ten seconds, align.</h2>
+  <p class="lede">With ARA2 there is nothing to play: the host hands over the audio and the analysis happens without a capture pass.</p>
+  <div class="steps">
+    <div class="step rise"><b>Insert</b><p>On every mic of the source — kick in and out, snare top and bottom, overheads, room.</p></div>
+    <div class="step rise"><b>Play ten seconds</b><p>Enough for the analysis to find each arrival. Under ARA2, skip this entirely.</p></div>
+    <div class="step rise"><b>Align All</b><p>One click. Every group aligns to its own reference, and the correlation figures update.</p></div>
+  </div>
+
+  <div class="feat rise" style="margin-top:clamp(36px,6vh,64px)">
+    <h3>Sub-millisecond, and visible.</h3>
+    <p>The same session zoomed to a five millisecond window: grey is what the mic captured, blue is where it sits after alignment. The figures beside each track are the delay applied and the correlation that resulted, not a rating.</p>
+    <div class="pic"><img src="images/apps/alignpro/precision.png" width="1536" height="1024" loading="lazy"
+      alt="The waveform view zoomed to a five millisecond window, the raw capture in grey behind the aligned version in blue"></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Why Align Pro</p>
+  <h2>Every mic against every other mic.</h2>
+  <p class="lede">Not each track against its own reference, but the whole array at once. The matrix is where you find the pair that is fighting — the overhead and the room that never agreed, the snare bottom pulling against the kick.</p>
+  <div class="feat rise">
+    <div class="pic"><img src="images/apps/alignpro/matrix.png" width="1536" height="1024" loading="lazy"
+      alt="The correlation matrix: every one of the eight mics scored against every other, with the strongest relationships highlighted"></div>
+  </div>
+  <h3 style="font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);margin:0 0 10px">And a dial for how far to take it.</h3>
+  <p class="body">Alignment at full strength can flatten a kit: part of what makes a room sound like a room is that the mics disagree. The Amount dial scales how much correction is applied, live, from nothing to all of it. You can hear the correlation climb and stop at the point where it is fixed but still sounds like a drum kit.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Where it sits</p>
+  <h2>Against Auto-Align 2.</h2>
+  <p class="lede">Sound Radix Auto-Align 2 is the established tool in this category and the fair comparison to make. The fundamentals match. These are the axes where they differ.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th></th><th class="us">Align Pro</th><th>Auto-Align 2</th></tr></thead>
+      <tbody>
+        <tr><th>Correction strength</th><td class="us"><span class="tick">✓</span> 0–100% Amount dial, live</td><td class="them"><span class="dash">–</span> fixed, no user control</td></tr>
+        <tr><th>Full-session view</th><td class="us"><span class="tick">✓</span> correlation matrix across all tracks</td><td class="them"><span class="dash">–</span> reference to track only</td></tr>
+        <tr><th>Activation</th><td class="us"><span class="tick">✓</span> type a key, no dongle app</td><td class="them">iLok account and License Manager</td></tr>
+        <tr><th>Presets</th><td class="us"><span class="tick">✓</span> unlimited, named</td><td class="them">four fixed slots</td></tr>
+        <tr><th>Lookahead window</th><td class="us"><span class="tick">✓</span> adjustable, 5–100 ms</td><td class="them">fixed</td></tr>
+        <tr><th>Core alignment</th><td class="us">sub-sample delay, polarity, spectral phase, automatic grouping</td><td class="them">sub-sample delay, polarity, spectral phase, automatic grouping</td></tr>
+        <tr><th>Pro Tools (AAX)</th><td class="us"><span class="dash">–</span> not offered</td><td class="them"><span class="tick">✓</span> AAX and ARA2</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Formats and requirements</p>
+  <h2>What has been run, and where.</h2>
+  <p class="lede">Each line is the current tested state of version 1.0.0, and nothing more than that.</p>
+  <div class="proof">
+    <div><b>ARA2 in a real session</b><span>Tested live</span>
+      <p>No capture pass, no added latency.</p></div>
+    <div><b>VST3</b><span>Tested live</span>
+      <p>Run in Reaper, Cubase and Nuendo, Studio One, Ableton Live and other VST3 hosts.</p></div>
+    <div><b>Windows build</b><span>Verified</span>
+      <p>Full DSP test suite and a host stress test.</p></div>
+    <div><b>macOS build</b><span>Verified</span>
+      <p>Signed, notarised and stapled, so it installs without a Gatekeeper argument.</p></div>
+    <div><b>AU, for Logic and GarageBand</b><span class="soft">Builds and loads</span>
+      <p>Not yet run inside an actual Logic session, so that is not claimed.</p></div>
+    <div><b>AAX, for Pro Tools</b><span class="no">Not offered</span>
+      <p>Deliberately out of scope for version 1.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="buy rise">
+    <p class="slot">$39<small>Once, for both machines</small></p>
+    <div>
+      <h2>One key, two computers, no dongle.</h2>
+      <p>Activation is a key you type into the plug-in — no account manager to install, nothing to plug in, and a Deactivate button for when you change machines. A year of updates is included, and the version you have keeps working after that.</p>
+      <button class="cta" data-buy type="button">Buy — $39</button>
+      <a class="cta ghost" href="#how">How it works</a>
+      <p class="promo-line" data-promo hidden></p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Questions, answered.</h2>
+  <details><summary>What does the Amount dial actually do?</summary>
+    <div>It scales how much of the calculated correction is applied, from none of it to all of it, while you listen. Full correction is not always what a kit wants — some of what makes a room sound like a room is the mics disagreeing.</div></details>
+  <details><summary>Do I have to play the session through first?</summary>
+    <div>About ten seconds, so the analysis can find each arrival. Under ARA2 the host hands over the audio and there is no capture pass at all.</div></details>
+  <details><summary>Does it work in Pro Tools?</summary>
+    <div>Not in version 1. AAX is not built, and it is not claimed.</div></details>
+  <details><summary>Logic?</summary>
+    <div>The AU builds and loads, but it has not yet been run inside an actual Logic session, so nothing on this page claims it has.</div></details>
+  <details><summary>Is there a dongle?</summary>
+    <div>No. A key you type into the plug-in, two computers at a time, and a Deactivate button when you move.</div></details>
+</section>
+
+<footer>
+  <a href="apps.html">App Store</a>
+  <a href="afdgate.html">AFD Gate</a>
+  <a href="aether.html">AETHER</a>
+  <a href="ambanalog.html">AMB Analog</a>
+  <a href="legal.html">Legal</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+(function(){
+  if('IntersectionObserver' in window &&
+     !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+    }, { threshold:.15 });
+    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+  } else {
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+<script src="assets/track.js" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
+<script src="assets/assure.js" defer></script>
+<script src="assets/buy-dock.js" defer></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+</body>
+</html>

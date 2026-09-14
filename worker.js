@@ -48,6 +48,26 @@ export default {
           return Response.redirect(SITE + '/mixing.html', 301);
         }
 
+        /* The privacy policy, at exactly this address and no other.
+
+           It is the URL handed to Apple and to Google Play, and a
+           policy link that 404s when a reviewer opens it is a rejected
+           app - so this one address is not left to a setting. The asset
+           layer already maps /privacy to privacy.html and answers first,
+           which means this line normally never runs; it is here so that
+           the day html_handling changes, or the file is renamed, the one
+           link that must never break still does not. */
+        if (path === '/privacy' || path === '/privacy/') {
+          const doc = await env.ASSETS.fetch(new Request(new URL('/privacy.html', request.url)));
+          if (doc && doc.ok) {
+            return new Response(doc.body, {
+              status: 200,
+              headers: { 'content-type': 'text/html; charset=utf-8',
+                         'cache-control': 'public, max-age=600' }
+            });
+          }
+        }
+
         const m = path.match(/^\/blog\/([^/]+)\/?$/);
         if (m) return await postPage(decodeURIComponent(m[1]), env, request,
                                      new URL(request.url).searchParams.has('diag'));
@@ -206,16 +226,18 @@ async function getCatalog(env) {
   return _catalog || { hub: { installers: {} }, apps: {} };
 }
 
-const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)' };
+const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)',
+                         'mac-x64': 'Mac (Intel)', android: 'Android' };
 
 /* One app installer, in the shape the download code below has always used. */
 function installerFor(catalog, app, platform) {
   const a = catalog.apps && catalog.apps[app];
-  // A build can be pulled without deleting anything: set the app's status
-  // to something other than "available" and every door closes at once -
-  // the Hub, My Apps, the store page and the direct link all come through
-  // here. The installer entry stays put, so putting it back is one word.
-  if (!a || (a.status && a.status !== 'available')) return null;
+  // "withdrawn" takes a build down without deleting anything: every door
+  // closes at once, because the Hub, My Apps, the store page and the
+  // direct link all come through here. The installer entry stays put, so
+  // putting it back is one word. Only this state blocks - "hidden" is a
+  // finished app kept out of public view, and its link must keep working.
+  if (!a || a.status === 'withdrawn') return null;
   const i = a.installers && a.installers[platform];
   if (!i || !i.key) return null;
   return {
@@ -498,6 +520,26 @@ async function appDownload(request, env) {
   const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
 
+  /* An open beta has no purchase to grant access, so the licence is
+     minted here - at the moment somebody actually downloads it, which is
+     when the clock should start. claim_beta_license is idempotent and
+     never extends, so a second download returns the same key with the
+     same end date. If it fails the ownership check below simply says no,
+     which is the right answer rather than a broken download. */
+  const entry = (catalog.apps || {})[app];
+  if (entry && entry.free && entry.licensed && entry.beta_days) {
+    try {
+      const c = await fetch(SUPABASE_URL + '/rest/v1/rpc/claim_beta_license', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY, Authorization: 'Bearer ' + jwt },
+        body: JSON.stringify({ p_app: app })
+      });
+      if (!c.ok) console.error('claim_beta_license refused:', c.status, await c.text());
+    } catch (e) {
+      console.error('claim_beta_license failed:', e && e.message);
+    }
+  }
+
   let owned = false;
   try {
     const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/has_app_access', {
@@ -559,9 +601,23 @@ async function serveHub(platform, env, request) {
    paths made absolute and the R2 keys left out - which object a file
    lives in is the Worker's business, not the Hub's. Public and
    cacheable; nothing here is about any one account. */
+/* The sale, if one is actually on. `ends` is honoured here rather than
+   trusted to whoever is reading: a promo whose deadline has passed is
+   no promo at all, and is never handed out. */
+function salePromo(c) {
+  const p = c && c.promo;
+  if (!p) return null;
+  if (p.ends) {
+    const t = Date.parse(p.ends);
+    if (!isFinite(t) || t <= Date.now()) return null;
+  }
+  return { percent: p.percent || null, note: p.note || '', ends: p.ends || null };
+}
+
 async function catalogApi(env) {
   const c = await getCatalog(env);
   const abs = p => p ? (/^https?:/.test(p) ? p : SITE + '/' + String(p).replace(/^\//, '')) : null;
+  const sale = !!salePromo(c);
   const apps = {};
   for (const id of Object.keys(c.apps || {})) {
     const a = c.apps[id];
@@ -569,7 +625,9 @@ async function catalogApi(env) {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
       tagline: a.tagline || '', icon: abs(a.icon), screenshot: abs(a.screenshot),
       page: abs(a.page), color: a.color || null,
-      free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null), licensed: !!a.licensed,
+      free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null),
+      list_price_cents: (sale && !a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
+      licensed: !!a.licensed,
       version: a.version || null, platforms: Object.keys(a.installers || {})
     };
   }
@@ -589,6 +647,12 @@ async function catalogApi(env) {
     hub: { name: hub.name || 'Amanorsac Hub', version: hub.version || null, protocol: hub.protocol || 'amanorsac',
            tagline: hub.tagline || '', platforms: Object.keys(hub.installers || {}),
            download: SITE + '/download/hub/{platform}' },
+    /* Present only while a sale is on, so the Hub can say "was X" the
+       same way the site does. Absent means full price, everywhere -
+       including the moment `ends` passes, which is a real deadline and
+       is allowed to make the offer disappear without anyone editing
+       anything. */
+    promo: salePromo(c),
     apps
   }), { status: 200, headers: { 'content-type': 'application/json', 'cache-control': 'public, max-age=300' } });
 }
@@ -964,6 +1028,12 @@ async function licenseActivate(request, env) {
     if (code === 'device_limit_reached') {
       return say({ error: code, max_devices: result.max_devices, devices: result.devices }, 409);
     }
+    /* A beta that has run out. 403 rather than 404: the key is real and
+       was ours, it simply no longer entitles anyone to a proof. The date
+       goes with it so the app can say when it ended instead of guessing. */
+    if (code === 'license_expired') {
+      return say({ error: code, expires_at: result.expires_at || null }, 403);
+    }
     return say({ error: code }, 404);
   }
 
@@ -1155,17 +1225,25 @@ async function postPage(slug, env, request, diag) {
    load is an error in Search Console.
    --------------------------------------------------------------------- */
 
+/* Only pages that are actually served. /performlive and /harmoniemd were
+   in here after their files were taken out of the upload, so the sitemap
+   was sending search engines at two 404s. */
 const PAGES = [
   ['/',            'weekly',  '1.0'],
   ['/mixing',      'monthly', '0.9'],
   ['/apps',        'monthly', '0.9'],
   ['/blog',        'weekly',  '0.9'],
   ['/about',       'monthly', '0.8'],
-  ['/performlive', 'monthly', '0.7'],
+  ['/nebulatide2', 'monthly', '0.7'],
+  ['/secondout',   'monthly', '0.7'],
+  ['/ambanalog',   'monthly', '0.7'],
+  ['/alignpro',    'monthly', '0.7'],
+  ['/afdgate',     'monthly', '0.7'],
+  ['/aether',      'monthly', '0.7'],
   ['/pulseroom',   'monthly', '0.7'],
-  ['/harmoniemd',  'monthly', '0.7'],
   ['/nebulatide',  'monthly', '0.7'],
-  ['/secondout',   'monthly', '0.7']
+  ['/legal',       'yearly',  '0.3'],
+  ['/privacy',     'yearly',  '0.3']
 ];
 
 async function sitemap() {

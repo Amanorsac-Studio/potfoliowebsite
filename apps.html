@@ -391,16 +391,23 @@ body[data-room="apps"] .wrap{max-width:1280px}
   background:#EAE4FF;box-shadow:0 0 18px 4px rgba(160,140,255,.7)}
 
 /* ---------- the four columns ---------- */
-.shelf{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(14px,2vw,26px);
+.shelf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2.1vw,28px);
   padding:clamp(38px,6vh,68px) 0 0}
 .app{display:flex;flex-direction:column;text-decoration:none;color:inherit;
   transition:transform var(--dur) var(--ease-out)}
 .app:hover{transform:translateY(-4px)}
 .app:active{transform:translateY(-1px) scale(.995)}
+/* A tile whose page is not being served. It keeps its place in the
+   shelf and loses everything that implies you can go there: no lift on
+   hover, no pointer, no "Explore" line. */
+.app.nolink{cursor:default;pointer-events:none}
+.app.nolink:hover,.app.nolink:active{transform:none}
+.app.nolink:hover .mark{box-shadow:none}
+.app.nolink .app-shot{filter:saturate(.55) brightness(.9)}
 
 /* name row: the mark, then the two-tone wordmark and its line */
-.app-id{display:flex;align-items:flex-start;gap:13px;margin:0 0 18px;
-  min-height:clamp(72px,6.4vw,88px)}
+.app-id{display:flex;align-items:center;gap:13px;margin:0 0 16px;
+  min-height:clamp(46px,4.4vw,60px)}
 .mark{flex:none;width:clamp(46px,4.4vw,60px);aspect-ratio:1;border-radius:15px;
   display:grid;place-items:center;
   box-shadow:inset 0 1px 1px rgba(255,255,255,.16), 0 8px 22px rgba(0,0,0,.5);
@@ -409,10 +416,8 @@ body[data-room="apps"] .wrap{max-width:1280px}
   0 10px 30px color-mix(in srgb,var(--k) 34%,transparent)}
 .mark svg{width:58%;height:58%;display:block;overflow:visible}
 .app-name{font-family:var(--display);font-weight:700;letter-spacing:-.03em;
-  font-size:clamp(18px,1.85vw,24px);line-height:1.12;margin:0 0 5px;color:#fff}
+  font-size:clamp(18px,1.85vw,24px);line-height:1.12;margin:0;color:#fff}
 .app-name em{font-style:normal;color:var(--k)}
-.app-say{font-family:var(--body);font-size:clamp(12.5px,1.05vw,14.5px);line-height:1.35;
-  color:#A9A2C8;margin:0}
 
 /* the capture */
 .app-shot{position:relative;border-radius:14px;overflow:hidden;background:#05040B;
@@ -421,7 +426,32 @@ body[data-room="apps"] .wrap{max-width:1280px}
   transition:border-color var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
 .app:hover .app-shot{border-color:color-mix(in srgb,var(--k) 58%,transparent);
   box-shadow:0 20px 54px rgba(0,0,0,.6), 0 0 44px -18px var(--k)}
-.app-shot img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:center top;display:block}
+/* The whole interface, not a crop of its top-left corner. These are
+   wide screenshots of software; cropping them to a 4:3 tile cut the
+   controls off and, on a phone, left a meaningless slice. The frame
+   keeps a fixed shape so the grid stays even, and the picture sits
+   inside it complete. */
+/* The frame keeps one shape so the shelf stays level; the picture
+   fills it and object-fit decides what to do with the leftover -
+   never a crop, never a stretch. place-items:center left the image
+   sizing itself from its own width, which made the frame taller
+   than 4:3 and knocked the prices out of line. */
+.app-shot{aspect-ratio:4/3;display:block;min-height:0}
+/* The picture is laid into the frame rather than flowed through it:
+   inset on all four sides gives it a definite box whatever its own
+   proportions are, so a portrait screenshot cannot make one card
+   taller than the four beside it. */
+/* width and height are spelled out rather than left to the four insets:
+   an absolutely positioned image with auto height falls back to its own
+   intrinsic height and ignores `bottom`, which is what was cropping the
+   tall screenshots. */
+.app-shot img{position:absolute;top:10px;left:10px;
+  width:calc(100% - 20px);height:calc(100% - 20px);
+  object-fit:contain;object-position:center;display:block;border-radius:6px}
+@media (max-width:720px){
+  .app-shot{aspect-ratio:16/10}
+  .app-shot img{top:8px;left:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
+}
 
 /* Still real screenshots, not mockups - dimmed and labelled rather than
    swapped out, so the capture keeps proving the app is real work in
@@ -432,20 +462,43 @@ body[data-room="apps"] .wrap{max-width:1280px}
   text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.4);
   border-radius:999px;padding:9px 20px;backdrop-filter:blur(2px)}
 
-.app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.6;
-  text-align:center;margin:20px 0 0;padding:0 4px}
+/* One sentence, two lines, never three - so the row of prices under a
+   shelf of cards is a straight line rather than a staircase. Each row
+   below the picture holds its height whether it has anything in it or
+   not, which is what keeps the columns level. */
+.app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.55;
+  text-align:center;margin:18px 0 0;padding:0 4px;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+  min-height:calc(2 * 1.55em)}
 .app-badge{text-align:center;margin:12px 0 0;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.06em;color:var(--k);min-height:1px}
-.app-badge:empty{margin:0}
+  font-size:10.5px;letter-spacing:.06em;color:var(--k);min-height:14px}
 .app-dot{margin:0 7px;opacity:.5}
+
+/* the price, the way a shop writes one: what it was, then what it is */
+.app-price{text-align:center;margin:12px 0 0;min-height:46px;
+  font-family:var(--body);color:#fff}
+.app-price s{display:block;font-size:12.5px;line-height:1.35;color:#8C85AC;
+  text-decoration-thickness:1px;margin:0 0 1px}
+.app-price b{font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-.02em;
+  vertical-align:middle}
+.app-price .free,.app-price .pwyw{font-size:clamp(15px,1.3vw,17px);font-weight:600;
+  color:#A9A2C8;letter-spacing:.01em}
+.app-price .save{display:inline-block;margin-left:8px;vertical-align:middle;
+  background:#E11D2E;color:#fff;border-radius:999px;padding:3px 9px;
+  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase}
+
+/* Measured, not guessed: at 10px and .72 opacity this read 4.15:1 against
+   the shelf, under the 4.5:1 the Build Standard requires of body text.
+   A point larger and less transparent clears it on every tile colour. */
 .app-go{margin-top:auto;padding-top:16px;text-align:center;
-  font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--k);opacity:.72;transition:opacity var(--dur) var(--ease-out)}
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--k);opacity:.92;transition:opacity var(--dur) var(--ease-out)}
 .app:hover .app-go{opacity:1}
 
-@media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,1fr)} }
-@media (max-width:700px){ .shelf{grid-template-columns:1fr 1fr;gap:26px} }
-@media (max-width:480px){ .shelf{grid-template-columns:1fr;gap:38px} }
+@media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media (max-width:700px){ .shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px} }
+@media (max-width:480px){ .shelf{grid-template-columns:minmax(0,1fr);gap:38px} }
 
 /* ---------- what they all have in common ---------- */
 .traits{display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;
@@ -674,6 +727,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
 <link rel="stylesheet" href="assets/hub-download.css">
+<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-room="apps">
 
@@ -721,8 +775,10 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 
   <!-- Four columns, four doors. Each app's own mark, its own colour, and
        a real capture of the thing running. -->
-  <section id="store" class="shelf" aria-label="The apps">
+  <!-- filled by assets/promo.js while a sale is on, empty otherwise -->
+  <div data-sale-banner></div>
 
+  <section id="store" class="shelf" aria-label="The apps">
     <a class="app" href="performlive.html" style="--k:#7B7DF7">
       <div class="app-id">
         <span class="mark" aria-hidden="true"
@@ -735,83 +791,29 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Perform<em>Live</em></h2>
-          <p class="app-say">Live performance, perfected.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy">
         <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multitrack playback and stem performance for worship teams, bands and artists on stage.</p>
-      <p class="app-go">Explore →</p>
+      <p class="app-note">Multitrack playback and stem performance for the stage.</p>
+      <p class="app-badge"></p>
+      <p class="app-price"></p>
+      <p class="app-go" aria-hidden="true"></p>
     </a>
 
-    <a class="app" href="harmoniemd.html" style="--k:#3ED598">
+    <a class="app" href="nebulatide2.html" style="--k:#9D8BFA">
       <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 20% 0%,#123B2E 0%,#0A1F19 58%,#06110D 100%)">
-          <!-- HarmonieMD: three harmony lanes -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2.4">
-            <path d="M2 5h20" stroke="#7BE3B4" opacity=".45"/>
-            <path d="M2 12h20" stroke="#3ED598"/>
-            <path d="M2 19h20" stroke="#7BE3B4" opacity=".45"/>
-            <circle cx="7" cy="5" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/>
-            <circle cx="15" cy="12" r="2.9" fill="#3ED598" stroke="none"/>
-            <circle cx="10" cy="19" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/></svg>
+        <span class="mark" aria-hidden="true" style="padding:0;overflow:hidden">
+          <img src="images/apps/nt-logo.webp" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
         </span>
         <span>
-          <h2 class="app-name">Harmonie<em>MD</em></h2>
-          <p class="app-say">Share. Simplify. Serve.</p>
+          <h2 class="app-name">Nebula <em>Tide 2</em></h2>
         </span>
       </div>
-      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">The rehearsal studio for choirs. Every singer gets their own harmony part to practise at home.</p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="nebulatide.html" style="--k:#4FE3FF">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 140% at 50% 118%,#0A3B54 0%,#04283F 46%,#020C16 100%)">
-          <!-- Nebula Tide: a star over the tide -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
-            <path d="M12 1.5c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5z" fill="#BDF3FF" stroke="none"/>
-            <path d="M2 16.5c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#4FE3FF" opacity=".9"/>
-            <path d="M2 21c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#16B8D8" opacity=".6"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Nebula <em>Tide</em></h2>
-          <p class="app-say">Cinematic. Immersive.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/nt-idle.webp" alt="Nebula Tide: a glowing pad on stage with the twelve key planets in orbit below" loading="lazy"></div>
-      <p class="app-note">Endless drone pads in all twelve keys, recorded rather than stretched, for producers and the stage.</p>
-      <!-- filled in by assets/app-reviews.js; empty until there is a
-           real number, so a brand-new app shows nothing rather than
-           a zero -->
-      <p class="app-badge" data-badge-app="nebulatide"></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="pulseroom.html" style="--k:#F25C7F">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 15% 8%,#1D2230 0%,#0F1218 62%,#08090D 100%)">
-          <!-- PulseRoom: its own five-accent equalizer -->
-          <svg viewBox="0 0 24 24">
-            <rect x="1"    y="8"   width="3.4" height="8"  rx="1.7" fill="#3fd3e4"/>
-            <rect x="6.15" y="4.5" width="3.4" height="15" rx="1.7" fill="#a48bfa"/>
-            <rect x="11.3" y="1.5" width="3.4" height="21" rx="1.7" fill="#f2b13c"/>
-            <rect x="16.45" y="6"  width="3.4" height="12" rx="1.7" fill="#f25c7f"/>
-            <rect x="21.6" y="9.5" width="2.4" height="5"  rx="1.2" fill="#4fd58f"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Pulse<em>Room</em></h2>
-          <p class="app-say">Mix smarter. Sound better.</p>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="PulseRoom: the EQ cheat sheet, boost and cut zones painted across the spectrum" loading="lazy"></div>
-      <p class="app-note">The producer’s reference desk. Drop a song in and it finds the tempo, then answers for delay, reverb, EQ and compression follow.</p>
-      <p class="app-badge" data-badge-app="pulseroom"></p>
+      <div class="app-shot"><img src="images/apps/nt2/stage.webp" alt="Nebula Tide 2: the stage, with the shimmer knob and the twelve keys in orbit" loading="lazy"></div>
+      <p class="app-note">Drone pads with shimmer, presets and drag-to-timeline.</p>
+      <p class="app-badge" data-badge-app="nebulatide2"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -829,14 +831,222 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
         </span>
         <span>
           <h2 class="app-name">Second<em>Out</em></h2>
-          <p class="app-say">One master bus. Two outputs.</p>
         </span>
       </div>
       <div class="app-shot"><img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window showing an active stream to a second output device, buffer health, and drift correction" loading="lazy"></div>
-      <p class="app-note">Mirrors your DAW’s master bus to a second output device — feed a switcher, stream, or record a safety copy, without touching your ASIO interface.</p>
-      <p class="app-badge">Briefly offline — back soon</p>
+      <p class="app-note">Mirrors your master bus to a second device.</p>
+      <p class="app-badge" data-badge-app="secondout"></p>
+      <p class="app-price"></p>
       <p class="app-go">Explore →</p>
     </a>
+
+    <a class="app" href="pulseroom.html" style="--k:#F25C7F">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 15% 8%,#1D2230 0%,#0F1218 62%,#08090D 100%)">
+          <!-- PulseRoom: its own five-accent equalizer -->
+          <svg viewBox="0 0 24 24">
+            <rect x="1"    y="8"   width="3.4" height="8"  rx="1.7" fill="#3fd3e4"/>
+            <rect x="6.15" y="4.5" width="3.4" height="15" rx="1.7" fill="#a48bfa"/>
+            <rect x="11.3" y="1.5" width="3.4" height="21" rx="1.7" fill="#f2b13c"/>
+            <rect x="16.45" y="6"  width="3.4" height="12" rx="1.7" fill="#f25c7f"/>
+            <rect x="21.6" y="9.5" width="2.4" height="5"  rx="1.2" fill="#4fd58f"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">Pulse<em>Room</em></h2>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="PulseRoom: the EQ cheat sheet, boost and cut zones painted across the spectrum" loading="lazy"></div>
+      <p class="app-note">Drop a song in, get tempo, delay, reverb and EQ.</p>
+      <p class="app-badge" data-badge-app="pulseroom"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <a class="app" href="nebulatide.html" style="--k:#4FE3FF">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 140% at 50% 118%,#0A3B54 0%,#04283F 46%,#020C16 100%)">
+          <!-- Nebula Tide: a star over the tide -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
+            <path d="M12 1.5c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5z" fill="#BDF3FF" stroke="none"/>
+            <path d="M2 16.5c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#4FE3FF" opacity=".9"/>
+            <path d="M2 21c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#16B8D8" opacity=".6"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">Nebula <em>Tide</em></h2>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/apps/nt-idle.webp" alt="Nebula Tide: a glowing pad on stage with the twelve key planets in orbit below" loading="lazy"></div>
+      <p class="app-note">Endless drone pads in all twelve keys.</p>
+      <!-- filled in by assets/app-reviews.js; empty until there is a
+           real number, so a brand-new app shows nothing rather than
+           a zero -->
+      <p class="app-badge" data-badge-app="nebulatide"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <a class="app" href="chordlight88.html" style="--k:#9A7CFF">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 4%,#241C48 0%,#171230 58%,#0B0918 100%)">
+          <!-- Chordlight: the notes that are sounding, lit over the keybed -->
+          <svg viewBox="0 0 24 24">
+            <rect x="2"   y="14.5" width="2.4" height="4"    rx="1.2" fill="#9A7CFF" opacity=".34"/>
+            <rect x="5.6" y="9"    width="2.4" height="9.5"  rx="1.2" fill="#9A7CFF" opacity=".95"/>
+            <rect x="9.2" y="11.5" width="2.4" height="7"    rx="1.2" fill="#9A7CFF" opacity=".34"/>
+            <rect x="12.8" y="5.5" width="2.4" height="13"   rx="1.2" fill="#C4B0FF"/>
+            <rect x="16.4" y="12.5" width="2.4" height="6"   rx="1.2" fill="#9A7CFF" opacity=".34"/>
+            <rect x="20"  y="8"    width="2.4" height="10.5" rx="1.2" fill="#9A7CFF" opacity=".95"/>
+            <rect x="2" y="20.4" width="20.4" height="1.6" rx=".8" fill="#9A7CFF" opacity=".5"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">Chord<em>light 88</em></h2>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/apps/chordlight88/notes.webp" alt="Chordlight 88: eighty-eight keys with six notes lit, named Fmaj9 and numbered 4maj9 in the key of C" loading="lazy" onerror="this.remove()">
+        <span class="soon"><span>Coming soon</span></span></div>
+      <p class="app-note">The chord and the number in your key, or in sol-fa. Shares your MIDI port.</p>
+      <p class="app-badge" data-badge-app="chordlight88"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <a class="app" href="ambanalog.html" style="--k:#D4A24C">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 4%,#3A2A12 0%,#211708 58%,#0E0A05 100%)">
+          <!-- AMB Analog: a rack of machines -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
+            <rect x="2" y="3.5" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6"/>
+            <rect x="2" y="9.6" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6" opacity=".72"/>
+            <rect x="2" y="15.7" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6" opacity=".5"/>
+            <circle cx="6" cy="6" r="1.2" fill="#D4A24C" stroke="none"/>
+            <circle cx="6" cy="12.1" r="1.2" fill="#D4A24C" stroke="none" opacity=".72"/>
+            <circle cx="6" cy="18.2" r="1.2" fill="#D4A24C" stroke="none" opacity=".5"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">AMB <em>Analog</em></h2>
+        </span>
+      </div>
+      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#2A1E0C 0%,#181005 60%,#0B0703 100%)"><img src="images/apps/analog/A01.webp" alt="Heritage EQ, the five-band equaliser of the AMB Analog bundle" loading="lazy" onerror="this.remove()">
+        <span class="soon"><span>Coming soon</span></span></div>
+      <p class="app-note">Ten analog processors, each with its own engine.</p>
+      <p class="app-badge" data-badge-app="ambanalog"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <a class="app" href="alignpro.html" style="--k:#2E9BF0">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 6%,#10314C 0%,#0A1C2C 58%,#050B12 100%)">
+          <!-- Align Pro: two arrivals brought onto one instant -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
+            <circle cx="12" cy="12" r="9.2" stroke="#2E9BF0" stroke-width="1.6" opacity=".45"/>
+            <circle cx="12" cy="12" r="4.4" stroke="#2E9BF0" stroke-width="1.6"/>
+            <path d="M12 1.6v4.2M12 18.2v4.2M1.6 12h4.2M18.2 12h4.2" stroke="#2E9BF0" stroke-width="1.7"/>
+            <circle cx="12" cy="12" r="1.7" fill="#4ADE80" stroke="none"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">Align <em>Pro</em></h2>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/apps/alignpro/auto.png" alt="Align Pro: eight drum mics grouped into four sources, correlation 0.32 before and 0.96 after" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
+      <p class="app-note">Multi-mic time and phase alignment, with a dial.</p>
+      <p class="app-badge" data-badge-app="alignpro"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <a class="app" href="afdgate.html" style="--k:#4A8BF0">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 4%,#16233B 0%,#0C1626 58%,#060B13 100%)">
+          <!-- AFD Gate: the band that listens, and the band that moves -->
+          <svg viewBox="0 0 24 24">
+            <rect x="4" y="5.5" width="16" height="4.4" rx="2.2" fill="#4A8BF0"/>
+            <rect x="7" y="14.1" width="13" height="4.4" rx="2.2" fill="#C9A227" opacity=".92"/>
+            <path d="M2 3.2v17.6" stroke="#7387A0" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">AFD <em>Gate</em></h2>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/apps/afdgate/ui.webp" alt="AFD Gate: the detector trace above the trigger and gated band selectors" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
+      <p class="app-note">A linear-phase gate for close-miked drums.</p>
+      <p class="app-badge" data-badge-app="afdgate"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <a class="app" href="aether.html" style="--k:#35E0F0">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 4%,#123A44 0%,#0A222B 58%,#070E14 100%)">
+          <!-- AETHER: the air shelf it draws -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
+            <path d="M1.5 17.5 H10 C14.5 17.5 14.5 7 19 6.5 H22.5" stroke="#35E0F0" stroke-width="2.2"/>
+            <path d="M1.5 17.5 H22.5" stroke="#5B6B78" stroke-width="1.1" opacity=".8"/>
+            <circle cx="19" cy="6.5" r="2.1" fill="#A9F4FA" stroke="none"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">AE<em>THER</em></h2>
+        </span>
+      </div>
+      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0E313A 0%,#08191F 60%,#050B0F 100%)"><img src="images/apps/aether/ui.webp" alt="AETHER's interface: analyser, presence and air knobs, glow, guard and focus" loading="lazy" onerror="this.remove()"></div>
+      <p class="app-note">A dynamic air exciter you can aim.</p>
+      <p class="app-badge" data-badge-app="aether"></p>
+      <p class="app-price"></p>
+      <p class="app-go">Explore →</p>
+    </a>
+
+    <div class="app nolink" style="--k:#3ED598">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 20% 0%,#123B2E 0%,#0A1F19 58%,#06110D 100%)">
+          <!-- HarmonieMD: three harmony lanes -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2.4">
+            <path d="M2 5h20" stroke="#7BE3B4" opacity=".45"/>
+            <path d="M2 12h20" stroke="#3ED598"/>
+            <path d="M2 19h20" stroke="#7BE3B4" opacity=".45"/>
+            <circle cx="7" cy="5" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/>
+            <circle cx="15" cy="12" r="2.9" fill="#3ED598" stroke="none"/>
+            <circle cx="10" cy="19" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">Harmonie<em>MD</em></h2>
+        </span>
+      </div>
+      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
+      <p class="app-note">The rehearsal studio for choirs.</p>
+      <p class="app-badge"></p>
+      <p class="app-price"></p>
+      <p class="app-go" aria-hidden="true"></p>
+    </div>
+
+    <div class="app nolink" data-hide-app="stemsorter" style="--k:#2AD2E8">
+      <div class="app-id">
+        <span class="mark" aria-hidden="true"
+              style="background:radial-gradient(130% 130% at 50% 6%,#0C3742 0%,#07222B 58%,#040F14 100%)">
+          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
+            <path d="M12 4v16M6 8v8M18 8v8" stroke="#2AD2E8" opacity=".55"/></svg>
+        </span>
+        <span>
+          <h2 class="app-name">Something <em>big</em></h2>
+        </span>
+      </div>
+      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C2A33 0%,#07161C 60%,#050C10 100%)">
+        <span class="soon"><span>Something big coming</span></span></div>
+      <p class="app-note">Something the studio has been building.</p>
+      <p class="app-badge"></p>
+      <p class="app-price"></p>
+      <p class="app-go" aria-hidden="true"></p>
+    </div>
 
   </section>
 
@@ -883,6 +1093,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
 <footer>
   <span><a href="index.html">← Back to the hub</a></span>
   <span>Stephen Amanor Sackey · Virginia, United States</span>
+  <span><a href="/privacy">Privacy</a> · <a href="legal.html">Licence &amp; terms</a></span>
 </footer>
 
 <script>
@@ -1263,8 +1474,109 @@ var CONFIG = {
 </script>
 <script src="assets/track.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js" defer></script>
+<script src="assets/supabase-client.js" defer></script>
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/hub-download.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
+<script>
+/* A tile says "coming soon" when the catalog says the app is not on
+   sale on this site. The badge is added here rather than typed into
+   the markup so the live site and a preview build can disagree without
+   the file being edited - see assets/store-state.js. */
+(function(){
+  function money(c){ return (c % 100 === 0) ? ('$' + c/100) : ('$' + (c/100).toFixed(2)); }
+
+  /* What a tile costs, and - while a sale is really on - the red flag
+     and the price it is down from. Everything comes off the same
+     catalog entry the page is already reading, so a tile can never
+     advertise a figure the checkout does not charge. */
+  function price(tile, shot, app, promo){
+    var p = tile.querySelector('.app-price');
+    if(!p || p.innerHTML) return;
+    var on = !!promo && !app.free && !app.pay_what_you_want && app.list_price_cents > app.price_cents;
+    if(on && promo.ends){ var t = Date.parse(promo.ends); if(!isFinite(t) || t <= Date.now()) on = false; }
+
+    if(app.free){ p.innerHTML = '<span class="free">Free</span>'; return; }
+    if(app.pay_what_you_want){ p.innerHTML = '<span class="pwyw">Name your price</span>'; return; }
+    if(!app.price_cents) return;
+
+    p.innerHTML = (on ? '<s>' + money(app.list_price_cents) + '</s>' : '') +
+      '<b>' + money(app.price_cents) + '</b>' +
+      (on ? '<span class="save">Save ' +
+            Math.round((1 - app.price_cents / app.list_price_cents) * 100) + '%</span>' : '');
+  }
+
+  function apply(){
+    if(!window.StoreState) return;
+    window.StoreState.catalog().then(function(c){
+      Object.keys(c.apps || {}).forEach(function(id){
+        var app = c.apps[id];
+        var page = app.page || '';
+        var tile = document.querySelector('#store [href="' + page + '"]') ||
+                   document.querySelector('#store [data-href="' + page + '"]');
+        if(!tile) return;
+        var shot = tile.querySelector('.app-shot');
+        if(!shot) return;
+        var soon = shot.querySelector('.soon');
+        var state = window.StoreState.stateOf(app);
+        /* "hidden" is an app that is finished but is not to be named in
+           public yet - a name still going through clearance, say. It is
+           not a badge: the tile leaves the shelf altogether here, while
+           a preview build, whose preview_status says available, still
+           shows it. Nothing else on the page needs to know. */
+        if(state === 'hidden'){ tile.remove(); return; }
+        if(state === 'available'){
+          if(soon) soon.remove();
+          tile.classList.remove('nolink');
+          if(tile.dataset.href){ tile.setAttribute('href', tile.dataset.href); delete tile.dataset.href; }
+          price(tile, shot, app, c.promo);
+          return;
+        }
+        /* "withdrawn" is a released app whose build has been taken down
+           while something is fixed. It is not coming soon and it is not
+           gone: the page stays readable and the tile stays a door, with
+           the badge saying plainly why nothing can be downloaded. */
+        if(state === 'withdrawn'){
+          if(!soon){
+            var w = document.createElement('span');
+            w.className = 'soon';
+            shot.appendChild(w);
+            soon = w;
+          }
+          soon.innerHTML = '<span>Temporarily unavailable</span>';
+          return;
+        }
+        /* Not on sale here, so the tile is not a door. Keep the address
+           on the element so the same script can put it back when the
+           state says available - a preview build reads the same markup. */
+        if(!soon){
+          var el = document.createElement('span');
+          el.className = 'soon';
+          el.innerHTML = '<span>Coming soon</span>';
+          shot.appendChild(el);
+        }
+        tile.classList.add('nolink');
+        if(tile.hasAttribute('href')){
+          tile.dataset.href = tile.getAttribute('href');
+          tile.removeAttribute('href');
+        }
+      });
+
+      /* The teaser tile - an app the studio is building but is not
+         naming yet. It has no address, so the loop above cannot find
+         it by one. It leaves the shelf when the catalog says hidden
+         and stands there as a teaser the rest of the time. */
+      document.querySelectorAll('#store [data-hide-app]').forEach(function(el){
+        var a = (c.apps || {})[el.getAttribute('data-hide-app')];
+        if(a && window.StoreState.stateOf(a) === 'hidden') el.remove();
+      });
+    });
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+})();
+</script>
 </body>
 </html>

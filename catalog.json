@@ -1,69 +1,55 @@
 {
-  "_readme": [
-    "THE ONE LIST OF APPS. Everything reads this file: the Worker (which files it may hand out",
-    "and to whom), the App Store pages, My Apps, and Amanorsac Hub via GET /api/catalog.",
-    "Adding an app = one entry here + uploading its installer to the amanorsac-downloads R2 bucket.",
-    "A new release = upload the new file under the same key, bump `version`. Nothing else changes.",
-    "",
-    "icon is the app's square mark and screenshot is a wide picture of it running. Both are",
-    "paths on this site, and both are handed to the Hub by /api/catalog as full URLs, so an app",
-    "added here shows its artwork in the Hub with no Hub release. screenshot is optional; an app",
-    "without one is shown with its icon on a plain ground.",
-    "",
-    "Per app: free (true = anyone signed in owns it; false = must be bought, price shown from",
-    "price_cents but CHARGED by supabase/functions/create-app-checkout - keep the two in step),",
-    "licensed (true = the app itself asks for a license key), kind (app | plugin), status",
-    "(available | coming_soon), installers keyed by platform: windows | mac | mac-arm64 | mac-x64.",
-    "Each installer: key (R2 object), alt_keys (older locations tried after key), as (filename",
-    "handed to the browser), type (content-type), size (shown to people), fallback_url (optional,",
-    "fetched server-side only if R2 has no such object).",
-    "",
-    "direct_download_fallback: true keeps a plain 'download the installer' link inside My Apps for",
-    "signed-in owners, under 'Trouble with the Hub?'. Set false once the Hub is the only door.",
-    "",
-    "The Hub's alt_keys are the names the first release was uploaded under, before the stable",
-    "hub/AmanorsacHub-* names existed. They are tried after `key`, so re-uploading under the",
-    "stable name is enough to retire them - no link on the site ever changes.",
-    "",
-    "news: what the Hub shows under What's new, newest first. One entry = one post.",
-    "Fields: id (never reused - the Hub remembers which ids a person has read), date",
-    "(YYYY-MM-DD), title, body (plain text, a short paragraph or two), and optionally app",
-    "(an id from `apps`, to show its icon and colour), url (Read more) and tag (a word like",
-    "Release, Update, Studio note). A new app added to `apps` announces itself in the Hub",
-    "without an entry here, so write one only when there is something to say."
-  ],
-
   "hub": {
     "name": "Amanorsac Hub",
     "version": "1.3.0",
     "protocol": "amanorsac",
     "tagline": "Install, activate and update every Amanorsac app from one place.",
     "installers": {
-      "windows":   { "key": "hub/AmanorsacHub-Setup.exe",     "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64.exe", "AMANORSAC HUB/Amanorsac.Hub-1.1.0-win-x64_2.exe"], "as": "Amanorsac Hub Setup.exe",           "type": "application/octet-stream",      "label": "Windows 10/11",      "size": "111 MB" },
-      "mac-arm64": { "key": "hub/AmanorsacHub-mac-arm64.dmg", "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-arm64.dmg"], "as": "Amanorsac Hub (Apple silicon).dmg", "type": "application/x-apple-diskimage", "label": "Mac · Apple silicon", "size": "128 MB" },
-      "mac-x64":   { "key": "hub/AmanorsacHub-mac-x64.dmg",   "alt_keys": ["AMANORSAC HUB/Amanorsac.Hub-1.1.0-mac-x64.dmg"], "as": "Amanorsac Hub (Intel).dmg",         "type": "application/x-apple-diskimage", "label": "Mac · Intel",         "size": "135 MB" }
+      "windows": {
+        "key": "hub/AmanorsacHub-Setup.exe",
+        "alt_keys": [
+          "AMANORSAC HUB/Amanorsac.Hub-1.3.0-win-x64.exe",
+          "AMANORSAC HUB/Amanorsac.Hub-1.2.0-win-x64.exe",
+          "AMANORSAC HUB/Amanorsac.Hub-1.2.0-win-x64-portable.exe"
+        ],
+        "as": "Amanorsac Hub Setup.exe",
+        "type": "application/octet-stream",
+        "label": "Windows 10/11",
+        "size": "111 MB"
+      },
+      "mac-arm64": {
+        "key": "hub/AmanorsacHub-mac-arm64.dmg",
+        "alt_keys": [
+          "AMANORSAC HUB/Amanorsac.Hub-1.3.0-mac-arm64.dmg",
+          "AMANORSAC HUB/Amanorsac.Hub-1.2.0-mac-arm64.dmg"
+        ],
+        "as": "Amanorsac Hub (Apple silicon).dmg",
+        "type": "application/x-apple-diskimage",
+        "label": "Mac · Apple silicon",
+        "size": "128 MB"
+      },
+      "mac-x64": {
+        "key": "hub/AmanorsacHub-mac-x64.dmg",
+        "alt_keys": [
+          "AMANORSAC HUB/Amanorsac.Hub-1.3.0-mac-x64.dmg",
+          "AMANORSAC HUB/Amanorsac.Hub-1.2.0-mac-x64.dmg"
+        ],
+        "as": "Amanorsac Hub (Intel).dmg",
+        "type": "application/x-apple-diskimage",
+        "label": "Mac · Intel",
+        "size": "135 MB"
+      }
     }
   },
-
   "direct_download_fallback": true,
-
   "news": [
     {
-      "id": "pulseroom-withdrawn-2026-09",
+      "id": "performlive-withdrawn-2026-09",
       "date": "2026-09-14",
       "tag": "Notice",
-      "app": "pulseroom",
-      "title": "PulseRoom is off the shelf for a moment",
-      "body": "A problem with the current build means I have pulled it rather than let anyone else download it. It stays in your library, your license is untouched, and a copy already installed keeps working. The download returns here the moment the fix is out.",
-      "url": "pulseroom.html"
-    },
-    {
-      "id": "performlive-announce",
-      "date": "2026-09-09",
-      "tag": "Coming soon",
       "app": "performlive",
-      "title": "PerformLive: your stems, untouched, under your fingers",
-      "body": "Performers with backing tracks have had two bad options: a DAW that is dangerous on stage, or a stereo bounce that cannot change its mind. PerformLive is the third. Every stem stays independently mutable while it plays, so a breakdown or an a cappella moment is a live decision instead of a separate bounce. Trigger a row while another is playing and the switch queues to the next bar. Twelve pads for atmosphere and one-shots, so a prayer that runs long stops being a problem. No auto-warp, no auto-trim, no fades imposed on your audio. Windows, touch-first, and no network activity at all. Not ready to download yet; the Hub will say the day it is.",
+      "title": "PerformLive is off the shelf for a moment",
+      "body": "Something is wrong with the current build, so I have taken the download down rather than let anyone else install it. It stays in your library, your license is untouched, and a copy already on your machine keeps working. The download returns the moment the fix is out.",
       "url": "performlive.html"
     },
     {
@@ -76,52 +62,419 @@
       "url": "harmoniemd.html"
     }
   ],
-
+  "promo": {
+    "_": "Delete this whole block to end the sale. Nothing else needs editing:",
+    "_2": "every price on the site reads list_price_cents against price_cents and",
+    "_3": "says nothing at all when this is absent.",
+    "_4": "ends is a REAL deadline, not decoration. The countdown on the site is",
+    "_5": "drawn from it, and the whole sale - banner, badges, struck-out prices -",
+    "_6": "vanishes by itself the moment it passes, on a page already open too.",
+    "_7": "Move the date to run the sale longer. Never let it pass and restart:",
+    "_8": "a clock that resets is the one thing that would make this dishonest.",
+    "_9": "When it does end, put each price_cents back up to its list_price_cents,",
+    "_10": "or the old price stops being a price the app was really sold at.",
+    "percent": 50,
+    "note": "Half price for a limited time",
+    "ends": "2026-09-30T23:59:59Z"
+  },
   "apps": {
-    "secondout": {
-      "name": "SecondOut", "vendor": "Aquarii Audio", "kind": "plugin", "status": "available",
-      "tagline": "One master bus. Two independent outputs.",
-      "icon": "images/apps/secondout-icon.png", "screenshot": "images/apps/secondout-screenshot.png", "page": "secondout.html", "color": "#3fe083",
-      "free": false, "price_cents": 1900, "licensed": true, "version": "1.3.1",
+    "chordlight88": {
+      "name": "Chordlight 88",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
+      "tagline": "What your hands just played, in the language you think in.",
+      "icon": "images/apps/chordlight88/icon.svg",
+      "page": "chordlight88.html",
+      "color": "#9A7CFF",
+      "free": false,
+      "price_cents": 1400,
+      "list_price_cents": 2800,
+      "licensed": false,
+      "version": "1.0.0",
       "installers": {
-        "windows": { "key": "SecondOut-1.3.1-Setup.exe", "alt_keys": ["secondout/SecondOut-1.3.1-Setup.exe"],
-                     "as": "SecondOut-1.3.1-Setup.exe", "type": "application/octet-stream", "size": "5 MB" }
+        "windows": {
+          "key": "chordlight88/chordlight-Windows_4.zip",
+          "alt_keys": [
+            "chordlight88/Chordlight88-Windows.zip"
+          ],
+          "as": "Chordlight88-Windows.zip",
+          "type": "application/zip",
+          "label": "Windows 10/11",
+          "size": "156 MB"
+        },
+        "mac": {
+          "key": "chordlight88/chordlight-macOS_3.zip",
+          "alt_keys": [
+            "chordlight88/Chordlight88-macOS.zip"
+          ],
+          "as": "Chordlight88-macOS.zip",
+          "type": "application/zip",
+          "label": "macOS 11+",
+          "size": "339 MB"
+        }
+      }
+    },
+    "secondout": {
+      "name": "SecondOut",
+      "vendor": "Amanorsac Studio",
+      "kind": "plugin",
+      "status": "available",
+      "tagline": "One master bus. Two independent outputs.",
+      "icon": "images/apps/secondout-icon.png",
+      "page": "secondout.html",
+      "color": "#3fe083",
+      "free": false,
+      "price_cents": 1900,
+      "list_price_cents": 3800,
+      "licensed": true,
+      "version": "1.3.2",
+      "installers": {
+        "windows": {
+          "key": "secondout/SecondOut-1.3.2-Setup.exe",
+          "alt_keys": [
+            "SECOND OUT/SecondOut-1.3.2-Setup.exe",
+            "SecondOut-1.3.2-Setup.exe"
+          ],
+          "as": "SecondOut-1.3.2-Setup.exe",
+          "type": "application/octet-stream",
+          "size": "5 MB"
+        },
+        "mac": {
+          "key": "secondout/SecondOut-1.3.2-macOS.zip",
+          "alt_keys": [
+            "SECOND OUT/SecondOut-1.3.2-macOS.zip"
+          ],
+          "as": "SecondOut-1.3.2-macOS.zip",
+          "type": "application/zip",
+          "size": "12 MB"
+        }
+      }
+    },
+    "stemsorter": {
+      "name": "Something big coming",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "hidden",
+      "tagline": "More when it is ready.",
+      "icon": "images/apps/stemsorter-logo.svg",
+      "page": "apps.html",
+      "color": "#2ad2e8",
+      "free": false,
+      "price_cents": 1900,
+      "list_price_cents": 3800,
+      "licensed": true,
+      "version": "0.6.0",
+      "installers": {
+        "windows": {
+          "key": "stemsorter/StemSorter-Windows.zip",
+          "alt_keys": [
+            "STEMSORTER/StemSorter-Windows.zip"
+          ],
+          "as": "StemSorter-Windows.zip",
+          "type": "application/zip",
+          "size": "9 MB"
+        },
+        "mac": {
+          "key": "stemsorter/StemSorter-macOS.zip",
+          "alt_keys": [
+            "STEMSORTER/StemSorter-macOS.zip"
+          ],
+          "as": "StemSorter-macOS.zip",
+          "type": "application/zip",
+          "size": "12 MB"
+        }
+      }
+    },
+    "ambanalog": {
+      "name": "AMB Analog",
+      "vendor": "Amanorsac Studio",
+      "kind": "plugin",
+      "status": "available",
+      "tagline": "Ten analog machines, built from the ground up.",
+      "icon": "images/apps/analog/icon.svg",
+      "page": "ambanalog.html",
+      "color": "#D4A24C",
+      "free": false,
+      "price_cents": 3900,
+      "list_price_cents": 7800,
+      "licensed": true,
+      "version": "1.0.0",
+      "installers": {
+        "windows": {
+          "key": "ambanalog/analog-bundle-windows.zip",
+          "alt_keys": [
+            "AMB Analog/analog-bundle-windows.zip"
+          ],
+          "as": "AMB-Analog-Windows.zip",
+          "type": "application/zip",
+          "size": "297 MB"
+        },
+        "mac": {
+          "key": "ambanalog/analog-bundle-macos.zip",
+          "alt_keys": [
+            "AMB Analog/analog-bundle-macos.zip"
+          ],
+          "as": "AMB-Analog-macOS.zip",
+          "type": "application/zip",
+          "size": "745 MB"
+        }
+      }
+    },
+    "alignpro": {
+      "name": "Align Pro",
+      "vendor": "Amanorsac Studio",
+      "kind": "plugin",
+      "status": "available",
+      "tagline": "Align every mic. Hear exactly how much.",
+      "icon": "images/apps/alignpro/icon.svg",
+      "page": "alignpro.html",
+      "color": "#2E9BF0",
+      "free": false,
+      "price_cents": 3900,
+      "list_price_cents": 7800,
+      "licensed": true,
+      "version": "1.0.0",
+      "installers": {
+        "windows": {
+          "key": "alignpro/AlignPro-1.0.0-windows.zip",
+          "alt_keys": [
+            "Align Pro/AlignPro-1.0.0-windows.zip"
+          ],
+          "as": "AlignPro-1.0.0-Windows.zip",
+          "type": "application/zip",
+          "size": "7 MB"
+        },
+        "mac": {
+          "key": "alignpro/AlignPro-1.0.0-macOS.zip",
+          "alt_keys": [
+            "Align Pro/AlignPro-1.0.0-macOS.zip"
+          ],
+          "as": "AlignPro-1.0.0-macOS.zip",
+          "type": "application/zip",
+          "size": "14 MB"
+        }
+      }
+    },
+    "afdgate": {
+      "name": "AFD Gate",
+      "vendor": "Amanorsac Studio",
+      "kind": "plugin",
+      "status": "available",
+      "tagline": "Filter the trigger. Shape the tail.",
+      "icon": "images/apps/afdgate/icon.svg",
+      "page": "afdgate.html",
+      "color": "#4A8BF0",
+      "free": false,
+      "price_cents": 1200,
+      "list_price_cents": 2400,
+      "licensed": false,
+      "version": "1.3.0",
+      "installers": {
+        "windows": {
+          "key": "afdgate/windows-installer.zip",
+          "alt_keys": [
+            "AFD Gate/windows-installer.zip"
+          ],
+          "as": "AFD-Gate-1.3.0-Windows.zip",
+          "type": "application/zip",
+          "size": "11 MB"
+        },
+        "mac": {
+          "key": "afdgate/macos-installer.zip",
+          "alt_keys": [
+            "AFD Gate/macos-installer.zip"
+          ],
+          "as": "AFD-Gate-1.3.0-macOS.zip",
+          "type": "application/zip",
+          "size": "33 MB"
+        }
+      }
+    },
+    "aether": {
+      "name": "AETHER",
+      "vendor": "Amanorsac Studio",
+      "kind": "plugin",
+      "status": "available",
+      "tagline": "Air you can aim. A dynamic air exciter for vocals, choir and the mix bus.",
+      "icon": "images/apps/aether/icon.svg",
+      "page": "aether.html",
+      "color": "#35E0F0",
+      "free": false,
+      "price_cents": 1200,
+      "list_price_cents": 2400,
+      "licensed": true,
+      "version": "1.0.0",
+      "installers": {
+        "windows": {
+          "key": "aether/AETHER-windows.zip",
+          "alt_keys": [
+            "AETHER/AETHER-windows.zip"
+          ],
+          "as": "AETHER-1.0.0-Windows.zip",
+          "type": "application/zip",
+          "size": "4 MB"
+        },
+        "mac": {
+          "key": "aether/AETHER-macos.zip",
+          "alt_keys": [
+            "AETHER/AETHER-macos.zip"
+          ],
+          "as": "AETHER-1.0.0-macOS.zip",
+          "type": "application/zip",
+          "size": "10 MB"
+        }
       }
     },
     "pulseroom": {
-      "name": "PulseRoom", "vendor": "Amanorsac Studio", "kind": "app", "status": "unavailable",
+      "name": "PulseRoom",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
       "tagline": "Every mixing answer. One tempo.",
-      "icon": "images/apps/pulseroom-logo.svg", "screenshot": "images/apps/S1-hero-delay-essentials.webp", "page": "pulseroom.html", "color": "#3fd3e4",
-      "free": true, "licensed": false, "version": "1.0",
+      "icon": "images/apps/pulseroom-logo.svg",
+      "page": "pulseroom.html",
+      "color": "#3fd3e4",
+      "free": true,
+      "licensed": false,
+      "version": "1.0",
       "installers": {
-        "windows": { "key": "pulseroom/PulseRoom-Windows.zip", "alt_keys": ["PulseRoom-Windows.zip"], "as": "PulseRoom-Windows.zip", "type": "application/zip", "size": "78 MB" },
-        "mac":     { "key": "pulseroom/PulseRoom-macOS.zip",   "alt_keys": ["PulseRoom-macOS.zip"],   "as": "PulseRoom-macOS.zip",   "type": "application/zip", "size": "171 MB" }
+        "windows": {
+          "key": "pulseroom/PulseRoom-Windows.zip",
+          "alt_keys": [
+            "PulseRoom-Windows.zip"
+          ],
+          "as": "PulseRoom-Windows.zip",
+          "type": "application/zip",
+          "size": "78 MB"
+        },
+        "mac": {
+          "key": "pulseroom/PulseRoom-macOS.zip",
+          "alt_keys": [
+            "PulseRoom-macOS.zip"
+          ],
+          "as": "PulseRoom-macOS.zip",
+          "type": "application/zip",
+          "size": "171 MB"
+        }
+      }
+    },
+    "nebulatide2": {
+      "name": "Nebula Tide 2",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
+      "tagline": "The pad rises as it fades. Shimmer, your own presets, and a drag to the timeline.",
+      "icon": "images/apps/nt-logo.webp",
+      "page": "nebulatide2.html",
+      "color": "#4FE3FF",
+      "free": false,
+      "price_cents": 2900,
+      "price_min_cents": 500,
+      "pay_what_you_want": true,
+      "licensed": true,
+      "version": "2.0",
+      "installers": {
+        "windows": {
+          "key": "nebulatide2/NebulaTide-Windows_2.zip",
+          "alt_keys": [
+            "nebulatide2/NebulaTide-Windows.zip"
+          ],
+          "as": "NebulaTide2-Windows.zip",
+          "type": "application/zip",
+          "size": "278 MB"
+        },
+        "mac": {
+          "key": "nebulatide2/NebulaTide-macOS_2.zip",
+          "alt_keys": [
+            "nebulatide2/NebulaTide-macOS.zip"
+          ],
+          "as": "NebulaTide2-macOS.zip",
+          "type": "application/zip",
+          "size": "312 MB"
+        }
       }
     },
     "nebulatide": {
-      "name": "Nebula Tide", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
+      "name": "Nebula Tide",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
       "tagline": "An ocean of sound. In every key.",
-      "icon": "images/apps/nt-logo.webp", "screenshot": "images/apps/nt-playing.webp", "page": "nebulatide.html", "color": "#4FE3FF",
-      "free": true, "licensed": false, "version": "1.2.2",
+      "icon": "images/apps/nt-logo.webp",
+      "page": "nebulatide.html",
+      "color": "#4FE3FF",
+      "free": true,
+      "licensed": false,
+      "version": "1.2.2",
       "installers": {
-        "windows": { "key": "nebulatide/NebulaTide-Windows.zip", "alt_keys": ["NebulaTide-Windows.zip"], "as": "NebulaTide-Windows.zip", "type": "application/zip", "size": "279 MB",
-                     "fallback_url": "https://www.dropbox.com/scl/fi/mh40nxu467ouw0uka6si9/NebulaTide-Windows.zip?rlkey=ngvoa116wi7xognir4frynqwn&st=k7lhh0at&dl=0" },
-        "mac":     { "key": "nebulatide/NebulaTide-macOS.zip",   "alt_keys": ["NebulaTide-macOS.zip"],   "as": "NebulaTide-macOS.zip",   "type": "application/zip", "size": "289 MB",
-                     "fallback_url": "https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0" }
+        "windows": {
+          "key": "nebulatide/NebulaTide-Windows.zip",
+          "alt_keys": [
+            "NebulaTide-Windows.zip"
+          ],
+          "as": "NebulaTide-Windows.zip",
+          "type": "application/zip",
+          "size": "279 MB",
+          "fallback_url": "https://www.dropbox.com/scl/fi/mh40nxu467ouw0uka6si9/NebulaTide-Windows.zip?rlkey=ngvoa116wi7xognir4frynqwn&st=k7lhh0at&dl=0"
+        },
+        "mac": {
+          "key": "nebulatide/NebulaTide-macOS.zip",
+          "alt_keys": [
+            "NebulaTide-macOS.zip"
+          ],
+          "as": "NebulaTide-macOS.zip",
+          "type": "application/zip",
+          "size": "289 MB",
+          "fallback_url": "https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0"
+        }
       }
     },
     "performlive": {
-      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
+      "name": "PerformLive",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "withdrawn",
       "tagline": "Live performance, perfected.",
-      "icon": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
-      "free": false, "licensed": true, "version": null,
-      "installers": {}
+      "icon": "images/apps/performlive.webp",
+      "page": "performlive.html",
+      "color": "#7B7DF7",
+      "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",
+      "_beta2": "asks claim_beta_license for at the moment of download, and what",
+      "_beta3": "My Apps counts down. Delete beta_days to make it free forever.",
+      "free": true,
+      "licensed": true,
+      "beta_days": 30,
+      "version": "0.4.0",
+      "installers": {
+        "windows": {
+          "key": "PERFORMLIVE/PerformLive-0.4.0-Windows.exe",
+          "as": "PerformLive-0.4.0-Windows.exe",
+          "type": "application/octet-stream",
+          "label": "Windows 10/11",
+          "size": "5.7 MB"
+        },
+        "mac": {
+          "key": "PERFORMLIVE/PerformLive-0.4.0-macOS.zip",
+          "as": "PerformLive-0.4.0-macOS.zip",
+          "type": "application/zip",
+          "label": "macOS 11+",
+          "size": "7.3 MB"
+        }
+      }
     },
     "harmoniemd": {
-      "name": "HarmonieMD", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
+      "name": "HarmonieMD",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "coming_soon",
       "tagline": "The rehearsal studio for choirs.",
-      "icon": "images/apps/harmoniemd.png", "page": "harmoniemd.html", "color": "#3ED598",
-      "free": false, "licensed": true, "version": null,
+      "icon": "images/apps/harmoniemd.png",
+      "page": "apps.html",
+      "color": "#3ED598",
+      "free": false,
+      "licensed": true,
+      "version": null,
       "installers": {}
     }
   }

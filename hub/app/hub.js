@@ -64,7 +64,7 @@
   function status(a) {
     const job = S.jobs[a.id], inst = S.installed[a.id], own = ownedRow(a.id), b = build(a);
     if (job) return { action: 'busy', badge: job.state === 'installing' ? 'Installing' : job.state === 'preparing' ? 'Preparing' : 'Downloading', job };
-    if (a.status === 'unavailable') return { action: 'pulled', badge: 'Temporarily unavailable', dim: true };
+    if (a.status === 'withdrawn') return { action: 'pulled', badge: 'Temporarily unavailable', dim: true };
     if (a.status !== 'available') return { action: 'soon', badge: 'Coming soon' };
     if (!own && !a.free) return { action: 'buy', badge: 'Not in your library', dim: true };
     if (!b) return { action: 'none', badge: otherPlatformNote(a), dim: true };
@@ -435,7 +435,7 @@
     // A withdrawn build stays on the shelf, greyed, rather than vanishing:
     // someone who owns it and has it installed should not have to wonder
     // whether it was deleted out from under them.
-    const avail = S.catalog.filter((a) => a.status === 'available' || a.status === 'unavailable');
+    const avail = S.catalog.filter((a) => a.status === 'available' || a.status === 'withdrawn');
     const list = avail.filter((a) => a.name.toLowerCase().includes(q) && (S.filter === 'all' || (S.filter === 'installed' ? !!S.installed[a.id] : !S.installed[a.id])));
     $('#cards').innerHTML = list.length ? list.map(card).join('') : '<div class="empty" style="grid-column:1/-1"><h3>No matching apps</h3><p>Try another search or choose All apps.</p></div>';
     $('#all-count').textContent = avail.length;
@@ -453,7 +453,7 @@
         '<button class="ghost" data-page-url="' + esc(f.page) + '">Explore ' + esc(f.name) + ' &nbsp; ↗</button></div></div>' +
         '<div class="feature-art">' + (shotFor(f) ? '<img src="' + shotFor(f) + '" alt="">' : '') + '</div>';
     }
-    const soon = S.catalog.filter((a) => a.status !== 'available' && a.status !== 'unavailable');
+    const soon = S.catalog.filter((a) => a.status !== 'available' && a.status !== 'withdrawn');
     $('#soon').innerHTML = soon.map((a) => '<a class="soon" data-page-url="' + esc(a.page) + '"><span class="appicon">' + iconFor(a) + '</span><div><strong>' + esc(a.name) + '</strong><p>' + esc(a.tagline) + '</p></div><small>COMING SOON</small></a>').join('') || '<p class="note">Everything in the collection is available.</p>';
   }
 

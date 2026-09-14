@@ -3,47 +3,648 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>SecondOut is briefly offline | Amanorsac App Store</title>
-<!-- HOLDING PAGE. The real page is in git history - restore it with
-       git checkout 9e22abd -- secondout.html
-     once the purchase-to-download flow is verified and the price is back
-     to $19. Nothing on this page can start a purchase. -->
+<meta name="google-adsense-account" content="ca-pub-6190327414594776">
+<title>SecondOut: mirror your master bus to a second output | Amanorsac App Store</title>
+<meta name="description" content="SecondOut mirrors your DAW's master bus to a second output device without touching your main audio interface. VST3 and standalone, Windows and macOS, $19 with a lifetime license.">
+<meta property="og:title" content="SecondOut: one master bus, two independent outputs">
+<meta property="og:description" content="Stream your mix, feed a switcher, or record a safety copy, while your monitoring path stays exactly as it is. VST3 and standalone, Windows and macOS.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/secondout-screenshot.png">
+<meta property="og:url" content="https://amanorsac.studio/secondout">
 <link rel="icon" href="images/apps/secondout-icon.png" type="image/png">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
 <style>
-  @font-face{font-family:'Sora';font-style:normal;font-weight:400 800;font-display:swap;src:url(fonts/sora-latin.woff2) format('woff2')}
-  @font-face{font-family:'Inter';font-style:normal;font-weight:400 600;font-display:swap;src:url(fonts/inter-latin.woff2) format('woff2')}
-  @font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;src:url(fonts/jetbrains-mono-latin.woff2) format('woff2')}
-  :root{--void:#0a0c0f;--panel:#12151a;--hairline:#262b33;--text-1:#f2f4f6;--text-2:#9aa5b3;--text-3:#5a6470;--green:#3fe083;--amber:#f2b84b}
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--void);color:var(--text-1);font-family:Inter,system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
-  body{min-height:100dvh;display:grid;place-items:center;padding:32px 20px}
-  main{max-width:560px;width:100%;text-align:center}
-  .brand{display:inline-flex;align-items:center;gap:12px;margin:0 0 40px;text-decoration:none;color:inherit}
-  .brand img{width:34px;height:34px;border-radius:8px}
-  .brand b{font-size:17px;font-weight:700;display:block;line-height:1.05}
-  .brand span{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.14em;color:var(--text-3);text-transform:uppercase}
-  .light{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:0 0 22px}
-  .light i{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);animation:blink 1.8s ease-in-out infinite}
-  @keyframes blink{50%{opacity:.35}}
-  h1{font-family:Sora,system-ui,sans-serif;font-weight:800;font-size:clamp(30px,5vw,44px);line-height:1.05;margin:0 0 16px;letter-spacing:.005em}
-  p{color:var(--text-2);font-size:16.5px;line-height:1.65;margin:0 0 14px}
-  .card{background:var(--panel);border:1px solid var(--hairline);border-radius:12px;padding:20px 22px;margin:28px 0 30px;text-align:left}
-  .card p{margin:0;font-size:15px}
-  .card b{color:var(--text-1)}
-  a.go{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;padding:11px 18px;border-radius:7px;border:1px solid var(--hairline);color:var(--text-1);text-decoration:none}
-  a.go:hover{background:var(--panel)}
-  @media (prefers-reduced-motion:reduce){.light i{animation:none}}
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 </style>
+<style>
+
+  /* ============================================================
+     SecondOut — Amanorsac Studio
+     Design: broadcast instrument panel. Grounded directly in the
+     shipped plugin's own dark UI system (near-black canvas, green /
+     amber / red status colours), because this page and the product
+     it sells should look like the same people made both. Committed
+     single dark theme — audio-utility software convention, same as
+     the app itself, which has no light mode either.
+     ============================================================ */
+
+  :root{
+    --void:        #0a0c0f;
+    --panel:       #12151a;
+    --panel-raised:#171b21;
+    --hairline:    #262b33;
+    --hairline-lit:#333a44;
+    --text-1:      #f2f4f6;
+    --text-2:      #9aa5b3;
+    --text-3:      #5a6470;
+    --blue:        #4f9dde;   /* existing path — your interface, unchanged */
+    --green:       #3fe083;   /* SecondOut path — healthy / streaming */
+    --amber:       #f2b84b;   /* precision / correction accent */
+    --red:         #ff5c68;   /* the problem, used once */
+    --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    --radius-s: 7px;
+    --radius-m: 10px;
+    --content: 1180px;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ background:var(--void); }
+  body{
+    margin:0;
+    background:var(--void);
+    color:var(--text-1);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+  }
+  ::selection{ background:var(--green); color:#04150b; }
+
+  h1,h2,h3{ font-family:var(--display); text-wrap:balance; margin:0; letter-spacing:.01em; }
+  code, .mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+
+  a{ color:inherit; }
+  img{ max-width:100%; display:block; }
+
+  .wrap{ max-width:var(--content); margin:0 auto; padding-inline:32px; }
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px; font-weight:600; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--text-2);
+  }
+
+  /* ---------- nav ---------- */
+  nav.top{
+    position:sticky; top:0; z-index:20;
+    background:rgba(10,12,15,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--hairline);
+  }
+  nav.top .row{
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand img{ width:28px; height:28px; border-radius:7px; }
+  .brand .word{ display:flex; flex-direction:column; line-height:1.05; }
+  .brand .word b{ font-size:15px; font-weight:700; }
+  .brand .word span{ font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--text-3); text-transform:uppercase; }
+  .navlinks{ display:flex; align-items:center; gap:30px; }
+  .navlinks a{ text-decoration:none; color:var(--text-2); font-size:14px; font-weight:500; transition:color .15s; }
+  .navlinks a.btn-primary{ color:#04150b; }
+  .navlinks a:hover, .navlinks a:focus-visible{ color:var(--text-1); }
+  /* the account chip (site-auth.js) wears this page's own palette */
+  .navlinks .sa{ --sa-accent:var(--green); --sa-fg:var(--text-1); --sa-bg:var(--panel);
+    --sa-line:var(--hairline-lit); --sa-muted:var(--text-2); }
+  .navlinks a.sa-in, .navlinks a.sa-item{ color:var(--text-1); font-weight:600; }
+  .navlinks a.sa-in{ font-size:13.5px; }
+  .navlinks .btn{ white-space:nowrap; }
+  @media (max-width:760px){
+    .navlinks{ gap:12px; position:relative; }
+    .navlinks > a:not(:first-child){ display:none; }
+    /* the menu hangs off the whole nav row, not the chip, so it stays
+       on screen with the Buy button sitting to the chip's right */
+    .navlinks .sa{ position:static; }
+  }
+  @media (max-width:520px){
+    .navlinks > a:first-child{ display:none; }   /* the brand already says where you are */
+    .brand .word span{ display:none; }
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:9px;
+    font: inherit; font-family:var(--mono); font-size:13px; font-weight:600; letter-spacing:.03em;
+    padding:10px 18px; border-radius:var(--radius-s);
+    text-decoration:none; cursor:pointer; border:1px solid transparent;
+    -webkit-appearance:none; appearance:none; margin:0;
+    transition:transform .15s, filter .15s, background .15s;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn[disabled]{ opacity:.6; cursor:default; pointer-events:none; }
+  .btn-primary{ background:var(--green); color:#04150b; }
+  .btn-primary:hover, .btn-primary:focus-visible{ filter:brightness(1.08); }
+  .btn-ghost{ border-color:var(--hairline-lit); color:var(--text-1); background:var(--panel); }
+  .btn-ghost:hover, .btn-ghost:focus-visible{ background:var(--panel-raised); }
+  a:focus-visible, button:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+  .buy-status{ font-family:var(--mono); font-size:12.5px; color:var(--green); margin:14px 0 0; }
+  .buy-status.bad{ color:var(--red); }
+  .buy-status[hidden]{ display:none; }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:88px 0 40px; }
+  .hero .eyebrow{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+  .hero .eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); }
+  .hero h1{
+    font-size:clamp(40px, 6.2vw, 78px);
+    font-weight:900; text-transform:uppercase;
+    line-height:.98;
+    max-width:15ch;
+  }
+  .hero h1 em{ font-style:normal; color:var(--green); }
+  .hero .sub{
+    margin-top:26px; max-width:56ch;
+    font-size:18px; color:var(--text-2);
+  }
+  .hero .sub b{ color:var(--text-1); font-weight:600; }
+  .hero .ctas{ display:flex; align-items:center; gap:18px; margin-top:36px; flex-wrap:wrap; }
+  .hero .meta{ font-family:var(--mono); font-size:12.5px; color:var(--text-3); }
+
+  /* ---------- signal diagram ---------- */
+  .diagram{ margin-top:72px; }
+  .diagram-frame{
+    background:var(--panel); border:1px solid var(--hairline); border-radius:var(--radius-m);
+    padding:28px clamp(16px,4vw,44px) 20px;
+  }
+  .diagram svg{ width:100%; height:auto; display:block; }
+  .diagram-caption{
+    display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--hairline);
+    font-family:var(--mono); font-size:12px; color:var(--text-3);
+  }
+  .diagram-caption .key{ display:flex; align-items:center; gap:8px; }
+  .diagram-caption .swatch{ width:10px; height:10px; border-radius:2px; }
+
+  .flow-dash{ stroke-dasharray: 6 7; animation: flow 1.1s linear infinite; }
+  @media (prefers-reduced-motion: reduce){ .flow-dash{ animation:none; } }
+  @keyframes flow{ to{ stroke-dashoffset:-13; } }
+
+  /* ---------- generic sections ---------- */
+  section{ padding:96px 0; border-top:1px solid var(--hairline); }
+  .section-head{ max-width:640px; margin-bottom:52px; }
+  .section-head h2{ font-size:clamp(30px,4vw,44px); font-weight:800; text-transform:uppercase; margin-top:10px; }
+  .section-head p{ color:var(--text-2); font-size:16.5px; margin-top:16px; max-width:52ch; }
+
+  /* ---------- problem / solution two-up ---------- */
+  .split{ display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+  @media (max-width:840px){ .split{ grid-template-columns:1fr; } }
+  .card{
+    background:var(--panel); border:1px solid var(--hairline); border-radius:var(--radius-m);
+    padding:30px 30px 32px;
+  }
+  .card .tag{
+    font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; padding:3px 9px; border-radius:5px; display:inline-block;
+  }
+  .card.problem{ border-color:#3a2427; }
+  .card.problem .tag{ background:rgba(255,92,104,.12); color:var(--red); border:1px solid rgba(255,92,104,.3); }
+  .card.solution{ border-color:#1e3a2c; }
+  .card.solution .tag{ background:rgba(63,224,131,.1); color:var(--green); border:1px solid rgba(63,224,131,.3); }
+  .card h3{ font-size:25px; font-weight:700; text-transform:none; margin-top:16px; font-family:var(--body); }
+  .card p{ color:var(--text-2); margin-top:12px; font-size:15.5px; }
+  .card .schematic{ margin-top:22px; display:flex; align-items:center; gap:10px; }
+  .lock-path{ flex:1; height:3px; background:var(--hairline-lit); border-radius:2px; position:relative; }
+  .lock-path::after{
+    content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg, var(--red) 0 6px, transparent 6px 12px);
+    opacity:.7;
+  }
+  .split-path{ flex:1; display:flex; flex-direction:column; gap:6px; }
+  .split-path i{ display:block; height:3px; border-radius:2px; }
+  .split-path i.a{ background:var(--blue); }
+  .split-path i.b{ background:var(--green); }
+
+  /* ---------- spec sheet capability rows ---------- */
+  .specsheet{ border-top:1px solid var(--hairline); }
+  .specrow{
+    display:grid; grid-template-columns:120px 1fr; gap:32px;
+    padding:34px 0; border-bottom:1px solid var(--hairline);
+    align-items:start;
+  }
+  @media (max-width:640px){ .specrow{ grid-template-columns:1fr; gap:10px; } }
+  .specrow .idx{ font-family:var(--mono); font-size:13px; color:var(--text-3); padding-top:4px; }
+  .specrow .idx b{ display:block; font-size:15px; color:var(--amber); letter-spacing:.06em; }
+  .specrow h3{ font-size:24px; font-weight:700; text-transform:none; font-family:var(--body); }
+  .specrow p{ color:var(--text-2); margin-top:10px; font-size:15.5px; max-width:64ch; }
+
+  /* ---------- screenshot ---------- */
+  .shotwrap{ display:grid; grid-template-columns: 1.1fr .9fr; gap:56px; align-items:center; }
+  @media (max-width:900px){ .shotwrap{ grid-template-columns:1fr; } }
+  .shot-frame{
+    background:var(--panel); border:1px solid var(--hairline); border-radius:14px;
+    padding:14px; box-shadow:0 30px 60px -20px rgba(0,0,0,.6);
+  }
+  .shot-frame .titlebar{ display:flex; gap:6px; padding:2px 6px 12px; }
+  .shot-frame .titlebar i{ width:9px; height:9px; border-radius:50%; background:var(--hairline-lit); }
+  .shot-frame img{ border-radius:6px; border:1px solid var(--hairline); }
+  .callouts{ display:flex; flex-direction:column; gap:26px; }
+  .callout{ display:flex; gap:14px; }
+  .callout .mark{ width:8px; height:8px; border-radius:2px; margin-top:7px; flex:none; }
+  .callout h4{ font-size:16px; font-weight:600; margin:0; }
+  .callout p{ color:var(--text-2); font-size:14.5px; margin:5px 0 0; }
+
+  /* ---------- specs strip (diagnostics panel styling) ---------- */
+  .diagpanel{
+    background:var(--panel); border:1px solid var(--hairline); border-radius:var(--radius-m);
+    overflow:hidden;
+  }
+  .diaghead{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:16px 24px; border-bottom:1px solid var(--hairline);
+    font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-3);
+  }
+  .diaggrid{ display:grid; grid-template-columns:repeat(3,1fr); }
+  @media (max-width:760px){ .diaggrid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .diaggrid{ grid-template-columns:1fr; } }
+  .diagcell{ padding:26px 24px; border-right:1px solid var(--hairline); border-bottom:1px solid var(--hairline); }
+  .diagcell:nth-child(3n){ border-right:none; }
+  .diagcell .k{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-3); }
+  .diagcell .v{ font-family:var(--mono); font-size:19px; font-weight:600; margin-top:8px; color:var(--text-1); }
+  .diagcell .v.green{ color:var(--green); }
+  .diagcell .v.amber{ color:var(--amber); }
+
+  /* ---------- use cases ---------- */
+  .cases{ display:grid; grid-template-columns:repeat(5,1fr); gap:1px; background:var(--hairline); border:1px solid var(--hairline); border-radius:var(--radius-m); overflow:hidden; }
+  @media (max-width:1080px){ .cases{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:900px){ .cases{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .cases{ grid-template-columns:1fr; } }
+  .case{ background:var(--panel); padding:26px 22px; }
+  .case .eyebrow{ margin-bottom:10px; color:var(--text-3); }
+  .case p{ font-size:14.5px; color:var(--text-2); margin:0; }
+
+  /* ---------- download / cta ---------- */
+  .cta{
+    background:var(--panel); border:1px solid var(--hairline); border-radius:14px;
+    padding:56px clamp(24px,5vw,64px); display:flex; justify-content:space-between; align-items:center; gap:40px;
+  }
+  @media (max-width:760px){ .cta{ flex-direction:column; align-items:flex-start; } }
+  .cta h2{ font-size:clamp(28px,4vw,42px); font-weight:800; text-transform:uppercase; }
+  .cta .meta{ font-family:var(--mono); font-size:12.5px; color:var(--text-3); margin-top:14px; }
+  .power{ flex:none; display:flex; flex-direction:column; align-items:center; gap:10px; }
+  .power .pill{
+    width:64px; height:34px; border-radius:17px; background:var(--green);
+    display:flex; align-items:center; padding:3px; box-shadow:0 0 22px -4px rgba(63,224,131,.55);
+  }
+  .power .pill i{ width:28px; height:28px; border-radius:50%; background:#f7fafc; margin-left:auto; }
+  .power .label{ font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.14em; color:var(--green); }
+  .fineprint{ margin-top:20px; font-size:12.5px; color:var(--text-3); max-width:70ch; }
+
+  /* ---------- footer ---------- */
+  footer{ border-top:1px solid var(--hairline); padding:40px 0 56px; }
+  footer .row{ display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; }
+  footer .word{ font-family:var(--mono); font-size:12px; color:var(--text-3); }
+
+  /* the site-wide nav back to the other apps, same convention every
+     other app page closes on - a separate class so it does not fight
+     the product footer's own rules above, which use the bare
+     tag selector. */
+  .sitefoot{ display:flex; flex-wrap:wrap; align-items:center; gap:22px;
+    border-top:1px solid var(--hairline); padding:26px clamp(18px,4vw,40px); }
+  .sitefoot a{ font-family:var(--mono); font-size:11px; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--text-3); text-decoration:none; transition:color .15s; }
+  .sitefoot a:hover, .sitefoot a:focus-visible{ color:var(--text-1); }
+  .sitefoot .who{ margin-left:auto; font-family:var(--mono); font-size:10.5px;
+    letter-spacing:.08em; color:var(--text-3); }
+</style>
+<link rel="canonical" href="https://amanorsac.studio/secondout">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "SecondOut",
+  "url": "https://amanorsac.studio/secondout",
+  "description": "SecondOut mirrors a DAW's master bus to a second, independent output device without touching the primary audio interface. VST3 and standalone, Windows and macOS.",
+  "operatingSystem": "Windows, macOS",
+  "softwareVersion": "1.3.2",
+  "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" },
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Audio utility",
+  "image": "https://amanorsac.studio/images/apps/secondout-screenshot.png",
+  "author": {
+    "@id": "https://amanorsac.studio/#studio"
+  },
+  "publisher": {
+    "@id": "https://amanorsac.studio/#studio"
+  }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
 </head>
-<body>
-<main>
-  <a class="brand" href="apps.html"><img src="images/apps/secondout-icon.png" alt=""><span><b>SecondOut</b><span>Aquarii Audio</span></span></a>
-  <p class="light"><i></i> Briefly offline</p>
-  <h1>Back within the hour.</h1>
-  <p>SecondOut is taking a short pause while the purchase-and-download flow is finished off. The page, the price and the Buy button return as soon as that's done.</p>
-  <div class="card"><p><b>Already bought it?</b> Nothing is lost. Your download and license key will be waiting under <b>My Apps</b> in your account the moment this page is back.</p></div>
-  <a class="go" href="apps.html">&larr; Back to the App Store</a>
-</main>
+<body data-app="secondout">
+
+
+<nav class="top">
+  <div class="wrap row">
+    <div class="brand">
+      <img src="images/apps/secondout-icon.png" alt="" />
+      <div class="word"><b>SecondOut</b><span>Amanorsac&nbsp;Studio</span></div>
+    </div>
+    <div class="navlinks">
+      <a href="apps.html">&larr; App Store</a>
+      <a href="#problem">Why</a>
+      <a href="#how">How it works</a>
+      <a href="#product">Product</a>
+      <a href="#specs">Specs</a>
+      <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+      <button class="btn btn-primary buy-btn" data-buy type="button">Buy — $19</button>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span> VST3 &nbsp;·&nbsp; STANDALONE &nbsp;·&nbsp; WINDOWS &amp; MACOS</div>
+    <h1>ONE MASTER BUS.<br>TWO INDEPENDENT<br><em>OUTPUTS.</em></h1>
+    <p class="sub">SecondOut mirrors your DAW's master bus to a second output device — <b>without touching your main audio interface</b>. Stream your mix, feed a switcher, or record a safety copy, while your monitoring path stays exactly as it is.</p>
+    <div class="ctas">
+      <button class="btn btn-primary buy-btn" data-buy type="button">Buy — $19</button>
+      <a class="btn btn-ghost" href="#how">See how it works</a>
+    </div>
+    <p class="buy-status" data-buy-status hidden></p>
+    <p class="promo-line" data-promo hidden></p>
+    <ul class="assure" data-assure hidden></ul>
+    <p class="meta">$19, once &nbsp;·&nbsp; lifetime license &nbsp;·&nbsp; 1 year of updates included &nbsp;·&nbsp; version 1.3.2 for Windows and macOS &nbsp;·&nbsp; signed and notarised &nbsp;·&nbsp; installs through Amanorsac Hub</p>
+
+    <div class="diagram">
+      <div class="diagram-frame">
+        <svg viewBox="0 0 920 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Signal diagram: the DAW master bus splits into your existing ASIO monitoring path and an independent SecondOut path to a second device.">
+          <!-- source -->
+          <rect x="20" y="108" width="176" height="44" rx="6" fill="#171b21" stroke="#333a44"/>
+          <text x="108" y="135" text-anchor="middle" fill="#f2f4f6" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600">DAW MASTER BUS</text>
+
+          <!-- split lines -->
+          <path d="M196 130 H 240 V 66 H 300" fill="none" stroke="#4f9dde" stroke-width="2.5"/>
+          <path d="M196 130 H 240 V 194 H 300" fill="none" stroke="#3fe083" stroke-width="2.5" class="flow-dash"/>
+
+          <!-- path A: existing / ASIO -->
+          <rect x="300" y="44" width="200" height="44" rx="6" fill="#12151a" stroke="#3a4653"/>
+          <text x="400" y="71" text-anchor="middle" fill="#e7edf3" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="600">AUDIO INTERFACE · ASIO</text>
+          <path d="M500 66 H 560" stroke="#4f9dde" stroke-width="2.5"/>
+          <rect x="560" y="44" width="180" height="44" rx="6" fill="#12151a" stroke="#3a4653"/>
+          <text x="650" y="71" text-anchor="middle" fill="#9aa5b3" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="600">YOUR MONITORS</text>
+          <text x="742" y="71" fill="#4f9dde" font-family="JetBrains Mono, monospace" font-size="16">→</text>
+          <text x="300" y="30" fill="#4f9dde" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="1.5" font-weight="600">UNCHANGED</text>
+
+          <!-- path B: SecondOut -->
+          <rect x="300" y="172" width="200" height="44" rx="6" fill="rgba(63,224,131,.07)" stroke="#3fe083"/>
+          <text x="400" y="199" text-anchor="middle" fill="#3fe083" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="700">SECONDOUT · WASAPI</text>
+          <path d="M500 194 H 560" stroke="#3fe083" stroke-width="2.5" class="flow-dash"/>
+          <rect x="560" y="172" width="180" height="44" rx="6" fill="rgba(63,224,131,.07)" stroke="#3fe083"/>
+          <text x="650" y="199" text-anchor="middle" fill="#e7edf3" font-family="JetBrains Mono, monospace" font-size="12.5" font-weight="600">SECOND DEVICE</text>
+          <text x="742" y="199" fill="#3fe083" font-family="JetBrains Mono, monospace" font-size="16">→</text>
+          <text x="300" y="158" fill="#3fe083" font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="1.5" font-weight="600">NEW · INDEPENDENT</text>
+        </svg>
+        <div class="diagram-caption">
+          <div class="key"><span class="swatch" style="background:var(--blue)"></span> Your existing monitoring path — SecondOut never touches it</div>
+          <div class="key"><span class="swatch" style="background:var(--green)"></span> The second path SecondOut opens on its own</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The problem</div>
+      <h2>ASIO gives you<br>one stream. Exclusively.</h2>
+      <p>ASIO drivers lock a device to one process at a time — brilliant for low-latency tracking, useless the moment you also need that same mix somewhere else: a switcher for a service, an encoder for a stream, a safety recording running in parallel.</p>
+    </div>
+    <div class="split">
+      <div class="card problem">
+        <span class="tag">Without SecondOut</span>
+        <h3>Pick one destination.</h3>
+        <p>Your DAW owns the interface. Nothing else can open it — not OBS, not a second console, not a hardware switcher — without stopping your session first.</p>
+        <div class="schematic"><div class="lock-path"></div></div>
+      </div>
+      <div class="card solution">
+        <span class="tag">With SecondOut</span>
+        <h3>Keep both.</h3>
+        <p>Your interface stays exactly as configured. SecondOut opens a second, independent connection alongside it — no session interruption, no re-patching.</p>
+        <div class="schematic">
+          <div class="split-path"><i class="a"></i><i class="b"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How it works</div>
+      <h2>It taps the signal<br>before ASIO ever sees it.</h2>
+      <p>SecondOut is a plugin, not a driver replacement. It sits on your master bus like any other insert — reading the exact audio your DAW is about to output, then handling the second device entirely on its own.</p>
+    </div>
+    <div class="specsheet">
+      <div class="specrow">
+        <div class="idx"><b>01</b>TAP</div>
+        <div>
+          <h3>Reads the post-fader signal, inside your DAW</h3>
+          <p>Drop it on the master bus. It copies the exact mix you're hearing — before it ever reaches your audio driver — so the feed matches your monitors sample for sample.</p>
+        </div>
+      </div>
+      <div class="specrow">
+        <div class="idx"><b>02</b>STREAM</div>
+        <div>
+          <h3>Opens its own WASAPI connection to Device B</h3>
+          <p>Independent of ASIO entirely. Runs in shared mode by design, so it won't fight your interface — or anything else — for exclusive access to a device. Switching devices happens on a background thread, so the plugin window never locks up while it reconnects.</p>
+        </div>
+      </div>
+      <div class="specrow">
+        <div class="idx"><b>03</b>CORRECT</div>
+        <div>
+          <h3>Keeps two unsynced clocks locked together</h3>
+          <p>Your DAW and the second device run on separate hardware clocks that drift apart by nature. A servo loop nudges the resampling ratio by fractions of a sample per second — the buffer stays centred, and you never hear it happen.</p>
+        </div>
+      </div>
+      <div class="specrow">
+        <div class="idx"><b>04</b>ROUTE</div>
+        <div>
+          <h3>Picks a specific pair on multi-channel interfaces</h3>
+          <p>On an interface with more than two outputs, choose exactly which pair SecondOut uses — outputs 1-2, 3-4, and so on. Run several SecondOut instances at once, each on its own pair, to send different mixes out different outputs of the same interface simultaneously.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="product">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The interface</div>
+      <h2>Built to be glanced at,<br>not stared at.</h2>
+      <p>One screen. One question it answers instantly: is the feed healthy? Everything else stays out of the way until you need it.</p>
+    </div>
+    <div class="shotwrap">
+      <div class="shot-frame">
+        <div class="titlebar"><i></i><i></i><i></i></div>
+        <img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window, showing an active stream to a Realtek output device with buffer health at 49 percent, drift trim at -0.3 ppm, and zero underruns" />
+      </div>
+      <div class="callouts">
+        <div class="callout"><span class="mark" style="background:var(--green)"></span><div><h4>A status you can read from across the room</h4><p>One glance answers it: streaming, buffering, or a problem — never a wall of meters.</p></div></div>
+        <div class="callout"><span class="mark" style="background:var(--blue)"></span><div><h4>Buffer health, not a black box</h4><p>Watch the drift correction hold centre. If it starts creeping toward an edge, you'll see it before it becomes a dropout.</p></div></div>
+        <div class="callout"><span class="mark" style="background:var(--amber)"></span><div><h4>Every device your system can see</h4><p>Physical interfaces or virtual cables — pick any WASAPI output, rescan when something changes.</p></div></div>
+        <div class="callout"><span class="mark" style="background:var(--red)"></span><div><h4>Clear about failure, not silent about it</h4><p>Device disconnected, or another app already has it open — SecondOut says which, and what to do next.</p></div></div>
+        <div class="callout"><span class="mark" style="background:var(--green)"></span><div><h4>A channel picker for multi-output interfaces</h4><p>Shows up automatically once a device reports more than two outputs — pick the exact pair this instance should use.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="specs">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Specifications</div>
+      <h2>The numbers that matter<br>when it's live.</h2>
+    </div>
+    <div class="diagpanel">
+      <div class="diaghead"><span>System requirements &amp; behaviour</span><span>Version 1.3.2</span></div>
+      <div class="diaggrid">
+        <div class="diagcell"><div class="k">Format</div><div class="v">VST3</div></div>
+        <div class="diagcell"><div class="k">Also included</div><div class="v">Standalone app</div></div>
+        <div class="diagcell"><div class="k">Platform</div><div class="v">Windows 10/11 · macOS 11+</div></div>
+        <div class="diagcell"><div class="k">Output mode</div><div class="v green">WASAPI shared (Windows)</div></div>
+        <div class="diagcell"><div class="k">Channels</div><div class="v green">Selectable pair</div></div>
+        <div class="diagcell"><div class="k">Buffer window</div><div class="v">~400 ms</div></div>
+        <div class="diagcell"><div class="k">Drift correction</div><div class="v amber">&lt; 10 ppm servo</div></div>
+        <div class="diagcell"><div class="k">Sample rate</div><div class="v">Auto-matched</div></div>
+        <div class="diagcell"><div class="k">Your interface</div><div class="v green">Never touched</div></div>
+      </div>
+    </div>
+    <p class="fineprint" style="margin-top:18px">The mechanism described above is the Windows build's. The macOS build is new in version 1.3.2 and does the same job through the system's own audio stack; one purchase covers both.</p>
+  </div>
+</section>
+
+<section id="cases">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Where it fits</div>
+      <h2>Anywhere one mix<br>needs two destinations.</h2>
+    </div>
+    <div class="cases">
+      <div class="case"><div class="eyebrow">Broadcast</div><p>Feed a switcher or encoder from your DAW's master bus while your interface stays dedicated to monitoring.</p></div>
+      <div class="case"><div class="eyebrow">Church &amp; live AV</div><p>Send the mix to a streaming rig during a service without repatching the console or your monitor path.</p></div>
+      <div class="case"><div class="eyebrow">Podcasting &amp; streaming</div><p>Route your session into OBS or a capture app through a virtual cable, no exclusive-mode conflicts.</p></div>
+      <div class="case"><div class="eyebrow">Safety recording</div><p>Keep a parallel record of the mix on a second device, isolated from your primary signal chain.</p></div>
+      <div class="case"><div class="eyebrow">Multi-mix distribution</div><p>Run several SecondOut instances at once, each on its own output pair of the same interface, to send different mixes to different destinations simultaneously.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="get">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <div class="eyebrow">Get SecondOut</div>
+        <h2>$19, once.<br>Windows &amp; macOS.</h2>
+        <p class="meta">VST3 · Standalone · signed on Windows, notarised on macOS</p>
+        <button class="btn btn-primary buy-btn" data-buy type="button" style="margin-top:22px;">Buy — $19</button>
+        <p class="promo-line" data-promo hidden></p>
+        <p class="fineprint">Lifetime license, one year of updates included. Buy it, install it through Amanorsac Hub, and paste the license key from your account into the plugin — one key, up to two devices, managed from <a href="/my-apps.html">My Apps</a>.</p>
+      </div>
+      <div class="power">
+        <div class="pill"><i></i></div>
+        <div class="label">OUTPUT ON</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <div class="brand">
+      <img src="images/apps/secondout-icon.png" alt="" style="width:22px;height:22px;" />
+      <span class="word">© Amanorsac Studio &nbsp;·&nbsp; SecondOut</span>
+    </div>
+    <span class="word">Built with JUCE &nbsp;·&nbsp; VST3 is a trademark of Steinberg Media Technologies GmbH</span>
+  </div>
+</footer>
+
+<footer class="sitefoot">
+  <a href="apps.html">App Store</a>
+  <a href="apps.html">HarmonieMD</a>
+  <a href="apps.html">PerformLive</a>
+  <a href="nebulatide.html">Nebula Tide</a>
+  <a href="pulseroom.html">PulseRoom</a>
+  <a href="index.html">Studio</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+/* reveal on scroll; falls back to visible when unsupported or reduced */
+if('IntersectionObserver' in window &&
+   !matchMedia('(prefers-reduced-motion: reduce)').matches){
+  var ro = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+  }, { threshold:.15 });
+  document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+}else{
+  document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+}
+</script>
+<link rel="stylesheet" href="/assets/hub-download.css">
+<script src="/assets/hub-download.js" defer></script>
+<script src="assets/track.js" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/store-state.js"></script>
+<script src="assets/app-purchase.js"></script>
+<script src="assets/promo.js" defer></script>
+<script src="assets/assure.js" defer></script>
+<script src="assets/buy-dock.js" defer></script>
+<script src="assets/site-auth.js"></script>
 </body>
 </html>

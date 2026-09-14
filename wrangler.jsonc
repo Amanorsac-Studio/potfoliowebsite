@@ -37,6 +37,22 @@
   "observability": {
     "enabled": true
   },
+
+  /* Preview URLs. Every version uploaded without deploying gets its own
+     address, <version>-potfoliowebsite.<subdomain>.workers.dev, running
+     the real Worker with the real bindings while amanorsac.studio keeps
+     serving whatever is deployed. That is how a change is looked at
+     before anyone else sees it.
+
+     For this to happen on a push, Workers Builds needs its Version
+     command set to "npx wrangler versions upload" - NOT "wrangler
+     deploy". With deploy there, every branch published itself over the
+     live site, which is exactly what happened in September 2026 when a
+     second branch's build took over amanorsac.studio.
+
+     The address is unguessable but not private: lock it behind
+     Cloudflare Access if a preview must be for one person only. */
+  "preview_urls": true,
   /* The app installers. Too big for Supabase's free plan at 78 MB and
      171 MB, and R2 costs nothing to serve however often they are taken.
      A binding rather than a key: the Worker reaches the bucket because

@@ -30,11 +30,16 @@
   var buttons = document.querySelectorAll('[data-buy]');
   if (!app || !buttons.length) return;
 
-  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  var sb = window.amanorsacClient ? window.amanorsacClient()
+                                  : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var statusEl = document.querySelector('[data-buy-status]');
 
-  var APP_NAMES = { secondout: 'SecondOut' };
-  var PRICES = { secondout: 'Buy — $19' };
+  var APP_NAMES = { secondout: 'SecondOut', stemsorter: 'Stem Sorter', nebulatide2: 'Nebula Tide 2',
+                    ambanalog: 'AMB Analog', aether: 'AETHER', afdgate: 'AFD Gate',
+                    alignpro: 'Align Pro', chordlight88: 'Chordlight 88' };
+  var PRICES = { secondout: 'Buy — $19', stemsorter: 'Buy — $19', nebulatide2: 'Name your price',
+                 ambanalog: 'Buy — $39', aether: 'Buy — $12', afdgate: 'Buy — $12',
+                 alignpro: 'Buy — $39', chordlight88: 'Buy — $14' };
   var HUB_PROTOCOL = 'amanorsac';
   var OWNED_LABEL = 'Install in Amanorsac Hub';
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }
@@ -75,13 +80,37 @@
     say((thanks ? 'Thank you — you’re in. ' : '') + OWNED_NOTE);
   }
 
+  /* An app can be on sale on a preview build and not yet in public -
+     see assets/store-state.js. A page that is not on sale here keeps
+     its price on the button but cannot start a checkout. */
+  var onSale = true;
+  function checkOnSale() {
+    if (!window.StoreState) return Promise.resolve(true);
+    return window.StoreState.state(app).then(function (st) {
+      onSale = (st === null || st === 'available');
+      return onSale;
+    }).catch(function () { return true; });
+  }
+
+  function showComingSoon() {
+    setButtons('Coming soon', true, 'soon');
+    say('Not on sale yet. Make an account and ' + esc(labelFor(app)) +
+        ' lands in <a href="/my-apps.html">My Apps</a> the day it does.');
+  }
+
   function render() {
-    return sb.auth.getSession().then(function (s) {
-      var signedIn = !!(s && s.data && s.data.session);
-      if (!signedIn) { setButtons(PRICES[app] || 'Buy', false); return; }
-      return checkAccess().then(function (owns) {
-        if (owns) showOwned(false);
-        else setButtons(PRICES[app] || 'Buy', false);
+    return checkOnSale().then(function (sale) {
+      return sb.auth.getSession().then(function (s) {
+        var signedIn = !!(s && s.data && s.data.session);
+        if (signedIn) {
+          return checkAccess().then(function (owns) {
+            if (owns) return showOwned(false);          // owners always get their door
+            if (!sale) return showComingSoon();
+            setButtons(PRICES[app] || 'Buy', false);
+          });
+        }
+        if (!sale) return showComingSoon();
+        setButtons(PRICES[app] || 'Buy', false);
       });
     });
   }
@@ -158,6 +187,7 @@
           return;
         }
         if (b.getAttribute('data-mode') === 'hub') return openInHub();
+        if (b.getAttribute('data-mode') === 'soon') return;
         return startCheckout(session);
       });
     });

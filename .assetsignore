@@ -43,3 +43,26 @@ images/apps/Pulse Room Carasol Background.jpg
 # the desktop app source; built separately, not a page
 hub/
 .github/
+
+# Pages that are deliberately not reachable. The files stay in the
+# repository because they are finished work waiting on a decision -
+# they are simply not uploaded, so the Worker answers 404.html for
+# them the same as it would for a made-up address.
+stemsorter.html
+harmoniemd.html
+
+# The loading bay for pictures, and the button that sends them. Both
+# are how the site gets made, not part of the site.
+images/incoming/
+send-pictures.bat
+deploy-prices.bat
+
+# the button that sends installers up to R2; not part of the site
+send-installers.bat
+
+# Notes for developers and for the studio: the licensing spec, the Hub
+# integration notes, the Supabase email templates, the one-page briefs.
+# Every one of them was being served as a file at /docs/... simply because
+# the assets directory is the repository root. None is linked from a page
+# and none is a page, so none of them should ever have been fetchable.
+docs/

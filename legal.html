@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Licence, terms and privacy | Amanorsac Studio</title>
+<meta name="description" content="The end user licence agreement, terms of service and privacy policy for Amanorsac Studio's apps and plugins.">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   The legal pages. One page, three documents, anchored so the plugin's
+   About screen and any email can link straight at the one it means.
+
+   Deliberately plain: no reveal animations, no gradients, nothing that
+   moves. Someone reading this is either checking one clause or has a
+   problem, and both are better served by a page that reads like a
+   document than one that performs.
+   ===================================================================== */
+:root{
+  --bg:#0b0f14; --panel:#121821; --line:rgba(255,255,255,.09);
+  --text:#e4ebf3; --muted:#a3b2c2; --dim:#7f8fa1; --accent:#35E0F0;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.wrap{max-width:760px;margin:0 auto;padding:0 clamp(18px,5vw,32px)}
+.top{border-bottom:1px solid var(--line);padding:14px clamp(18px,5vw,32px);display:flex;gap:18px;align-items:center}
+.top a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+.top a:hover{color:var(--text)}
+.top .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+header.page{padding:clamp(48px,8vh,84px) 0 0}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.025em;
+  font-size:clamp(30px,4.6vw,46px);line-height:1.08;margin:0 0 16px}
+.lede{color:var(--muted);font-size:17px;margin:0 0 10px}
+.updated{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0}
+nav.toc{margin:34px 0 0;padding:20px 22px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+nav.toc b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 10px;font-weight:500}
+nav.toc ol{margin:0;padding-left:20px}
+nav.toc li{margin:4px 0}
+section{padding:clamp(44px,7vh,72px) 0 0}
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(22px,3vw,30px);margin:0 0 6px;scroll-margin-top:24px}
+h2 + .updated{margin:0 0 22px}
+h3{font-family:var(--display);font-weight:600;font-size:17.5px;margin:26px 0 6px}
+p{margin:0 0 14px}
+ul{margin:0 0 14px;padding-left:20px}
+li{margin:6px 0}
+.plain{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 22px;color:var(--muted)}
+.plain b{color:var(--text)}
+footer{border-top:1px solid var(--line);margin-top:clamp(56px,9vh,96px);
+  padding:26px clamp(18px,5vw,32px);display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a href="index.html">← Amanorsac Studio</a>
+  <a href="apps.html">App Store</a>
+  <span class="who">Legal</span>
+</div>
+
+<header class="page wrap">
+  <h1>Licence, terms and privacy.</h1>
+  <p class="lede">Three documents, in plain English wherever plain English will do. They cover every app and plugin Amanorsac Studio sells or gives away.</p>
+  <p class="updated">Last updated 11 September 2026</p>
+
+  <nav class="toc">
+    <b>On this page</b>
+    <ol>
+      <li><a href="#eula">End user licence agreement</a> — what you may do with the software</li>
+      <li><a href="#terms">Terms of service</a> — buying, refunds and the account</li>
+      <li><a href="#privacy">Privacy policy</a> — what is stored and what is not</li>
+    </ol>
+  </nav>
+</header>
+
+<section class="wrap" id="eula">
+  <h2>1. End user licence agreement</h2>
+  <p class="updated">Applies to every Amanorsac Studio app and plugin</p>
+
+  <div class="plain"><b>The short version.</b> You are buying a licence to use the software, not the software itself. One purchase covers two computers at a time, and you can move it between them yourself. Don't resell it, don't pull it apart, and don't expect it to be perfect.</div>
+
+  <h3>1.1 What you get</h3>
+  <p>When you buy a product, Amanorsac Studio grants you a non-exclusive, non-transferable licence to install and use it. The licence does not expire. Updates released during your included update period are part of it, and a version you already have keeps working after that period ends.</p>
+
+  <h3>1.2 How many machines</h3>
+  <p>Unless the product page says otherwise, one licence key activates two computers at a time. Both may be yours, or one yours and one a studio machine you work on. You may deactivate a machine from inside the product or from My Apps at any time, which frees the slot immediately.</p>
+
+  <h3>1.3 What you may not do</h3>
+  <ul>
+    <li>Share, sell, rent, lend or sub-licence your key, or publish it anywhere.</li>
+    <li>Reverse engineer, decompile or disassemble the software, or defeat its licensing, except where law expressly permits it despite this clause.</li>
+    <li>Redistribute the installers, the sound libraries or any content shipped inside them.</li>
+    <li>Use the software to build a competing product.</li>
+  </ul>
+  <p>Sound libraries are licensed, not sold. You may use the audio a product makes in your own music, commercially, with no further payment and no credit required. You may not extract the underlying recordings and distribute them as sounds.</p>
+
+  <h3>1.4 Activation and the internet</h3>
+  <p>Licensed products check a key against our server the first time, and quietly now and then afterwards. Between checks they work offline, for at least thirty days at a stretch. We do not require an always-on connection, and we do not use a dongle.</p>
+
+  <h3>1.5 If the licence ends</h3>
+  <p>The licence ends if you break the terms in 1.3. If that happens, stop using the software and remove it. We may deactivate a key that we can show has been shared publicly or used fraudulently.</p>
+
+  <h3>1.6 No warranty, and the limit of what we owe you</h3>
+  <p>The software is provided as it is. We test it, we care about it, and we still cannot promise it is free of faults or that it will suit a particular purpose. To the fullest extent the law allows, Amanorsac Studio is not liable for lost work, lost recordings, lost income or any indirect loss, and our total liability for any claim is limited to what you paid for the product.</p>
+  <p>Keep backups. Do not put an unfamiliar plugin in front of an audience without rehearsing with it first. That is true of all software, not only ours.</p>
+
+  <h3>1.7 The law that applies</h3>
+  <p>This agreement is governed by the law of the place where Amanorsac Studio is established, and any dispute will be heard by the courts of that place. Nothing here removes rights you have as a consumer that cannot be removed by agreement.</p>
+</section>
+
+<section class="wrap" id="terms">
+  <h2>2. Terms of service</h2>
+  <p class="updated">Buying, accounts and support</p>
+
+  <div class="plain"><b>The short version.</b> Make an account, buy a product, get a key in My Apps. If a product genuinely does not work for you, write to us and we will sort it out.</div>
+
+  <h3>2.1 Your account</h3>
+  <p>You need an account to buy anything, to find your licence keys and to download through Amanorsac Hub. Keep your password to yourself. Tell us if you think someone else has it.</p>
+
+  <h3>2.2 Payment</h3>
+  <p>Payments are taken by Stripe. We never see or store your card details. Prices are in US dollars and shown before you pay. Where a product is sold as pay what you want, what you pay is what you chose, within the range shown at checkout.</p>
+
+  <h3>2.3 Refunds</h3>
+  <p>Downloadable software cannot be returned in the way a physical thing can, so we do not offer a no-questions refund window. What we do offer is this: if a product does not work on a system it says it supports, and we cannot fix it for you, we refund it. Write to <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a> within thirty days of buying, tell us what happened, and you will get a straight answer rather than a form.</p>
+  <p>If the law where you live gives you a stronger right to a refund, that right applies and this clause does not reduce it.</p>
+
+  <h3>2.4 Availability</h3>
+  <p>We aim to keep downloads and activation working. We do not promise either is available without interruption, and we may take a product off sale at any time. If a product you have bought is withdrawn, your licence still works and you can still download it from My Apps.</p>
+
+  <h3>2.5 Support</h3>
+  <p>Support is by email, from a person, at <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a>. There is no support subscription, and there never will be one.</p>
+
+  <h3>2.6 Changes</h3>
+  <p>We may change these terms. The date at the top of this page says when they last changed, and a change never applies backwards to a purchase you already made.</p>
+</section>
+
+<section class="wrap" id="privacy">
+  <h2>3. Privacy policy</h2>
+  <p class="updated">What is stored, why, and for how long</p>
+
+  <div class="plain"><b>The short version.</b> Your email address, what you bought, and an anonymous id per computer so the two-machine limit can work. No tracking of what you make, no selling anything to anyone, ever.</div>
+
+  <p>The privacy policy is a document of its own, because it is the one the app stores ask for by address and it needs to answer at that address on its own. It covers what the website records, what each app and plug-in sends and does not send, the four companies involved and what each is allowed to do, how long anything is kept, and how to have all of it deleted.</p>
+
+  <p><b><a href="/privacy">Read the privacy policy →</a></b></p>
+</section>
+
+<footer>
+  <a href="index.html">Studio</a>
+  <a href="apps.html">App Store</a>
+  <a href="my-apps.html">My Apps</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">© Amanorsac Studio</span>
+</footer>
+
+</body>
+</html>

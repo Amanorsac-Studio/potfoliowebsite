@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AETHER: dynamic air exciter for vocals, choir and mix bus | Amanorsac Studio</title>
+<meta name="description" content="AETHER is a dynamic air exciter. Tunable presence and air bands, a real harmonic exciter, a sibilance-aware limiter that keeps the sparkle and drops the harshness, and stereo focus that aims the air at the centre or the sides. VST3 and AU, Windows and macOS.">
+<meta property="og:title" content="AETHER — air you can aim">
+<meta property="og:description" content="Tunable presence and air, a real harmonic exciter, and a sibilance-aware limiter. The air plugin for people who hit the ceiling of two fixed sliders.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/aether/ui.png">
+<meta property="og:url" content="https://amanorsac.studio/aether.html">
+<link rel="icon" href="images/apps/aether/icon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   AETHER product page.
+
+   The palette is the plugin's own, and used the way the plugin uses it:
+   a dark chassis, brushed-silver panels for the things you touch, and
+   cyan reserved for whatever is live. Cyan is never a background here,
+   because it is never a background there.
+   ===================================================================== */
+:root{
+  --ground:#0E1116; --glass:#0A1620;
+  --panel:#D9DEE3; --panel-lite:#E6EAEE; --panel-line:#BCC5CE;
+  --ink:#1B2733; --ink-mute:#5B6B78;
+  --text:#E6EAEE; --muted:#9DAEBD; --dim:#7A8B9B; --line:rgba(255,255,255,.10);
+  --cy:#35E0F0; --cy-bright:#A9F4FA; --cy-deep:#0AA9BB; --alert:#FF5A4A;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:20px;
+  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--ground);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--cy);outline-offset:3px;border-radius:4px}
+
+.wrap{max-width:1080px;margin:0 auto;padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+section{padding:clamp(60px,9vh,110px) 0}
+
+/* ---------- top ---------- */
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:13px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--ground) 88%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;font-family:var(--display);font-weight:800;font-size:14px;letter-spacing:.34em}
+.top .sa{--sa-fg:var(--text);--sa-bg:#141A22;--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#04161a}
+
+/* ---------- buttons ---------- */
+.cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;
+  border-radius:999px;padding:14px 28px;min-height:50px;
+  background:var(--cy);color:#062429;transition:transform var(--dur) var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:translateY(0) scale(.985)}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.cta[disabled]{opacity:.6;cursor:default;transform:none}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(52px,8vh,92px)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
+.badges span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--cy);border:1px solid color-mix(in srgb,var(--cy) 36%,transparent);
+  background:color-mix(in srgb,var(--cy) 9%,transparent);border-radius:999px;padding:5px 12px}
+.badges span.soon{color:var(--muted);border-color:var(--line);background:transparent}
+h1{font-family:var(--display);font-weight:800;letter-spacing:.02em;line-height:1;
+  font-size:clamp(52px,10vw,124px);margin:0 0 6px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.34em;text-transform:uppercase;
+  color:var(--cy);margin:0 0 26px}
+.hero .one{font-family:var(--display);font-weight:700;font-size:clamp(22px,3.2vw,34px);
+  letter-spacing:-.02em;margin:0 0 16px}
+.hero .sub{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);max-width:60ch;margin:0 0 30px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:0}
+.buy-status{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:56ch}
+.buy-status.bad{color:var(--alert)}
+.buy-status a{color:var(--cy)}
+.shot{margin-top:clamp(34px,6vh,60px);border:1px solid var(--line);border-radius:var(--r-lg);
+  overflow:hidden;background:#151A21;box-shadow:0 40px 100px rgba(0,0,0,.6)}
+.shot img{width:100%;height:auto}
+.shot-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:12px 0 0}
+
+/* ---------- headings ---------- */
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
+  font-size:clamp(26px,3.4vw,40px);margin:0 0 14px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--cy);margin:0 0 12px}
+.lede{color:var(--muted);max-width:64ch;margin:0 0 40px;font-size:17px}
+
+/* ---------- the demo ---------- */
+.abs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){ .abs{grid-template-columns:1fr} }
+.ab{background:var(--panel);color:var(--ink);border-radius:var(--r);
+  border:1px solid var(--panel-line);padding:20px 22px}
+.ab h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 2px;color:var(--ink)}
+.ab .src{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-mute);margin:0 0 16px}
+.ab-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ab-play{width:46px;height:46px;flex:0 0 auto;border-radius:50%;border:1px solid var(--panel-line);
+  background:var(--panel-lite);color:var(--ink);cursor:pointer;display:grid;place-items:center;
+  font-size:15px;line-height:1}
+.ab-play:hover{background:#fff}
+.ab-sw{display:flex;border:1px solid var(--panel-line);border-radius:999px;overflow:hidden;background:var(--panel-lite)}
+.ab-sw button{border:0;cursor:pointer;background:transparent;color:var(--ink-mute);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  padding:10px 18px;min-height:40px}
+.ab-sw button.on{background:var(--cy);color:#062429;font-weight:600}
+.ab-bar{flex:1 1 120px;height:4px;border-radius:2px;background:#C3CBD3;position:relative;overflow:hidden;min-width:90px}
+.ab-bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--cy-deep);display:block}
+.ab-note{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-mute);
+  margin:14px 0 0;line-height:1.7}
+.ab-note:empty{display:none}
+.ab-note.bad{color:#A8402F}
+.demo-fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);margin:22px 0 0}
+
+/* ---------- the five ---------- */
+.five{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.ctrl{background:var(--panel);color:var(--ink);border:1px solid var(--panel-line);
+  border-radius:var(--r);padding:22px 20px 20px}
+.ctrl svg{display:block;margin:0 0 16px}
+.ctrl b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--ink);margin:0 0 7px}
+.ctrl p{margin:0;font-size:14.5px;color:var(--ink-mute);line-height:1.6}
+.plus{background:var(--panel-lite);color:var(--ink);border:1px solid var(--panel-line);
+  border-radius:var(--r);padding:20px 22px;margin-top:16px;font-size:15px}
+.plus b{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+
+/* ---------- comparison ---------- */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;min-width:620px;background:#121820}
+th,td{text-align:left;padding:14px 18px;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:#161D26;font-family:var(--display);font-weight:600;font-size:14px}
+thead th:last-child{color:var(--cy)}
+tbody th{font-weight:500;color:var(--muted);font-family:var(--body)}
+td.them{color:var(--dim)}
+td.us{color:var(--text)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+
+/* ---------- presets ---------- */
+.presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+.preset{background:#121820;border:1px solid var(--line);border-radius:var(--r);padding:20px}
+.preset b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 5px}
+.preset p{margin:0;font-size:14px;color:var(--muted)}
+
+/* ---------- specs ---------- */
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.spec{background:#121820;border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.spec b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--cy);margin:0 0 9px;font-weight:500}
+.spec p{margin:0;font-size:14.5px;color:var(--muted)}
+.spec code{font-family:var(--mono);font-size:.88em;color:var(--text)}
+.warn{margin-top:18px;background:#1B1410;border:1px solid color-mix(in srgb,var(--alert) 34%,transparent);
+  border-left:3px solid var(--alert);border-radius:0 var(--r) var(--r) 0;padding:18px 22px}
+.warn b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 7px}
+.warn p{margin:0 0 8px;color:var(--muted);font-size:14.5px}
+.warn p:last-child{margin:0}
+.warn code{font-family:var(--mono);font-size:.88em;color:var(--text);background:#241A15;
+  border-radius:4px;padding:2px 6px}
+
+/* ---------- price ---------- */
+.buy{background:var(--panel);color:var(--ink);border:1px solid var(--panel-line);
+  border-radius:var(--r-lg);padding:clamp(28px,5vw,48px);display:grid;
+  grid-template-columns:auto 1fr;gap:clamp(20px,4vw,48px);align-items:center}
+.buy .slot{font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,56px);
+  letter-spacing:-.03em;line-height:1;color:var(--cy-deep);margin:0}
+.buy .slot small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-mute);font-weight:500;margin-top:10px}
+.buy h2{margin:0 0 8px;color:var(--ink)}
+.buy p{margin:0 0 18px;color:var(--ink-mute);max-width:52ch}
+.buy .cta.ghost{color:var(--ink);border-color:var(--panel-line)}
+@media (max-width:700px){ .buy{grid-template-columns:1fr;gap:16px} }
+
+/* ---------- faq ---------- */
+details{border-bottom:1px solid var(--line)}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted);font-size:18px;
+  transition:transform var(--dur) var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+details code{font-family:var(--mono);font-size:.88em;color:var(--text)}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+
+.rise{opacity:0;transform:translateY(16px);
+  transition:opacity 620ms var(--ease),transform 620ms var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rise{opacity:1;transform:none}
+}
+</style>
+<link rel="canonical" href="https://amanorsac.studio/aether">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "AETHER",
+  "alternateName": "AETHER Dynamic Air Exciter",
+  "url": "https://amanorsac.studio/aether",
+  "description": "A dynamic air exciter: tunable presence and air bands, a harmonic exciter, a sibilance-aware limiter on the boost, stereo focus and level-matched comparison.",
+  "operatingSystem": "Windows, macOS",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Audio plugin",
+  "softwareVersion": "1.0.0",
+  "offers": { "@type": "Offer", "price": "12", "priceCurrency": "USD" },
+  "image": "https://amanorsac.studio/images/apps/aether/ui.png",
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+</head>
+<body data-app="aether">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name">AETHER</span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <div class="badges">
+    <span>$12</span><span>VST3</span><span>AU</span><span>Windows</span><span>macOS</span>
+  </div>
+  <h1>AETHER</h1>
+  <p class="kicker">Dynamic Air Exciter</p>
+  <p class="one">Air you can aim.</p>
+  <p class="sub">Tunable presence and air bands, a real harmonic exciter, and a sibilance-aware limiter that keeps the sparkle and drops the harshness. Point the air at the centre for a lead vocal, or out to the sides for a choir.</p>
+  <div class="cta-row">
+    <button class="cta" id="aether-primary" data-buy type="button">Buy — $12</button>
+    <a class="cta ghost" href="#controls">See the controls</a>
+  </div>
+  <p class="fine">$12 once · one key covers two computers · Windows &amp; macOS · installs through Amanorsac Hub</p>
+  <p class="promo-line" data-promo hidden></p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <ul class="assure" data-assure hidden></ul>
+
+  <div class="shot rise" id="ae-shot">
+    <img src="images/apps/aether/ui.webp" width="830" height="510"
+         onerror="document.getElementById('ae-shot').hidden=true;document.getElementById('ae-shot-cap').hidden=true"
+         alt="AETHER's interface: the analyser across the top, then presence, air, glow, guard, focus and the output section">
+  </div>
+  <p class="shot-cap" id="ae-shot-cap">The interface, at rest · the analyser draws the boost curve once audio is running through it</p>
+</header>
+
+<section id="controls" class="wrap">
+  <p class="eyebrow">The five controls</p>
+  <h2>Five things to turn, and each one does a job you can name.</h2>
+  <div class="five">
+
+    <div class="ctrl rise">
+      <svg width="92" height="46" viewBox="0 0 92 46" fill="none" aria-hidden="true">
+        <path d="M2 38 C26 38 30 16 46 16 C62 16 66 38 90 38" stroke="#0AA9BB" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 38 H90" stroke="#BCC5CE" stroke-width="1"/>
+      </svg>
+      <b>Presence</b>
+      <p>A wide, musical lift between 1.5 and 8 kHz. Bite and articulation. Tunable, not fixed at a frequency somebody else chose.</p>
+    </div>
+
+    <div class="ctrl rise">
+      <svg width="92" height="46" viewBox="0 0 92 46" fill="none" aria-hidden="true">
+        <path d="M2 38 H44 C58 38 58 12 74 11 H90" stroke="#0AA9BB" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M2 38 H90" stroke="#BCC5CE" stroke-width="1"/>
+      </svg>
+      <b>Air</b>
+      <p>A high shelf with a soft resonant corner, 6 to 18 kHz. Silk and sparkle. Also tunable, so it sits where the source needs it.</p>
+    </div>
+
+    <div class="ctrl rise">
+      <svg width="92" height="46" viewBox="0 0 92 46" fill="none" aria-hidden="true">
+        <path d="M2 38 H90" stroke="#BCC5CE" stroke-width="1"/>
+        <g stroke="#0AA9BB" stroke-width="2.4" stroke-linecap="round">
+          <path d="M20 38 V20"/><path d="M38 38 V13"/><path d="M56 38 V24"/><path d="M74 38 V30"/>
+        </g>
+      </svg>
+      <b>Glow</b>
+      <p>Harmonic excitation. It generates top end that was never in the recording, which is what rescues a dull vocal or a distant choir mic. An EQ can only lift what is already there. This does not have that problem.</p>
+    </div>
+
+    <div class="ctrl rise">
+      <svg width="92" height="46" viewBox="0 0 92 46" fill="none" aria-hidden="true">
+        <path d="M2 38 H90" stroke="#BCC5CE" stroke-width="1"/>
+        <path d="M2 30 C24 30 30 8 46 8 C62 8 68 30 90 30" stroke="#BCC5CE" stroke-width="2" stroke-dasharray="3 4"/>
+        <path d="M2 30 C24 30 32 20 46 20 C60 20 68 30 90 30" stroke="#0AA9BB" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="46" cy="14" r="3.4" fill="#FF5A4A"/>
+      </svg>
+      <b>Guard</b>
+      <p>Watches the 5 to 9 kHz range and pulls back the boost, and only the boost, when it gets hot. The air stays. The sibilance does not.</p>
+    </div>
+
+    <div class="ctrl rise">
+      <svg width="92" height="46" viewBox="0 0 92 46" fill="none" aria-hidden="true">
+        <rect x="2" y="14" width="86" height="18" rx="9" stroke="#BCC5CE" stroke-width="1.6"/>
+        <circle cx="16" cy="23" r="6" fill="#0AA9BB"/>
+        <circle cx="76" cy="23" r="6" fill="#0AA9BB"/>
+        <circle cx="46" cy="23" r="4" fill="#BCC5CE"/>
+      </svg>
+      <b>Focus</b>
+      <p>Sweeps the air from the centre of the stereo image out to the sides. Centre for a lead vocal that has to stay put. Sides for pads, choir and width.</p>
+    </div>
+
+  </div>
+  <p class="plus"><b>And under them:</b> Mix for parallel blending, Auto Gain for loudness-matched comparison, 2× and 4× oversampling around the exciter, and a live analyser that draws exactly what is being added rather than a decorative animation.</p>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Where it sits</p>
+  <h2>Against the one you already have.</h2>
+  <p class="lede">Fresh Air is a good free plugin with a deliberately narrow design: two sliders, no decisions. This is the comparison for people who have hit the edge of that.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th></th><th>Fresh Air</th><th>AETHER</th></tr></thead>
+      <tbody>
+        <tr><th>Bands</th><td class="them">Two, fixed centres</td><td class="us">Presence (1.5–8 kHz) and Air (6–18 kHz), both tunable</td></tr>
+        <tr><th>Harmonics</th><td class="them">None — it is EQ</td><td class="us">Asymmetric soft-saturation exciter, band-limited to the air region</td></tr>
+        <tr><th>Harshness control</th><td class="them">None</td><td class="us">Program-dependent reduction on the boost only, when 5–9 kHz gets hot</td></tr>
+        <tr><th>Stereo</th><td class="them">L/R</td><td class="us">Sweep the air from centre to sides</td></tr>
+        <tr><th>Level honesty</th><td class="them">Trim</td><td class="us">RMS-matched wet and dry, so brighter never masquerades as better</td></tr>
+        <tr><th>Aliasing</th><td class="them">—</td><td class="us">2× and 4× oversampling around the exciter</td></tr>
+        <tr><th>Metering</th><td class="them">None</td><td class="us">Live in and out spectrum, boost curve, harshness lamp, output meters</td></tr>
+        <tr><th>Presets</th><td class="them">None</td><td class="us">Ten, named for the job</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Presets</p>
+  <h2>Ten starting points, named for the job.</h2>
+  <p class="lede">Open one, and it is already doing something sensible to what you have. Nothing here needs learning before it is useful.</p>
+  <div class="presets">
+    <div class="preset"><b>Vocal</b><p>Lead vocals, close-mic'd. Presence forward, focus at the centre, guard doing the work on the esses.</p></div>
+    <div class="preset"><b>Choir</b><p>What Focus was built for. Air swept to the sides so a wide source opens up without the middle getting brittle.</p></div>
+    <div class="preset"><b>Piano</b><p>Glow rather than shelf, for the top octaves of a room-recorded piano.</p></div>
+    <div class="preset"><b>Bus</b><p>Gentle across a group. Mix pulled back so it lifts rather than glazes.</p></div>
+    <div class="preset"><b>Mastering</b><p>Small numbers, oversampling up, auto gain on. The setting you audition rather than commit to.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <p class="eyebrow">Specifications</p>
+  <h2>What it needs, and what it does not.</h2>
+  <div class="specs">
+    <div class="spec"><b>Formats</b><p>VST3 on Windows. VST3 and AU on macOS.</p></div>
+    <div class="spec"><b>Windows</b><p>Windows 10 or 11, 64-bit.</p></div>
+    <div class="spec"><b>macOS</b><p>macOS 10.13 or later. Universal — Intel and Apple silicon.</p></div>
+    <div class="spec"><b>Hosts</b><p>Any VST3 or AU host: Studio One, Ableton Live, Logic, Reaper, Cubase, FL Studio, and Pro Tools through a VST3 wrapper.</p></div>
+    <div class="spec"><b>Install</b><p>One self-contained installer. No .NET, no runtime download, no administrator rights. It installs per user and uninstalls cleanly from Apps &amp; Features, leaving your presets where they are.</p></div>
+    <div class="spec"><b>Licensing</b><p>No iLok, no dongle, no subscription. A key, two computers, and thirty days offline at a stretch.</p></div>
+  </div>
+
+  <div class="warn">
+    <b>Windows will warn you once, and here is why.</b>
+    <p>The Windows installer is not code-signed yet, so SmartScreen shows a blue box saying it protected your PC. That is Windows not recognising a new publisher, not Windows finding something wrong with the file.</p>
+    <p>Click <code>More info</code>, then <code>Run anyway</code>. We would rather tell you that here than have you meet it alone.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="buy rise">
+    <p class="slot">$12<small>Once, for both machines</small></p>
+    <div>
+      <h2>One purchase. Two computers. No subscription.</h2>
+      <p>A single perpetual licence, activated from inside the plugin and moved between machines by you whenever you need to. A year of updates is included, and the version you have keeps working after that.</p>
+      <button class="cta" data-buy type="button">Buy — $12</button>
+      <a class="cta ghost" href="#controls">See the controls</a>
+      <p class="promo-line" data-promo hidden></p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Questions, answered.</h2>
+  <details><summary>How does activation work?</summary>
+    <div>The plugin installs and opens for anyone, and stays silent until a key is entered. You paste the key from <a href="/my-apps.html">My Apps</a> into the plugin's own activation screen, and it checks once with our server. After that it runs offline for thirty days at a stretch.</div></details>
+  <details><summary>How do I move it to another computer?</summary>
+    <div>Deactivate lives in the plugin's About screen, so you can free a slot yourself without writing to anyone. You can also remove a machine from My Apps.</div></details>
+  <details><summary>Where do I find my key?</summary>
+    <div>In <a href="/my-apps.html">My Apps</a>, on the card for the product, the moment the purchase goes through. It is also in the email receipt.</div></details>
+  <details><summary>Is there a Mac version?</summary>
+    <div>Yes. Signed by us and notarised by Apple, so it opens without a fight. VST3 and AU, Intel and Apple silicon from the one universal build.</div></details>
+  <details><summary>Is there a trial?</summary>
+    <div>Not at the moment. Twelve dollars was set low enough that a trial would cost more to build than it would save anyone.</div></details>
+  <details><summary>Does it phone home while I work?</summary>
+    <div>No. It checks a key on activation and quietly now and then afterwards. It does not send your audio anywhere, and it has no analytics in it. The <a href="/legal#privacy">privacy policy</a> says exactly what is stored.</div></details>
+</section>
+
+<footer>
+  <a href="apps.html">App Store</a>
+  <a href="secondout.html">SecondOut</a>
+  <a href="apps.html">Stem Sorter</a>
+  <a href="nebulatide2.html">Nebula Tide 2</a>
+  <a href="legal.html">Legal</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+/* The A/B demo section is out until the clips exist - see
+   audio/aether/README.md. Its styles are left in place so it can come
+   back whole. */
+(function(){
+  /* reveal on scroll, and never in the way of anyone who asked for less motion */
+  if('IntersectionObserver' in window &&
+     !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+    }, { threshold:.15 });
+    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+  } else {
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+<script src="assets/track.js" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
+<script src="assets/assure.js" defer></script>
+<script src="assets/buy-dock.js" defer></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+</body>
+</html>

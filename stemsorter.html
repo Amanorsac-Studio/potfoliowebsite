@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-6190327414594776">
+<title>Stem Sorter: a folder of audio onto the right tracks of your template | Amanorsac App Store</title>
+<meta name="description" content="Made for Studio One and Fender Studio Pro, on Mac and Windows. Stem Sorter reads the names of incoming audio files and places every clip on the right track of your template. Overheads on overheads, tenor 2 on tenor 2, takes in order. Your inserts, sends and buses untouched. Windows and macOS.">
+<meta property="og:title" content="Your files. Your template. One click.">
+<meta property="og:description" content="Drop a folder of audio onto the right tracks of your Studio One template — automatically. Mac and Windows.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/stemsorter/08-light.png">
+<meta property="og:url" content="https://amanorsac.studio/stemsorter.html">
+<link rel="icon" href="images/apps/stemsorter-logo.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   Stem Sorter product page. The same skeleton every product page here
+   uses, wearing the app's own colours: near-black panels, one cyan
+   accent, and amber kept for exactly what the app keeps it for - the
+   rows that want a human look before you build.
+   ===================================================================== */
+:root{
+  --bg:#0a1018; --panel:#111c2a; --panel-2:#16222f; --line:rgba(255,255,255,.08);
+  --text:#e4ebf3; --muted:#9fb0c2; --dim:#7d8fa3;
+  --accent:#2ad2e8; --accent-soft:#08252c;
+  --am:#e5a44b; --go:#4fd58f; --vi:#7b8ff5;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-lg:22px;
+  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+.wrap{max-width:1120px;margin:0 auto;
+  padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+section{padding:clamp(64px,10vh,120px) 0}
+
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 86%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;display:flex;align-items:center;gap:9px;
+  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
+.top .name img{width:18px;height:18px}
+.top .name b{color:var(--accent);font-weight:700}
+.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
+.top .sa-av{color:#04161a}
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(56px,9vh,100px)}
+.hero .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
+  border-radius:999px;padding:6px 14px;margin:0 0 26px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;
+  font-size:clamp(34px,5.6vw,64px);margin:0 0 22px;max-width:15ch}
+.hero .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:58ch;margin:0 0 30px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
+  text-decoration:none;border:0;cursor:pointer;border-radius:999px;padding:14px 28px;
+  background:var(--accent);color:#04222a;transition:transform var(--dur) var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta:active{transform:translateY(0) scale(.98)}
+.cta[disabled]{opacity:.65;cursor:default;transform:none}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.hero .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0}
+.buy-status{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:56ch}
+.buy-status.bad{color:#f27c8f}
+.buy-status a{color:var(--accent)}
+.hero-shot{margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
+  border-radius:var(--r-lg);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.55)}
+.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent);margin:14px 0 0}
+
+/* ---------- reviews ---------- */
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+.star{font-size:16px;line-height:1;color:var(--line)}
+.star.on{color:var(--accent)}
+.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
+.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
+.rv-list{list-style:none;margin:0 0 40px;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
+.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+.rv-head .star{font-size:13px}
+.rv-who{font-size:12.5px;color:var(--dim)}
+.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
+.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
+.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px)}
+.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px}
+.rv-pick{display:flex;gap:6px;margin:0 0 20px}
+.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
+.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
+.rv-pick .star.on{color:var(--accent)}
+.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
+.rv-lbl span{text-transform:none;letter-spacing:0}
+.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
+  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
+  font-size:14.5px;resize:vertical;margin:0 0 16px}
+.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent)}
+.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
+.rv-go[disabled]{opacity:.6;cursor:default}
+.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
+.rv-msg.bad{color:#f27c8f}
+.rv-done{text-align:center;padding:6px 0 4px}
+.rv-done[hidden]{display:none}
+.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
+  display:grid;place-items:center;font-size:20px;color:var(--accent);background:var(--accent-soft)}
+.rv-done h3{font-size:19px;margin:0 0 8px}
+.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
+
+/* ---------- section headings ---------- */
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
+  font-size:clamp(25px,3.2vw,38px);margin:0 0 14px}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 40px;font-size:17px}
+.lede code{font-family:var(--mono);font-size:.86em;color:var(--text);
+  background:var(--panel-2);border-radius:5px;padding:2px 6px}
+
+/* ---------- feature rows ---------- */
+.feat{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,4vw,56px);
+  align-items:center;margin-bottom:clamp(48px,8vh,84px)}
+.feat.flip{grid-template-columns:1.15fr 1fr}
+.feat.flip .feat-copy{order:2}
+.feat .kicker,.feat-wide .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--k,var(--accent));margin:0 0 10px}
+.feat h3,.feat-wide h3{font-family:var(--display);font-weight:700;
+  font-size:clamp(20px,2.2vw,26px);letter-spacing:-.015em;margin:0 0 12px}
+.feat p{color:var(--muted);margin:0;max-width:46ch}
+.feat .shot,.feat-wide .shot{border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;box-shadow:0 14px 48px rgba(0,0,0,.45)}
+.feat-wide{margin-bottom:clamp(48px,8vh,84px)}
+.feat-wide p{color:var(--muted);max-width:60ch;margin:0 0 26px}
+.feat code,.feat-wide code,.trio code,details code,.guide code{font-family:var(--mono);
+  font-size:.85em;color:var(--text);background:var(--panel-2);border-radius:5px;padding:2px 6px}
+
+/* the quiet ones */
+.trio{border-top:1px solid var(--line)}
+.trio > div{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:18px;
+  padding:26px 0;border-bottom:1px solid var(--line)}
+.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.trio p{margin:0;color:var(--muted);max-width:62ch}
+@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
+
+/* ---------- workflow ---------- */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:step}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  padding:22px 20px;counter-increment:step}
+.step::before{content:counter(step,decimal-leading-zero);display:block;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px}
+.step b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:6px}
+.step p{margin:0;font-size:14px;color:var(--muted)}
+@media (max-width:980px){ .steps{grid-template-columns:1fr 1fr 1fr} }
+@media (max-width:640px){ .steps{grid-template-columns:1fr 1fr} }
+@media (max-width:420px){ .steps{grid-template-columns:1fr} }
+
+/* ---------- compatibility ---------- */
+.compat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.compat div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px}
+.compat b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 10px;font-weight:500}
+.compat p{margin:0;font-size:14.5px;color:var(--muted)}
+@media (max-width:860px){ .compat{grid-template-columns:1fr 1fr} }
+@media (max-width:480px){ .compat{grid-template-columns:1fr} }
+
+/* ---------- the template guideline ---------- */
+.guide{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(26px,4vw,40px)}
+.guide h2{margin:0 0 12px}
+.guide > p{color:var(--muted);max-width:64ch;margin:0 0 22px}
+.guide ul{margin:0;padding:0;list-style:none;display:grid;gap:16px}
+.guide li{display:grid;grid-template-columns:22px 1fr;gap:12px;color:var(--muted);max-width:70ch}
+.guide li::before{content:"→";font-family:var(--mono);color:var(--accent);line-height:1.7}
+
+/* ---------- the price ---------- */
+.price{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
+  gap:clamp(20px,4vw,48px);align-items:center}
+.price .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,7vw,84px);
+  letter-spacing:-.04em;line-height:1;color:var(--accent);margin:0}
+.price h2{margin:0 0 8px}
+.price p{margin:0 0 18px;color:var(--muted);max-width:52ch}
+@media (max-width:700px){ .price{grid-template-columns:1fr;gap:14px} }
+
+/* ---------- faq ---------- */
+details{border-bottom:1px solid var(--line)}
+details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
+details summary::-webkit-details-marker{display:none}
+details summary::after{content:"+";font-family:var(--mono);color:var(--muted);
+  font-size:18px;transition:transform var(--dur) var(--ease)}
+details[open] summary::after{transform:rotate(45deg)}
+details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
+
+.finale{border-top:1px solid var(--line)}
+.finale h2{max-width:22ch}
+
+footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
+  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;
+  display:inline-flex;align-items:center;min-height:24px}
+footer a:hover{color:var(--text)}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+
+/* ---------- motion ---------- */
+.rise{opacity:0;transform:translateY(18px);
+  transition:opacity 640ms var(--ease),transform 640ms var(--ease)}
+.rise.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rise{opacity:1;transform:none}
+}
+@media (max-width:820px){
+  .feat,.feat.flip{grid-template-columns:1fr}
+  .feat.flip .feat-copy{order:0}
+}
+</style>
+<link rel="canonical" href="https://amanorsac.studio/stemsorter">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Stem Sorter",
+  "url": "https://amanorsac.studio/stemsorter",
+  "description": "Places a folder of audio files onto the right tracks of a Fender Studio Pro or Studio One template, then writes a ready-to-open song.",
+  "operatingSystem": "Windows, macOS",
+  "applicationCategory": "MultimediaApplication",
+  "applicationSubCategory": "Audio software",
+  "softwareVersion": "0.6.0",
+  "image": "https://amanorsac.studio/images/apps/stemsorter/08-light.png",
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" },
+  "offers": { "@type": "Offer", "price": "19", "priceCurrency": "USD" }
+}
+</script>
+<link rel="stylesheet" href="assets/site-auth.css">
+</head>
+<body data-app="stemsorter">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name"><img src="images/apps/stemsorter-logo.svg" alt="">Stem <b>Sorter</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <span class="status">$19 · Mac &amp; Windows · made for Studio One</span>
+  <h1>Your files. Your template. One click.</h1>
+  <p class="sub">Stem Sorter reads the names of incoming audio files, works out what each one is, and places every clip on the right track of your Fender Studio Pro or Studio One template. Kicks on the kick track, overheads on the overheads, tenor 2 on tenor 2. Inserts, sends and buses untouched.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $19</button>
+    <a class="cta ghost" href="#how">See how it works</a>
+  </div>
+  <p class="fine">Mac &amp; Windows · made for Studio One and Fender Studio Pro · one key covers two computers · installs through Amanorsac Hub</p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <p class="dl-count" hidden></p>
+  <div class="hero-shot rise">
+    <img src="images/apps/stemsorter/08-light.webp" width="1280" height="820"
+         alt="Stem Sorter's track assignments table: thirty-nine incoming channels matched to template tracks, each with a confidence bar" fetchpriority="high">
+  </div>
+</header>
+
+<section id="features" class="wrap">
+  <h2>Every session starts the same way.</h2>
+  <p class="lede">Forty files land in a folder: <code>KICK #03.aif</code>, <code>OVH L #03.aif</code>, <code>TNR 2 #03.aif</code>, <code>SNARE DWN #03.aif</code>. You open your template, drag them in one by one, rename, move, route, and twenty minutes later you can finally press play. Multiply that by every Sunday, every client, every rehearsal capture.</p>
+
+  <div class="feat-wide rise">
+    <p class="kicker">Names</p>
+    <h3>It understands what people actually type.</h3>
+    <p><code>OH</code>, <code>OVH</code>, <code>Overheads</code> and <code>Over L</code> are all overheads. <code>LV</code>, <code>Lead Vox</code>, <code>WL</code> and <code>Song 1</code> are all your lead vocal. <code>TNR 2</code> is the second tenor mic. Stem Sorter ships knowing hundreds of these, and you can teach it yours in seconds.</p>
+  </div>
+
+  <div class="feat rise">
+    <div class="feat-copy">
+      <p class="kicker">Template</p>
+      <h3>It knows your template.</h3>
+      <p>Point it at your <code>.songtemplate</code>. It reads every track, every folder, every colour, and matches each incoming channel to the right one — side-aware for L and R, number-aware for SOP, SOP 2, SOP 3. Every match carries a confidence bar, so you see at a glance what deserves a look.</p>
+    </div>
+    <div class="shot"><img src="images/apps/stemsorter/03-needs-review.webp" width="1280" height="820"
+      alt="The Needs review tab, isolating three channels matched at sixty-six per cent" loading="lazy"></div>
+  </div>
+
+  <div class="feat flip rise">
+    <div class="feat-copy">
+      <p class="kicker">Build</p>
+      <h3>It writes a real song.</h3>
+      <p>Press Build and you get a new <code>.song</code> with every clip already sitting on its track and takes laid out in order, ready to open. Because it only adds clips and never rebuilds the mixer, your inserts, sends, buses, colours and folders come through exactly as you saved them.</p>
+    </div>
+    <div class="shot"><img src="images/apps/stemsorter/06-built.webp" width="1280" height="820"
+      alt="The status bar confirming assignments were saved and the song was built" loading="lazy"></div>
+  </div>
+
+  <div class="feat rise">
+    <div class="feat-copy">
+      <p class="kicker">Review</p>
+      <h3>Nothing is committed behind your back.</h3>
+      <p>A live table of every channel: which track it is going to, how sure the tool is, and why. Filter to <em>Needs review</em>, search by channel or track, fix anything with one click. Every assignment you confirm is remembered per template, so the next capture from the same rig lands in one press.</p>
+    </div>
+    <div class="shot"><img src="images/apps/stemsorter/05-aliases.webp" width="1280" height="820"
+      alt="The names editor: instrument categories on the left, the aliases for Overheads listed as chips" loading="lazy"></div>
+  </div>
+
+  <div class="feat-wide rise">
+    <p class="kicker">Mid-project</p>
+    <h3>Add to a song you already have going.</h3>
+    <p>New files arrived halfway through? Switch to <em>Add to existing song</em>, pick the <code>.song</code>, and Stem Sorter places the new material after what is already there, copies the audio into that song's Media folder, and keeps the previous version beside it as a backup.</p>
+    <div class="shot"><img src="images/apps/stemsorter/07-add-to-existing.webp" width="1280" height="820"
+      alt="Add to existing song mode, with placement options for after existing content or at bar one" loading="lazy"></div>
+  </div>
+
+  <div class="trio">
+    <div><h3>Takes stay aligned</h3>
+      <p>Live captures arrive as <code>#01</code>, <code>#02</code>, <code>#03</code> per channel. Stem Sorter lays each take out after the longest file of the previous one, so every channel stays in sync across the whole service.</p></div>
+    <div><h3>Teach it your names</h3>
+      <p>An in-app editor lists every instrument category with the names people use for it. Type <code>OVHS</code>, press Enter, done. Share the file with a colleague and Stem Sorter understands their world too.</p></div>
+    <div><h3>Dark or light</h3>
+      <p>Two themes, switched live and remembered. Track colours from your template carry into the app, so a channel you recognise by colour looks the same here.</p></div>
+    <div><h3>Built for the format, not against it</h3>
+      <p>Clips are written in the song's own format and everything else is copied through byte for byte. That is why the songs it builds open cleanly, and why it works across Fender Studio Pro and Studio One 6, 7, 8 and the releases after them.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>The same session, in the dark.</h2>
+  <p class="lede">Whichever your room is lit for. The theme switches live and is remembered next time — and the track colours from your template carry into both.</p>
+  <div class="hero-shot rise" style="margin-top:0">
+    <img src="images/apps/stemsorter/02-analyzed.webp" width="1280" height="820"
+      alt="Stem Sorter in its dark theme, the same session ready to build" loading="lazy">
+  </div>
+</section>
+
+<section id="how" class="wrap">
+  <h2>Five steps, about a minute.</h2>
+  <div class="steps">
+    <div class="step rise"><b>Pick your template</b><p>Or an existing song you have already started.</p></div>
+    <div class="step rise"><b>Pick the folder</b><p>Wherever the audio landed. Subfolders included.</p></div>
+    <div class="step rise"><b>Analyze</b><p>One row per channel, every take grouped under it.</p></div>
+    <div class="step rise"><b>Glance at what needs review</b><p>Fix anything with a double-click.</p></div>
+    <div class="step rise"><b>Build</b><p>Open the song in Fender Studio Pro. Press play.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>What it runs on.</h2>
+  <div class="compat">
+    <div><b>DAW</b><p>Fender Studio Pro and Studio One. Tuned for version 8; works with songs and templates from 6, 7 and newer.</p></div>
+    <div><b>Audio</b><p>WAV, AIFF and FLAC. Mono or stereo, any sample rate — the song resamples as it always does.</p></div>
+    <div><b>Systems</b><p>Windows 10 and 11, 64-bit. macOS 11 Big Sur and later, Apple silicon and Intel.</p></div>
+    <div><b>Footprint</b><p>Under 40 MB installed. No runtime to install, and nothing about your session leaves your computer.</p></div>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="guide rise">
+    <h2>Set your template up once.</h2>
+    <p>Stem Sorter never creates tracks and never touches your mixer — which is exactly why the songs it builds open cleanly. So give it room:</p>
+    <ul>
+      <li><span>Keep a few <b>spare tracks in every section</b>: <code>SPARE 1</code>–<code>SPARE 4</code> under BGVs, a couple under Keys, one or two under Drums and Loops, routed and coloured the way you would want a surprise channel to arrive. It recognises <code>SPARE</code>, <code>EXTRA</code>, <code>FREE</code>, <code>OPEN</code> and <code>TBD</code> and uses them when a channel has nowhere else to go.</span></li>
+      <li><span>Name tracks the way files arrive: <code>OH L</code>, <code>SNARE BOTTOM</code>, <code>TNR 2</code>, <code>CRWD R</code>.</span></li>
+      <li><span>Keep numbered families next to each other: <code>SOP</code>, <code>SOP 2</code>, <code>SOP 3</code>.</span></li>
+      <li><span>Mark virtual-instrument and utility tracks as <em>never auto-fill</em> in the editor, so a real microphone never lands on one.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="wrap">
+  <div class="price rise">
+    <p class="big">$19</p>
+    <div>
+      <h2>Bought once. Yours on two computers.</h2>
+      <p>One license key covers the studio machine and the laptop that goes out to the room. A year of updates is included, and the version you have keeps working after that.</p>
+      <button class="cta" data-buy type="button">Buy — $19</button>
+    </div>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Questions, answered.</h2>
+  <details><summary>Does it change my template?</summary>
+    <div>No. It reads your template and writes a new song file next to your others. The template itself is never modified.</div></details>
+  <details><summary>Does it change my plugins or routing?</summary>
+    <div>No. Stem Sorter only adds clips to tracks that already exist. Inserts, sends, buses, colours and folders are copied through untouched.</div></details>
+  <details><summary>What if a file doesn't match any track?</summary>
+    <div>It appears under <em>Needs review</em>. Assign it to any track in two clicks, skip it, or add a spare track to your template so it has a home next time.</div></details>
+  <details><summary>Can I use it on a song I've already started mixing?</summary>
+    <div>Yes. Save and close the song in Fender Studio Pro, run <em>Add to existing song</em>, then reopen it. The previous version is kept beside it as a backup.</div></details>
+  <details><summary>How does the license work?</summary>
+    <div>Buying gives you a key, shown in <a href="/my-apps.html">My Apps</a>. Type it into Stem Sorter once and that computer is activated. One key covers two computers at a time, and you can free a slot from My Apps when you change machines.</div></details>
+  <details><summary>Does it need the internet?</summary>
+    <div>Only to activate the first time, and for a quiet check now and then. After that it works offline for a month at a stretch, which covers any room you are likely to be working in.</div></details>
+  <details><summary>Where do my settings live?</summary>
+    <div><code>Documents / Amanorsac Studio / Stem Sorter</code>. The alias dictionary and every template's learned assignments are plain files you can back up or share.</div></details>
+  <details><summary>Is it signed?</summary>
+    <div>Yes. The Windows installer is Authenticode-signed, and the macOS app is Developer ID-signed and notarized by Apple.</div></details>
+</section>
+
+<section id="reviews" class="wrap">
+  <p class="eyebrow">From people who use it</p>
+  <h2>What engineers are saying.</h2>
+  <div class="rv-stats" hidden></div>
+  <ul class="rv-list"></ul>
+  <p class="rv-empty" hidden>Be the first to leave one.</p>
+  <div class="rv-panel">
+    <form class="rv-form" novalidate>
+      <p class="rv-legend">Used it? Rate it.</p>
+      <div class="rv-pick" role="group" aria-label="Rating">
+        <span class="star">&#9733;</span><span class="star">&#9733;</span><span class="star">&#9733;</span>
+        <span class="star">&#9733;</span><span class="star">&#9733;</span>
+      </div>
+      <label class="rv-lbl" for="rv-body">Your review</label>
+      <textarea class="rv-body-in" id="rv-body" rows="3"
+        placeholder="How long did it used to take you?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
+      <button class="cta rv-go" type="submit">Post review</button>
+      <p class="rv-msg" role="status"></p>
+    </form>
+    <div class="rv-done" hidden>
+      <p class="rv-tick" aria-hidden="true">&#10003;</p>
+      <h3>Thank you.</h3>
+      <p>It goes up once I've actually read it — usually within a day or two.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap finale">
+  <h2>Next Sunday's files can sort themselves.</h2>
+  <p class="lede">Twenty minutes of dragging, or one press of Build. Made for Studio One and Fender Studio Pro, on Mac and Windows, one key for two computers.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $19</button>
+    <a class="cta ghost" href="apps.html">Back to the App Store</a>
+  </div>
+  <p class="fine">Studio One and Fender Studio Pro are trademarks of their owners · Stem Sorter is not affiliated with them</p>
+</section>
+
+<footer>
+  <a href="apps.html">App Store</a>
+  <a href="secondout.html">SecondOut</a>
+  <a href="pulseroom.html">PulseRoom</a>
+  <a href="nebulatide.html">Nebula Tide</a>
+  <a href="index.html">Studio</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">Amanorsac Studio</span>
+</footer>
+
+<script>
+/* Buying and downloading are assets/app-purchase.js's job; this is only
+   the reveal-on-scroll, and it gives up gracefully. */
+(function(){
+  if('IntersectionObserver' in window &&
+     !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var ro = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
+    }, { threshold:.15 });
+    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
+  }else{
+    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
+  }
+})();
+</script>
+<link rel="stylesheet" href="/assets/hub-download.css">
+<script src="/assets/hub-download.js" defer></script>
+<script src="assets/app-reviews.js" defer></script>
+<script src="assets/track.js" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+</body>
+</html>

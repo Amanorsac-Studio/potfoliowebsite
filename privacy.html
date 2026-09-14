@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy | Amanorsac Studio</title>
+<meta name="description" content="The privacy policy for Amanorsac Studio: what the website, the apps and the plug-ins collect, why, who else is involved, how long it is kept, and how to have it deleted.">
+<link rel="canonical" href="https://amanorsac.studio/privacy">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+/* ---------- fonts ----------
+   Served from this site rather than fonts.googleapis.com. That stylesheet
+   blocked the first paint on every visit while the browser opened a
+   connection to a third party and waited for an answer. These are the
+   same typefaces, variable-weight, latin only, and they come down the
+   connection the page is already using. Nothing about visitors is shared
+   with Google to render text any more. */
+/* latin-ext */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Sora';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =====================================================================
+   The legal pages. One page, three documents, anchored so the plugin's
+   About screen and any email can link straight at the one it means.
+
+   Deliberately plain: no reveal animations, no gradients, nothing that
+   moves. Someone reading this is either checking one clause or has a
+   problem, and both are better served by a page that reads like a
+   document than one that performs.
+   ===================================================================== */
+:root{
+  --bg:#0b0f14; --panel:#121821; --line:rgba(255,255,255,.09);
+  --text:#e4ebf3; --muted:#a3b2c2; --dim:#7f8fa1; --accent:#35E0F0;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.wrap{max-width:760px;margin:0 auto;padding:0 clamp(18px,5vw,32px)}
+.top{border-bottom:1px solid var(--line);padding:14px clamp(18px,5vw,32px);display:flex;gap:18px;align-items:center}
+.top a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+.top a:hover{color:var(--text)}
+.top .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+header.page{padding:clamp(48px,8vh,84px) 0 0}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.025em;
+  font-size:clamp(30px,4.6vw,46px);line-height:1.08;margin:0 0 16px}
+.lede{color:var(--muted);font-size:17px;margin:0 0 10px}
+.updated{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin:0}
+nav.toc{margin:34px 0 0;padding:20px 22px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+nav.toc b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 10px;font-weight:500}
+nav.toc ol{margin:0;padding-left:20px}
+nav.toc li{margin:4px 0}
+section{padding:clamp(44px,7vh,72px) 0 0}
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(22px,3vw,30px);margin:0 0 6px;scroll-margin-top:24px}
+h2 + .updated{margin:0 0 22px}
+h3{font-family:var(--display);font-weight:600;font-size:17.5px;margin:26px 0 6px}
+p{margin:0 0 14px}
+ul{margin:0 0 14px;padding-left:20px}
+li{margin:6px 0}
+.plain{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 22px;color:var(--muted)}
+.plain b{color:var(--text)}
+footer{border-top:1px solid var(--line);margin-top:clamp(56px,9vh,96px);
+  padding:26px clamp(18px,5vw,32px);display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim)}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a href="index.html">← Amanorsac Studio</a>
+  <a href="apps.html">App Store</a>
+  <a href="legal.html">Licence &amp; terms</a>
+  <span class="who">Privacy</span>
+</div>
+
+<header class="page wrap">
+  <h1>Privacy policy.</h1>
+  <p class="lede">This covers amanorsac.studio, every app and plug-in Amanorsac Studio sells or gives away, and Amanorsac Hub. It is written to be read, not to be survived.</p>
+  <p class="updated">Effective 12 September 2026 &middot; last updated 12 September 2026</p>
+
+  <div class="plain" style="margin-top:30px">
+    <b>The short version.</b> We hold your email address, what you bought, and a random identifier for each computer you activate on — that last one only so a licence for two machines can count to two. We never see your audio, your sessions or your projects. Nothing about you is sold, rented or traded, to anyone, ever. Ask us to delete you and we delete you.
+  </div>
+
+  <nav class="toc">
+    <b>On this page</b>
+    <ol>
+      <li><a href="#who">Who this is</a></li>
+      <li><a href="#collect">What is collected, and why</a></li>
+      <li><a href="#never">What is never collected</a></li>
+      <li><a href="#apps">What the apps and plug-ins do</a></li>
+      <li><a href="#others">Who else is involved</a></li>
+      <li><a href="#cookies">Cookies, storage and advertising</a></li>
+      <li><a href="#keep">How long anything is kept</a></li>
+      <li><a href="#rights">Seeing, correcting and deleting your data</a></li>
+      <li><a href="#children">Children</a></li>
+      <li><a href="#where">Where the data lives</a></li>
+      <li><a href="#security">Security</a></li>
+      <li><a href="#changes">Changes to this policy</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ol>
+  </nav>
+</header>
+
+<section class="wrap" id="who">
+  <h2>1. Who this is</h2>
+  <p>Amanorsac Studio is a one-person studio run by Stephen Amanor Sackey in Charlottesville, Virginia, United States. It records and mixes music, and it builds the audio software listed in its <a href="apps.html">App Store</a>. For the purposes of data protection law, Amanorsac Studio is the controller of the personal data described here.</p>
+  <p>Everything on this page is a statement of what the software and the website actually do. Where a section says something is not collected, that means the code does not collect it.</p>
+</section>
+
+<section class="wrap" id="collect">
+  <h2>2. What is collected, and why</h2>
+  <p class="updated">Four things, and each is here for a reason you can point at</p>
+
+  <h3>2.1 Your account</h3>
+  <p>An email address and a password you choose. The password is never stored as you typed it: our database provider stores a hash of it and nothing can turn that back into the password. An account exists so that a licence key you paid for can be found again on a computer you have not bought it from — which is the whole point of having one.</p>
+  <p><b>Why we may hold this:</b> to perform the contract you entered into when you bought or claimed a product.</p>
+
+  <h3>2.2 Your purchases</h3>
+  <p>What you bought, when, the amount paid, and the licence key issued to you. <b>We never see your card.</b> Card numbers are entered on Stripe's own checkout page and are held by Stripe; what comes back to us is a confirmation that a payment succeeded and an identifier for it.</p>
+  <p><b>Why we may hold this:</b> to perform the contract, and to meet tax and accounting obligations.</p>
+
+  <h3>2.3 Your activations</h3>
+  <p>When a licensed plug-in is activated we store a random identifier generated on that computer, a name for the machine so you can tell your machines apart in <a href="my-apps.html">My Apps</a>, and when it last checked in. That identifier is generated by the software; it is <b>not</b> a hardware serial number, not a MAC address, and not tied to anything else about your computer. Deactivating the machine removes it.</p>
+  <p><b>Why we may hold this:</b> to perform the contract — a licence that covers two computers at a time has to be able to count them.</p>
+
+  <h3>2.4 How the website is used</h3>
+  <p>The website keeps its own, first-party record of traffic. For each visit it stores: which page, the <em>hostname</em> of the site that linked you here (never the full address, which can carry someone's search terms or a private link), any campaign tags in the address, whether you are on a phone, tablet or desktop, which browser and operating system family, the window width, how long the page took to load, how long you stayed and how far down you read, and a handful of named events such as "an enquiry was sent".</p>
+  <p>Two random identifiers make that possible: one that lives in the tab and disappears when the tab closes, and one kept in your browser's local storage so a returning visitor can be told apart from a new one. Neither is a cookie, neither is shared with anyone, and neither is joined to your account.</p>
+  <p><b>If your browser sends a Do Not Track signal, none of this runs at all.</b> No identifier is created and nothing is recorded.</p>
+  <p><b>Why we may hold this:</b> our legitimate interest in knowing whether the website works, balanced by holding no more than the list above.</p>
+
+  <h3>2.5 Anything you send us</h3>
+  <p>Emails you write, reviews you submit, and messages sent through a form on this site. A review you post is shown publicly with the name you give it, and you can ask for it to be taken down.</p>
+</section>
+
+<section class="wrap" id="never">
+  <h2>3. What is never collected</h2>
+  <div class="plain"><b>Your work is yours and it never leaves your computer.</b></div>
+  <ul>
+    <li><b>No audio.</b> No product uploads, streams, samples or analyses your audio anywhere but on your own machine.</li>
+    <li><b>No sessions or projects.</b> What you are working on is never read, sent or inspected.</li>
+    <li><b>No presets you make.</b> Presets are files on your disk.</li>
+    <li><b>No usage tracking inside the software.</b> The apps and plug-ins carry no analytics: which controls you touch, which presets you load and how often you open them are not recorded and are not sent.</li>
+    <li><b>No location, no contacts, no browsing history, no advertising identifier.</b></li>
+    <li><b>No profile of you</b>, and no data of any kind sold, rented, traded or handed to a data broker. There is no circumstance in which that changes without your explicit consent.</li>
+  </ul>
+</section>
+
+<section class="wrap" id="apps">
+  <h2>4. What the apps and plug-ins do</h2>
+  <p>Because this is the question an app store reviewer usually wants answered, here it is directly.</p>
+
+  <h3>4.1 Plug-ins and apps that use a licence key</h3>
+  <p>On activation the software sends the licence key you typed and the random machine identifier described in 2.3, over an encrypted connection, and receives a signed confirmation back. That is the entire conversation. It happens when you activate, when you deactivate, and periodically to confirm the licence is still valid. No other data leaves the plug-in.</p>
+
+  <h3>4.2 Products with no activation at all</h3>
+  <p>Some products — AFD Gate is one — carry no licensing of any kind. They never contact a server, they work with no network connection, and they collect nothing whatsoever. Where a product page says "no activation, ever", that is what it means.</p>
+
+  <h3>4.3 Amanorsac Hub</h3>
+  <p>The Hub signs in with your account so it can show what you own, download it and install it. It sends your account's token to ask "may this person download this file", and stores your sign-in locally so you are not asked every time. It does not scan your disk, index your projects or report what you have installed beyond what is needed to offer you updates.</p>
+
+  <h3>4.4 In the language of the app stores</h3>
+  <ul>
+    <li><b>Contact information</b> — email address. Linked to your identity. Used for app functionality and to email you about your purchases. Not used for tracking.</li>
+    <li><b>Purchases</b> — purchase history. Linked to your identity. Used for app functionality. Not used for tracking.</li>
+    <li><b>Identifiers</b> — a random device identifier for licensing, and a random visitor identifier on the website only. Not used for tracking.</li>
+    <li><b>Usage data</b> — collected on the website only, as described in 2.4. Not collected by any app or plug-in.</li>
+    <li><b>Diagnostics, location, health, financial info, contacts, browsing history, sensitive information, user content</b> — none, anywhere.</li>
+  </ul>
+  <p>Nothing collected by Amanorsac Studio is used to track you across other companies' apps or websites.</p>
+</section>
+
+<section class="wrap" id="others">
+  <h2>5. Who else is involved</h2>
+  <p>Running any of this alone is not possible, so four companies are used, each for one job and nothing else. Each is bound by its contract with us to protect your data at least as well as this policy promises, to use it only to provide the service we are paying for, and never for its own purposes.</p>
+  <ul>
+    <li><b>Supabase</b> — stores the account, purchase, licence and review database, and handles signing in.</li>
+    <li><b>Stripe</b> — takes payments and holds the card details. We never receive them.</li>
+    <li><b>Cloudflare</b> — serves this website and the installer downloads, and keeps the short-lived request logs any web host keeps.</li>
+    <li><b>Resend</b> — delivers the emails we send you.</li>
+  </ul>
+  <p>There is one more, and it applies to one part of the site only: see the next section.</p>
+</section>
+
+<section class="wrap" id="cookies">
+  <h2>6. Cookies, storage and advertising</h2>
+
+  <h3>6.1 On the website generally</h3>
+  <p>No advertising cookies and no third-party trackers. What is stored in your browser is the sign-in your account needs to stay signed in, the two random identifiers described in 2.4, and small conveniences such as which tab you last had open. Fonts are served from this site rather than from a font network, so nothing about your visit is shared with anyone in order to draw text on the page.</p>
+
+  <h3>6.2 On blog posts</h3>
+  <p>Articles on the blog carry advertising from Google AdSense. Google sets its own cookies and may use them to show you advertising, and what it does with them is governed by <a href="https://policies.google.com/technologies/partner-sites" rel="noopener">Google's own policy</a>, not by ours. You can turn personalised advertising off at <a href="https://myadcenter.google.com" rel="noopener">Google's My Ad Center</a>. No advertising appears anywhere near your account, the App Store, checkout, or any product page, and nothing about your account is shared with Google.</p>
+</section>
+
+<section class="wrap" id="keep">
+  <h2>7. How long anything is kept</h2>
+  <ul>
+    <li><b>Your account and purchases</b> — for as long as you have an account. A licence key you own has to remain findable, and a receipt has to remain provable.</li>
+    <li><b>Device activations</b> — until you remove the device, or until the account is deleted.</li>
+    <li><b>Website traffic records</b> — kept in aggregate. They are not joined to accounts and are not used to identify anyone.</li>
+    <li><b>Emails you send</b> — kept while the conversation is useful, then deleted.</li>
+    <li><b>Payment records</b> — kept as long as tax law requires us to be able to produce them, which is longer than the rest and is not a choice we get to make.</li>
+  </ul>
+</section>
+
+<section class="wrap" id="rights">
+  <h2>8. Seeing, correcting and deleting your data</h2>
+  <p>You can ask for a copy of everything held about you, ask for anything wrong to be corrected, ask for it to be exported, ask us to stop using it, or ask for all of it to be deleted. Write to <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a> from the address on the account and a person — not a form — will answer. There is no charge and you do not have to give a reason.</p>
+
+  <h3>8.1 Deleting your account</h3>
+  <p>Email <a href="mailto:hello@amanorsac.studio?subject=Delete%20my%20account">hello@amanorsac.studio</a> with the subject "Delete my account". We will confirm it is you, tell you plainly what you are about to lose, and on your say-so delete the account, the licence keys on it and the devices activated against them, normally within 30 days and usually within a few days.</p>
+  <div class="plain"><b>Deleting an account means losing access to what you bought.</b> The keys go with it and they cannot be brought back. That is why we ask you to confirm rather than doing it on the first email.</div>
+  <p>You can remove an individual computer yourself at any time, without deleting anything else, from <a href="my-apps.html">My Apps</a>.</p>
+
+  <h3>8.2 If you are in the UK, the EU, California or somewhere similar</h3>
+  <p>The rights above are yours by law, and this section only tells you where to send the request. We do not sell or share personal information as those laws define it, and we do not discriminate against anyone for exercising a right. If you believe we have got something wrong, you are entitled to complain to your data protection authority — though we would rather you told us first, so we can fix it.</p>
+</section>
+
+<section class="wrap" id="children">
+  <h2>9. Children</h2>
+  <p>These are professional audio tools. They are not directed at children, and accounts are not knowingly created for anyone under 13. If you believe a child has given us personal data, write to <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a> and it will be deleted.</p>
+</section>
+
+<section class="wrap" id="where">
+  <h2>10. Where the data lives</h2>
+  <p>Amanorsac Studio is in the United States and the services listed in section 5 store data in the United States and, in Cloudflare's case, on servers around the world so that a download is fast wherever you are. If you are outside the United States, using this site or these products means your data is transferred there. Where the law requires a legal mechanism for that transfer, our providers' standard contractual clauses are the mechanism relied on.</p>
+</section>
+
+<section class="wrap" id="security">
+  <h2>11. Security</h2>
+  <p>Everything travels over an encrypted connection. Passwords are stored hashed. Licence confirmations are signed with a private key that exists only inside the server that signs them and appears in no file, no page and no copy of the software. Access to the database is limited to what each part of the system needs — the key published in the website's own code can write a page view and read a published review, and can read nothing about anybody's account.</p>
+  <p>No system is perfect, and anyone who claims otherwise is selling something. If a breach affects you we will tell you what happened, what it means for you and what we are doing about it, without waiting to be asked.</p>
+</section>
+
+<section class="wrap" id="changes">
+  <h2>12. Changes to this policy</h2>
+  <p>When this changes, the date at the top changes with it. If a change actually affects what is collected or who it goes to, we will say so on this page and email account holders rather than leaving it to be discovered.</p>
+</section>
+
+<section class="wrap" id="contact">
+  <h2>13. Contact</h2>
+  <p>Questions, requests, or a paragraph here that does not match what you have seen the software do:</p>
+  <p><b>Amanorsac Studio</b><br>
+     Charlottesville, Virginia, United States<br>
+     <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a></p>
+  <p>The <a href="legal.html#eula">end user licence agreement</a> and the <a href="legal.html#terms">terms of service</a> are on the licence and terms page.</p>
+</section>
+
+<footer>
+  <a href="index.html">Studio</a>
+  <a href="apps.html">App Store</a>
+  <a href="legal.html">Licence &amp; terms</a>
+  <a href="my-apps.html">My Apps</a>
+  <a href="about.html#contact">Contact</a>
+  <span class="who">© Amanorsac Studio</span>
+</footer>
+
+</body>
+</html>

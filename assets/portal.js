@@ -12,7 +12,8 @@ const PORTAL_BASE  = window.location.origin + window.location.pathname.replace(/
 
 /* ==================== stop editing here ==================== */
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.amanorsacClient ? window.amanorsacClient()
+                                  : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 /* ---------- theme (light default, dark optional) ---------- */
 const Theme = {

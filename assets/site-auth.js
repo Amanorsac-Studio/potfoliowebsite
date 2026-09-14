@@ -18,7 +18,8 @@
   var slots = document.querySelectorAll('[data-auth-slot]');
   if (!slots.length || !window.supabase) return;
 
-  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  var sb = window.amanorsacClient ? window.amanorsacClient()
+                                  : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   var here = location.pathname + location.search;
   var SIGN_IN = '/client.html?next=' + encodeURIComponent(here);
 

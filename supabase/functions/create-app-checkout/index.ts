@@ -37,13 +37,69 @@ const json = (body: unknown, status = 200) =>
 
 const SITE = "https://amanorsac.studio";
 
+/** Where Stripe sends the buyer back to once they have paid.
+ *
+ *  Normally the live site. On a preview build it is that build's own
+ *  workers.dev address, so a test purchase lands back on the page it
+ *  started from instead of on a live URL that may not exist yet.
+ *
+ *  Anything else falls back to SITE and is never echoed: an unchecked
+ *  origin here would be an open redirect with a payment attached to it. */
+function returnOrigin(req: Request): string {
+  const o = req.headers.get("origin") ?? "";
+  if (o === SITE) return o;
+  if (/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+){1,2}\.workers\.dev$/.test(o)) return o;
+  return SITE;
+}
+
 /** Every app anyone can actually buy, and what it costs. A fixed map,
  *  the same reasoning worker.js's INSTALLERS map uses: no request can
- *  invent a price or a product name that is not on this list. */
-const APP_CATALOG: Record<string, { amount_cents: number; label: string }> = {
+ *  invent a price or a product name that is not on this list.
+ *
+ *  An entry carries either a fixed amount_cents, or a stripe_price: the
+ *  id of a Price created in Stripe. The second form is what makes "pay
+ *  what you want" possible - a Price with "customers choose what to
+ *  pay" turned on has the minimum, maximum and suggested figure stored
+ *  on Stripe's side, and Checkout shows the buyer a box to type in.
+ *  Either way the buyer cannot name a figure this file did not allow:
+ *  with amount_cents the number is here, and with stripe_price the
+ *  bounds are on the Price. stripe-webhook records what was actually
+ *  paid, so a purchase row is always the real amount. */
+const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string; label: string }> = {
   secondout: {
     amount_cents: 1900,
     label: "SecondOut — lifetime license, one year of updates included",
+  },
+  stemsorter: {
+    amount_cents: 1900,
+    label: "Stem Sorter — lifetime license for two computers, one year of updates included",
+  },
+  afdgate: {
+    amount_cents: 1200,
+    label: "AFD Gate — lifetime licence, no activation",
+  },
+  aether: {
+    amount_cents: 1200,
+    label: "AETHER — lifetime licence for two computers, one year of updates included",
+  },
+  ambanalog: {
+    amount_cents: 3900,
+    label: "AMB Analog — ten plug-ins, lifetime licence for two computers",
+  },
+  alignpro: {
+    amount_cents: 3900,
+    label: "Align Pro — lifetime licence for two computers, one year of updates included",
+  },
+  chordlight88: {
+    amount_cents: 1400,
+    label: "Chordlight 88 — lifetime licence, no activation",
+  },
+  nebulatide2: {
+    // Pay what you want. The figures live on the Price in Stripe -
+    // $5 minimum, $100 maximum, $29 suggested - so changing what people
+    // may pay is done there and needs no deploy here.
+    stripe_price: "price_1UEF1E06LBP0UxjsM9VMPGux",
+    label: "Nebula Tide 2 — lifetime license for two machines, one year of updates included",
   },
 };
 
@@ -87,6 +143,9 @@ Deno.serve(async (req) => {
   const app = String(body.app ?? "").toLowerCase().trim();
   const item = APP_CATALOG[app];
   if (!item) return json({ error: "No such app for sale." }, 404);
+  if (!item.stripe_price && typeof item.amount_cents !== "number") {
+    return json({ error: "That app has no price set up yet." }, 500);
+  }
 
   const admin = createClient(url, service, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -99,21 +158,30 @@ Deno.serve(async (req) => {
     .select("id").eq("user_id", user.id).eq("app", app).limit(1);
   if (existing && existing.length) return json({ already_owned: true });
 
+  const back = returnOrigin(req);
+
   try {
+    // One line item, priced one of the two ways above.
+    const priced: Record<string, string> = item.stripe_price
+      ? { "line_items[0][price]": item.stripe_price }
+      : {
+        "line_items[0][price_data][currency]": "usd",
+        "line_items[0][price_data][unit_amount]": String(item.amount_cents),
+        "line_items[0][price_data][product_data][name]": item.label,
+      };
+
     const session = await stripe("checkout/sessions", {
       mode: "payment",
       "line_items[0][quantity]": "1",
-      "line_items[0][price_data][currency]": "usd",
-      "line_items[0][price_data][unit_amount]": String(item.amount_cents),
-      "line_items[0][price_data][product_data][name]": item.label,
+      ...priced,
       customer_email: user.email ?? "",
       // This is the thread stripe-webhook follows back to this account.
       "metadata[app]": app,
       "metadata[user_id]": user.id,
       // Back to the app's own page, not the portal - there is no "My
       // Apps" section there yet for this to land in usefully.
-      success_url: SITE + "/" + app + "?purchased=1",
-      cancel_url: SITE + "/" + app + "?checkout=cancelled",
+      success_url: back + "/" + app + "?purchased=1",
+      cancel_url: back + "/" + app + "?checkout=cancelled",
     });
     return json({ url: session.url });
   } catch (e) {
