@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Codes · Studio admin</title>
+<script>
+/* set the theme BEFORE first paint so there is no flash of the wrong colours */
+(function(){ var t='light'; try{ t=localStorage.getItem('portal-theme')||'light'; }catch(e){}
+  document.documentElement.setAttribute('data-theme',t); })();
+</script>
+<link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F7F5F1">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AMANORSAC">
+<link rel="stylesheet" href="../assets/portal.css">
+<style>
+  .why{font-size:13px;color:var(--muted);margin:-4px 0 16px;max-width:72ch;line-height:1.7}
+  .sec{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin:30px 0 10px}
+
+  /* ---------- the maker ---------- */
+  .maker{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;align-items:end}
+  .f{display:flex;flex-direction:column;gap:6px}
+  /* display:flex on a class beats the browser's own [hidden]{display:none},
+     so the discount box sat there on an access batch even though the
+     script had hidden it. Same shape as the padding shorthands that
+     zeroed the page gutters: a class quietly outranking a default. */
+  .f[hidden]{display:none}
+  .f label{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .f input,.f select{font-family:var(--body);font-size:14px;color:var(--ink);
+    background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:10px 12px;width:100%}
+  .f input:focus,.f select:focus{outline:none;border-color:var(--accent)}
+  .f .hint{font-size:11.5px;color:var(--muted)}
+  .go{font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer;color:#fff;
+    background:var(--accent);border:0;border-radius:999px;padding:12px 24px}
+  .go:disabled{opacity:.55;cursor:default}
+
+  /* ---------- the batch it just made ---------- */
+  .batch{margin:18px 0 0}
+  .batch textarea{width:100%;min-height:150px;font-family:var(--mono);font-size:13.5px;line-height:1.9;
+    color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px}
+  .batch .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:10px 0 0}
+  .batch button{font-size:13px;font-weight:500;cursor:pointer;color:var(--ink);background:transparent;
+    border:1px solid var(--line);border-radius:999px;padding:8px 16px}
+  .batch .note{font-size:12.5px;color:var(--muted)}
+
+  /* ---------- the list ---------- */
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl th,.tbl td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:400}
+  .tbl td.code{font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+  .tbl td.n{text-align:right;font-family:var(--mono);font-size:12.5px}
+  .tbl tr:last-child td{border-bottom:0}
+  .tblwrap{overflow-x:auto}
+  .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+    border:1px solid currentColor;border-radius:999px;padding:2px 8px;opacity:.85}
+  .tag.unused{color:#2E8B6E}
+  .tag.inuse{color:var(--muted)}
+  .tag.used,.tag.expired,.tag.off{color:#B4552F}
+  .kill{font-size:12px;cursor:pointer;color:var(--muted);background:transparent;border:0;text-decoration:underline}
+  .empty{color:var(--muted);font-size:13px;padding:16px 0}
+  .msg:empty{display:none}
+</style>
+</head>
+<body>
+<header class="top" id="topbar"></header>
+<main>
+  <div class="head">
+    <p class="eyebrow">Studio admin</p>
+    <h1>Codes</h1>
+    <p class="sub">Make codes, hand them out, see what has been used. Nobody has to send you an email address and wait.</p>
+  </div>
+
+  <p class="msg" id="m" role="status" aria-live="polite"></p>
+
+  <p class="sec">Make some</p>
+  <p class="why">An <b>access</b> code gives somebody the app. How long for is decided here, per batch:
+    leave the days box empty and it is theirs to keep, put 30 in it and their licence ends thirty days
+    after <i>they</i> redeem it. A <b>discount</b> code takes money off at checkout instead.</p>
+
+  <div class="card">
+    <div class="maker">
+      <div class="f"><label for="kind">Kind</label>
+        <select id="kind">
+          <option value="access">Access — gives the app</option>
+          <option value="discount">Discount — takes money off</option>
+        </select></div>
+      <div class="f"><label for="app">App</label>
+        <select id="app"><option value="*">Any app</option></select></div>
+      <div class="f"><label for="count">How many codes</label>
+        <input id="count" type="number" min="1" max="500" value="10"></div>
+      <div class="f"><label for="uses">Uses each</label>
+        <input id="uses" type="number" min="1" value="1">
+        <span class="hint">1 = one person per code</span></div>
+      <div class="f" data-for="access"><label for="days">Ends after (days)</label>
+        <input id="days" type="number" min="1" placeholder="never">
+        <span class="hint">empty = theirs to keep</span></div>
+      <div class="f" data-for="discount" hidden><label for="percent">Per cent off</label>
+        <input id="percent" type="number" min="1" max="100" placeholder="20"></div>
+      <div class="f"><label for="expires">Code dies on</label>
+        <input id="expires" type="date">
+        <span class="hint">empty = never</span></div>
+      <div class="f"><label for="note">What is it for</label>
+        <input id="note" type="text" placeholder="October worship conference"></div>
+      <div class="f"><label>&nbsp;</label><button class="go" id="make" type="button">Generate</button></div>
+    </div>
+
+    <div class="batch" id="batch" hidden>
+      <textarea id="out" readonly aria-label="The codes just made"></textarea>
+      <div class="row">
+        <button type="button" id="copy">Copy all</button>
+        <button type="button" id="links">Copy as links</button>
+        <span class="note" id="batchnote"></span>
+      </div>
+    </div>
+  </div>
+
+  <p class="sec">Every code</p>
+  <p class="why">Switching one off stops it working immediately, and does not touch anything already redeemed with it.</p>
+  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="list"></tbody></table></div></div>
+
+  <p class="sec">Redeemed</p>
+  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="used"></tbody></table></div></div>
+
+  <p class="why" style="margin:26px 0 40px">Codes are checked on the database, never in a browser, and a code with uses
+    left is spent while its row is held &mdash; two people racing for the last use of a code cannot both win.</p>
+</main>
+
+<script src="../assets/vendor/supabase-2.116.0.js"></script>
+<script src="../assets/supabase-client.js"></script>
+<script src="../assets/portal.js"></script>
+<script>
+(async function(){
+  const me = await requireAdmin(); if(!me) return;
+  await mountChrome('admin-codes');
+  const sb = window.amanorsacClient();
+  const m = $('#m');
+
+  const esc = t => { const d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; };
+  const when = t => t ? new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) : '—';
+
+  /* The app list comes from the catalog, so a new app is offered here
+     the day it is added and never needs typing into this page. */
+  const NAMES = {};
+  const named = fetch('/catalog.json', { cache:'no-cache' }).then(r=>r.json()).then(c=>{
+    const sel = $('#app');
+    Object.keys(c.apps||{}).forEach(id=>{
+      NAMES[id] = c.apps[id].name || id;
+      const o=document.createElement('option'); o.value=id; o.textContent=NAMES[id]; sel.appendChild(o);
+    });
+  }).catch(()=>{});
+  const appName = id => id === '*' ? 'any app' : (NAMES[id] || id);
+
+  function kindFields(){
+    const k = $('#kind').value;
+    $$('[data-for]').forEach(el => { el.hidden = el.getAttribute('data-for') !== k; });
+  }
+  $('#kind').addEventListener('change', kindFields);
+  kindFields();                    // and once now, not only on a change
+
+  async function make(){
+    const kind = $('#kind').value;
+    const count = Number($('#count').value) || 0;
+    const uses = Number($('#uses').value) || 1;
+    const days = Number($('#days').value) || null;
+    const pct  = Number($('#percent').value) || null;
+    const exp  = $('#expires').value ? new Date($('#expires').value + 'T23:59:59').toISOString() : null;
+    const app  = $('#app').value;
+
+    if(count < 1 || count > 500){ m.textContent='Between 1 and 500 at a time.'; m.className='msg bad'; return; }
+    if(kind === 'discount' && !pct){ m.textContent='A discount code needs a per cent.'; m.className='msg bad'; return; }
+
+    $('#make').disabled = true; m.textContent='Making them…'; m.className='msg';
+    const { data, error } = await sb.rpc('create_codes', {
+      p_count: count, p_kind: kind, p_apps: [app],
+      p_grant_days: kind === 'access' ? days : null, p_grant_until: null,
+      p_percent_off: kind === 'discount' ? pct : null, p_amount_off_cents: null,
+      p_max_uses: uses, p_expires_at: exp, p_note: $('#note').value || null, p_prefix: 'AMAN'
+    });
+    $('#make').disabled = false;
+
+    if(error){
+      m.textContent = error.message.includes('does not exist')
+        ? 'The codes tables are not installed yet — run supabase-redeem-codes.sql in the SQL editor.'
+        : 'Could not make them: ' + error.message;
+      m.className='msg bad'; return;
+    }
+    m.textContent='';
+    const codes = (data||[]).map(r => r.code);
+    $('#out').value = codes.join('\n');
+    $('#batchnote').textContent = codes.length + (codes.length===1?' code':' codes') +
+      ' · this is the only time they are shown as a list';
+    $('#batch').hidden = false;
+    $('#out').dataset.links = codes.map(c => location.origin + '/redeem?c=' + c).join('\n');
+    draw();
+  }
+
+  function copy(text, btn){
+    navigator.clipboard.writeText(text).then(()=>{
+      const was = btn.textContent; btn.textContent = 'Copied';
+      setTimeout(()=>{ btn.textContent = was; }, 1400);
+    }).catch(()=>{ $('#out').select(); });
+  }
+  $('#copy').addEventListener('click', e => copy($('#out').value, e.target));
+  $('#links').addEventListener('click', e => copy($('#out').dataset.links || '', e.target));
+  $('#make').addEventListener('click', make);
+
+  function terms(r){
+    if(r.kind === 'discount') return (r.percent_off ? r.percent_off + '% off' : '—');
+    if(r.grant_until) return 'until ' + when(r.grant_until);
+    if(r.grant_days) return r.grant_days + ' days';
+    return 'to keep';
+  }
+
+  async function draw(){
+    await named;                   // so the table can use real names
+    const [codes, used] = await Promise.all([
+      sb.rpc('codes_list', { p_limit: 200 }),
+      sb.rpc('code_redemption_list', { p_limit: 60 })
+    ]);
+
+    const bad = [codes, used].find(r => r && r.error);
+    if(bad){
+      m.textContent = bad.error.message.includes('does not exist')
+        ? 'The codes tables are not installed yet — run supabase-redeem-codes.sql in the SQL editor.'
+        : 'Could not read them: ' + bad.error.message;
+      m.className = 'msg bad'; return;
+    }
+
+    const rows = codes.data || [];
+    $('#list').innerHTML = rows.length
+      ? '<tr><th>Code</th><th>For</th><th>Gives</th><th>Used</th><th>Dies</th><th>What for</th><th></th></tr>' +
+        rows.map(r =>
+          '<tr><td class="code">' + esc(r.code) + '</td>' +
+          '<td>' + esc((r.apps||['*']).map(appName).join(', ')) + '</td>' +
+          '<td>' + esc(terms(r)) + '</td>' +
+          '<td class="n">' + r.uses + (r.max_uses ? ' / ' + r.max_uses : '') + '</td>' +
+          '<td>' + esc(when(r.expires_at)) + '</td>' +
+          '<td>' + esc(r.note || '') + '</td>' +
+          '<td><span class="tag ' + esc(r.state.replace(/\s/g,'')) + '">' + esc(r.state) + '</span>' +
+            (r.disabled ? '' : ' <button class="kill" data-off="' + esc(r.code) + '">switch off</button>') +
+          '</td></tr>').join('')
+      : '<tr><td class="empty">No codes yet. Make some above.</td></tr>';
+
+    const u = used.data || [];
+    $('#used').innerHTML = u.length
+      ? '<tr><th>Who</th><th>Code</th><th>App</th><th>When</th></tr>' +
+        u.map(r => '<tr><td>' + esc(r.email) + '</td><td class="code">' + esc(r.code) + '</td>' +
+          '<td>' + esc(appName(r.app || '')) + '</td><td>' + esc(when(r.at)) + '</td></tr>').join('')
+      : '<tr><td class="empty">Nobody has redeemed one yet.</td></tr>';
+  }
+
+  document.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-off]');
+    if(!b) return;
+    b.disabled = true;
+    const { error } = await sb.rpc('set_code_disabled', { p_code: b.getAttribute('data-off'), p_off: true });
+    if(error){ m.textContent = 'Could not switch it off: ' + error.message; m.className='msg bad'; b.disabled=false; return; }
+    draw();
+  });
+
+  draw();
+})();
+</script>
+</body>
+</html>
