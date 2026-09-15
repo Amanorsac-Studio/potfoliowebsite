@@ -132,5 +132,17 @@ Deno.serve(async (req) => {
     }
     return json({ error: error.message }, 500);
   }
+  /* Same as the Stripe side: the code is spent once the money is real,
+     never at checkout, so an abandoned payment does not eat a use. */
+  const code = tx.metadata?.code;
+  if (code) {
+    const { data: spent } = await db.rpc("spend_code",
+      { p_code: String(code), p_app: String(app), p_user: String(userId) });
+    if (spent === false) {
+      console.error("CODE OVERSPENT - a discounted sale went through on a code with no uses left:",
+        JSON.stringify({ code, app, user_id: userId, reference }));
+    }
+  }
+
   return json({ ok: true, app, user_id: userId, reference });
 });

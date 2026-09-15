@@ -105,6 +105,26 @@ function amountFor(pay: Pay, app: App, usdCents?: number): number | null {
   return Math.ceil((usd / 100) * rate * 100 / step) * step;
 }
 
+/** A dollar figure turned into the account's currency, for a code that
+ *  takes a fixed amount off rather than a percentage. */
+function localFromUsd(pay: Pay, usdCents: number): number {
+  const rate = Number(pay.rate_per_usd);
+  if (!usdCents || !isFinite(rate) || rate <= 0) return 0;
+  return Math.round((usdCents / 100) * rate * 100);
+}
+
+/** What to say when a code will not work. The same sentences the redeem
+ *  page uses, because it is the same disappointment. */
+function codeWords(err?: string): string {
+  switch (err) {
+    case "expired":             return "That code has passed its date.";
+    case "all_used":            return "That code has been used as many times as it was meant to be.";
+    case "already_used_by_you": return "You have already used that code.";
+    case "wrong_app":           return "That code is not for this app.";
+    default:                    return "No code like that. Check for a typo - codes never contain the letter O or the digit 0.";
+  }
+}
+
 async function paystack(path: string, body: unknown) {
   const res = await fetch("https://api.paystack.co/" + path, {
     method: "POST",
@@ -143,9 +163,10 @@ Deno.serve(async (req) => {
   if (!user) return json({ error: "Sign in first." }, 401);
   if (!user.email) return json({ error: "This account has no email address to send a receipt to." }, 400);
 
-  let body: { app?: string; amount?: number };
+  let body: { app?: string; amount?: number; code?: string };
   try { body = await req.json(); } catch { return json({ error: "Bad JSON." }, 400); }
   const app = String(body.app ?? "").toLowerCase().trim();
+  const code = String(body.code ?? "").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 40);
 
   let c: Awaited<ReturnType<typeof catalog>>;
   try { c = await catalog(); } catch (e) { return json({ error: (e as Error).message }, 502); }
@@ -163,6 +184,8 @@ Deno.serve(async (req) => {
     return json({ error: (item.name ?? app) + " is not on sale right now." }, 403);
   }
 
+  const admin = createClient(url, service, { auth: { autoRefreshToken: false, persistSession: false } });
+
   /* A name-your-price app may be told what to charge; everything else
      may not. Either way the figure is clamped here, against the
      catalog's own minimum and a ceiling of a hundred times the
@@ -178,7 +201,24 @@ Deno.serve(async (req) => {
   }
   if (!amount || amount < 1) return json({ error: "That app has no Paystack price set up yet." }, 500);
 
-  const admin = createClient(url, service, { auth: { autoRefreshToken: false, persistSession: false } });
+  /* A discount code, if one came with the request. Looked up here and
+     applied here: the page was told what it is worth so it could show a
+     figure, and that figure is not trusted - this is worked out again
+     from the code's own row. An invalid code is refused rather than
+     quietly ignored, because somebody who typed one is expecting it to
+     count and should be told if it did not. */
+  let discount: { percent_off?: number; amount_off_cents?: number } | null = null;
+  if (code) {
+    const { data: d } = await admin.rpc("code_value",
+      { p_code: code, p_app: app, p_user: user.id });
+    if (!d?.ok) return json({ error: codeWords(d?.error), code_error: d?.error ?? "no_such_code" }, 400);
+    discount = d;
+    const off = d.percent_off
+      ? Math.round(amount * d.percent_off / 100)
+      : Math.min(localFromUsd(pay, d.amount_off_cents ?? 0), amount);
+    // Both processors refuse a tiny charge; 100% off is an access code's job.
+    amount = Math.max(100, amount - off);
+  }
 
   // Already owns it - do not sell it twice.
   const { data: existing } = await admin.from("purchases")
@@ -196,6 +236,8 @@ Deno.serve(async (req) => {
       metadata: {
         app,
         user_id: user.id,
+        // What the webhook spends once the money is real.
+        code: code || null,
         // Shown on the Paystack dashboard next to the payment, so a
         // transaction is readable without looking anything up.
         custom_fields: [
@@ -209,7 +251,8 @@ Deno.serve(async (req) => {
 
     const auth = out?.data?.authorization_url;
     if (!auth) return json({ error: "Paystack did not return a checkout link." }, 502);
-    return json({ url: auth, reference: out?.data?.reference ?? null, amount, currency: pay.currency });
+    return json({ url: auth, reference: out?.data?.reference ?? null, amount,
+                  currency: pay.currency, discount });
   } catch (e) {
     return json({ error: (e as Error).message }, 502);
   }

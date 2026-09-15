@@ -108,14 +108,19 @@
   /* What the main button says. When Paystack leads, it says the local
      figure - a Ghanaian buyer should see cedis on the button, not a
      dollar price that turns into cedis on the next screen. */
-  function buyLabel() {
-    if (pay && pay.first === 'paystack' && pay.paystack) {
+  function buyLabel(discount) {
+    var usePaystack = pay && pay.first === 'paystack' && pay.paystack;
+    if (discount) {
+      var d = usePaystack && discount.paystack ? discount.paystack : discount.usd;
+      if (d) return 'Buy \u2014 ' + d.display;
+    }
+    if (usePaystack) {
       return pay.paystack.choose ? 'Name your price \u00b7 ' + pay.paystack.display
                                  : 'Buy \u2014 ' + pay.paystack.display;
     }
     return PRICES[app] || 'Buy';
   }
-  function showBuy() { setButtons(buyLabel(), false); renderAlt(); }
+  function showBuy() { setButtons(buyLabel(), false); renderAlt(); renderCode(); }
 
   function render() {
     return Promise.all([checkOnSale(), loadPayOptions()]).then(function (both) {
@@ -173,6 +178,116 @@
     slot.hidden = false;
   }
 
+  /* ---------- a discount code ----------
+
+     The box is drawn only for an app that has a price. What a code is
+     worth is answered by /api/check-code, which works it out from the
+     catalog and the code's own row - this file never does the
+     arithmetic, and the checkout works it out again before charging, so
+     a figure edited in a console changes what is shown and nothing
+     else. Checking does not spend it; the webhook does that when the
+     money lands. */
+  var code = null;                 // the code, once it has been accepted
+
+  function renderCode() {
+    var slot = document.querySelector('[data-code-box]');
+    if (!slot) return;
+    /* Drawn once. Every redraw of the buy button used to come through
+       here and wipe the box - which took the message with it, so a
+       refused code said nothing at all, and closed the form somebody
+       was still typing in. */
+    if (slot.firstChild) return;
+    slot.innerHTML =
+      '<button type="button" class="code-open" data-code-open>Have a code?</button>' +
+      '<span class="code-form" hidden>' +
+        '<input type="text" class="code-in" data-code-input placeholder="AMAN-XXXX-XXXX-XXXX" ' +
+               'autocomplete="off" spellcheck="false" aria-label="Discount code">' +
+        '<button type="button" class="code-go" data-code-go>Apply</button>' +
+      '</span>' +
+      '<span class="code-say" data-code-say></span>';
+    slot.hidden = false;
+  }
+
+  function codeSay(text, bad) {
+    var el = document.querySelector('[data-code-say]');
+    if (!el) return;
+    el.innerHTML = text || '';
+    el.className = 'code-say' + (bad ? ' bad' : '') + (text ? ' on' : '');
+  }
+
+  function applyCode(typed) {
+    var clean = String(typed || '').toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    if (clean.length < 6) { codeSay('That does not look like a code.', true); return; }
+    codeSay('Checking\u2026');
+    sb.auth.getSession().then(function (s) {
+      var session = s && s.data && s.data.session;
+      if (!session) { codeSay('Sign in first, then the code can be checked against your account.', true); return; }
+      return fetch('/api/check-code', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({ app: app, code: clean })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (!j || !j.ok) {
+            /* Put the button back to full price first, then say why -
+               the other way round and the message is written and then
+               painted over. */
+            code = null;
+            setButtons(buyLabel(), false);
+            renderAlt();
+            codeSay(CODE_WORDS[j && j.error] || 'That code could not be used.', true);
+            return;
+          }
+          code = j.code;
+          /* The button itself changes, because the price on it is the
+             thing somebody is about to agree to. */
+          /* The whole sentence, because the sale line above is still
+             saying the pre-code price and is still right - the sale
+             takes it to $12, the code takes $12 to $9.60. Saying only
+             "20% off" leaves the reader to reconcile two figures. */
+          var usePaystack = pay && pay.first === 'paystack' && pay.paystack;
+          var m = (usePaystack && j.paystack) ? j.paystack : j.usd;
+          codeSay('<b>' + esc(j.code) + '</b> applied \u2014 ' +
+            (j.percent_off ? j.percent_off + '% off ' : '') + esc(m.was) +
+            '. You pay <b>' + esc(m.display) + '</b>.');
+          setButtons(buyLabel(j), false);
+          renderAlt();
+        })
+        .catch(function () { codeSay('Could not check that just now. Try again in a moment.', true); });
+    });
+  }
+
+  var CODE_WORDS = {
+    sign_in:             'Sign in first, then the code can be checked against your account.',
+    not_a_code:          'That does not look like a code.',
+    no_such_code:        'No code like that. Codes never contain the letter O or the digit 0.',
+    expired:             'That code has passed its date.',
+    all_used:            'That code has been used as many times as it was meant to be.',
+    already_used_by_you: 'You have already used that one.',
+    wrong_app:           'That code is not for this app.',
+    unavailable:         'Could not check that just now. Try again in a moment.'
+  };
+
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-code-open]')) {
+      var f = document.querySelector('.code-form');
+      var o = document.querySelector('[data-code-open]');
+      if (f) { f.hidden = false; o.hidden = true; f.querySelector('input').focus(); }
+      return;
+    }
+    if (e.target.closest('[data-code-go]')) {
+      var i = document.querySelector('[data-code-input]');
+      if (i) applyCode(i.value);
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-code-input]')) {
+      e.preventDefault();
+      applyCode(e.target.value);
+    }
+  });
+
   var params = new URLSearchParams(location.search);
 
   if (params.get('purchased') === '1') {
@@ -217,7 +332,9 @@
         'apikey': SUPABASE_KEY,
         'Authorization': 'Bearer ' + session.access_token
       },
-      body: JSON.stringify(amount ? { app: app, amount: amount } : { app: app })
+      body: JSON.stringify(Object.assign({ app: app },
+        amount ? { amount: amount } : null,
+        code ? { code: code } : null))
     })
       .then(function (r) { return r.json().then(function (j) { return r.ok ? j : Promise.reject(j); }); })
       .then(function (j) {
@@ -226,6 +343,15 @@
         return Promise.reject(j);
       })
       .catch(function (j) {
+        /* A code the checkout refused is the code box's news, not the
+           buy button's - and the code is dropped so the next press is
+           not the same refusal again. */
+        if (j && j.code_error) {
+          code = null;
+          showBuy();
+          codeSay(CODE_WORDS[j.code_error] || esc(j.error || ''), true);
+          return;
+        }
         showBuy();
         say(esc((j && j.error) || 'Could not start checkout. Try again in a moment.'), true);
       });

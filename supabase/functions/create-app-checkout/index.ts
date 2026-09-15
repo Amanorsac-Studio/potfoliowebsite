@@ -103,6 +103,18 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
   },
 };
 
+/** What to say when a code will not work. The same sentences the redeem
+ *  page uses, because it is the same disappointment. */
+function codeWords(err?: string): string {
+  switch (err) {
+    case "expired":             return "That code has passed its date.";
+    case "all_used":            return "That code has been used as many times as it was meant to be.";
+    case "already_used_by_you": return "You have already used that code.";
+    case "wrong_app":           return "That code is not for this app.";
+    default:                    return "No code like that. Check for a typo - codes never contain the letter O or the digit 0.";
+  }
+}
+
 async function stripe(path: string, params: Record<string, string>) {
   const res = await fetch("https://api.stripe.com/v1/" + path, {
     method: "POST",
@@ -138,9 +150,10 @@ Deno.serve(async (req) => {
   const { data: { user } } = await asCaller.auth.getUser();
   if (!user) return json({ error: "Sign in first." }, 401);
 
-  let body: { app?: string };
+  let body: { app?: string; code?: string };
   try { body = await req.json(); } catch { return json({ error: "Bad JSON." }, 400); }
   const app = String(body.app ?? "").toLowerCase().trim();
+  const code = String(body.code ?? "").toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 40);
   const item = APP_CATALOG[app];
   if (!item) return json({ error: "No such app for sale." }, 404);
   if (!item.stripe_price && typeof item.amount_cents !== "number") {
@@ -160,14 +173,41 @@ Deno.serve(async (req) => {
 
   const back = returnOrigin(req);
 
+  /* A discount code, if one came with the request. Ours, not Stripe's:
+     see supabase-redeem-codes.sql for why. Looked up here and applied
+     here - the page was told what it is worth so it could show a
+     figure, and that figure is not trusted. An invalid code is refused
+     rather than quietly ignored, because somebody who typed one is
+     expecting it to count. */
+  let discount: { percent_off?: number; amount_off_cents?: number } | null = null;
+  let amount = item.amount_cents;
+  if (code) {
+    if (item.stripe_price) {
+      // A name-your-price app already lets the buyer choose; a code on
+      // top of that has no meaning worth guessing at.
+      return json({ error: "That app is name your price - a discount code does not apply.",
+                    code_error: "wrong_app" }, 400);
+    }
+    const { data: d } = await admin.rpc("code_value", { p_code: code, p_app: app, p_user: user.id });
+    if (!d?.ok) return json({ error: codeWords(d?.error), code_error: d?.error ?? "no_such_code" }, 400);
+    discount = d;
+    const base = amount ?? 0;
+    const off = d.percent_off ? Math.round(base * d.percent_off / 100)
+                              : Math.min(d.amount_off_cents ?? 0, base);
+    // Stripe refuses anything under fifty cents, and 100% off is an
+    // access code's job rather than a discount's.
+    amount = Math.max(50, base - off);
+  }
+
   try {
     // One line item, priced one of the two ways above.
     const priced: Record<string, string> = item.stripe_price
       ? { "line_items[0][price]": item.stripe_price }
       : {
         "line_items[0][price_data][currency]": "usd",
-        "line_items[0][price_data][unit_amount]": String(item.amount_cents),
-        "line_items[0][price_data][product_data][name]": item.label,
+        "line_items[0][price_data][unit_amount]": String(amount),
+        "line_items[0][price_data][product_data][name]":
+          item.label + (discount ? " (code " + code + ")" : ""),
       };
 
     const session = await stripe("checkout/sessions", {
@@ -178,12 +218,14 @@ Deno.serve(async (req) => {
       // This is the thread stripe-webhook follows back to this account.
       "metadata[app]": app,
       "metadata[user_id]": user.id,
+      // What the webhook spends once the money is real.
+      "metadata[code]": code || "",
       // Back to the app's own page, not the portal - there is no "My
       // Apps" section there yet for this to land in usefully.
       success_url: back + "/" + app + "?purchased=1",
       cancel_url: back + "/" + app + "?checkout=cancelled",
     });
-    return json({ url: session.url });
+    return json({ url: session.url, discount });
   } catch (e) {
     return json({ error: (e as Error).message }, 502);
   }

@@ -106,7 +106,8 @@ export default {
       // Preflight for the two doors the Hub uses from a desktop app.
       if (request.method === 'OPTIONS') {
         const p = new URL(request.url).pathname;
-        if (p === '/api/app-download' || p === '/api/catalog' || p === '/api/hub-ping') {
+        if (p === '/api/app-download' || p === '/api/catalog' || p === '/api/hub-ping' ||
+            p === '/api/check-code') {
           return withCors(new Response(null, { status: 204 }));
         }
       }
@@ -122,6 +123,9 @@ export default {
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/hub-ping') {
         return withCors(await hubPing(request, env, ctx));
+      }
+      if (request.method === 'POST' && new URL(request.url).pathname === '/api/check-code') {
+        return withCors(await checkCode(request, env));
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/licenses/activate') {
         return await licenseActivate(request, env);
@@ -565,6 +569,91 @@ async function hubPing(request, env, ctx) {
 
   waitOn(ctx, write);
   return ok;
+}
+
+/* ---------------------------------------------------------------------
+   POST /api/check-code   -   what a discount code is worth, before
+   anybody pays.
+
+   The page needs to show the price a code produces, and the price
+   depends on things only this side knows: the catalog, the Paystack
+   rate, and whether this account has already used the code. So the
+   figure is worked out here and the page only ever displays it.
+
+   This does NOT spend the code. A code marked spent for a checkout
+   somebody abandoned is a code the next person cannot use, so it is
+   spent by the webhook when the money actually arrives - and the edge
+   function works the price out AGAIN from the same catalog before
+   charging, so a page that lies about a discount changes nothing.
+   --------------------------------------------------------------------- */
+function applyDiscount(cents, d) {
+  if (!cents || !d) return cents;
+  const off = d.percent_off ? Math.round(cents * d.percent_off / 100)
+            : Math.min(d.amount_off_cents || 0, cents);
+  /* Never below fifty cents: both processors refuse a smaller charge,
+     and "100% off" is an access code's job, not a discount's. */
+  return Math.max(50, cents - off);
+}
+
+async function checkCode(request, env) {
+  const say = (obj, status) => new Response(JSON.stringify(obj), {
+    status: status || 200,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
+  });
+  if (!env.SUPABASE_SERVICE_KEY) return say({ ok: false, error: 'unavailable' }, 503);
+
+  const jwt = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  if (!jwt) return say({ ok: false, error: 'sign_in' }, 401);
+
+  let body = {};
+  try { body = await request.json(); } catch (e) {}
+  const app  = String(body.app || '').toLowerCase().slice(0, 40);
+  const code = String(body.code || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 40);
+  if (!app || code.length < 6) return say({ ok: false, error: 'not_a_code' });
+
+  const c = await getCatalog(env);
+  const entry = (c.apps || {})[app];
+  if (!entry || entry.free) return say({ ok: false, error: 'wrong_app' });
+
+  let d;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/code_value', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json',
+                 apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+      body: JSON.stringify({ p_code: code, p_app: app, p_user: await userIdFrom(jwt) })
+    });
+    if (!r.ok) { console.error('code_value refused:', r.status, await r.text()); return say({ ok: false, error: 'unavailable' }, 502); }
+    d = await r.json();
+  } catch (e) { return say({ ok: false, error: 'unavailable' }, 502); }
+
+  if (!d || !d.ok) return say({ ok: false, error: (d && d.error) || 'no_such_code' });
+
+  const usdBefore = entry.price_cents || 0;
+  const usdAfter  = applyDiscount(usdBefore, d);
+
+  /* And the same discount in the local currency, when Paystack is the
+     one that would be charging. Worked out from the discounted dollar
+     price rather than by discounting the local one twice. */
+  const pay = c.paystack;
+  const country = (request.headers.get('cf-ipcountry') || '').toUpperCase();
+  let local = null;
+  if (pay && pay.live && (pay.countries || []).includes(country)) {
+    const before = paystackAmount(pay, entry);
+    const after  = paystackAmount(pay, { price_cents: usdAfter });
+    if (before && after) {
+      local = { currency: pay.currency, before: before, after: after,
+                display: money(pay.currency, after), was: money(pay.currency, before) };
+    }
+  }
+
+  return say({
+    ok: true, code: code,
+    percent_off: d.percent_off || null, amount_off_cents: d.amount_off_cents || null,
+    usd: { before: usdBefore, after: usdAfter,
+           display: money('USD', usdAfter), was: money('USD', usdBefore) },
+    paystack: local
+  });
 }
 
 async function appDownload(request, env, ctx) {

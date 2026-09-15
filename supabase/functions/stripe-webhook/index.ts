@@ -117,6 +117,24 @@ Deno.serve(async (req) => {
     }, { onConflict: "stripe_session_id", ignoreDuplicates: true });
 
     if (error) return json({ error: error.message }, 500);
+
+    /* The discount code is spent here and nowhere earlier. A code marked
+       spent for a checkout somebody abandoned is a code the next person
+       cannot use, so it is only counted once the money has arrived.
+       spend_code is atomic and refuses when the uses have run out - if
+       that happens the sale still stands, because the buyer paid the
+       discounted price in good faith and the shortfall is the studio's
+       to wear, not theirs. */
+    const code = session.metadata?.code;
+    if (code) {
+      const { data: spent } = await db.rpc("spend_code",
+        { p_code: String(code), p_app: String(app), p_user: String(userId) });
+      if (spent === false) {
+        console.error("CODE OVERSPENT - a discounted sale went through on a code with no uses left:",
+          JSON.stringify({ code, app, user_id: userId, session: session.id }));
+      }
+    }
+
     return json({ ok: true, app, user_id: userId });
   }
 

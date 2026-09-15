@@ -176,3 +176,33 @@
 .app-plat{font-family:var(--mono,ui-monospace,monospace);font-size:9.5px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--muted,#8C85AC);border:1px solid currentColor;
   border-radius:999px;padding:2px 7px;opacity:.8;white-space:nowrap}
+
+/* ---------------------------------------------------------------------
+   A discount code, under the buy button.
+
+   Closed by default: most people do not have one, and a box asking for
+   a code you do not have is a small accusation that you are paying too
+   much. It opens when somebody says they have one.
+   --------------------------------------------------------------------- */
+.code-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:12px 0 0;font-size:13.5px}
+.code-open{appearance:none;cursor:pointer;font:inherit;font-size:13.5px;color:inherit;
+  background:transparent;border:0;padding:0;opacity:.72;text-decoration:underline;
+  text-underline-offset:3px}
+.code-open:hover{opacity:1}
+.code-form{display:inline-flex;align-items:center;gap:8px}
+.code-in{font-family:var(--mono,ui-monospace,monospace);font-size:13.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:inherit;background:color-mix(in srgb,currentColor 7%,transparent);
+  border:1px solid color-mix(in srgb,currentColor 26%,transparent);
+  border-radius:999px;padding:8px 14px;width:21ch;max-width:100%}
+.code-in:focus{outline:none;border-color:currentColor}
+.code-go{appearance:none;cursor:pointer;font:inherit;font-size:13.5px;font-weight:600;color:inherit;
+  background:transparent;border:1px solid currentColor;border-radius:999px;padding:8px 16px;opacity:.8}
+.code-go:hover{opacity:1}
+.code-say{font-size:13px;opacity:.8}
+.code-say.bad{color:var(--alert,#FF7A8A);opacity:1}
+.code-say.on b{font-family:var(--mono,ui-monospace,monospace);font-size:12.5px;letter-spacing:.06em}
+@media (max-width:520px){
+  .code-row{gap:8px}
+  .code-form{width:100%}
+  .code-in{flex:1 1 auto;width:auto}
+}
