@@ -62,12 +62,22 @@
     { "binding": "DOWNLOADS", "bucket_name": "amanorsac-downloads" }
   ],
 
-  /* Once a day, worker.js's scheduled() runs and emails a review-invite
-     link to anyone who downloaded a REVIEW_INVITE_APPS app a week or
-     more ago and hasn't already been asked. 15:00 UTC is late morning
-     across the US and evening in Europe - no real science to it beyond
-     not being the middle of the night anywhere Nebula Tide has actually
-     been downloaded so far. */
+  /* Once a day, worker.js's scheduled() runs. Two jobs now:
+
+       review invites  - a link to anyone who downloaded a
+                         REVIEW_INVITE_APPS app a week or more ago and
+                         has not already been asked.
+       update notices  - one email to the owners of any app carrying a
+                         `notice` block in catalog.json, once per notice
+                         id, a batch of 120 a day.
+
+     The second one means editing catalog.json can send real email to
+     real customers within a day, with nothing else to press. That is
+     the point of it, and it is worth knowing before writing a notice.
+
+     15:00 UTC is late morning across the US and evening in Europe - no
+     real science to it beyond not being the middle of the night
+     anywhere Nebula Tide has actually been downloaded so far. */
   "triggers": {
     "crons": ["0 15 * * *"]
   },
