@@ -975,8 +975,23 @@ async function catalogApi(env) {
       version: a.version || null, platforms: Object.keys(a.installers || {})
     };
   }
+  /* What's new. The Hub keeps its own record of which ids a person has
+     read, so entries are handed over whole and in the order the catalog
+     lists them - newest first, oldest last. Only the last 30 travel: a
+     desktop panel is not an archive.
+
+     `app` is dropped unless it names a real app, because the Hub turns
+     it into a button; `url` goes through abs() like every other link
+     here, so a relative path in the catalog arrives usable. */
+  const news = (Array.isArray(c.news) ? c.news : []).slice(0, 30).map((n) => ({
+    id: String(n.id), date: n.date || null, tag: n.tag || null,
+    title: n.title || '', body: n.body || '',
+    app: n.app && (c.apps || {})[n.app] ? n.app : null, url: abs(n.url),
+  })).filter((n) => n.id && n.title);
+
   const hub = c.hub || {};
   return new Response(JSON.stringify({
+    news,
     hub: { name: hub.name || 'Amanorsac Hub', version: hub.version || null, protocol: hub.protocol || 'amanorsac',
            tagline: hub.tagline || '', platforms: Object.keys(hub.installers || {}),
            download: SITE + '/download/hub/{platform}' },

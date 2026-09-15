@@ -172,6 +172,14 @@
   <p class="why">One row per installation of Amanorsac Hub, not per person. It says how many copies are out there, on what, and how many are still on an old build.</p>
   <div id="hubwrap"></div>
 
+  <p class="sec">What people actually open</p>
+  <p class="why">From the Hub's usage notes, and <b>only from the people who switched them on</b> &mdash;
+    they are off until someone says yes. So these are not totals: read them as shape, not size.
+    Which app gets opened, how often, and on what. Never a file name, a folder, a project, or
+    anything inside an app. Anyone can erase everything they have sent, from any machine, at any
+    time, and these numbers go down when they do.</p>
+  <div id="usewrap"></div>
+
   <p class="sec">Codes</p>
   <p class="why">What the codes are costing and whether anybody uses them. <b>Given away</b> values each
     comped licence at the most anyone has paid for that app &mdash; the catalog price is not in the
@@ -209,6 +217,20 @@
   const num = n => Number(n||0).toLocaleString();
   const usd = c => '$' + (Number(c||0)/100).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2});
   const when = t => new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+
+  /* Real names, from the one file that has them. The reports return app
+     ids because that is what the database stores, and an id read back
+     raw gives "performlive" and "afdgate" - which is how this page ended
+     up calling AFD Gate "afdgate" on a screen the studio looks at every
+     week. Fetched once, and every table falls back to the id if the
+     catalog cannot be read, so a dropped request costs a nicety and not
+     a row. */
+  let NAMES = {};
+  const appName = id => NAMES[id] || id;
+  const namesReady = fetch('/catalog.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : null)
+    .then(c => { if(c && c.apps) Object.keys(c.apps).forEach(k => { NAMES[k] = c.apps[k].name || k; }); })
+    .catch(() => {});
 
   /* A number with no direction is decoration. */
   function delta(now, before){
@@ -338,7 +360,7 @@
       '<tr><th>App</th><th class="n">Revenue</th><th class="n">Sales</th><th class="n">Downloads</th>' +
       '<th class="n">Via Hub</th><th class="n">Installs</th><th class="n">Seats</th><th class="n">Rating</th></tr>' +
       rows.map(r =>
-        '<tr><td><span class="app">'+esc(r.app)+'</span>' +
+        '<tr><td><span class="app">'+esc(appName(r.app))+'</span>' +
           '<i class="inline-bar" data-w="'+Math.round((Number(r.revenue_cents)||0)/peak*100)+'"></i></td>' +
         '<td class="n">'+usd(r.revenue_cents)+'</td>' +
         '<td class="n">'+num(r.sales)+'</td>' +
@@ -409,6 +431,61 @@
     barList($('#plats'), plat, r => r[0] === 'windows' ? 'Windows' : r[0] === 'mac' ? 'macOS' : r[0], r => r[1]);
   }
 
+  /* The consented half of the picture. Deliberately kept apart from the
+     installed base above: that one counts every Hub that started, this
+     one counts only the people who opted in, and putting the two sets of
+     figures in one panel would invite reading a share of the second as a
+     share of everybody. `opted_in` below is the honest denominator and
+     is stated first for that reason. */
+  function usage(u, byApp, base){
+    const wrap = $('#usewrap');
+    if(!u){ wrap.innerHTML = '<div class="pending">The usage tables are not installed yet &mdash; run ' +
+      '<b>supabase-hub-usage.sql</b> in the SQL editor.</div>'; return; }
+
+    if(!Number(u.installs)){
+      wrap.innerHTML = '<div class="pending">Nobody has turned usage notes on yet, or nobody has ' +
+        'opened an app since they did. The switch is on the Hub\u2019s library page.</div>';
+      return;
+    }
+
+    /* What share of the installed base opted in. product_hub counts every
+       Hub that ever said hello, so this is the real denominator; without
+       it "142 machines" reads like everybody. */
+    const total = base && Number(base.installs) || 0;
+    const share = total ? Math.round(Number(u.installs) / total * 100) : null;
+    const perMachine = Number(u.installs)
+      ? (Number(u.app_opens) / Number(u.installs)).toFixed(1) : '0';
+
+    wrap.innerHTML =
+      '<div class="figs" style="margin-bottom:14px">' +
+        '<div class="fig"><p class="k">Opted in</p><p class="v">'+num(u.installs)+'</p>' +
+          '<span class="d">'+(share === null ? 'machines sending notes'
+             : share + '% of the ' + num(total) + ' installations') + '</span></div>' +
+        '<div class="fig"><p class="k">App opens</p><p class="v">'+num(u.app_opens)+'</p>' +
+          '<span class="d">'+perMachine+' per machine in this window</span></div>' +
+        '<div class="fig"><p class="k">Hub opens</p><p class="v">'+num(u.hub_opens)+'</p>' +
+          '<span class="d">'+num(u.accounts)+' account'+(Number(u.accounts)===1?'':'s')+' behind them</span></div>' +
+        '<div class="fig"><p class="k">Installed from the Hub</p><p class="v">'+num(u.installs_done)+'</p>' +
+          '<span class="d">'+num(u.updates_done)+' update'+(Number(u.updates_done)===1?'':'s')+'</span></div>' +
+      '</div>' +
+      '<div class="card"><div class="card-head"><h2>Which app, and how deeply</h2></div>' +
+        '<div class="tblwrap"><table class="tbl"><tbody id="useapps"></tbody></table></div></div>';
+
+    /* opens_per_machine is the column worth reading. A high open count on
+       one machine is one person's habit; a high per-machine number across
+       many is an app people live in. */
+    const rows = byApp || [];
+    $('#useapps').innerHTML = rows.length
+      ? '<tr><th>App</th><th class="n">Machines</th><th class="n">Opens</th>' +
+        '<th class="n">Opens each</th><th class="n">Last opened</th></tr>' +
+        rows.map(r => '<tr><td>'+esc(appName(r.app))+'</td>' +
+          '<td class="n">'+num(r.machines)+'</td>' +
+          '<td class="n">'+num(r.opens)+'</td>' +
+          '<td class="n">'+(r.opens_per_machine == null ? '—' : Number(r.opens_per_machine).toFixed(1))+'</td>' +
+          '<td class="n dim">'+esc(when(r.last_opened))+'</td></tr>').join('')
+      : '<tr><td class="empty">No app has been opened in this window.</td></tr>';
+  }
+
   function codes(c){
     const wrap = $('#codeswrap');
     if(!c){ wrap.innerHTML = '<div class="pending">The codes tables are not installed yet &mdash; run ' +
@@ -473,7 +550,8 @@
   /* ---------- load ---------- */
   async function draw(){
     m.textContent = 'Reading…'; m.className = 'msg';
-    const [s, a, d, f, g, h, l, cd, rec] = await Promise.all([
+    await namesReady;
+    const [s, a, d, f, g, h, l, cd, rec, us, ua] = await Promise.all([
       sb.rpc('product_summary',    { p_days: days }),
       sb.rpc('product_by_app',     { p_days: days }),
       sb.rpc('product_daily',      { p_days: days }),
@@ -483,11 +561,13 @@
       sb.rpc('product_licences'),
       sb.rpc('product_codes',      { p_days: days }),
       sb.rpc('product_recent',     { p_limit: 12 }),
+      sb.rpc('hub_usage_summary',  { p_days: days }),
+      sb.rpc('hub_usage_by_app',   { p_days: days }),
     ]);
 
-    /* The codes report is allowed to be missing - phase 1's SQL may not
-       have been run - so it is checked on its own and says so in its own
-       panel rather than emptying the whole page. */
+    /* The codes and usage reports are allowed to be missing - their SQL
+       may not have been run - so they are checked on their own and say so
+       in their own panels rather than emptying the whole page. */
     const bad = [s,a,d,f,g,h,l,rec].find(r => r && r.error);
     if(bad){
       m.textContent = bad.error.message.includes('does not exist')
@@ -508,6 +588,9 @@
             r => num(r.downloads) + ' <span style="opacity:.55">of ' + num(r.visits) + ' visits</span>');
     hub((h.data && h.data[0]) || null);
     licences((l.data && l.data[0]) || null);
+    usage((us && !us.error && us.data && us.data[0]) || null,
+          (ua && !ua.error && ua.data) || [],
+          (h.data && h.data[0]) || null);
     codes((cd && !cd.error && cd.data && cd.data[0]) || null);
     recent(rec.data || []);
   }

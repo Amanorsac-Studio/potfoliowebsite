@@ -30,6 +30,11 @@ with want(file, thing, kind, name) as (values
   ('supabase-product-analytics.sql','purchases.code [ph 3]',  'col',   'purchases.code'),
   ('supabase-update-notices.sql',   'update_notices table',   'table', 'update_notices'),
   ('supabase-update-notices.sql',   'notice_optouts table',   'table', 'notice_optouts'),
+  ('supabase-hub-usage.sql',        'hub_usage table',        'table', 'hub_usage'),
+  ('supabase-hub-usage.sql',        'record_hub_usage()',     'func',  'record_hub_usage'),
+  ('supabase-hub-usage.sql',        'revoke_hub_usage()',     'func',  'revoke_hub_usage'),
+  ('supabase-hub-usage.sql',        'hub_usage_summary()',    'func',  'hub_usage_summary'),
+  ('supabase-hub-usage.sql',        'hub_usage_by_app()',     'func',  'hub_usage_by_app'),
   ('supabase-beta-licenses.sql',    'claim_beta_license()',   'func',  'claim_beta_license')
 )
 select w.file, w.thing,

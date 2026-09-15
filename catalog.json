@@ -13,6 +13,60 @@
   },
 
   "direct_download_fallback": true,
+  "_news": "What's new, inside the Hub. Newest first - the order here is the",
+  "_news2": "order it is read in, and only the first 30 travel. Add an entry and",
+  "_news3": "every open Hub picks it up within a few minutes; there is no Hub",
+  "_news4": "release in the loop.",
+  "_news5": "",
+  "_news6": "id is what a Hub remembers as read. Never reuse one for a different",
+  "_news7": "post, and never change one to make an old post unread again -",
+  "_news8": "editing a post in place is meant to be quiet.",
+  "_news9": "",
+  "_news10": "app must be an id from the list below, or null. When it names one,",
+  "_news11": "the Hub offers the right button for that app on that computer -",
+  "_news12": "Install, Update or Open. url opens in the browser.",
+  "_news13": "",
+  "_news14": "The Hub already announces a brand new app by itself, by comparing",
+  "_news15": "the ids it saw last time. An entry here is for when there is",
+  "_news16": "something to say beyond \"this exists\".",
+  "news": [
+    {
+      "id": "hub-1-3-0",
+      "date": "2026-09-15",
+      "tag": "Release",
+      "app": null,
+      "title": "Hub 1.3.0: What's new, artwork, and a switch you control",
+      "body": "This page is the new part. Releases, new apps and notes from the studio land here, and the sidebar marks itself when one does. Every app in the library now shows its own artwork, drawn from the same place the store draws it, so the two can no longer drift. And there is a switch on the library page for usage notes: it is off until you turn it on, it records which app you open and whether this is a Windows or a Mac, and it never reads a file name, a folder, a project or anything inside an app. You can delete everything it has ever sent, from any computer, in one press.",
+      "url": "hub.html"
+    },
+    {
+      "id": "nebulatide-2-1",
+      "date": "2026-09-14",
+      "tag": "Update",
+      "app": "nebulatide2",
+      "title": "Nebula Tide 2.1, and it runs on Android now",
+      "body": "Version 2.1 is up for Windows and Mac, and for the first time there is an Android build on the site. It is the same app: pay what you want, no key, no account needed to run it. If you already have Nebula Tide 2 the Hub will offer the update; if you are still on version 1, this replaces it rather than sitting beside it. macOS needs Big Sur or newer - a Catalina machine cannot run this one.",
+      "url": "nebulatide2.html"
+    },
+    {
+      "id": "performlive-paused-2026-09",
+      "date": "2026-09-14",
+      "tag": "Notice",
+      "app": "performlive",
+      "title": "PerformLive downloads are paused for a moment",
+      "body": "I have taken the download down while the next beta build goes up, rather than let anyone else install the current one. It stays in your library, your licence is untouched, and a copy already on your machine keeps working. The download returns the moment the new build is out - check again tomorrow.",
+      "url": "performlive.html"
+    },
+    {
+      "id": "harmoniemd-announce",
+      "date": "2026-09-09",
+      "tag": "Coming soon",
+      "app": "harmoniemd",
+      "title": "HarmonieMD: walk into rehearsal already knowing your part",
+      "body": "A voice note has no isolation. A YouTube link has no parts. A Drive folder has no structure. And nobody is installing a DAW to learn an alto line. HarmonieMD gives every singer their own harmony track to solo, slow to 85% without changing pitch, and loop until the bar lands. For the director it is a real multi-track studio underneath, with non-destructive takes and audio latency that is measured rather than estimated. Songs download once, so rehearsal never depends on the church WiFi. Free for teams up to five. Not ready to download yet; the Hub will say the day it is.",
+      "url": "harmoniemd.html"
+    }
+  ],
 
   "paystack": {
     "_": "African payments, next to Stripe rather than instead of it.",

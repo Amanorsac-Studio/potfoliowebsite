@@ -12,9 +12,14 @@ const path = require('path');
 const fs = require('fs');
 const fsp = require('fs/promises');
 const os = require('os');
+const crypto = require('crypto');
 const { spawn, execFile } = require('child_process');
 
-const SITE = 'https://amanorsac.studio';
+// HUB_SITE points the Hub at another origin - a staging copy, or a
+// local server - without a rebuild. Unset, it is the live site.
+const SITE = (process.env.HUB_SITE && /^https?:\/\//.test(process.env.HUB_SITE))
+  ? process.env.HUB_SITE.replace(/\/+$/, '')
+  : 'https://amanorsac.studio';
 const isMac = process.platform === 'darwin';
 const isWin = process.platform === 'win32';
 
@@ -138,6 +143,67 @@ async function writeRecords(records) {
   await fsp.writeFile(paths.records(), JSON.stringify(records, null, 2));
 }
 function exists(p) { try { return !!p && fs.existsSync(p); } catch (e) { return false; } }
+
+/* ---------------------------------------------------------------------
+   Usage notes
+
+   What is counted: an app was opened, installed or updated, and which
+   kind of machine it happened on. That is the whole of it. No file
+   names, no folder names, no computer name, no keystrokes, nothing from
+   inside an app - none of that is read here and none of it is sent.
+
+   Nothing is counted until the person says yes. Until then `consent` is
+   null and every record() is dropped on the floor. Saying no later
+   empties the queue as well as stopping it.
+
+   The queue is a file on this machine, so a week offline loses nothing:
+   the page drains it the next time amanorsac.studio answers, and only
+   removes what the server confirmed. `installId` is a random number
+   belonging to this installation, not to a person - it is what makes
+   "opened on two machines" different from "opened twice", and it is the
+   only identifier stored beside an event.
+   --------------------------------------------------------------------- */
+
+const USAGE_LIMIT = 500; // a bounded file: the oldest go first
+paths.usage = () => path.join(app.getPath('userData'), 'usage.json');
+
+let usageCache = null;
+async function readUsage() {
+  if (usageCache) return usageCache;
+  let u = null;
+  try { u = JSON.parse(await fsp.readFile(paths.usage(), 'utf8')); } catch (e) {}
+  if (!u || typeof u !== 'object') u = {};
+  usageCache = {
+    installId: typeof u.installId === 'string' && u.installId ? u.installId : crypto.randomUUID(),
+    consent: u.consent === true ? true : u.consent === false ? false : null,
+    decidedAt: u.decidedAt || null,
+    queue: Array.isArray(u.queue) ? u.queue.slice(-USAGE_LIMIT) : [],
+  };
+  return usageCache;
+}
+async function writeUsage(u) {
+  usageCache = u;
+  try {
+    await fsp.mkdir(path.dirname(paths.usage()), { recursive: true });
+    await fsp.writeFile(paths.usage(), JSON.stringify(u, null, 2));
+  } catch (e) { /* a note that cannot be written is a note not worth an error */ }
+}
+
+const USAGE_EVENTS = ['hub_open', 'app_open', 'app_install', 'app_update'];
+
+async function recordUsage(event, appId, version) {
+  if (!USAGE_EVENTS.includes(event)) return;
+  const u = await readUsage();
+  if (u.consent !== true) return;
+  u.queue.push({
+    event, app: appId || null, app_version: version || null,
+    at: new Date().toISOString(),
+    platform: shownPlatform, arch: process.arch, os_release: os.release(),
+    hub_version: app.getVersion(),
+  });
+  if (u.queue.length > USAGE_LIMIT) u.queue = u.queue.slice(-USAGE_LIMIT);
+  await writeUsage(u);
+}
 
 /* Installed apps, checked against the disk every time they are asked
    for: a folder the user deleted by hand is not an installed app. */
@@ -357,7 +423,7 @@ function runInstaller(file) {
   });
 }
 
-ipcMain.handle('hub:install', async (event, { app: appId, name, path: file, version, kind }) => {
+ipcMain.handle('hub:install', async (event, { app: appId, name, path: file, version, kind, mode }) => {
   if (!exists(file)) return { error: 'missing', message: 'The downloaded file is no longer there. Download it again.' };
   const records = await readRecords();
   const lower = file.toLowerCase();
@@ -383,6 +449,7 @@ ipcMain.handle('hub:install', async (event, { app: appId, name, path: file, vers
         installedAt: new Date().toISOString(), source: file, pending: !!r.detached };
     }
     await writeRecords(records);
+    await recordUsage(mode === 'update' ? 'app_update' : 'app_install', appId, records[appId].version);
     return { ok: true, record: records[appId] };
   } catch (e) {
     return { error: 'install_failed', message: (e && e.message) || 'Could not install.' };
@@ -400,6 +467,7 @@ ipcMain.handle('hub:launch', async (event, appId) => {
   try {
     if (isMac) await run('open', ['-a', r.exe]);
     else { const child = spawn(r.exe, [], { cwd: path.dirname(r.exe), detached: true, stdio: 'ignore' }); child.unref(); }
+    await recordUsage('app_open', appId, r.version);
     return { ok: true };
   } catch (e) { return { error: 'launch_failed', message: e.message }; }
 });
@@ -448,6 +516,42 @@ ipcMain.handle('hub:device', async () => ({
 ipcMain.handle('hub:external', async (event, url) => {
   if (/^https?:\/\//i.test(url)) { await shell.openExternal(url); return { ok: true }; }
   return { ok: false };
+});
+
+/* The page owns the sending: it is the side with the account and the
+   connection. Main owns the writing, so a note survives a crash and a
+   week with no network. take() hands over a copy; ack(n) is what
+   removes those n, and only the page's own success calls it. */
+ipcMain.handle('hub:usage-state', async () => {
+  const u = await readUsage();
+  return { installId: u.installId, consent: u.consent, decidedAt: u.decidedAt, pending: u.queue.length };
+});
+
+ipcMain.handle('hub:usage-consent', async (event, yes) => {
+  const u = await readUsage();
+  u.consent = !!yes;
+  u.decidedAt = new Date().toISOString();
+  if (!yes) u.queue = []; // no is retrospective: what was waiting is dropped
+  await writeUsage(u);
+  return { consent: u.consent, pending: u.queue.length };
+});
+
+ipcMain.handle('hub:usage-record', async (event, { event: name, app: appId, version }) => {
+  await recordUsage(name, appId, version);
+  return { ok: true };
+});
+
+ipcMain.handle('hub:usage-take', async (event, max) => {
+  const u = await readUsage();
+  if (u.consent !== true) return { installId: u.installId, events: [] };
+  return { installId: u.installId, events: u.queue.slice(0, Math.min(max || 100, 100)) };
+});
+
+ipcMain.handle('hub:usage-ack', async (event, n) => {
+  const u = await readUsage();
+  u.queue = u.queue.slice(Math.max(0, n | 0));
+  await writeUsage(u);
+  return { pending: u.queue.length };
 });
 
 ipcMain.handle('hub:confirm', async (event, { title, message, ok }) => {
