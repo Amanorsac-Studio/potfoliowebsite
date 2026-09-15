@@ -27,7 +27,8 @@
   var ICON_HUB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
   var ICON_OPEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg>';
 
-  var LABELS = { 'windows': 'Windows', 'mac-arm64': 'Mac · Apple silicon', 'mac-x64': 'Mac · Intel' };
+  var LABELS = { 'windows': 'Windows', 'mac': 'Mac', 'mac-arm64': 'Mac · Apple silicon',
+                 'mac-x64': 'Mac · Intel', 'ios': 'iPhone & iPad', 'android': 'Android' };
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')

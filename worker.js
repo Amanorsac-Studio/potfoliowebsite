@@ -93,6 +93,9 @@ export default {
         // Which checkout this visitor should be shown, and for how much.
         if (path === '/api/pay-options') return withCors(await payOptions(request, env));
 
+        // The stop link at the bottom of an update notice.
+        if (path === '/notices/stop') return await noticeStop(new URL(request.url), env);
+
         const d = path.match(/^\/download\/([a-z0-9-]+)\/([a-z0-9-]+)$/);
         if (d) {
           const file = await serveInstaller(d[1], d[2], new URL(request.url), env, request);
@@ -148,6 +151,7 @@ export default {
      be fast either. See sendReviewInvites for what it actually does. */
   async scheduled(event, env, ctx) {
     ctx.waitUntil(sendReviewInvites(env));
+    ctx.waitUntil(sendUpdateNotices(env));
   }
 };
 
@@ -235,7 +239,7 @@ async function getCatalog(env) {
 }
 
 const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)',
-                         'mac-x64': 'Mac (Intel)', android: 'Android' };
+                         'mac-x64': 'Mac (Intel)', android: 'Android', ios: 'iPhone & iPad' };
 
 /* One app installer, in the shape the download code below has always used. */
 function installerFor(catalog, app, platform) {
@@ -1085,6 +1089,177 @@ async function submitReview(request, env) {
    each of them a signed link, and only mark an address asked once the
    email provider has confirmed the letter actually went. A failed send
    is retried tomorrow rather than silently recorded as done. */
+/* ---------------------------------------------------------------------
+   Telling owners about an update.
+
+   Driven from catalog.json, where an app can carry a `notice` block:
+
+     "notice": {
+       "id": "2026-09-phones",
+       "subject": "Nebula Tide 2 is on your phone now",
+       "line": "One sentence saying what changed.",
+       "body": "A paragraph, optional.",
+       "cta": "Open it in Amanorsac Hub"
+     }
+
+   Written where every other decision about an app is written, and
+   nothing here is a deploy: add the block, and the next daily run sends
+   it to the people who own that app. Delete it and nothing more goes
+   out. `id` is what a send is remembered by, so changing the wording
+   without changing the id does nothing, and changing the id sends a
+   second letter to everybody - which is the behaviour you want from
+   something that must not surprise anyone.
+
+   Who gets it: owners of that app. Not the mailing list, not everyone
+   with an account, not owners of a different app. A product update is a
+   service message to a customer about the thing they paid for.
+
+   The send is marked before the letter leaves, and the candidate list
+   is "owns it and has no mark". A run that dies halfway, a cron that
+   fires twice, a retry after a timeout - none can produce a second
+   letter, because the mark is a unique row and not a flag.
+
+   Rate: a slice each day rather than the lot at once. A few hundred
+   letters from a new domain in one burst is how a domain gets a
+   reputation nobody wants, and there is no hurry.
+   --------------------------------------------------------------------- */
+const NOTICE_BATCH = 120;
+
+async function sendUpdateNotices(env) {
+  if (!env.SUPABASE_SERVICE_KEY || !env.RESEND_API_KEY || !env.DOWNLOAD_SECRET) {
+    console.error('update notices: SUPABASE_SERVICE_KEY, RESEND_API_KEY or DOWNLOAD_SECRET not set, skipping');
+    return;
+  }
+
+  const catalog = await getCatalog(env);
+  const apps = catalog.apps || {};
+  const db = (fn, body) => fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json',
+               apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+    body: JSON.stringify(body)
+  });
+
+  let budget = NOTICE_BATCH;
+
+  for (const app of Object.keys(apps)) {
+    if (budget <= 0) break;
+    const n = apps[app].notice;
+    if (!n || !n.id || !n.subject || !n.line) continue;
+
+    let people = [];
+    try {
+      const r = await db('update_notice_candidates', { p_app: app, p_notice_id: String(n.id), p_limit: budget });
+      if (r.ok) people = await r.json();
+      else console.error('update_notice_candidates refused:', app, r.status, await r.text());
+    } catch (e) { console.error('update_notice_candidates unreachable:', app, e && e.message); continue; }
+
+    for (const row of people) {
+      if (budget <= 0) break;
+      const email = String(row.email || '').toLowerCase();
+      if (!looksLikeEmail(email)) continue;
+
+      /* Marked first. If this returns false somebody else already took
+         this person - two runs overlapping, most likely - and the right
+         answer is to leave them alone rather than send a second copy. */
+      let mine = false;
+      try {
+        const r = await db('mark_update_notice_sent',
+          { p_app: app, p_notice_id: String(n.id), p_email: email, p_user_id: row.user_id || null });
+        if (r.ok) mine = (await r.json()) === true;
+        else console.error('mark_update_notice_sent refused:', email, app, r.status, await r.text());
+      } catch (e) { console.error('mark_update_notice_sent unreachable:', email, app, e && e.message); }
+      if (!mine) continue;
+
+      budget--;
+      const ok = await sendUpdateNotice(env, email, appTitle(catalog, app), app, n);
+      if (!ok) console.error('update notice failed to send:', email, app, n.id);
+    }
+  }
+}
+
+async function sendUpdateNotice(env, email, title, app, n) {
+  /* The stop link is signed, so an address cannot be opted out by
+     somebody who merely knows it. No expiry on this one: a link that
+     says "stop emailing me" should work whenever it is finally
+     clicked, including two years later out of an archived inbox. */
+  const sig = await sign(env.DOWNLOAD_SECRET, 'optout:' + email);
+  const stop = SITE + '/notices/stop?e=' + encodeURIComponent(email) + '&s=' + sig;
+  const link = SITE + '/' + app;
+
+  const text =
+    n.line + '\n\n' +
+    (n.body ? n.body + '\n\n' : '') +
+    link + '\n\n' +
+    'You are getting this because you own ' + title + '. It is not a ' +
+    'newsletter and there is nothing else coming.\n' +
+    'Rather not hear about updates at all? ' + stop + '\n\n' +
+    'Amanorsac Studio\n' + SITE + '\n';
+
+  const html =
+    '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;' +
+      'margin:0 auto;padding:32px 24px;color:#1C1916;line-height:1.6">' +
+    '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;' +
+      'color:#6B655C">' + esc(title) + '</p>' +
+    '<p style="margin:0 0 18px;font-size:21px;font-weight:600;line-height:1.35">' + esc(n.line) + '</p>' +
+    (n.body ? '<p style="margin:0 0 22px">' + esc(n.body) + '</p>' : '') +
+    '<p style="margin:0 0 22px"><a href="' + esc(link) + '" ' +
+      'style="display:inline-block;background:#1C1916;color:#fff;text-decoration:none;' +
+      'padding:13px 22px;border-radius:9px;font-weight:600">' +
+      esc(n.cta || ('Open ' + title)) + '</a></p>' +
+    '<p style="margin:0 0 8px;color:#6B655C;font-size:13.5px">' +
+      'You are getting this because you own ' + esc(title) + '. It is not a newsletter ' +
+      'and there is nothing else coming.</p>' +
+    '<p style="margin:0 0 18px;color:#6B655C;font-size:13.5px">' +
+      '<a href="' + esc(stop) + '" style="color:#6B655C">Rather not hear about updates at all?</a></p>' +
+    '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + env.RESEND_API_KEY },
+      body: JSON.stringify({
+        from: env.NOTIFY_FROM || 'Amanorsac Studio <hello@amanorsac.studio>',
+        to: [email], subject: n.subject, text: text, html: html
+      })
+    });
+    return r.ok;
+  } catch (e) { return false; }
+}
+
+/* GET /notices/stop?e=...&s=...  -  the link at the bottom of a notice.
+   A plain page, no account needed: somebody who wants out should not
+   have to sign in to say so. */
+async function noticeStop(url, env) {
+  const email = String(url.searchParams.get('e') || '').toLowerCase().slice(0, 200);
+  const sig = String(url.searchParams.get('s') || '');
+  if (!env.SUPABASE_SERVICE_KEY || !env.DOWNLOAD_SECRET || !looksLikeEmail(email) || !sig) {
+    return confirmPage('That link is not right',
+      'Reply to any email from the studio and it will be sorted by hand.', null, 400);
+  }
+  const want = await sign(env.DOWNLOAD_SECRET, 'optout:' + email);
+  if (!sameString(sig, want)) {
+    return confirmPage('That link is not right',
+      'Reply to any email from the studio and it will be sorted by hand.', null, 400);
+  }
+
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/rpc/notice_optout', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json',
+                 apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+      body: JSON.stringify({ p_email: email })
+    });
+    if (!r.ok) console.error('notice_optout refused:', r.status, await r.text());
+  } catch (e) { console.error('notice_optout unreachable:', e && e.message); }
+
+  return confirmPage('That is done',
+    'No more emails about app updates will go to ' + email + '. Anything about a ' +
+    'purchase you make, or a password you reset, still will - those are not ' +
+    'something to be opted out of.', null, 200);
+}
+
 async function sendReviewInvites(env) {
   if (!env.SUPABASE_SERVICE_KEY || !env.DOWNLOAD_SECRET || !env.RESEND_API_KEY) {
     console.error('review invites: SUPABASE_SERVICE_KEY, DOWNLOAD_SECRET or RESEND_API_KEY not set, skipping');

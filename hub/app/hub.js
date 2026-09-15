@@ -56,7 +56,17 @@
   function otherPlatformNote(a) {
     const has = Object.keys(a.platforms || {});
     if (!has.length) return 'Coming soon';
-    return has.map((p) => p === 'windows' ? 'Windows' : 'Mac').join(' and ') + ' only';
+    /* The Hub is a desktop app, so a phone build is not "no build for
+       you" - it is a build for something else entirely, and saying
+       "Android only" to somebody at a computer is worse than useless.
+       Desktop builds are named; phones are mentioned separately. */
+    const DESK = { windows: 'Windows', mac: 'Mac' };
+    const desktop = has.filter((p) => DESK[p]).map((p) => DESK[p]);
+    const phone = has.filter((p) => p === 'ios' || p === 'android')
+                     .map((p) => p === 'ios' ? 'iPhone' : 'Android');
+    if (desktop.length) return desktop.join(' and ') + ' only';
+    if (phone.length) return 'On ' + phone.join(' and ') + ', not on the desktop';
+    return 'Coming soon';
   }
   /* What one card should offer. */
   function status(a) {
