@@ -61,36 +61,30 @@
     "_": "The big panel at the top of the Hub's library. Fill this in and",
     "_2": "every Hub that is open picks it up by itself - it re-reads this",
     "_3": "file a few minutes after you save, and again whenever somebody",
-    "_4": "brings the window back to the front. There is no Hub release in",
-    "_5": "the loop, and nothing to press.",
-    "_6": "",
-    "_7": "Delete the whole block, or set live to false, and the panel goes",
-    "_8": "back to what it does on its own: offering the update that is",
-    "_9": "waiting, or the app in the library that is not installed yet.",
-    "_10": "",
-    "_11": "starts and ends are optional and are real. Before starts and",
-    "_12": "after ends the panel shows nothing, on a Hub already open too,",
-    "_13": "so an announcement can be written today and go up on its own.",
-    "_14": "",
-    "_15": "id is what a dismissal remembers. Change it for a new notice or",
-    "_16": "anyone who closed the last one will never see this one.",
-    "_17": "",
-    "_18": "action is optional. app must be an id from the list below, and",
-    "_19": "the button then does the right thing for that app on that",
-    "_20": "computer - Install, Update, or Open. url opens in the browser.",
+    "_4": "brings the window back to the front.",
+    "_5": "",
+    "_6": "Set live to false, or delete the block, and the panel goes back",
+    "_7": "to what it does on its own: offering the update that is waiting,",
+    "_8": "or the first app in the list below that the account can install.",
+    "_9": "That fallback is why the order of `apps` matters - it is the",
+    "_10": "promotion of last resort, and works on a Hub that has never",
+    "_11": "heard of this block.",
+    "_12": "",
+    "_13": "id is what a dismissal remembers. Change it for a new notice or",
+    "_14": "anyone who closed the last one will never see this one.",
 
-    "live": false,
-    "id": "2026-09-launch",
-    "eyebrow": "FROM THE STUDIO",
-    "headline": "Ten apps. Half price until the thirtieth.",
-    "body": "Every paid app in the collection is fifty per cent off until 30 September. PerformLive is free for thirty days while the beta runs.",
+    "live": true,
+    "id": "2026-09-performlive",
+    "eyebrow": "FREE FOR THIRTY DAYS",
+    "headline": "The stage, and everything on it.",
+    "body": "Stem decks, scenes and warm pads laid out for a service. Free for thirty days - the clock starts the day you download it, not today, and your key is waiting in My Apps.",
     "art": "images/apps/banner-performlive.webp",
     "accent": "#A99CFF",
     "action": { "label": "Install PerformLive", "app": "performlive" },
-    "link": { "label": "See what is on", "url": "https://amanorsac.studio/apps" },
+    "link": { "label": "What it does", "url": "https://amanorsac.studio/performlive" },
     "dismissible": true,
     "starts": null,
-    "ends": "2026-09-30T23:59:59Z"
+    "ends": null
   },
 
   "promo": {
@@ -110,6 +104,23 @@
   },
 
   "apps": {
+    "performlive": {
+      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
+      "tagline": "Live performance, perfected.",
+      "icon": "images/apps/performlive.webp", "art": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
+      "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",
+      "_beta2": "asks claim_beta_license for at the moment of download, and what",
+      "_beta3": "My Apps counts down. Delete beta_days to make it free forever.",
+      "free": true, "licensed": true, "beta_days": 30, "version": "0.4.0",
+      "installers": {
+        "windows": { "key": "PERFORMLIVE/PerformLive-0.4.0-Windows.exe",
+                     "as": "PerformLive-0.4.0-Windows.exe", "type": "application/octet-stream",
+                     "label": "Windows 10/11", "size": "5.7 MB" },
+        "mac":     { "key": "PERFORMLIVE/PerformLive-0.4.0-macOS.zip",
+                     "as": "PerformLive-0.4.0-macOS.zip",   "type": "application/zip",
+                     "label": "macOS 11+",    "size": "7.3 MB" }
+      }
+    },
     "chordlight88": {
       "name": "Chordlight 88", "vendor": "Amanorsac Studio", "kind": "app", "status": "available",
       "tagline": "What your hands just played, in the language you think in.",
@@ -255,24 +266,7 @@
                      "fallback_url": "https://www.dropbox.com/scl/fi/ezjr579od0kyskqmgqya9/NebulaTide-macOS.zip?rlkey=gg049q3d0ia809vre9lwz57cn&st=ycv2bnoj&dl=0" }
       }
     },
-    "performlive": {
-      "name": "PerformLive", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
-      "soon_note": "Downloads paused — check again tomorrow.",
-      "tagline": "Live performance, perfected.",
-      "icon": "images/apps/performlive.webp", "art": "images/apps/performlive.webp", "page": "performlive.html", "color": "#7B7DF7",
-      "_beta": "Free, but licensed and time-limited. beta_days is what the Worker",
-      "_beta2": "asks claim_beta_license for at the moment of download, and what",
-      "_beta3": "My Apps counts down. Delete beta_days to make it free forever.",
-      "free": true, "licensed": true, "beta_days": 30, "version": "0.4.0",
-      "installers": {
-        "windows": { "key": "PERFORMLIVE/PerformLive-0.4.0-Windows.exe",
-                     "as": "PerformLive-0.4.0-Windows.exe", "type": "application/octet-stream",
-                     "label": "Windows 10/11", "size": "5.7 MB" },
-        "mac":     { "key": "PERFORMLIVE/PerformLive-0.4.0-macOS.zip",
-                     "as": "PerformLive-0.4.0-macOS.zip",   "type": "application/zip",
-                     "label": "macOS 11+",    "size": "7.3 MB" }
-      }
-    },
+    
     "harmoniemd": {
       "name": "HarmonieMD", "vendor": "Amanorsac Studio", "kind": "app", "status": "coming_soon",
       "tagline": "The rehearsal studio for choirs.",
