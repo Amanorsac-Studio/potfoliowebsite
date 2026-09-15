@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Business · Studio admin</title>
+<script>
+/* set the theme BEFORE first paint so there is no flash of the wrong colours */
+(function(){ var t='light'; try{ t=localStorage.getItem('portal-theme')||'light'; }catch(e){}
+  document.documentElement.setAttribute('data-theme',t); })();
+</script>
+<link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F7F5F1">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="AMANORSAC">
+<link rel="stylesheet" href="../assets/portal.css">
+<style>
+  /* ---------- the range switch (same control as Traffic) ---------- */
+  .range{display:flex;gap:6px;margin:0 0 20px;flex-wrap:wrap}
+  .range button{font-family:var(--body);font-size:13px;font-weight:500;cursor:pointer;
+    color:var(--ink);background:var(--surface-2);border:1px solid var(--line);
+    border-radius:999px;padding:8px 15px;transition:background .2s,border-color .2s}
+  .range button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+  /* ---------- headline numbers ---------- */
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin:0 0 22px}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .fig.lead{grid-column:span 2}
+  @media (max-width:560px){ .fig.lead{grid-column:span 1} }
+  .fig .k{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 8px}
+  .fig .v{font-size:30px;font-weight:600;line-height:1;margin:0;letter-spacing:-.02em}
+  .fig.lead .v{font-size:40px}
+  .fig .d{font-size:12.5px;margin:7px 0 0;color:var(--muted)}
+  .fig .d.up{color:#2E8B6E}
+  .fig .d.down{color:#B4552F}
+
+  /* ---------- the money chart ----------
+     Inline SVG, same approach the Traffic page uses: no library, no
+     third-party request, and it prints. Bars are days, the line is the
+     running total, so the shape of the month and the total it is adding
+     up to are one picture rather than two. */
+  .bigchart{position:relative;height:290px}
+  .bigchart svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .bigchart .tip{position:absolute;pointer-events:none;opacity:0;transition:opacity .12s;
+    background:var(--ink);color:var(--surface);border-radius:8px;padding:8px 11px;
+    font-size:11.5px;line-height:1.5;white-space:nowrap;transform:translate(-50%,-115%)}
+  .bigchart .tip b{font-size:13.5px}
+  .bigchart .tip small{display:block;font-family:var(--mono);font-size:9.5px;
+    letter-spacing:.1em;text-transform:uppercase;opacity:.7}
+
+  /* ---------- the metric switch above the chart ---------- */
+  .metrics{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+  .metrics button{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    cursor:pointer;color:var(--muted);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:7px 13px}
+  .metrics button.on{color:var(--ink);border-color:var(--ink)}
+
+  /* ---------- tables ---------- */
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl th,.tbl td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+  .tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:400}
+  .tbl td:first-child,.tbl th:first-child{white-space:normal;width:100%;max-width:0;
+    overflow:hidden;text-overflow:ellipsis}
+  .tbl td.n,.tbl th.n{text-align:right;padding-right:0;padding-left:16px}
+  .tbl td.n{font-family:var(--mono);font-size:12.5px}
+  .tbl tr:last-child td{border-bottom:0}
+  .tblwrap{overflow-x:auto}
+  .tbl .app{font-weight:600}
+  .tbl .dim{color:var(--muted)}
+
+  /* a bar drawn inside a table cell, so a column reads as a shape */
+  .inline-bar{display:block;height:4px;border-radius:2px;background:var(--accent);
+    opacity:.35;margin-top:5px;width:0;transition:width .7s cubic-bezier(.2,.7,.3,1)}
+
+  /* ---------- the funnel ---------- */
+  .funnel{list-style:none;margin:0;padding:0}
+  .funnel li{padding:12px 0;border-bottom:1px solid var(--line)}
+  .funnel li:last-child{border-bottom:0}
+  .funnel .row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .funnel .lab{font-size:14px}
+  .funnel .num{font-family:var(--mono);font-size:13px}
+  .funnel .drop{font-size:12px;color:var(--muted);margin-left:8px}
+  .funnel .track{display:block;height:8px;border-radius:4px;background:var(--surface-2);margin-top:8px;overflow:hidden}
+  .funnel .track i{display:block;height:100%;width:0;border-radius:4px;background:var(--accent);
+    transition:width .8s cubic-bezier(.2,.7,.3,1)}
+  .funnel li.sep{opacity:.72}
+
+  /* ---------- simple bar lists (geography, versions) ---------- */
+  .bars{list-style:none;margin:0;padding:0}
+  .bars li{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;
+    border-bottom:1px solid var(--line);font-size:13.5px}
+  .bars li:last-child{border-bottom:0}
+  .bars .num{font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+  .bars .track{grid-column:1/-1;height:4px;border-radius:2px;background:var(--surface-2);overflow:hidden}
+  .bars .track i{display:block;height:100%;width:0;border-radius:2px;background:var(--accent);
+    transition:width .7s cubic-bezier(.2,.7,.3,1)}
+
+  .sec{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--muted);margin:30px 0 10px}
+  .why{font-size:12.5px;color:var(--muted);margin:-4px 0 14px;max-width:70ch}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){ .two{grid-template-columns:1fr} }
+  .empty{color:var(--muted);font-size:13px;padding:14px 0}
+  /* portal.css gives .msg a background, which leaves a grey bar sitting
+     under the range switch whenever there is nothing to say. There
+     usually is nothing to say. */
+  .msg:empty{display:none}
+
+  /* A panel that is waiting on something the studio has not done yet.
+     It says what is missing rather than drawing a zero, because a zero
+     looks like an answer. */
+  .pending{background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;
+    padding:16px 18px;font-size:13px;color:var(--muted);line-height:1.6}
+  .pending b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<header class="top" id="topbar"></header>
+<main>
+  <div class="head">
+    <p class="eyebrow">Studio admin</p>
+    <h1>Business</h1>
+    <p class="sub">What sold, what was downloaded, and what is actually running on somebody&rsquo;s machine. Traffic answers who came to the site; this answers what the software did after they arrived.</p>
+  </div>
+
+  <div class="range" id="range">
+    <button type="button" data-d="7">7 days</button>
+    <button type="button" data-d="30" class="on">30 days</button>
+    <button type="button" data-d="90">90 days</button>
+    <button type="button" data-d="365">12 months</button>
+  </div>
+
+  <p class="msg" id="m" role="status" aria-live="polite"></p>
+
+  <div class="figs" id="figs"></div>
+
+  <div class="metrics" id="metrics">
+    <button type="button" data-k="revenue_cents" class="on">Revenue</button>
+    <button type="button" data-k="sales">Sales</button>
+    <button type="button" data-k="downloads">Downloads</button>
+    <button type="button" data-k="installs">Installs</button>
+  </div>
+  <div class="card">
+    <div class="bigchart" id="bigchart"><svg id="csvg" aria-hidden="true"></svg><div class="tip" id="ctip"></div></div>
+  </div>
+
+  <p class="sec">Every app, side by side</p>
+  <p class="why">Sorted by what each one earned in the window. The columns to read together are downloads and installs: an app people download and never run has something wrong with its installer, not its marketing.</p>
+  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
+
+  <div class="two" style="margin-top:14px">
+    <div>
+      <p class="sec" style="margin-top:16px">From arriving to running it</p>
+      <p class="why">Everybody who made an account in this window, and how far the same people got afterwards. Each step is a subset of the one above it, so it cannot widen at the bottom.</p>
+      <div class="card"><ul class="funnel" id="funnel"></ul></div>
+    </div>
+    <div>
+      <p class="sec" style="margin-top:16px">Where they are</p>
+      <p class="why">Visits and downloads rarely draw the same map. Where downloads run ahead of visits, the product is travelling by word of mouth.</p>
+      <div class="card"><ul class="bars" id="geo"></ul></div>
+    </div>
+  </div>
+
+  <p class="sec">The installed base</p>
+  <p class="why">One row per installation of Amanorsac Hub, not per person. It says how many copies are out there, on what, and how many are still on an old build.</p>
+  <div id="hubwrap"></div>
+
+  <div class="two" style="margin-top:14px">
+    <div>
+      <p class="sec" style="margin-top:16px">Licences and seats</p>
+      <div class="card"><ul class="bars" id="lic"></ul></div>
+    </div>
+    <div>
+      <p class="sec" style="margin-top:16px">The latest sales</p>
+      <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="recent"></tbody></table></div></div>
+    </div>
+  </div>
+
+  <p class="why" style="margin:26px 0 40px">No cookies, no third-party analytics, no IP addresses kept. Country is the two-letter code Cloudflare works out from the connection. Downloads are kept for two years and then deleted by <code>product_prune()</code>.</p>
+</main>
+
+<script src="../assets/vendor/supabase-2.116.0.js"></script>
+<script src="../assets/supabase-client.js"></script>
+<script src="../assets/portal.js"></script>
+<script>
+(async function(){
+  const me = await requireAdmin(); if(!me) return;   // bounces anyone who is not the studio
+  await mountChrome('admin-analytics');
+
+  const sb = window.amanorsacClient();
+  const m  = $('#m');
+  let days = 30, metric = 'revenue_cents', daily = [];
+
+  const esc = t => { const d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; };
+  const num = n => Number(n||0).toLocaleString();
+  const usd = c => '$' + (Number(c||0)/100).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2});
+  const when = t => new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+
+  /* A number with no direction is decoration. */
+  function delta(now, before){
+    if(before == null || !Number(before)) return '';
+    const change = Math.round(((Number(now) - Number(before)) / Number(before)) * 100);
+    if(!isFinite(change)) return '';
+    if(change === 0) return '<span class="d">level with the period before</span>';
+    return '<span class="d '+(change>0?'up':'down')+'">'+(change>0?'▲':'▼')+' '+
+           Math.abs(change)+'% on the period before</span>';
+  }
+
+  function grow(el){
+    requestAnimationFrame(() => requestAnimationFrame(() =>
+      $$('[data-w]', el).forEach(i => i.style.width = i.getAttribute('data-w') + '%')));
+  }
+
+  /* ---------- the chart ----------
+     Bars for the day, a line for the running total across the window.
+     Drawn straight into SVG: no library to load, nothing fetched from
+     anyone else, and it survives being printed. */
+  function chart(){
+    const svg = $('#csvg'), tip = $('#ctip'), wrap = $('#bigchart');
+    const W = wrap.clientWidth || 900, H = wrap.clientHeight || 290;
+    const L = 52, R = 14, T = 16, B = 26;
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    if(!daily.length){
+      svg.innerHTML = '<text x="'+(W/2)+'" y="'+(H/2)+'" text-anchor="middle" fill="currentColor" ' +
+        'opacity=".45" font-size="13">Nothing in this window yet.</text>';
+      return;
+    }
+
+    const money = metric === 'revenue_cents';
+    const vals  = daily.map(d => Number(d[metric]) || 0);
+    const peak  = Math.max(1, ...vals);
+    const x = i => L + (W - L - R) * (daily.length === 1 ? .5 : i / (daily.length - 1));
+    const y = v => T + (H - T - B) * (1 - v / peak);
+    const bw = Math.max(2, Math.min(22, (W - L - R) / daily.length - 3));
+
+    // gridlines, four of them, labelled in the unit being shown
+    let g = '';
+    for(let i = 0; i <= 3; i++){
+      const v = peak * (1 - i / 3), yy = T + (H - T - B) * (i / 3);
+      g += '<line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" stroke="currentColor" opacity=".1"/>' +
+           '<text x="'+(L-8)+'" y="'+(yy+4)+'" text-anchor="end" font-size="10" ' +
+           'fill="currentColor" opacity=".5">'+(money ? usd(v) : Math.round(v))+'</text>';
+    }
+
+    // the running total, so the shape and the sum are one picture
+    let run = 0;
+    const cume = vals.map(v => (run += v));
+    const cpeak = Math.max(1, run);
+    const cy = v => T + (H - T - B) * (1 - v / cpeak);
+    const line = cume.map((v,i) => (i ? 'L' : 'M') + x(i) + ' ' + cy(v)).join(' ');
+
+    const bars = vals.map((v,i) =>
+      '<rect x="'+(x(i)-bw/2)+'" y="'+y(v)+'" width="'+bw+'" height="'+Math.max(0,(H-B)-y(v))+'" ' +
+      'rx="2" fill="currentColor" opacity="'+(v?'.28':'.07')+'" data-i="'+i+'"/>').join('');
+
+    // one label at each end and one in the middle: more than that is noise
+    const marks = [0, Math.floor(daily.length/2), daily.length-1]
+      .filter((v,i,a) => a.indexOf(v) === i)
+      .map(i => '<text x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10" ' +
+                'fill="currentColor" opacity=".5">'+esc(when(daily[i].day))+'</text>').join('');
+
+    svg.innerHTML = g + bars +
+      '<path d="'+line+'" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".85"/>' + marks +
+      '<rect x="'+L+'" y="'+T+'" width="'+(W-L-R)+'" height="'+(H-T-B)+'" fill="transparent" id="hit"/>';
+
+    const hit = svg.querySelector('#hit');
+    hit.addEventListener('mousemove', (e) => {
+      const b = wrap.getBoundingClientRect();
+      const px = e.clientX - b.left;
+      let best = 0, bd = Infinity;
+      daily.forEach((_, i) => { const d = Math.abs(x(i) - px); if(d < bd){ bd = d; best = i; } });
+      const row = daily[best];
+      tip.innerHTML = '<small>'+esc(when(row.day))+'</small>' +
+        '<b>'+(money ? usd(row[metric]) : num(row[metric]))+'</b> ' +
+        (money ? 'that day' : '') +
+        '<small style="opacity:.55">'+(money ? usd(cume[best]) : num(cume[best]))+' so far</small>';
+      tip.style.left = x(best) + 'px';
+      tip.style.top  = Math.max(28, y(vals[best])) + 'px';
+      tip.style.opacity = 1;
+    });
+    hit.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+  }
+  addEventListener('resize', chart);
+
+  /* ---------- everything else ---------- */
+  function headline(s){
+    const rows = [
+      ['Revenue',        usd(s.revenue_cents), delta(s.revenue_cents, s.prev_revenue_cents), true],
+      ['Sales',          num(s.sales),         delta(s.sales, s.prev_sales)],
+      ['Downloads',      num(s.downloads),     delta(s.downloads, s.prev_downloads)],
+      ['Through the Hub', s.downloads ? Math.round(100*s.hub_downloads/s.downloads)+'%' : '—',
+                         '<span class="d">'+num(s.hub_downloads)+' of '+num(s.downloads)+'</span>'],
+      ['New machines',   num(s.installs),      '<span class="d">first activations</span>'],
+      ['Live seats',     num(s.active_devices),'<span class="d">active in the last 30 days</span>'],
+      ['New accounts',   num(s.new_accounts),  delta(s.new_accounts, s.prev_new_accounts)],
+    ];
+    $('#figs').innerHTML = rows.map(([k,v,d,lead]) =>
+      '<div class="fig'+(lead?' lead':'')+'"><p class="k">'+esc(k)+'</p><p class="v">'+v+'</p>'+(d||'')+'</div>').join('');
+  }
+
+  function appTable(rows){
+    const el = $('#apps');
+    if(!rows.length){ el.innerHTML = '<tr><td class="empty">Nothing sold or downloaded in this window.</td></tr>'; return; }
+    const peak = Math.max(1, ...rows.map(r => Number(r.revenue_cents)||0));
+    el.innerHTML =
+      '<tr><th>App</th><th class="n">Revenue</th><th class="n">Sales</th><th class="n">Downloads</th>' +
+      '<th class="n">Via Hub</th><th class="n">Installs</th><th class="n">Seats</th><th class="n">Rating</th></tr>' +
+      rows.map(r =>
+        '<tr><td><span class="app">'+esc(r.app)+'</span>' +
+          '<i class="inline-bar" data-w="'+Math.round((Number(r.revenue_cents)||0)/peak*100)+'"></i></td>' +
+        '<td class="n">'+usd(r.revenue_cents)+'</td>' +
+        '<td class="n">'+num(r.sales)+'</td>' +
+        '<td class="n">'+num(r.downloads)+'</td>' +
+        '<td class="n dim">'+(r.hub_share_pct==null?'—':Number(r.hub_share_pct)+'%')+'</td>' +
+        '<td class="n">'+num(r.installs)+'</td>' +
+        '<td class="n dim">'+num(r.devices)+'</td>' +
+        '<td class="n dim">'+(r.rating==null?'—':Number(r.rating).toFixed(1)+' ('+num(r.reviews)+')')+'</td></tr>').join('');
+    grow(el);
+  }
+
+  function funnel(rows){
+    const el = $('#funnel');
+    if(!rows.length){ el.innerHTML = '<li class="empty">Nothing yet.</li>'; return; }
+    // the first row is visits and the rest are accounts: two units, so
+    // two scales, and the bar only ever compares like with like
+    const cohort = rows.filter(r => r.unit !== 'visits');
+    const top = Math.max(1, ...cohort.map(r => Number(r.n)||0));
+    el.innerHTML = rows.map((r, i) => {
+      const visits = r.unit === 'visits';
+      const n = Number(r.n) || 0;
+      const prev = i > 1 ? Number(rows[i-1].n) || 0 : null;
+      const drop = (prev && prev > n) ? '<span class="drop">'+Math.round(100*(prev-n)/prev)+'% fell away</span>' : '';
+      return '<li'+(visits?' class="sep"':'')+'><div class="row"><span class="lab">'+esc(r.stage)+drop+'</span>' +
+        '<span class="num">'+num(n)+'</span></div>' +
+        (visits ? '' : '<span class="track"><i data-w="'+Math.round(n/top*100)+'"></i></span>') + '</li>';
+    }).join('');
+    grow(el);
+  }
+
+  function barList(el, rows, label, value, second){
+    const peak = Math.max(1, ...rows.map(r => Number(value(r))||0));
+    el.innerHTML = rows.length
+      ? rows.map(r => '<li><span>'+esc(label(r))+'</span>' +
+          '<span class="num">'+(second ? second(r) : num(value(r)))+'</span>' +
+          '<span class="track"><i data-w="'+Math.round((Number(value(r))||0)/peak*100)+'"></i></span></li>').join('')
+      : '<li class="empty">Nothing yet.</li>';
+    grow(el);
+  }
+
+  function hub(h){
+    const wrap = $('#hubwrap');
+    if(!h || !Number(h.installs)){
+      wrap.innerHTML = '<div class="pending">Nothing here yet, and that is not a zero &mdash; it is a build. ' +
+        'The Hub does not report anything back today, so there is no way to know how many copies are ' +
+        'running or which version they are on. The database and the endpoint are ready: ' +
+        '<b>POST /api/hub-ping</b> is live, and the Hub needs about twenty lines to call it once when ' +
+        'it starts. Ship a Hub that does, and this fills in by itself.</div>';
+      return;
+    }
+    const vers = Object.entries(h.versions || {}).sort((a,b) => b[1]-a[1]);
+    const plat = Object.entries(h.platforms || {}).sort((a,b) => b[1]-a[1]);
+    const stale = Number(h.installs) - Number(h.on_current || 0);
+    wrap.innerHTML =
+      '<div class="figs" style="margin-bottom:14px">' +
+        '<div class="fig"><p class="k">Installations</p><p class="v">'+num(h.installs)+'</p>' +
+          '<span class="d">'+num(h.active_30d)+' seen in the last 30 days</span></div>' +
+        '<div class="fig"><p class="k">Signed in</p><p class="v">'+num(h.signed_in)+'</p>' +
+          '<span class="d">the rest have never signed in</span></div>' +
+        '<div class="fig"><p class="k">On '+esc(h.current_version||'—')+'</p><p class="v">'+num(h.on_current)+'</p>' +
+          '<span class="d'+(stale?' down':'')+'">'+num(stale)+' on an older build</span></div>' +
+      '</div>' +
+      '<div class="two">' +
+        '<div class="card"><div class="card-head"><h2>Versions</h2></div><ul class="bars" id="vers"></ul></div>' +
+        '<div class="card"><div class="card-head"><h2>Platform</h2></div><ul class="bars" id="plats"></ul></div>' +
+      '</div>';
+    barList($('#vers'),  vers, r => r[0], r => r[1]);
+    barList($('#plats'), plat, r => r[0] === 'windows' ? 'Windows' : r[0] === 'mac' ? 'macOS' : r[0], r => r[1]);
+  }
+
+  function licences(l){
+    if(!l){ $('#lic').innerHTML = '<li class="empty">Nothing yet.</li>'; return; }
+    const rows = [
+      ['Licences in total', l.licences],
+      ['Paid for', l.paid],
+      ['Given (testers, comps)', l.comped],
+      ['Seats in use', l.seats_used],
+      ['Betas running', l.betas_live],
+      ['Betas ending within a week', l.betas_ending_7d],
+      ['Betas that have ended', l.betas_expired],
+    ];
+    barList($('#lic'), rows, r => r[0], r => r[1]);
+  }
+
+  function recent(rows){
+    const el = $('#recent');
+    if(!rows.length){ el.innerHTML = '<tr><td class="empty">No sales yet.</td></tr>'; return; }
+    el.innerHTML = '<tr><th>Who</th><th class="n">App</th><th class="n">Paid</th><th class="n">When</th></tr>' +
+      rows.map(r => '<tr><td>'+esc(r.email)+'<br><span class="dim" style="font-size:11.5px">'+esc(r.kind)+'</span></td>' +
+        '<td class="n">'+esc(r.app)+'</td>' +
+        '<td class="n">'+(Number(r.amount_cents) ? (String(r.currency||'usd').toUpperCase()==='USD'
+            ? usd(r.amount_cents) : (Number(r.amount_cents)/100).toLocaleString()+' '+String(r.currency).toUpperCase())
+          : '—')+'</td>' +
+        '<td class="n dim">'+esc(when(r.at))+'</td></tr>').join('');
+  }
+
+  /* ---------- load ---------- */
+  async function draw(){
+    m.textContent = 'Reading…'; m.className = 'msg';
+    const [s, a, d, f, g, h, l, rec] = await Promise.all([
+      sb.rpc('product_summary',    { p_days: days }),
+      sb.rpc('product_by_app',     { p_days: days }),
+      sb.rpc('product_daily',      { p_days: days }),
+      sb.rpc('product_funnel',     { p_days: days }),
+      sb.rpc('product_geography',  { p_days: days }),
+      sb.rpc('product_hub'),
+      sb.rpc('product_licences'),
+      sb.rpc('product_recent',     { p_limit: 12 }),
+    ]);
+
+    const bad = [s,a,d,f,g,h,l,rec].find(r => r && r.error);
+    if(bad){
+      m.textContent = bad.error.message.includes('does not exist')
+        ? 'The reports are not installed yet — run supabase-product-analytics.sql in the SQL editor.'
+        : 'Could not read the reports: ' + bad.error.message;
+      m.className = 'msg bad';
+      return;
+    }
+    m.textContent = ''; m.className = 'msg';
+
+    headline((s.data && s.data[0]) || {});
+    appTable(a.data || []);
+    daily = d.data || [];
+    chart();
+    funnel(f.data || []);
+    barList($('#geo'), g.data || [], r => r.country,
+            r => r.downloads,
+            r => num(r.downloads) + ' <span style="opacity:.55">of ' + num(r.visits) + ' visits</span>');
+    hub((h.data && h.data[0]) || null);
+    licences((l.data && l.data[0]) || null);
+    recent(rec.data || []);
+  }
+
+  $$('#range button').forEach(b => b.addEventListener('click', () => {
+    $$('#range button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    days = Number(b.getAttribute('data-d'));
+    draw();
+  }));
+  $$('#metrics button').forEach(b => b.addEventListener('click', () => {
+    $$('#metrics button').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    metric = b.getAttribute('data-k');
+    chart();
+  }));
+
+  draw();
+})();
+</script>
+</body>
+</html>

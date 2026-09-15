@@ -33,7 +33,7 @@ const SUPABASE_KEY = 'sb_publishable_PlVBmRgFdhTkVMurXLiBFQ_NjiVssQp';
 const SITE = 'https://amanorsac.studio';
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     try {
       if (request.method === 'GET' || request.method === 'HEAD') {
         const path = new URL(request.url).pathname;
@@ -103,7 +103,9 @@ export default {
       // Preflight for the two doors the Hub uses from a desktop app.
       if (request.method === 'OPTIONS') {
         const p = new URL(request.url).pathname;
-        if (p === '/api/app-download' || p === '/api/catalog') return withCors(new Response(null, { status: 204 }));
+        if (p === '/api/app-download' || p === '/api/catalog' || p === '/api/hub-ping') {
+          return withCors(new Response(null, { status: 204 }));
+        }
       }
 
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/download') {
@@ -113,7 +115,10 @@ export default {
         return await submitReview(request, env);
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/api/app-download') {
-        return withCors(await appDownload(request, env));
+        return withCors(await appDownload(request, env, ctx));
+      }
+      if (request.method === 'POST' && new URL(request.url).pathname === '/api/hub-ping') {
+        return withCors(await hubPing(request, env, ctx));
       }
       if (request.method === 'POST' && new URL(request.url).pathname === '/licenses/activate') {
         return await licenseActivate(request, env);
@@ -497,7 +502,68 @@ async function confirmDownload(url, env) {
    gate mints, so serveInstaller neither knows nor cares which door
    somebody came through. Free apps can take this door too once claimed
    in My Apps; the email gate stays open for visitors who never sign in. */
-async function appDownload(request, env) {
+/* ---------------------------------------------------------------------
+   POST /api/hub-ping   -   a Hub saying hello when it starts.
+
+   One row per installation: an id the Hub makes for itself on first run
+   and keeps, its version, its platform. It identifies a copy of the
+   software, not a person - two people sharing a computer are one row,
+   and the same person on two machines is two. Signing in attaches the
+   account, which is the only reason an account is mentioned at all.
+
+   What it deliberately does not carry: no machine fingerprint, no list
+   of what is installed, no record of which app was opened or when, no
+   IP address. Country is Cloudflare's two-letter code, taken from the
+   connection the request arrived on and never from anything the Hub
+   sends. This has to stay true of it - the privacy policy says the
+   studio collects what it needs to run the shop, and a heartbeat that
+   grew into a usage log would make that sentence false.
+
+   Unauthenticated on purpose: a Hub that nobody has signed into yet is
+   exactly the installation worth knowing about. That means the install
+   id is self-asserted and somebody could invent installations with a
+   curl loop. The answer to that is that this number is a count of
+   copies for the studio's own planning, not something anyone is paid
+   on, and the cost of getting it wrong is a wrong graph. Nothing is
+   granted, unlocked or sold by it.
+   --------------------------------------------------------------------- */
+async function hubPing(request, env, ctx) {
+  const ok = new Response(null, { status: 204, headers: { 'cache-control': 'no-store' } });
+  if (!env.SUPABASE_SERVICE_KEY) return ok;
+
+  let body = {};
+  try { body = await request.json(); } catch (e) { return ok; }
+
+  const clean = (v, n) => {
+    const t = String(v == null ? '' : v).slice(0, n);
+    return /^[\w .+-]*$/.test(t) ? t : '';
+  };
+  const install = clean(body.install_id, 64);
+  if (install.length < 8) return ok;
+
+  const jwt = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+
+  const write = fetch(SUPABASE_URL + '/rest/v1/rpc/record_hub_install', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json',
+               apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+    body: JSON.stringify({
+      p_install_id: install,
+      p_version:  clean(body.version, 20),
+      p_platform: clean(body.platform, 20),
+      p_os:       clean(body.os, 40),
+      p_arch:     clean(body.arch, 20),
+      p_country:  request.headers.get('cf-ipcountry') || null,
+      p_user_id:  jwt ? await userIdFrom(jwt) : null
+    })
+  }).then(r => { if (!r.ok) return r.text().then(t => console.error('record_hub_install refused:', r.status, t)); })
+    .catch(e => console.error('record_hub_install failed:', e && e.message));
+
+  waitOn(ctx, write);
+  return ok;
+}
+
+async function appDownload(request, env, ctx) {
   const say = (obj, status) => new Response(JSON.stringify(obj), {
     status: status || 200,
     headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
@@ -574,7 +640,66 @@ async function appDownload(request, env) {
   const t = Date.now() + TICKET_MINUTES * 60 * 1000;
   const path = '/download/' + app + '/' + platform;
   const ticket = path + '?e=' + t + '&s=' + (await sign(env.DOWNLOAD_SECRET, path + ':' + t));
+
+  /* Count it. This is the only place every download of every app
+     passes through - the Hub asks here, and so does the button on an
+     app page - which is why the count belongs here and not in either
+     of them. Recorded when the ticket is issued rather than when the
+     bytes move: a ticket is one deliberate act by one person, while a
+     transfer can be resumed, ranged and retried, and counting those
+     would make a flaky connection look like enthusiasm.
+
+     Told apart by the user agent, which the Hub sets to its own name -
+     the one thing it has always sent, so this works on every Hub that
+     is already installed rather than only on the next one.
+
+     Deliberately not awaited into the answer: a download must not wait
+     on, or fail because of, a statistic. */
+  const ua = request.headers.get('user-agent') || '';
+  const hub = /AmanorsacHub\/([0-9][0-9A-Za-z.\-]*)/.exec(ua);
+  const count = fetch(SUPABASE_URL + '/rest/v1/rpc/record_app_download', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json',
+               apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+    body: JSON.stringify({
+      p_app: app, p_platform: platform, p_version: item.version || null,
+      p_source: hub ? 'hub' : 'site', p_hub_version: hub ? hub[1] : null,
+      p_country: request.headers.get('cf-ipcountry') || null,
+      p_user_id: await userIdFrom(jwt)
+    })
+  }).then(r => { if (!r.ok) return r.text().then(t => console.error('record_app_download refused:', r.status, t)); })
+    .catch(e => console.error('record_app_download failed:', e && e.message));
+  if (env.SUPABASE_SERVICE_KEY) waitOn(ctx, count); else count.catch(() => {});
+
   return say({ url: ticket, file: item.as, title: item.title, version: item.version || null });
+}
+
+/* The account id out of a Supabase access token, without a round trip.
+   Only the subject is wanted and only for a statistic: the token was
+   already proven real by has_app_access above, which is the check that
+   decides anything. A malformed one gives null and the row is simply
+   anonymous. */
+async function userIdFrom(jwt) {
+  try {
+    const part = String(jwt).split('.')[1];
+    if (!part) return null;
+    const pad = part.replace(/-/g, '+').replace(/_/g, '/');
+    const body = JSON.parse(atob(pad + '='.repeat((4 - pad.length % 4) % 4)));
+    return /^[0-9a-f-]{36}$/i.test(body.sub || '') ? body.sub : null;
+  } catch (e) { return null; }
+}
+
+/* Let a background write finish after the answer has already gone out.
+   Cloudflare can cancel work still running when a response returns, so
+   without this the count would be recorded most of the time and not all
+   of the time, which is worse than not recording it. ctx is the third
+   argument to fetch(); a test harness calling the worker directly does
+   not pass one, and a statistic is not worth a crash either way. */
+function waitOn(ctx, promise) {
+  try {
+    if (ctx && typeof ctx.waitUntil === 'function') return ctx.waitUntil(promise);
+  } catch (e) {}
+  promise.catch(() => {});
 }
 
 /* The Hub's own installer: public, no ticket, no account - it is the

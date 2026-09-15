@@ -668,12 +668,68 @@
   $('#sync').addEventListener('click', () => refresh(false));
   $('#dialog').addEventListener('click', (e) => { if (e.target === $('#dialog')) { const r = e.target.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) e.target.close(); } });
 
+  /* ---------- saying hello ----------
+
+     One POST when the Hub starts, so the studio can answer "how many
+     copies are out there and are they on the current build" without
+     guessing from download numbers, which count downloads and not
+     installations.
+
+     install_id is random, made here on first run and kept. It
+     identifies a COPY OF THE SOFTWARE, not a person: two people sharing
+     a computer are one id, and the same person on a laptop and a studio
+     machine is two. Nothing about it is derived from the machine, so it
+     is not a fingerprint and cannot be recognised anywhere else.
+
+     What goes with it: the version, the platform, the architecture. The
+     country is not sent - the server takes that from the connection.
+     What does not go with it, and must not be added later: which apps
+     are installed, which app was opened, when anything was used, any
+     path through this interface. The privacy policy says the studio
+     collects what it needs to run the shop, and a heartbeat that grew
+     into a usage log would make that sentence false.
+
+     Failure is silence. If the site is unreachable this is simply not
+     sent - it is a statistic, and nothing in the Hub waits on it. */
+  function installId() {
+    var k = 'hub-install-id', v = null;
+    try { v = localStorage.getItem(k); } catch (e) {}
+    if (!v || v.length < 8) {
+      var b = new Uint8Array(16);
+      (window.crypto || {}).getRandomValues ? window.crypto.getRandomValues(b)
+        : b.forEach(function (_, i) { b[i] = Math.floor(Math.random() * 256); });
+      v = Array.prototype.map.call(b, function (n) { return n.toString(16).padStart(2, '0'); }).join('');
+      try { localStorage.setItem(k, v); } catch (e) { return null; }
+    }
+    return v;
+  }
+
+  async function sayHello() {
+    var id = installId();
+    if (!id) return;                    // no storage, no id, no ping
+    var token = null;
+    try { var s = await sb.auth.getSession(); token = s && s.data && s.data.session && s.data.session.access_token; }
+    catch (e) {}
+    try {
+      await window.hub.site('/api/hub-ping', {
+        method: 'POST', token: token || undefined,
+        body: { install_id: id, version: window.hub.version || '',
+                platform: window.hub.platform || '', os: S.device.os || '', arch: window.hub.arch || '' }
+      });
+    } catch (e) {}
+  }
+
   /* ---------- boot ---------- */
   async function boot() {
     $('#version').textContent = window.hub.version ? 'v' + window.hub.version : '';
     $('#foot-right').textContent = 'Hub ' + (window.hub.version || '') + ' · ' + (window.hub.platform === 'windows' ? 'Windows' : window.hub.platform === 'mac' ? 'macOS' : 'Linux');
     try { S.device = await window.hub.device(); } catch (e) {}
     $('#device-chip').textContent = 'This device: ' + S.device.os + ' · ' + (S.device.arch === 'arm64' ? 'Apple Silicon' : S.device.arch === 'x64' ? '64-bit' : S.device.arch);
+
+    /* Once per launch, after the device is known and before anything
+       else needs the network. Not awaited: the window opens whether or
+       not this gets through. */
+    sayHello();
 
     let entering = false;
     async function signedIn(session) {
