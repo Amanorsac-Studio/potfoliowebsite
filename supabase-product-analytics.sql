@@ -34,6 +34,23 @@
 
 
 -- =====================================================================
+--  0 · TWO COLUMNS ON PURCHASES
+--
+--  Which code paid for a discount, and how much it took off. The
+--  webhooks write both when a code was used - the checkout knows the
+--  price before and after, and the webhook is the only place that knows
+--  the money actually arrived, so the figure travels between them in the
+--  payment's own metadata rather than being worked out again from a
+--  catalog that may have moved on by then.
+-- =====================================================================
+
+alter table public.purchases add column if not exists code           text;
+alter table public.purchases add column if not exists discount_cents integer;
+
+create index if not exists purchases_code_idx on public.purchases (code) where code is not null;
+
+
+-- =====================================================================
 --  1 · WHAT WAS DOWNLOADED
 -- =====================================================================
 
@@ -195,9 +212,19 @@ end $$;
 
 /* The headline row, with the same window immediately before it for
    comparison - a number with no direction is decoration. */
+/* CURRENCY. revenue_cents is DOLLARS ONLY, and revenue_other carries
+   every other currency beside it. Summing amount_cents across the whole
+   table was right while Stripe was the only way to pay and became wrong
+   the day Paystack arrived: a GHS 190 sale is stored as 19000 pesewas,
+   and adding that to a dollar total reports it as $190. There is no
+   honest single number without a rate that is only ever approximate, so
+   the dashboard shows the currencies side by side and nothing is
+   silently converted. */
+drop function if exists public.product_summary(int);
 create or replace function public.product_summary(p_days int default 30)
 returns table (
-  revenue_cents bigint, sales bigint, downloads bigint, hub_downloads bigint,
+  revenue_cents bigint, revenue_other jsonb, discount_given_cents bigint,
+  sales bigint, downloads bigint, hub_downloads bigint,
   installs bigint, active_devices bigint, new_accounts bigint, refunds bigint,
   prev_revenue_cents bigint, prev_sales bigint, prev_downloads bigint, prev_new_accounts bigint
 )
@@ -208,7 +235,16 @@ language sql security definer stable set search_path = '' as $$
                   now() - make_interval(days => p_days) as b)
   select
     (select coalesce(sum(amount_cents),0) from public.purchases, win
-       where purchased_at >= win.a and amount_cents > 0),
+       where purchased_at >= win.a and amount_cents > 0
+         and coalesce(currency,'usd') = 'usd'),
+    (select coalesce(jsonb_object_agg(cur, cents), '{}'::jsonb) from (
+       select coalesce(currency,'usd') cur, sum(amount_cents) cents
+       from public.purchases, win
+       where purchased_at >= win.a and amount_cents > 0
+         and coalesce(currency,'usd') <> 'usd'
+       group by 1) o),
+    (select coalesce(sum(discount_cents),0) from public.purchases, win
+       where purchased_at >= win.a and coalesce(currency,'usd') = 'usd'),
     (select count(*) from public.purchases, win
        where purchased_at >= win.a and amount_cents > 0),
     (select count(*) from public.app_downloads, win where at >= win.a),
@@ -220,7 +256,8 @@ language sql security definer stable set search_path = '' as $$
     (select count(*) from public.device_activations, win
        where revoked_at is not null and revoked_at >= win.a),
     (select coalesce(sum(amount_cents),0) from public.purchases, prev
-       where purchased_at >= prev.a and purchased_at < prev.b and amount_cents > 0),
+       where purchased_at >= prev.a and purchased_at < prev.b and amount_cents > 0
+         and coalesce(currency,'usd') = 'usd'),
     (select count(*) from public.purchases, prev
        where purchased_at >= prev.a and purchased_at < prev.b and amount_cents > 0),
     (select count(*) from public.app_downloads, prev
@@ -251,7 +288,9 @@ language sql security definer stable set search_path = '' as $$
   ),
   p as (
     select app, count(*) filter (where amount_cents > 0) n,
-           coalesce(sum(amount_cents) filter (where amount_cents > 0),0) cents,
+           -- dollars only, for the same reason product_summary splits them
+           coalesce(sum(amount_cents) filter (
+             where amount_cents > 0 and coalesce(currency,'usd') = 'usd'),0) cents,
            count(*) total
     from public.purchases, win where purchased_at >= win.a group by app
   ),
@@ -293,7 +332,8 @@ language sql security definer stable set search_path = '' as $$
   )
   select days.d,
     (select coalesce(sum(amount_cents),0) from public.purchases
-       where purchased_at::date = days.d and amount_cents > 0),
+       where purchased_at::date = days.d and amount_cents > 0
+         and coalesce(currency,'usd') = 'usd'),
     (select count(*) from public.purchases
        where purchased_at::date = days.d and amount_cents > 0),
     (select count(*) from public.app_downloads where at::date = days.d),
@@ -427,6 +467,67 @@ language sql security definer stable set search_path = '' as $$
     (select count(*) from public.purchases where expires_at is not null and expires_at <= now())
   where public.is_admin();
 $$;
+
+/* Codes, as a business question rather than an admin one.
+
+   The Codes page answers "what have I made and what is spent". This
+   answers "what are they costing me and are they working" - how many
+   licences were given away rather than sold, how much money the
+   discounts took off, and which codes people actually use.
+
+   given_cents is what the comped licences would have been worth at
+   today's price. It is an opportunity cost, not a loss: most of those
+   people would not have bought it. Worth knowing, not worth mourning. */
+create or replace function public.product_codes(p_days int default 30)
+returns table (
+  codes_made bigint, redemptions bigint,
+  access_granted bigint, given_cents bigint,
+  discounted_sales bigint, discount_given_cents bigint,
+  live_grants bigint, grants_ending_7d bigint,
+  top_codes jsonb
+)
+language sql security definer stable set search_path = '' as $$
+  with win as (select now() - make_interval(days => p_days) as a),
+  granted as (
+    select p.app, count(*) n
+    from public.purchases p, win
+    where p.granted_reason like 'code:%' and p.purchased_at >= win.a
+    group by p.app
+  )
+  select
+    (select count(*) from public.codes, win where created_at >= win.a),
+    (select count(*) from public.code_redemptions, win where at >= win.a),
+    (select coalesce(sum(n),0) from granted),
+    /* Priced from the catalog the store is selling from today, joined
+       through the app name. An app with no price - a free one, or one
+       pulled since - contributes nothing rather than a guess. */
+    (select coalesce(sum(granted.n * coalesce(pr.price_cents,0)),0)
+       from granted
+       left join (select app, max(amount_cents) price_cents
+                    from public.purchases
+                   where amount_cents > 0 and coalesce(currency,'usd') = 'usd'
+                   group by app) pr on pr.app = granted.app),
+    (select count(*) from public.purchases, win
+       where code is not null and purchased_at >= win.a),
+    (select coalesce(sum(discount_cents),0) from public.purchases, win
+       where code is not null and purchased_at >= win.a
+         and coalesce(currency,'usd') = 'usd'),
+    (select count(*) from public.purchases
+       where granted_reason like 'code:%'
+         and (expires_at is null or expires_at > now())),
+    (select count(*) from public.purchases
+       where granted_reason like 'code:%'
+         and expires_at is not null and expires_at > now()
+         and expires_at < now() + interval '7 days'),
+    (select coalesce(jsonb_agg(t), '[]'::jsonb) from (
+       select c.code, c.kind, c.note, c.uses, c.max_uses
+       from public.codes c
+       where c.uses > 0
+       order by c.uses desc, c.created_at desc
+       limit 8) t)
+  where public.is_admin();
+$$;
+
 
 /* The most recent sales, for the feed at the bottom of the dashboard.
    An email is shown because the studio already has it on the account

@@ -35,7 +35,8 @@
     color:var(--muted);margin:0 0 8px}
   .fig .v{font-size:30px;font-weight:600;line-height:1;margin:0;letter-spacing:-.02em}
   .fig.lead .v{font-size:40px}
-  .fig .d{font-size:12.5px;margin:7px 0 0;color:var(--muted)}
+  .fig .d{display:block;font-size:12.5px;margin:7px 0 0;color:var(--muted)}
+  .fig .d + .d{margin-top:3px}
   .fig .d.up{color:#2E8B6E}
   .fig .d.down{color:#B4552F}
 
@@ -171,6 +172,13 @@
   <p class="why">One row per installation of Amanorsac Hub, not per person. It says how many copies are out there, on what, and how many are still on an old build.</p>
   <div id="hubwrap"></div>
 
+  <p class="sec">Codes</p>
+  <p class="why">What the codes are costing and whether anybody uses them. <b>Given away</b> values each
+    comped licence at the most anyone has paid for that app &mdash; the catalog price is not in the
+    database, so this is read back from real sales. It is an opportunity cost rather than a loss: most
+    of those people were never going to buy it.</p>
+  <div id="codeswrap"></div>
+
   <div class="two" style="margin-top:14px">
     <div>
       <p class="sec" style="margin-top:16px">Licences and seats</p>
@@ -290,9 +298,26 @@
   addEventListener('resize', chart);
 
   /* ---------- everything else ---------- */
+  /* Revenue is reported per currency and never converted. A GHS sale is
+     stored in pesewas; adding it to a dollar total would report GHS 190
+     as $190. There is no honest single number without a rate that is
+     only ever a guess, so both are shown. */
+  const CUR = { ghs:'\u20b5', ngn:'\u20a6', zar:'R', kes:'KSh', usd:'$' };
+  function others(obj){
+    const e = Object.entries(obj || {});
+    if(!e.length) return '';
+    return '<span class="d">+ ' + e.map(([c,n]) =>
+      (CUR[c] || (c.toUpperCase()+' ')) + (Number(n)/100).toLocaleString()).join(' · ') + '</span>';
+  }
+
   function headline(s){
     const rows = [
-      ['Revenue',        usd(s.revenue_cents), delta(s.revenue_cents, s.prev_revenue_cents), true],
+      /* Both: how the dollars moved, and what was taken in other
+         currencies beside them. Dropping the comparison to make room for
+         the second currency would have quietly removed the one thing
+         that makes the headline figure mean anything. */
+      ['Revenue',        usd(s.revenue_cents),
+        delta(s.revenue_cents, s.prev_revenue_cents) + others(s.revenue_other), true],
       ['Sales',          num(s.sales),         delta(s.sales, s.prev_sales)],
       ['Downloads',      num(s.downloads),     delta(s.downloads, s.prev_downloads)],
       ['Through the Hub', s.downloads ? Math.round(100*s.hub_downloads/s.downloads)+'%' : '—',
@@ -384,6 +409,41 @@
     barList($('#plats'), plat, r => r[0] === 'windows' ? 'Windows' : r[0] === 'mac' ? 'macOS' : r[0], r => r[1]);
   }
 
+  function codes(c){
+    const wrap = $('#codeswrap');
+    if(!c){ wrap.innerHTML = '<div class="pending">The codes tables are not installed yet &mdash; run ' +
+      '<b>supabase-redeem-codes.sql</b> in the SQL editor.</div>'; return; }
+
+    if(!Number(c.redemptions) && !Number(c.codes_made) && !Number(c.live_grants)){
+      wrap.innerHTML = '<div class="pending">No codes have been made or used in this window. ' +
+        'The <b>Codes</b> page is where you make them.</div>';
+      return;
+    }
+
+    const soon = Number(c.grants_ending_7d);
+    wrap.innerHTML =
+      '<div class="figs" style="margin-bottom:14px">' +
+        '<div class="fig"><p class="k">Redeemed</p><p class="v">'+num(c.redemptions)+'</p>' +
+          '<span class="d">'+num(c.codes_made)+' made in this window</span></div>' +
+        '<div class="fig"><p class="k">Given away</p><p class="v">'+usd(c.given_cents)+'</p>' +
+          '<span class="d">'+num(c.access_granted)+' licence'+(Number(c.access_granted)===1?'':'s')+', priced from past sales</span></div>' +
+        '<div class="fig"><p class="k">Discounted sales</p><p class="v">'+num(c.discounted_sales)+'</p>' +
+          '<span class="d">'+usd(c.discount_given_cents)+' off</span></div>' +
+        '<div class="fig"><p class="k">Grants running</p><p class="v">'+num(c.live_grants)+'</p>' +
+          '<span class="d'+(soon?' down':'')+'">'+(soon ? num(soon)+' end within a week' : 'none ending soon')+'</span></div>' +
+      '</div>' +
+      '<div class="card"><div class="card-head"><h2>Most used</h2></div>' +
+        '<div class="tblwrap"><table class="tbl"><tbody id="topcodes"></tbody></table></div></div>';
+
+    const top = c.top_codes || [];
+    $('#topcodes').innerHTML = top.length
+      ? '<tr><th>Code</th><th>Kind</th><th>What for</th><th class="n">Used</th></tr>' +
+        top.map(t => '<tr><td style="font-family:var(--mono);font-size:12.5px">'+esc(t.code)+'</td>' +
+          '<td class="dim">'+esc(t.kind)+'</td><td class="dim">'+esc(t.note||'')+'</td>' +
+          '<td class="n">'+num(t.uses)+(t.max_uses?' / '+t.max_uses:'')+'</td></tr>').join('')
+      : '<tr><td class="empty">None used yet.</td></tr>';
+  }
+
   function licences(l){
     if(!l){ $('#lic').innerHTML = '<li class="empty">Nothing yet.</li>'; return; }
     const rows = [
@@ -413,7 +473,7 @@
   /* ---------- load ---------- */
   async function draw(){
     m.textContent = 'Reading…'; m.className = 'msg';
-    const [s, a, d, f, g, h, l, rec] = await Promise.all([
+    const [s, a, d, f, g, h, l, cd, rec] = await Promise.all([
       sb.rpc('product_summary',    { p_days: days }),
       sb.rpc('product_by_app',     { p_days: days }),
       sb.rpc('product_daily',      { p_days: days }),
@@ -421,9 +481,13 @@
       sb.rpc('product_geography',  { p_days: days }),
       sb.rpc('product_hub'),
       sb.rpc('product_licences'),
+      sb.rpc('product_codes',      { p_days: days }),
       sb.rpc('product_recent',     { p_limit: 12 }),
     ]);
 
+    /* The codes report is allowed to be missing - phase 1's SQL may not
+       have been run - so it is checked on its own and says so in its own
+       panel rather than emptying the whole page. */
     const bad = [s,a,d,f,g,h,l,rec].find(r => r && r.error);
     if(bad){
       m.textContent = bad.error.message.includes('does not exist')
@@ -444,6 +508,7 @@
             r => num(r.downloads) + ' <span style="opacity:.55">of ' + num(r.visits) + ' visits</span>');
     hub((h.data && h.data[0]) || null);
     licences((l.data && l.data[0]) || null);
+    codes((cd && !cd.error && cd.data && cd.data[0]) || null);
     recent(rec.data || []);
   }
 

@@ -208,6 +208,7 @@ Deno.serve(async (req) => {
      quietly ignored, because somebody who typed one is expecting it to
      count and should be told if it did not. */
   let discount: { percent_off?: number; amount_off_cents?: number } | null = null;
+  const fullAmount = amount;            // before any code, for the record
   if (code) {
     const { data: d } = await admin.rpc("code_value",
       { p_code: code, p_app: app, p_user: user.id });
@@ -236,8 +237,10 @@ Deno.serve(async (req) => {
       metadata: {
         app,
         user_id: user.id,
-        // What the webhook spends once the money is real.
+        // What the webhook spends once the money is real, and what it
+        // records. In the account's own currency, like the charge.
         code: code || null,
+        discount_cents: Math.max(0, (fullAmount ?? 0) - (amount ?? 0)),
         // Shown on the Paystack dashboard next to the payment, so a
         // transaction is readable without looking anything up.
         custom_fields: [

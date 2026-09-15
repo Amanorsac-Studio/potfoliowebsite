@@ -114,6 +114,8 @@ Deno.serve(async (req) => {
     amount_cents: Number(tx.amount ?? 0),
     currency: String(tx.currency ?? "GHS").toLowerCase(),
     stripe_session_id: "paystack:" + reference,
+    code: tx.metadata?.code || null,
+    discount_cents: Number(tx.metadata?.discount_cents ?? 0) || null,
     update_eligible_until: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
   }, { onConflict: "stripe_session_id", ignoreDuplicates: true });
 

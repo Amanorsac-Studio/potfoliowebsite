@@ -111,6 +111,8 @@ Deno.serve(async (req) => {
       amount_cents: lineItem,
       currency: String(session.currency ?? "usd"),
       stripe_session_id: String(session.id ?? ""),
+      code: session.metadata?.code || null,
+      discount_cents: Number(session.metadata?.discount_cents ?? 0) || null,
       update_eligible_until: new Date(
         Date.now() + 365 * 24 * 60 * 60 * 1000,
       ).toISOString(),

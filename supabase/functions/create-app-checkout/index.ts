@@ -218,8 +218,11 @@ Deno.serve(async (req) => {
       // This is the thread stripe-webhook follows back to this account.
       "metadata[app]": app,
       "metadata[user_id]": user.id,
-      // What the webhook spends once the money is real.
+      // What the webhook spends once the money is real, and what it
+      // records - the price before and after are both known here and
+      // nowhere else, so the difference travels with the payment.
       "metadata[code]": code || "",
+      "metadata[discount_cents]": String(Math.max(0, (item.amount_cents ?? 0) - (amount ?? 0))),
       // Back to the app's own page, not the portal - there is no "My
       // Apps" section there yet for this to land in usefully.
       success_url: back + "/" + app + "?purchased=1",
