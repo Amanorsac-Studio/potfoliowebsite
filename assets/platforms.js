@@ -27,10 +27,19 @@
   var slots = document.querySelectorAll('[data-platforms]');
   if (!slots.length || !window.StoreState) return;
 
-  var SCREEN = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+  /* width and height are ATTRIBUTES, not a CSS rule.
+
+     An inline SVG with only a viewBox has no intrinsic size, so it
+     fills whatever box it is in the moment the stylesheet is missing -
+     a cached old copy, a stylesheet that 404s, a reader mode. This
+     exact shape has bitten this site once already: a 16px tick on the
+     PerformLive page rendered about 900px tall because that page was
+     not loading sale.css. Sized here it cannot happen again, and the
+     CSS below only ever refines it. */
+  var SCREEN = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
     '<rect x="1.4" y="2.2" width="13.2" height="9" rx="1.4" stroke="currentColor" stroke-width="1.3"/>' +
     '<path d="M5.6 13.8h4.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
-  var PHONE = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+  var PHONE = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
     '<rect x="4.2" y="1.4" width="7.6" height="13.2" rx="1.6" stroke="currentColor" stroke-width="1.3"/>' +
     '<path d="M7 12.6h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>';
 

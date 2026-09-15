@@ -16,7 +16,11 @@
   if (!slots.length || !window.StoreState) return;
   var app = (document.body.getAttribute('data-app') || '').toLowerCase();
 
-  var TICK = '<svg viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+  /* Sized by attribute for the same reason the platform icons are: an
+     SVG with only a viewBox fills its container when no stylesheet
+     reaches it, and this very tick is the one that rendered about
+     900px tall on the PerformLive page. */
+  var TICK = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
     '<circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3" opacity=".45"/>' +
     '<path d="M4.8 8.2 6.9 10.3 11.2 6" stroke="currentColor" stroke-width="1.6" ' +
     'stroke-linecap="round" stroke-linejoin="round"/></svg>';
