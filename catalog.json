@@ -220,19 +220,22 @@
         "_4": "remembered by. Change id and EVERY owner gets a second letter,",
         "_5": "which is the behaviour you want from something that must not",
         "_6": "surprise anyone. Nobody is emailed twice for the same id, ever.",
-        "id": "2026-09-phones",
-        "subject": "Nebula Tide 2 is on your phone now",
-        "line": "Nebula Tide 2 now runs on iPhone, iPad and Android \u2014 and the desktop build has been updated.",
-        "body": "The same twelve keys and the same pads, in your pocket. Your licence already covers it: sign in with the account you bought it with and it is there. The Windows and Mac builds have been updated too, and Amanorsac Hub will offer you the new one next time you open it.",
-        "cta": "Get it on your phone"
+        "_7": "",
+        "_8": "The iPhone build is not mentioned. It goes through the App",
+        "_9": "Store, and nothing should be promised in writing to a paying",
+        "_10": "customer before Apple has actually approved it. When it is",
+        "_11": "live, that is a new notice with a new id.",
+        "id": "2026-09-android",
+        "subject": "Nebula Tide 2 is on Android, and the desktop build is new",
+        "line": "Nebula Tide 2 now runs on Android \u2014 and there is a new build for Windows and Mac.",
+        "body": "The same twelve keys and the same pads, on your phone. Your licence already covers it: sign in with the account you bought it with and it is there. On the desktop, Amanorsac Hub will offer you version 2.1 next time you open it.",
+        "cta": "Get the Android build"
       },
       "installers": {
         "windows": { "key": "nebulatide2/NebulaTide-Windows.zip", "alt_keys": [],
                      "as": "NebulaTide2-Windows.zip", "type": "application/zip", "size": "278 MB" },
         "mac":     { "key": "nebulatide2/NebulaTide-macOS.zip",   "alt_keys": [],
                      "as": "NebulaTide2-macOS.zip",   "type": "application/zip", "size": "312 MB" },
-        "ios":     { "key": "nebulatide2/NebulaTide-iOS.zip",     "alt_keys": [],
-                     "as": "NebulaTide2-iOS.zip",     "type": "application/zip", "size": "207 MB" },
         "android": { "key": "nebulatide2/NebulaTide-Android.zip", "alt_keys": [],
                      "as": "NebulaTide2-Android.zip", "type": "application/zip", "size": "263 MB" }
       }

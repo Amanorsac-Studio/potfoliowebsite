@@ -37,18 +37,35 @@
       ? 'Free. Sign in and it is yours.'
       : 'Secure checkout. Your card details go to Stripe, never to us.');
 
+    /* Two shapes reach this file. store-state.js reads catalog.json
+       itself, where the platforms are the keys of `installers`; the
+       Worker's /api/catalog flattens them into a `platforms` array for
+       the Hub. Accept either rather than depending on which one got
+       here. */
+    var plats = a.platforms || Object.keys(a.installers || {});
+    var phone = plats.indexOf('android') >= 0 || plats.indexOf('ios') >= 0;
+    var desktop = plats.indexOf('windows') >= 0 || plats.indexOf('mac') >= 0;
+
     lines.push(beta
       ? 'Your key is made when you download, and it is waiting in My Apps.'
+      : (a.licensed && phone && desktop)
+      ? 'One key, two computers and your phone. Yours to keep, with no subscription.'
       : a.licensed
       ? 'One key, two computers. Yours to keep, with no subscription.'
       : 'No activation, ever. It runs offline and never asks who you are.');
 
     /* "Instant download" has to stop being said the moment it stops
-       being true. A paused app says why instead. */
+       being true. A paused app says why instead - and an app that also
+       runs on a phone does not install through a desktop launcher, so
+       it does not claim to. */
     var here = window.StoreState.stateOf(a);
-    lines.push(here === 'available'
-      ? 'Instant download. It installs and updates through Amanorsac Hub.'
-      : (a.soon_note || 'Not available to download yet. It arrives in Amanorsac Hub the day it ships.'));
+    lines.push(here !== 'available'
+      ? (a.soon_note || 'Not available to download yet. It arrives in Amanorsac Hub the day it ships.')
+      : (phone && desktop)
+      ? 'Instant download. The desktop build installs and updates through Amanorsac Hub; the phone build is a direct download.'
+      : phone
+      ? 'Instant download, straight to your phone.'
+      : 'Instant download. It installs and updates through Amanorsac Hub.');
 
     if (beta) {
       lines.push('Tell us what breaks. That is what a beta is for — ' +
