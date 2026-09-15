@@ -342,6 +342,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 }
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-app="pulseroom">
 
@@ -356,7 +357,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   <h1>Every mixing answer. One tempo.</h1>
   <p class="sub">Drop the song in and PulseRoom finds the tempo, then turns it into delay times, reverb tails, EQ moves and compression settings — in one desktop app that opens faster than the browser tab it replaces.</p>
   <div data-hub-get data-app="pulseroom" style="margin:0 0 14px"></div>
-  <p class="fine">Free · installs through Amanorsac Hub with a free account · Windows &amp; macOS · works offline once installed</p>
+  <p class="plat-row" data-platforms hidden></p>
+  <p class="fine">Free · installs through Amanorsac Hub with a free account · works offline once installed</p>
   <!-- filled in by app-reviews.js; hidden until there is a real number,
        because "0 downloads" under a hero is worse than nothing there -->
   <p class="dl-count" hidden></p>
@@ -614,5 +616,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 <script src="assets/vendor/supabase-2.116.0.js" defer></script>
 <script src="assets/supabase-client.js" defer></script>
 <script src="assets/site-auth.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/platforms.js" defer></script>
 </body>
 </html>

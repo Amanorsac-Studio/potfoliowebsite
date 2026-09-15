@@ -798,6 +798,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Multitrack playback and stem performance for the stage.</p>
       <p class="app-badge"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go" aria-hidden="true"></p>
     </a>
 
@@ -814,6 +815,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Drone pads with shimmer, presets and drag-to-timeline.</p>
       <p class="app-badge" data-badge-app="nebulatide2"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -837,6 +839,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Mirrors your master bus to a second device.</p>
       <p class="app-badge" data-badge-app="secondout"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -860,6 +863,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Drop a song in, get tempo, delay, reverb and EQ.</p>
       <p class="app-badge" data-badge-app="pulseroom"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -884,6 +888,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
            a zero -->
       <p class="app-badge" data-badge-app="nebulatide"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -910,6 +915,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">The chord and the number in your key, or in sol-fa. Shares your MIDI port.</p>
       <p class="app-badge" data-badge-app="chordlight88"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -935,6 +941,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Ten analog processors, each with its own engine.</p>
       <p class="app-badge" data-badge-app="ambanalog"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -958,6 +965,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Multi-mic time and phase alignment, with a dial.</p>
       <p class="app-badge" data-badge-app="alignpro"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -980,6 +988,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">A linear-phase gate for close-miked drums.</p>
       <p class="app-badge" data-badge-app="afdgate"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -1001,6 +1010,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">A dynamic air exciter you can aim.</p>
       <p class="app-badge" data-badge-app="aether"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go">Explore →</p>
     </a>
 
@@ -1026,6 +1036,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">The rehearsal studio for choirs.</p>
       <p class="app-badge"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go" aria-hidden="true"></p>
     </div>
 
@@ -1045,6 +1056,7 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
       <p class="app-note">Something the studio has been building.</p>
       <p class="app-badge"></p>
       <p class="app-price"></p>
+      <p class="app-plats" hidden></p>
       <p class="app-go" aria-hidden="true"></p>
     </div>
 
@@ -1508,6 +1520,31 @@ var CONFIG = {
             Math.round((1 - app.price_cents / app.list_price_cents) * 100) + '%</span>' : '');
   }
 
+  /* What each one runs on, under its price. Same source as the badge on
+     the app's own page - the installers the catalog actually carries -
+     so a tile cannot claim a platform the download does not have. Two
+     Mac builds collapse to one Mac. */
+  var PLATS = [['windows','Win'],['mac','Mac'],['mac-arm64','Mac'],['mac-x64','Mac'],
+               ['ios','iPhone'],['android','Android'],['linux','Linux']];
+  function platforms(tile, app){
+    var slot = tile.querySelector('.app-plats');
+    if(!slot) return;
+    var have = app.platforms || Object.keys(app.installers || {});
+    var seen = {}, out = [];
+    PLATS.forEach(function(p){
+      if(have.indexOf(p[0]) < 0 || seen[p[1]]) return;
+      seen[p[1]] = true;
+      out.push('<span class="app-plat"></span>');
+    });
+    if(!out.length) return;
+    slot.innerHTML = out.join('');
+    var i = 0;
+    Object.keys(seen).forEach(function(name){
+      slot.children[i++].textContent = name;
+    });
+    slot.hidden = false;
+  }
+
   function apply(){
     if(!window.StoreState) return;
     window.StoreState.catalog().then(function(c){
@@ -1532,6 +1569,7 @@ var CONFIG = {
           tile.classList.remove('nolink');
           if(tile.dataset.href){ tile.setAttribute('href', tile.dataset.href); delete tile.dataset.href; }
           price(tile, shot, app, c.promo);
+          platforms(tile, app);
           return;
         }
         /* Not on sale here, so the tile is not a door. Keep the address
@@ -1548,6 +1586,10 @@ var CONFIG = {
            the markup, and the catalog's own wording has to win over the
            "Coming soon" typed into the page. */
         soon.firstChild.textContent = app.soon_note || 'Coming soon';
+        /* Still worth saying what it runs on. An app that is paused or
+           not out yet is one somebody may come back for, and "will it
+           work on my machine" is the question they are coming back with. */
+        platforms(tile, app);
         tile.classList.add('nolink');
         if(tile.hasAttribute('href')){
           tile.dataset.href = tile.getAttribute('href');

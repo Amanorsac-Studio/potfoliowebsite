@@ -384,6 +384,7 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 }
 </script>
 <link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-app="nebulatide">
 
@@ -414,7 +415,8 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
     <p class="sub">Nebula Tide plays endless, seamless drone pads — real recordings in all twelve keys — inside an interface that’s alive. One click, infinite atmosphere.</p>
     <div data-hub-get data-app="nebulatide" style="margin:0 0 14px"></div>
     <div class="cta-row"><a class="cta ghost" href="#features">See the instrument</a></div>
-    <p class="fine">Free · installs through Amanorsac Hub with a free account · Standalone and VST3 on Windows · iPad planned</p>
+    <p class="plat-row" data-platforms hidden></p>
+    <p class="fine">Free · installs through Amanorsac Hub with a free account · standalone and VST3 · iPad planned</p>
     <!-- filled in by app-reviews.js; hidden until there is a real number -->
     <p class="dl-count" hidden></p>
   </div>
@@ -661,5 +663,7 @@ if('IntersectionObserver' in window &&
 <script src="assets/vendor/supabase-2.116.0.js" defer></script>
 <script src="assets/supabase-client.js" defer></script>
 <script src="assets/site-auth.js" defer></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/platforms.js" defer></script>
 </body>
 </html>

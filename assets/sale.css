@@ -144,3 +144,35 @@
 .pwyw-in:focus-within{opacity:1}
 .pwyw small{flex-basis:100%;font-size:12.5px;opacity:.7}
 .pay-alt-fx{flex-basis:100%;font-size:13px;color:var(--muted,#A9A2C8)}
+
+/* ---------------------------------------------------------------------
+   What it runs on, next to the price.
+
+   Drawn by assets/platforms.js from the app's own installers, so it can
+   never disagree with what the download actually hands over.
+   --------------------------------------------------------------------- */
+.plat-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 0}
+.plat-lead{font-family:var(--mono,ui-monospace,monospace);font-size:10px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted,#A9A2C8);margin-right:2px}
+/* color:inherit, not var(--ink). These pills go on twelve pages that do
+   not agree about what --ink means: most leave it undefined, and aether
+   sets it to #1B2733 - a DARK ink, for a light element on that page -
+   which rendered near-black pills on a near-black background. The
+   colour of the text they sit beside is the one thing every page
+   already has right, so take that. */
+.plat{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;
+  color:inherit;background:color-mix(in srgb,currentColor 9%,transparent);
+  border:1px solid color-mix(in srgb,currentColor 22%,transparent);
+  border-radius:999px;padding:5px 12px 5px 10px;white-space:nowrap}
+.plat svg{width:15px;height:15px;flex:none;opacity:.75}
+@media (max-width:520px){
+  .plat-row{gap:6px}
+  .plat{font-size:12.5px;padding:4px 10px 4px 8px}
+  .plat svg{width:14px;height:14px}
+}
+
+/* The same fact on a store tile, small enough to sit under the price. */
+.app-plats{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin:8px 0 0}
+.app-plat{font-family:var(--mono,ui-monospace,monospace);font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted,#8C85AC);border:1px solid currentColor;
+  border-radius:999px;padding:2px 7px;opacity:.8;white-space:nowrap}
