@@ -232,11 +232,14 @@
         "cta": "Get the Android build"
       },
       "installers": {
-        "windows": { "key": "nebulatide2/NebulaTide-Windows.zip", "alt_keys": [],
+        "windows": { "key": "nebulatide2/NebulaTide-Windows.zip",
+                     "alt_keys": ["Nebula Tide V2/NebulaTide-Windows.zip", "nebulatide2/NebulaTide-Windows_2.zip"],
                      "as": "NebulaTide2-Windows.zip", "type": "application/zip", "size": "278 MB" },
-        "mac":     { "key": "nebulatide2/NebulaTide-macOS.zip",   "alt_keys": [],
+        "mac":     { "key": "nebulatide2/NebulaTide-macOS.zip",
+                     "alt_keys": ["Nebula Tide V2/NebulaTide-macOS.zip", "nebulatide2/NebulaTide-macOS_2.zip"],
                      "as": "NebulaTide2-macOS.zip",   "type": "application/zip", "size": "312 MB" },
-        "android": { "key": "nebulatide2/NebulaTide-Android.zip", "alt_keys": [],
+        "android": { "key": "nebulatide2/NebulaTide-Android.zip",
+                     "alt_keys": ["Nebula Tide V2/NebulaTide-Android.zip"],
                      "as": "NebulaTide2-Android.zip", "type": "application/zip", "size": "263 MB" }
       }
     },
