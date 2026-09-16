@@ -79,6 +79,30 @@
 
   <p class="msg" id="m" role="status" aria-live="polite"></p>
 
+  <p class="sec">Give it to someone by email</p>
+  <p class="why">The short way. No code to send, nothing for them to type, nothing to explain &mdash;
+    the app simply appears in their My&nbsp;Apps. They need an account on the site with that exact
+    email first; if they have not made one, this says so and you can press it again once they have.
+    Use a code instead when you do not know who they are &mdash; a giveaway, a room at a workshop.</p>
+
+  <div class="card">
+    <div class="form">
+      <div class="f"><label for="g-email">Their email</label>
+        <input id="g-email" type="email" placeholder="singer@choir.org" autocomplete="off"></div>
+      <div class="f"><label for="g-app">App</label>
+        <select id="g-app"></select></div>
+      <div class="f"><label for="g-days">Ends after (days)</label>
+        <input id="g-days" type="number" min="1" placeholder="blank = theirs to keep"></div>
+      <div class="f"><label for="g-note">What is it for</label>
+        <input id="g-note" type="text" placeholder="choir pilot"></div>
+      <div class="f"><label>&nbsp;</label><button class="go" id="g-go" type="button">Give it</button></div>
+    </div>
+    <p class="msg" id="g-m" role="status" aria-live="polite"></p>
+  </div>
+
+  <p class="sec">Given away</p>
+  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="given"></tbody></table></div></div>
+
   <p class="sec">Make some</p>
   <p class="why">An <b>access</b> code gives somebody the app. How long for is decided here, per batch:
     leave the days box empty and it is theirs to keep, put 30 in it and their licence ends thirty days
@@ -150,12 +174,98 @@
   const NAMES = {};
   const named = fetch('/catalog.json', { cache:'no-cache' }).then(r=>r.json()).then(c=>{
     const sel = $('#app');
+    const gsel = $('#g-app');
     Object.keys(c.apps||{}).forEach(id=>{
       NAMES[id] = c.apps[id].name || id;
       const o=document.createElement('option'); o.value=id; o.textContent=NAMES[id]; sel.appendChild(o);
+      /* The giving form has no "any app": you cannot hand somebody
+         every app by accident, which a stray '*' would do. */
+      const g=document.createElement('option'); g.value=id; g.textContent=NAMES[id]; gsel.appendChild(g);
     });
   }).catch(()=>{});
   const appName = id => id === '*' ? 'any app' : (NAMES[id] || id);
+
+  /* ---------- giving an app away by email ----------
+     Every refusal below is a sentence somebody can act on. "no_account"
+     in particular is not an error - it is the normal first answer for
+     anyone who has not signed up yet, and the fix is to tell them to,
+     not to debug anything. */
+  const GIVE_WORDS = {
+    no_account:    e => 'No account here yet for ' + e + '. Ask them to make one at amanorsac.studio ' +
+                        'with that exact email, then press Give it again.',
+    already_owned: e => e + ' already has that one \u2014 nothing to do.',
+    bad_email:     () => 'That does not look like an email address.',
+    no_app:        () => 'Pick an app first.',
+  };
+
+  async function give(){
+    const email = $('#g-email').value.trim();
+    const app   = $('#g-app').value;
+    const days  = Number($('#g-days').value) || null;
+    const note  = $('#g-note').value.trim() || null;
+    const gm    = $('#g-m');
+
+    if(!email){ gm.textContent='Type their email first.'; gm.className='msg bad'; return; }
+    $('#g-go').disabled = true;
+    gm.textContent = 'Giving\u2026'; gm.className = 'msg';
+
+    const { data, error } = await sb.rpc('grant_app_to_email',
+      { p_email: email, p_app: app, p_days: days, p_note: note });
+    $('#g-go').disabled = false;
+
+    /* The real message, never a shrug. A missing function here means a
+       file has not been run, and saying which one is the difference
+       between a two-minute fix and an evening. */
+    if(error){
+      gm.textContent = /does not exist/i.test(error.message)
+        ? 'Not installed yet \u2014 run supabase-grant-by-email.sql in the SQL editor.'
+        : 'Could not do it: ' + error.message;
+      gm.className='msg bad'; return;
+    }
+    const d = data || {};
+    if(!d.ok){
+      gm.textContent = (GIVE_WORDS[d.error] || (() => 'That did not work: ' + (d.error||'unknown')))(email);
+      gm.className='msg bad'; return;
+    }
+    gm.textContent = appName(app) + ' is now in ' + email + '\u2019s My Apps' +
+      (d.expires_at ? ', until ' + when(d.expires_at) : ', to keep') + '.';
+    gm.className='msg';
+    $('#g-email').value=''; $('#g-note').value='';
+    loadGiven();
+  }
+  $('#g-go').addEventListener('click', give);
+  $('#g-email').addEventListener('keydown', e => { if(e.key === 'Enter') give(); });
+
+  async function loadGiven(){
+    const { data, error } = await sb.rpc('granted_list', { p_limit: 200 });
+    const el = $('#given');
+    if(error){
+      el.innerHTML = '<tr><td class="empty">' + (/does not exist/i.test(error.message)
+        ? 'Run supabase-grant-by-email.sql to switch this on.'
+        : esc(error.message)) + '</td></tr>';
+      return;
+    }
+    const rows = data || [];
+    el.innerHTML = rows.length
+      ? '<tr><th>Who</th><th>App</th><th>Why</th><th>Ends</th><th></th></tr>' +
+        rows.map(r => '<tr><td>'+esc(r.email)+'</td><td>'+esc(appName(r.app))+'</td>' +
+          '<td class="dim">'+esc(String(r.reason||'').replace(/^email:|^code:/,''))+'</td>' +
+          '<td class="dim">'+(r.expires_at?when(r.expires_at):'kept')+'</td>' +
+          /* Only ever offered for something that was given. A real sale
+             never appears in this table, so this button cannot reach one. */
+          '<td><button class="danger" data-take="'+esc(r.email)+'" data-app="'+esc(r.app)+'">Take back</button></td></tr>').join('')
+      : '<tr><td class="empty">Nothing given away yet.</td></tr>';
+  }
+
+  $('#given').addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-take]');
+    if(!b) return;
+    const email = b.getAttribute('data-take'), app = b.getAttribute('data-app');
+    if(!confirm('Take ' + appName(app) + ' back from ' + email + '?')) return;
+    const { error } = await sb.rpc('ungrant_app_from_email', { p_email: email, p_app: app });
+    if(error){ $('#g-m').textContent = 'Could not: ' + error.message; $('#g-m').className='msg bad'; return; }
+    loadGiven();
+  });
 
   function kindFields(){
     const k = $('#kind').value;
@@ -266,6 +376,7 @@
   });
 
   draw();
+  named.then(loadGiven);   // after the app names, so the table reads in words
 })();
 </script>
 </body>

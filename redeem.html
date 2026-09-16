@@ -340,7 +340,23 @@ footer a:hover{color:var(--accent)}
       .then(function () { return sb.rpc('redeem_code', { p_code: code, p_app: app || null }); })
       .then(function (r) {
         go.disabled = false;
-        if (r.error) { say('Something went wrong on our end. Try again in a moment.', true); return; }
+        /* The database's own words, not a shrug.
+
+           This line used to say "something went wrong on our end" to
+           every failure alike, which meant a code that could never work
+           - because a function was missing, or a permission was not
+           granted - looked exactly like a code that was merely unlucky.
+           Nobody could tell the studio anything useful, and the studio
+           could not tell what was wrong. Whatever it is, say it. */
+        if (r.error) {
+          var msg = String(r.error.message || '');
+          say(/does not exist|schema cache/i.test(msg)
+                ? 'Codes are not switched on yet. Tell the studio: redeem_code is missing.'
+              : /permission denied/i.test(msg)
+                ? 'This account is not allowed to redeem. Tell the studio: permission denied on redeem_code.'
+              : 'Could not use that code: ' + msg, true);
+          return;
+        }
         var d = r.data || {};
 
         if (!d.ok && d.error === 'choose_an_app') {
