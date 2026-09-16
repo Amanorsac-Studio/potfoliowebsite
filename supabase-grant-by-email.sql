@@ -148,8 +148,21 @@ returns table (email text, app text, license_key text, reason text,
 language plpgsql security definer set search_path = '' as $$
 begin
   if not public.is_admin() then raise exception 'not permitted'; end if;
+  /* ::text on every one of these, and auth.users.email is the reason.
+     Supabase declares it character varying(255), not text. A LANGUAGE
+     SQL function quietly coerces that to the text this promises to
+     return; RETURN QUERY in plpgsql does not - it compares the types
+     exactly and raises "structure of query does not match function
+     result type" at CALL time, not at creation. So the function
+     installs perfectly, every other function in the file works, and
+     only this one fails, which is exactly how it failed.
+
+     The rest are cast for the same reason: purchases is not the only
+     table that might be declared varchar on somebody's database, and a
+     cast that was never needed costs nothing. */
   return query
-  select u.email, p.app, p.license_key, p.granted_reason, p.expires_at, p.created_at
+  select u.email::text, p.app::text, p.license_key::text, p.granted_reason::text,
+         p.expires_at, p.created_at
   from public.purchases p
   join auth.users u on u.id = p.user_id
   where p.granted_reason is not null
