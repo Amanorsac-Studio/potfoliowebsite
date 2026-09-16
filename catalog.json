@@ -54,7 +54,7 @@
       "tag": "Release",
       "app": "performlive",
       "title": "PerformLive is back, on 0.4.1",
-      "body": "The download is open again, for Windows and Mac. If you installed the last beta the Hub will offer you the update - take it, this is the build the pause was for. Your key carries over: the same one is still in My Apps and you do not need a new one. One thing to be straight about - the thirty days run from the day you first claimed the key, not from this build, so if you have been testing since August you have less than thirty left. New here? Thirty days from the moment you download. Both builds changed shape: Windows is a zip the Hub unpacks itself, so nothing goes into Program Files, and the Mac build is a proper .pkg installer now rather than a zip.",
+      "body": "The download is open again, for Windows and Mac. If you installed the last beta the Hub will offer you the update - take it, this is the build the pause was for. Your key carries over: the same one is still in My Apps and you do not need a new one. One thing to be straight about - the thirty days run from the day you first claimed the key, not from this build, so if you have been testing since August you have less than thirty left. New here? Thirty days from the moment you download. Both builds changed shape: Windows is a zip the Hub unpacks itself, so nothing goes into Program Files, and the Mac build is a proper .pkg installer now rather than a zip. There is a second Mac build too, for older machines - if the main one will not open on your Mac, take the one marked older macOS in My Apps. The Hub itself needs a recent macOS, so on an old Mac download from the website rather than through it.",
       "url": "performlive.html"
     },
     {
