@@ -283,7 +283,7 @@ footer a:hover{color:var(--accent)}
   const ORDER = Object.keys(APPS);   // the catalog's own order
   const FALLBACK = !!catalog.direct_download_fallback;
   const PROTO = (catalog.hub && catalog.hub.protocol) || 'amanorsac';
-  const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)', 'mac-legacy': 'Mac (older macOS)' };
+  const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)' };
   const DL  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>';
   const HUB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
 

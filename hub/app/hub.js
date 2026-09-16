@@ -55,7 +55,27 @@
   /* ---------- the collection ---------- */
   function byId(id) { return S.catalog.find((a) => a.id === id); }
   function ownedRow(id) { return S.owned.find((o) => o.app === id); }
-  function build(a) { return a.platforms && a.platforms[S.device.platform]; }
+  /* Which build is for THIS machine.
+
+     Most apps ship one Mac build under "mac" and that is the whole
+     answer. Some ship two - PerformLive is universal the hard way, an
+     Apple silicon build needing macOS 11 and an Intel build going back
+     to High Sierra - and handing an Intel Mac the arm64 package is
+     handing it something that will not run.
+
+     So on a Mac, the architecture is asked first and "mac" is the
+     fallback. process.arch is what Electron is, not what the machine
+     is: under Rosetta an arm64 Mac reports x64, and then it is offered
+     the Intel build, which is correct - that is the one that will run
+     in the process it is being installed from. */
+  function build(a) {
+    const p = a.platforms || {};
+    if (S.device.platform === 'mac') {
+      const byArch = S.device.arch === 'arm64' ? 'mac-arm64' : 'mac-x64';
+      if (p[byArch]) return p[byArch];
+    }
+    return p[S.device.platform];
+  }
   function otherPlatformNote(a) {
     const has = Object.keys(a.platforms || {});
     if (!has.length) return 'Coming soon';
@@ -68,7 +88,7 @@
        and the line this replaced mapped everything that was not Windows
        to "Mac" - so an Android-only app would have told a Mac owner it
        was Mac only. */
-    const DESK = { windows: 'Windows', mac: 'Mac', 'mac-legacy': 'Mac' };
+    const DESK = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac', 'mac-x64': 'Mac' };
     const desktop = has.filter((p) => DESK[p]).map((p) => DESK[p]);
     const phone = has.filter((p) => p === 'ios' || p === 'android')
                      .map((p) => p === 'ios' ? 'iPhone' : 'Android');
