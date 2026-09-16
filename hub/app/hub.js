@@ -68,7 +68,7 @@
        and the line this replaced mapped everything that was not Windows
        to "Mac" - so an Android-only app would have told a Mac owner it
        was Mac only. */
-    const DESK = { windows: 'Windows', mac: 'Mac' };
+    const DESK = { windows: 'Windows', mac: 'Mac', 'mac-legacy': 'Mac' };
     const desktop = has.filter((p) => DESK[p]).map((p) => DESK[p]);
     const phone = has.filter((p) => p === 'ios' || p === 'android')
                      .map((p) => p === 'ios' ? 'iPhone' : 'Android');

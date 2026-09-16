@@ -229,7 +229,12 @@
                                   "PERFORMLIVE/PerformLive-0.4.0-macOS.zip",
                                   "PerformLive/PerformLive-0.4.0-macOS.pkg"],
                      "as": "PerformLive-0.4.0-macOS.pkg",   "type": "application/octet-stream",
-                     "label": "macOS 11+",    "size": "9.14 MB" }
+                     "label": "macOS 11+",    "size": "9.14 MB" },
+        "mac-legacy": { "key": "PERFORMLIVE/PerformLive-0.4.0-OldermacOS.pkg",
+                     "alt_keys": ["PERFORMLIVE/PerformLive-0.4.1-OldermacOS.pkg",
+                                  "PerformLive/PerformLive-0.4.0-OldermacOS.pkg"],
+                     "as": "PerformLive-0.4.0-OldermacOS.pkg", "type": "application/octet-stream",
+                     "label": "Older macOS", "size": "9.16 MB" }
       }
     },
     "chordlight88": {

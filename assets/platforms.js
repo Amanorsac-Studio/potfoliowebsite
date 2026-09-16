@@ -50,6 +50,7 @@
     { id: 'mac',       name: 'macOS',          icon: SCREEN },
     { id: 'mac-arm64', name: 'macOS',          icon: SCREEN },
     { id: 'mac-x64',   name: 'macOS',          icon: SCREEN },
+    { id: 'mac-legacy',name: 'macOS',          icon: SCREEN },
     { id: 'ios',       name: 'iPhone & iPad',  icon: PHONE },
     { id: 'android',   name: 'Android',        icon: PHONE },
     { id: 'linux',     name: 'Linux',          icon: SCREEN }
