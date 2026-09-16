@@ -111,6 +111,32 @@
     "wallet_note": "Mobile money, bank transfer or a local card."
   },
 
+  "whatsapp": {
+    "_": "Mobile money, by hand, over WhatsApp. This is the stand-in for",
+    "_2": "Paystack while Paystack is switched off - and it is worth keeping",
+    "_3": "afterwards, because some people would simply rather talk to a",
+    "_4": "person before sending money.",
+    "_5": "",
+    "_6": "It is MANUAL and it does not pretend otherwise. Nobody gets an app",
+    "_7": "from this link. They message, they send the momo, and then you",
+    "_8": "make them an access code at /portal/admin-codes and send it over.",
+    "_9": "They redeem it at /redeem and it lands in My Apps like any other",
+    "_10": "purchase. The page below says so plainly, because a buyer who",
+    "_11": "thinks a chat is a checkout is a buyer who waits and then asks",
+    "_12": "where their app is.",
+    "_13": "",
+    "_14": "countries is who sees it, and it is the same list Paystack uses -",
+    "_15": "offering mobile money to somebody in London is not a second door,",
+    "_16": "it is a dead end. Empty the list to show it everywhere; set live",
+    "_17": "to false and the row disappears with nothing else to edit.",
+
+    "live": true,
+    "url": "https://wa.me/message/ALHEP5TQPRHQB1",
+    "label": "Pay with mobile money",
+    "note": "MTN, Telecel or AirtelTigo. Message the studio and your code comes back the same day.",
+    "countries": ["GH", "NG", "KE", "ZA", "CI", "EG", "RW", "UG", "TZ", "ZM", "BW", "CM", "SN", "BJ", "TG", "BF", "ML", "NE", "GM", "SL", "LR", "MW", "MZ", "NA", "ET", "SS", "ZW", "AO", "GA", "CD", "CG", "MU"]
+  },
+
   "announcement": {
     "_": "The big panel at the top of the Hub's library. Fill this in and",
     "_2": "every Hub that is open picks it up by itself - it re-reads this",

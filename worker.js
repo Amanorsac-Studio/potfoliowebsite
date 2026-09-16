@@ -933,12 +933,36 @@ async function payOptions(request, env) {
   if (here && local) offer.push('paystack');
   if (app && !app.free) offer.push('stripe');
 
+  /* Mobile money by hand, over WhatsApp. Not a processor and not
+     pretending to be one: it is a conversation that ends with an access
+     code typed at /redeem. It is offered on the same reasoning as
+     Paystack and in the same places - a momo wallet is a real way to
+     pay where momo exists and a dead end where it does not - and it is
+     independent of whether Paystack is live, because for now it is the
+     only mobile money there is.
+
+     An empty countries list means everywhere, which is the setting for
+     turning it on globally without editing this file. */
+  const wa = c.whatsapp || null;
+  const waCountries = (wa && wa.countries) || [];
+  const waHere = !!(wa && wa.live && wa.url && app && !app.free &&
+                    (!waCountries.length || (known && waCountries.includes(country))));
+
   return new Response(JSON.stringify({
     country: known ? country : null,
     /* Which one leads. Where Paystack works it leads and the card is
        the quiet second door; everywhere else there is only the card. */
     first: (here && local) ? 'paystack' : 'stripe',
     offer,
+    /* Null unless it is on offer here, so the page has nothing to
+       decide - the same shape as everything else this endpoint hands
+       back. The URL is the studio's own, from the catalog, and never
+       built from anything a request said. */
+    whatsapp: waHere ? {
+      url: wa.url,
+      label: wa.label || 'Pay with mobile money',
+      note: wa.note || ''
+    } : null,
     paystack: local ? {
       currency: pay.currency, amount: local, display: money(pay.currency, local),
       /* A name-your-price app keeps naming its price here. The figure

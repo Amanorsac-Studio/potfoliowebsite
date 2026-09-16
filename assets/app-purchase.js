@@ -159,8 +159,36 @@
   function renderAlt() {
     var slot = document.querySelector('[data-pay-alt]');
     if (!slot) return;
+
+    /* Mobile money over WhatsApp. A LINK, never a button: every other
+       control in this row starts a checkout, and this one leaves the
+       site for a conversation. Making it look like the others would be
+       the lie - somebody would press it expecting a card form and get a
+       chat window.
+
+       It says what actually happens, because it is a slower road than
+       it looks and a buyer who thinks a message is a purchase is a
+       buyer who waits all evening for an app that is not coming. */
+    var waHtml = '';
+    if (pay && pay.whatsapp && pay.whatsapp.url) {
+      var w = pay.whatsapp;
+      waHtml =
+        '<a class="pay-wa" href="' + esc(w.url) + '" target="_blank" rel="noopener noreferrer">' +
+          '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" fill="currentColor">' +
+          '<path d="M8 1.5a6.4 6.4 0 0 0-5.5 9.7L1.6 14.5l3.4-.9A6.4 6.4 0 1 0 8 1.5Zm0 1.3a5.1 5.1 0 1 1-2.7 9.4l-.2-.1-2 .5.5-2-.1-.2A5.1 5.1 0 0 1 8 2.8Zm-2.2 2.6c-.1 0-.3 0-.4.2-.2.2-.6.6-.6 1.4 0 .8.6 1.6.7 1.7.1.1 1.2 1.9 3 2.6 1.5.6 1.8.5 2.1.4.3 0 1-.4 1.1-.8.1-.4.1-.7.1-.8l-.4-.2-1-.5c-.1 0-.2-.1-.3.1l-.5.5c-.1.1-.2.1-.3.1-.2-.1-.8-.3-1.4-.9-.5-.5-.9-1-1-1.2 0-.2 0-.3.1-.3l.3-.3.1-.3v-.3l-.4-1c-.1-.3-.2-.3-.3-.3h-.9Z"/></svg>' +
+          esc(w.label) +
+        '</a>' +
+        (w.note ? '<span class="pay-alt-note">' + esc(w.note) + '</span>' : '') +
+        '<span class="pay-alt-note">Not an instant checkout: you message the studio, send the money, ' +
+        'and a code comes back that unlocks it in My&nbsp;Apps.</span>';
+    }
+
     if (!pay || !pay.paystack || (pay.offer || []).indexOf('paystack') < 0) {
-      slot.innerHTML = ''; slot.hidden = true; return;
+      /* No Paystack here, but WhatsApp may still be on - which is the
+         whole situation while Paystack is switched off. */
+      slot.innerHTML = waHtml;
+      slot.hidden = !waHtml;
+      return;
     }
     var ps = pay.paystack;
     /* Every one of these pages writes its price into the prose in
@@ -175,6 +203,7 @@
       : '<button type="button" class="pay-alt" data-pay="paystack">Pay with mobile money \u2014 ' +
         esc(ps.display) + '</button>' +
         '<span class="pay-alt-note">' + esc(ps.note) + '</span>';
+    slot.innerHTML += waHtml;
     slot.hidden = false;
   }
 

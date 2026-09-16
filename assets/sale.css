@@ -206,3 +206,26 @@
   .code-form{width:100%}
   .code-in{flex:1 1 auto;width:auto}
 }
+
+/* ---------------------------------------------------------------
+   Mobile money over WhatsApp.
+
+   A link, deliberately shaped like one. The buttons beside it start a
+   checkout; this one opens a chat, and dressing it up as a third
+   payment button would promise a card form that never arrives.
+
+   currentColor throughout, for the same reason the platform pills use
+   it: these pages do not agree on what --ink is, and AETHER's is dark
+   enough to render a hardcoded colour near-invisible.
+   --------------------------------------------------------------- */
+.pay-wa{
+  display:inline-flex; align-items:center; gap:7px;
+  margin-top:6px; padding:7px 13px;
+  border:1px solid currentColor; border-radius:999px;
+  font:inherit; font-size:14px; font-weight:600; line-height:1;
+  color:inherit; text-decoration:none; opacity:.82;
+  transition:opacity .15s ease, transform .15s ease;
+}
+.pay-wa:hover,
+.pay-wa:focus-visible{ opacity:1; transform:translateY(-1px); }
+.pay-wa svg{ flex:0 0 auto; }
