@@ -678,19 +678,26 @@ async function appDownload(request, env, ctx) {
   const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
 
-  /* An app the studio has taken off the shelf hands out nothing, to
-     anybody, however they got here. The buttons on the site already
-     know - but the buttons are not the lock, this is: a paused app
-     still has its files in the bucket and its address is still a
-     sentence anybody can type. Refused before the beta licence below,
-     so a paused beta does not quietly start somebody's thirty days on a
-     build they cannot have. */
+  /* An app the studio has taken off the shelf sells nothing and hands
+     nothing to a stranger - the buttons on the site already know, but
+     the buttons are not the lock: a paused app still has its files in
+     the bucket and its address is still a sentence anybody can type.
+
+     But it hands it to somebody who already BOUGHT it, and the check
+     therefore moves below the ownership test rather than above it.
+     legal.html says, in as many words: "If a product you have bought is
+     withdrawn, your licence still works and you can still download it
+     from My Apps." Refusing an owner here would have made that sentence
+     false the first time an app was pulled - and a paid app is exactly
+     when somebody needs their copy back, because it is the moment they
+     can no longer buy another.
+
+     The beta licence below is still reached only by people this lets
+     through, so a paused beta cannot quietly start somebody's thirty
+     days on a build they cannot have: a non-owner is turned away by the
+     block further down before any of it means anything. */
   const state = (catalog.apps || {})[app];
-  if (state && state.status && state.status !== 'available') {
-    return say({ error: 'not_available',
-                 message: state.soon_note ||
-                   appTitle(catalog, app) + ' is not available to download right now.' }, 403);
-  }
+  const pulled = !!(state && state.status && state.status !== 'available');
 
   /* An open beta has no purchase to grant access, so the licence is
      minted here - at the moment somebody actually downloads it, which is
@@ -699,7 +706,7 @@ async function appDownload(request, env, ctx) {
      same end date. If it fails the ownership check below simply says no,
      which is the right answer rather than a broken download. */
   const entry = (catalog.apps || {})[app];
-  if (entry && entry.free && entry.licensed && entry.beta_days) {
+  if (!pulled && entry && entry.free && entry.licensed && entry.beta_days) {
     try {
       const c = await fetch(SUPABASE_URL + '/rest/v1/rpc/claim_beta_license', {
         method: 'POST',
@@ -728,6 +735,16 @@ async function appDownload(request, env, ctx) {
   } catch (e) {
     return say({ error: 'upstream_error', message: 'Could not check your account. Try again shortly.' }, 502);
   }
+  /* Withdrawn, and not theirs. This is the wall for everybody else, and
+     it is deliberately the same answer a stranger gets for any app they
+     do not own - a pulled app should not be advertised by the shape of
+     its refusal. */
+  if (pulled && !owned) {
+    return say({ error: 'not_available',
+                 message: state.soon_note ||
+                   appTitle(catalog, app) + ' is not available to download right now.' }, 403);
+  }
+
   if (!owned) {
     return say({ error: 'not_owned', message: 'This account does not own ' + appTitle(catalog, app) + ' yet.' }, 403);
   }
