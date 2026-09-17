@@ -353,10 +353,16 @@
          inside one function was being reported as the file missing.
          Only a genuinely absent function says run the file now. */
       const msg = String(error.message || '');
-      el.innerHTML = '<tr><td class="empty">' + (
-        /does not exist|schema cache/i.test(msg) && !/structure of query/i.test(msg)
-          ? 'Run supabase-grant-by-email.sql to switch this on.'
-          : 'Installed, but this failed: ' + esc(msg)) + '</td></tr>';
+      /* The hint AND the database's own words, always. Twice now I have
+         guessed at a cause from a message I had thrown away - once a
+         type mismatch reported as a missing file, and once this. A hint
+         is worth having; it is not worth losing the evidence for. */
+      const hint = /does not exist|schema cache/i.test(msg) && !/structure of query/i.test(msg)
+        ? 'Not found. Re-run supabase-grant-by-email.sql, then in the SQL editor run:  notify pgrst, \'reload schema\';'
+        : 'Installed, but the call failed.';
+      el.innerHTML = '<tr><td class="empty">' + esc(hint) +
+        '<br><br><span style="opacity:.6;font-family:var(--mono,monospace);font-size:12px">' +
+        esc(msg) + '</span></td></tr>';
       return;
     }
     const rows = data || [];
