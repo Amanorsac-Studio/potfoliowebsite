@@ -1,0 +1,44 @@
+Your stems. Untouched. Under your fingers.
+
+If you run backing tracks, you already know the two bad options: a DAW,
+which is dangerous on stage, or a stereo bounce, which cannot change its
+mind. PerformLive is the third one.
+
+  https://amanorsac.studio/performlive.html
+
+Windows, and Mac on both Apple silicon and Intel.
+Free for thirty days from the day you claim your key.
+
+
+DROP THE DRUMS. KEEP THE PAD.
+Every stem stays independently mutable while it plays. Breakdowns, a
+cappella moments and "just the keys" become live decisions instead of
+separate bounces.
+
+CUES THAT LAND ON THE BAR.
+Trigger a row while another is playing and the switch queues to the next
+bar. Transitions arrive musically, not whenever your finger did. A whole
+song - the row, the stems, the tempo, the pads - recalls in one tap.
+
+YOUR AUDIO, UNTOUCHED.
+No auto-warp, no auto-trim, no fades. Tempo is detected and shown, never
+imposed. What you exported is what the room hears - and the shipping
+build makes no network requests at all, so nothing phones home
+mid-service.
+
+IT IS TOUCH-FIRST, SO A VOLUNTEER CAN RUN IT.
+Row triggers, pads and FX all bind to a controller or a foot pedal.
+Autosave runs every minute, so a crash mid-set offers you the session
+back rather than a blank screen.
+
+Get it: https://amanorsac.studio/performlive.html
+
+Tell me what breaks. It is a beta and I read every reply.
+- Stephen, Amanorsac Studio
+
+
+---
+You are getting this because you signed up at amanorsac.studio or asked
+to hear when PerformLive was ready.
+Unsubscribe: {{{RESEND_UNSUBSCRIBE_URL}}}
+Amanorsac Studio - [YOUR POSTAL ADDRESS] - Accra, Ghana
