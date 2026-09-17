@@ -1,106 +1,127 @@
 -- =====================================================================
 --  WHY ARE THE CODES NOT WORKING
 --
---  Paste into Supabase → SQL Editor → New query → Run. It reads and
---  reports; it changes nothing and is safe to run at any time.
+--  Paste the whole thing into Supabase → SQL Editor → Run.
+--  It reads only. It changes nothing. Safe to run any time.
 --
---  Five answers, in the order they matter. The first one that says
---  something other than "ok" is the reason.
+--  ONE query on purpose. The SQL editor only ever shows you the result
+--  of the LAST statement in a script, so a file made of five separate
+--  selects runs all five and shows you one - which looks exactly like
+--  nothing happening. Everything below arrives in a single table.
+--
+--  Read the ANSWER column. Anything that is not "ok" is the problem,
+--  and the rows are ordered so the most fundamental come first.
 -- =====================================================================
+with
 
--- ---------------------------------------------------------------------
---  1 · IS THE MACHINERY EVEN THERE
---
---  A function that does not exist is the single most common cause: the
---  page calls it, the database says no such function, and the page says
---  "something went wrong on our end" without ever naming it.
--- ---------------------------------------------------------------------
-select '1 · installed' as step, thing, answer from (
-  values
-    ('codes table',          case when to_regclass('public.codes') is not null then 'ok' else 'MISSING - run supabase-redeem-codes.sql' end),
-    ('code_redemptions',     case when to_regclass('public.code_redemptions') is not null then 'ok' else 'MISSING - run supabase-redeem-codes.sql' end),
-    ('redeem_code()',        case when exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='redeem_code') then 'ok' else 'MISSING - run supabase-redeem-codes.sql' end),
-    ('create_codes()',       case when exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='create_codes') then 'ok' else 'MISSING - run supabase-redeem-codes.sql' end),
-    ('generate_license_key()', case when exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='generate_license_key') then 'ok' else 'MISSING - redeem_code cannot mint a key without it. Run supabase-licenses.sql' end),
-    ('has_app_access()',     case when exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and p.proname='has_app_access') then 'ok' else 'MISSING - run supabase-purchases.sql' end),
-    ('purchases.granted_reason', case when exists (select 1 from information_schema.columns where table_schema='public' and table_name='purchases' and column_name='granted_reason') then 'ok' else 'MISSING - redeem_code INSERT fails. Re-run supabase-redeem-codes.sql' end),
-    ('purchases.expires_at', case when exists (select 1 from information_schema.columns where table_schema='public' and table_name='purchases' and column_name='expires_at') then 'ok' else 'MISSING - redeem_code INSERT fails. Re-run supabase-redeem-codes.sql' end),
-    ('stripe_session_id is nullable', coalesce((select case when is_nullable='YES' then 'ok' else 'NOT NULL - a free grant has no Stripe session, so every redeem fails. Re-run supabase-redeem-codes.sql' end
-       from information_schema.columns where table_schema='public' and table_name='purchases' and column_name='stripe_session_id'), 'no purchases table'))
-) as t(thing, answer);
-
-
--- ---------------------------------------------------------------------
---  2 · MAY A SIGNED-IN VISITOR CALL IT
---
---  redeem_code is granted to `authenticated` by the file. If that grant
---  is missing, every redeem fails with permission denied - which the
---  page also reports as "something went wrong on our end".
--- ---------------------------------------------------------------------
-select '2 · permission' as step, func, needs_role, answer from (
-  select p.proname as func, 'authenticated' as needs_role,
-         case when has_function_privilege('authenticated', p.oid, 'EXECUTE')
-              then 'ok'
-              else 'DENIED - a signed-in visitor cannot call this. Re-run the file that defines it.' end as answer
+-- 1 ── is the machinery installed --------------------------------------
+fn as (
+  select p.proname::text as name, p.oid
   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-  where n.nspname = 'public' and p.proname in ('redeem_code', 'has_app_access')
+  where n.nspname = 'public'
+),
+col as (
+  select column_name::text as name, is_nullable::text as nullable
+  from information_schema.columns
+  where table_schema = 'public' and table_name = 'purchases'
+),
+installed as (
+  select '1 · installed' as section, t.thing, t.answer from (values
+    ('redeem_code()',
+     case when exists (select 1 from fn where name='redeem_code') then 'ok'
+          else 'MISSING — run supabase-redeem-codes.sql' end),
+    ('create_codes()',
+     case when exists (select 1 from fn where name='create_codes') then 'ok'
+          else 'MISSING — run supabase-redeem-codes.sql' end),
+    ('generate_license_key()',
+     case when exists (select 1 from fn where name='generate_license_key') then 'ok'
+          else 'MISSING — redeem_code cannot mint a key, so every redeem fails. Run supabase-licenses.sql' end),
+    ('has_app_access()',
+     case when exists (select 1 from fn where name='has_app_access') then 'ok'
+          else 'MISSING — run supabase-purchases.sql' end),
+    ('purchases.granted_reason',
+     case when exists (select 1 from col where name='granted_reason') then 'ok'
+          else 'MISSING — the INSERT inside redeem_code fails. Re-run supabase-redeem-codes.sql' end),
+    ('purchases.expires_at',
+     case when exists (select 1 from col where name='expires_at') then 'ok'
+          else 'MISSING — the INSERT inside redeem_code fails. Re-run supabase-redeem-codes.sql' end),
+    ('purchases.stripe_session_id nullable',
+     coalesce((select case when nullable='YES' then 'ok'
+                           else 'NOT NULL — a free grant has no Stripe session, so EVERY redeem fails. Re-run supabase-redeem-codes.sql' end
+               from col where name='stripe_session_id'), 'no purchases table at all'))
+  ) as t(thing, answer)
+),
+
+-- 2 ── may a signed-in visitor call it ---------------------------------
+perms as (
+  select '2 · permission' as section,
+         f.name || '  (needs: authenticated)' as thing,
+         case when has_function_privilege('authenticated', f.oid, 'EXECUTE') then 'ok'
+              else 'DENIED — nobody can redeem. Re-run supabase-redeem-codes.sql' end as answer
+  from fn f where f.name in ('redeem_code','has_app_access')
   union all
-  -- These two are deliberately NOT open to visitors: only the checkout
-  -- functions call them, with the service key. authenticated being
-  -- denied here is correct and is not the bug.
-  select p.proname, 'service_role',
-         case when has_function_privilege('service_role', p.oid, 'EXECUTE')
-              then 'ok'
-              else 'DENIED - discount codes at checkout will fail. Re-run supabase-redeem-codes.sql' end
-  from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-  where n.nspname = 'public' and p.proname in ('code_value', 'spend_code')
-) t order by needs_role, func;
+  -- These two are deliberately closed to visitors; only the checkout
+  -- functions call them with the service key. Denied here is correct.
+  select '2 · permission',
+         f.name || '  (needs: service_role)',
+         case when has_function_privilege('service_role', f.oid, 'EXECUTE') then 'ok'
+              else 'DENIED — discount codes at checkout fail. Re-run supabase-redeem-codes.sql' end
+  from fn f where f.name in ('code_value','spend_code')
+),
 
+-- 3 ── every code you have made, and whether anything blocks it --------
+codes as (
+  select '3 · your codes' as section,
+         c.code || '  ·  ' || c.kind || '  ·  ' || array_to_string(c.apps, ', ')
+           || '  ·  used ' || c.uses || ' of ' || coalesce(c.max_uses::text, 'unlimited')
+           || coalesce('  ·  ' || c.note, '') as thing,
+         case
+           when c.disabled                                         then 'NO — switched off'
+           when c.expires_at is not null and c.expires_at <= now() then 'NO — past its date (' || c.expires_at::date || ')'
+           when c.max_uses is not null and c.uses >= c.max_uses    then 'NO — all used up'
+           -- A code naming an app that does not exist is dead whatever
+           -- else is true of it, so this must not report "ok" and leave
+           -- section 4 to contradict it further down the table.
+           when exists (
+             select 1 from unnest(c.apps) a
+             where a <> '*' and a not in
+               ('performlive','chordlight88','secondout','stemsorter','ambanalog',
+                'alignpro','afdgate','aether','pulseroom','nebulatide2',
+                'nebulatide','harmoniemd'))                        then 'NO — names an app that does not exist, see section 4'
+           else 'ok — nothing about this code stops it'
+         end as answer
+  from public.codes c
+),
 
--- ---------------------------------------------------------------------
---  3 · THE CODES THEMSELVES
---
---  Every code you have made, and whether it would be accepted right
---  now. "usable" means nothing about the code stops it; a person can
---  still be refused for already owning the app or having used it once.
--- ---------------------------------------------------------------------
-select '3 · your codes' as step,
-       c.code, c.kind, c.apps, c.uses, c.max_uses,
-       c.disabled, c.expires_at, c.note,
-       case
-         when c.disabled                                          then 'NO - switched off'
-         when c.expires_at is not null and c.expires_at <= now()  then 'NO - past its date'
-         when c.max_uses  is not null and c.uses >= c.max_uses    then 'NO - all used up'
-         else 'usable'
-       end as usable
-from public.codes c
-order by c.created_at desc nulls last
-limit 50;
+-- 4 ── a code naming an app id that does not exist can never work ------
+ids as (
+  select '4 · app ids' as section,
+         c.code || '  is for  "' || a || '"' as thing,
+         'NO SUCH APP — this code can never be redeemed. The ids are lowercase: performlive, chordlight88, secondout, ambanalog, alignpro, afdgate, aether, pulseroom, nebulatide2, nebulatide' as answer
+  from public.codes c, unnest(c.apps) a
+  where a <> '*'
+    and a not in ('performlive','chordlight88','secondout','stemsorter','ambanalog',
+                  'alignpro','afdgate','aether','pulseroom','nebulatide2',
+                  'nebulatide','harmoniemd')
+),
 
+-- 5 ── has anybody actually got through --------------------------------
+totals as (
+  select '5 · so far' as section, 'codes made' as thing, count(*)::text as answer from public.codes
+  union all
+  select '5 · so far', 'codes redeemed', count(*)::text from public.code_redemptions
+  union all
+  select '5 · so far', 'licences granted by a code',
+         count(*)::text from public.purchases where granted_reason like 'code:%'
+  union all
+  select '5 · so far', 'accounts on the site', count(*)::text from auth.users
+),
 
--- ---------------------------------------------------------------------
---  4 · DOES THE APP NAME ON THE CODE EXIST
---
---  A code for "Aether" or "aether " or "AFD Gate" matches nothing: the
---  site uses short lowercase ids. This lists any that will never match.
--- ---------------------------------------------------------------------
-select '4 · app ids' as step, c.code, a as app_on_code,
-       case when a = '*' then 'ok - any app'
-            when a in ('performlive','chordlight88','secondout','stemsorter','ambanalog',
-                       'alignpro','afdgate','aether','pulseroom','nebulatide2',
-                       'nebulatide','harmoniemd') then 'ok'
-            else 'NO SUCH APP - this code can never be redeemed' end as answer
-from public.codes c, unnest(c.apps) a
-where not (a = '*' or a in ('performlive','chordlight88','secondout','stemsorter','ambanalog',
-                            'alignpro','afdgate','aether','pulseroom','nebulatide2',
-                            'nebulatide','harmoniemd'));
-
-
--- ---------------------------------------------------------------------
---  5 · HAS ANYBODY ACTUALLY GOT THROUGH
--- ---------------------------------------------------------------------
-select '5 · redemptions' as step, count(*) as redeemed_so_far from public.code_redemptions;
-
-select '5 · granted licences' as step, app, count(*) as licences
-from public.purchases where granted_reason like 'code:%'
-group by app order by 2 desc;
+everything as (
+  select * from installed
+  union all select * from perms
+  union all select * from codes
+  union all select * from ids
+  union all select * from totals
+)
+select section, thing, answer from everything order by section, thing;
