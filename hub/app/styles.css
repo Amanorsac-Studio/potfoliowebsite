@@ -214,3 +214,31 @@ dialog form{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
 .consent-do button{font-size:12.5px}
 .row.privacy p{line-height:1.7;max-width:66ch}
 .row.privacy .right{flex-wrap:wrap;justify-content:flex-end}
+
+/* ---------------------------------------------------------------
+   Where things are on this computer.
+
+   Added because the Hub could say an app was installed, fail to open
+   it, and tell somebody to "open it from your system as usual" without
+   ever saying where that was. A path is only useful if you can read it
+   and select it, so these are selectable and wrap on the character
+   rather than the word.
+   --------------------------------------------------------------- */
+.pathline{
+  font-family:var(--mono,ui-monospace,Menlo,Consolas,monospace);
+  font-size:12px;line-height:1.55;color:var(--muted,#9C9AAF);
+  word-break:break-all;-webkit-user-select:text;user-select:text;
+}
+.wherebox{border:1px solid var(--line,#2A2A3A);border-radius:12px;padding:16px 18px}
+.wherebox p{margin:0 0 14px}
+.wherebox p:last-child{margin-bottom:0}
+.wherebox b{font-size:13px}
+.where{margin:8px 0 0;font-size:12px;color:var(--muted,#9C9AAF)}
+/* A path that behaves like a link, because pressing it does what a link
+   does: takes you to the thing. */
+.linky{
+  background:none;border:0;padding:0;cursor:pointer;font:inherit;
+  color:inherit;text-decoration:underline;text-underline-offset:2px;
+  text-align:left;opacity:.85;
+}
+.linky:hover{opacity:1}

@@ -469,7 +469,31 @@
 
   async function launch(a) {
     const r = await window.hub.launch(a.id);
-    if (r.error) toast(r.message || 'Could not open ' + a.name + '.', r.error !== 'plugin');
+    if (!r.error) return;
+
+    /* The one failure worth explaining properly. "Nothing to open" almost
+       always means the installer was started and never finished - closed,
+       cancelled at the UAC prompt, or refused - and the Hub recorded it
+       as installed because starting the installer is the only thing it
+       can observe about a .exe or a .pkg.
+
+       So say that, show where the installer actually is, and offer to run
+       it again from the copy already on the disk. A toast that says "open
+       it from your system as usual" is no help to somebody who cannot
+       find it, which is the whole problem. */
+    if (r.error === 'no_launcher' && r.installer) {
+      modal('Did the install finish?',
+        '<p>' + esc(r.message) + '</p>' +
+        '<p class="note">The installer the Hub downloaded is still here:</p>' +
+        '<p class="pathline">' + esc(r.installer) + '</p>' +
+        '<div class="right" style="margin-top:14px">' +
+          '<button class="primary" data-run-installer="' + esc(r.installer) + '">Run the installer again</button> ' +
+          '<button data-reveal="' + esc(r.installer) + '">Show me the file</button> ' +
+          '<button data-forget="' + esc(a.id) + '">It is not installed</button>' +
+        '</div>');
+      return;
+    }
+    toast(r.message || 'Could not open ' + a.name + '.', r.error !== 'plugin');
   }
 
   async function uninstall(a) {
@@ -603,7 +627,34 @@
               : iconFor(a)) + '</div>' +
       '<div class="card-content"><div class="cardtitle"><h3>' + esc(a.name) + '</h3><span class="badge' + (st.ready ? ' ready' : st.dim ? ' dim' : '') + '">' + esc(st.badge) + '</span></div>' +
       '<p>' + esc(a.tagline) + '</p>' +
+      /* Where it is on this computer. Asked for by name, and the answer
+         to "the Hub says it is installed and I cannot find it". A folder
+         for something the Hub unpacked; the installer file for something
+         an installer set up, because that is the thing to double-click
+         if it did not take the first time. */
+      whereLine(st) +
       '<div class="cardfoot"><div class="meta">' + meta.join('<br>') + '</div><div class="btns">' + btn + '</div></div>' + bar + '</div></article>';
+  }
+
+  function whereLine(st) {
+    const i = st.inst;
+    if (!i) return '';
+    const where = i.dir || i.source || i.exe;
+    if (!where) return '';
+    const what = i.dir ? 'Unpacked to' : 'Installed from';
+    return '<p class="where">' + esc(what) + ' ' +
+      '<button class="linky" data-reveal="' + esc(where) + '">' + esc(shortPath(where)) + '</button></p>';
+  }
+
+  /* A full path is unreadable on a card and the useful half is the end
+     of it, so keep the front, keep the file, and elide the middle. */
+  function shortPath(p) {
+    const s = String(p || '');
+    if (s.length <= 46) return s;
+    const sep = s.indexOf('\\') >= 0 ? '\\' : '/';
+    const bits = s.split(sep);
+    return bits.length < 4 ? '…' + s.slice(-44)
+      : bits[0] + sep + '…' + sep + bits.slice(-2).join(sep);
   }
 
   function renderLibrary() {
@@ -738,7 +789,24 @@
       const hist = S.history.map((h) => { const a = byId(h.app) || { id: h.app, name: h.name }; return row(a, '<h3>' + esc(h.name) + '</h3><p>' + esc(h.mode === 'update' ? 'Updated' : 'Installed') + ' ' + esc(ago(h.at)) + (h.version ? ' · version ' + esc(h.version) : '') + (h.bytes ? ' · ' + mb(h.bytes) : '') + '</p>', '<span class="badge ready">Complete</span>'); });
       html = jobs.join('') + hist.join('');
       if (!html) html = '<div class="empty"><h3>No downloads yet.</h3><p>Install or update an app from your library and it will show up here.</p><button data-go="library">Go to my library</button></div>';
-      html += '<p class="note">Installers are kept in the Hub’s downloads folder; apps unpacked by the Hub live in its apps folder. <button class="quiet" data-reveal="downloads" style="padding:4px 8px;font-size:11px">Open downloads folder</button> <button class="quiet" data-reveal="apps" style="padding:4px 8px;font-size:11px">Open apps folder</button></p>';
+      /* The actual paths, written out. Buttons that open a folder are
+         useful standing in front of the Hub; a path you can read is
+         what you need when you are describing the problem to somebody
+         else, or looking for the file without the Hub in front of you. */
+      const pth = (S.device && S.device.paths) || {};
+      html += '<p class="section" style="margin-top:26px">Where things are kept</p>' +
+        '<div class="wherebox">' +
+          '<p><b>Installers download to</b><br>' +
+            '<span class="pathline">' + esc(pth.downloads || 'the Hub\u2019s downloads folder') + '</span>' +
+            ' <button class="quiet" data-reveal="downloads">Open</button></p>' +
+          '<p><b>Apps the Hub unpacks itself live in</b><br>' +
+            '<span class="pathline">' + esc(pth.apps || 'the Hub\u2019s apps folder') + '</span>' +
+            ' <button class="quiet" data-reveal="apps">Open</button></p>' +
+          '<p class="note" style="margin:10px 0 0">An app set up by its own installer goes wherever that installer put it \u2014 ' +
+            'usually Program Files or Applications \u2014 not into the folders above. ' +
+            'The installer itself stays in the downloads folder, so if a setup did not finish ' +
+            'you can run it again from there without downloading it twice.</p>' +
+        '</div>';
     }
     if (p === 'licenses') {
       const licensed = S.owned.filter((o) => byId(o.app) && byId(o.app).licensed);
@@ -937,6 +1005,29 @@
     if (d.closeNotice) closeNotice(d.closeNotice);
     if (d.info) { const app = byId(d.info); modal(app.name, '<p>' + esc(app.name) + ' is a plug-in. It is installed on this computer; open it inside your DAW like any other plug-in.' + (app.licensed ? ' When it asks for a license key, it is under License keys here.' : '') + '</p>'); }
     if (d.reveal) window.hub.reveal(d.reveal);
+    if (d.runInstaller) {
+      const f = d.runInstaller;
+      $('#dialog').close();
+      toast('Running the installer\u2026');
+      window.hub.runInstaller(f).then((r) => {
+        if (r && r.error) { toast(r.message || 'The installer did not run.', true); return; }
+        toast('Installer finished. Press Open when it is done.');
+        window.hub.installed().then((m) => { S.installed = m; render(); });
+      });
+    }
+    /* "It is not installed" - the Hub believed an installer that never
+       finished, and this is how somebody tells it otherwise without
+       hunting through a system uninstall panel for something that was
+       never there. */
+    if (d.forget) {
+      const id = d.forget;
+      $('#dialog').close();
+      window.hub.forget(id).then(async () => {
+        S.installed = await window.hub.installed();
+        toast('Forgotten. Install it again whenever you like.');
+        render();
+      });
+    }
     if (d.goApp) { navigate('library'); S.filter = 'all'; $('#search').value = (byId(d.goApp) || {}).name || ''; render(); }
     if (d.usage === 'on') setUsageConsent(true);
     if (d.usage === 'off') setUsageConsent(false);

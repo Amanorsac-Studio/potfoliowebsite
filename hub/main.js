@@ -456,6 +456,19 @@ ipcMain.handle('hub:install', async (event, { app: appId, name, path: file, vers
   }
 });
 
+/* Run an installer the Hub already downloaded. Saves a second download
+   of a file that is sitting right there, which matters on a connection
+   where the first one took ten minutes. Same containment as reveal: the
+   Hub's own folders only. */
+ipcMain.handle('hub:run-installer', async (event, file) => {
+  const f = path.resolve(String(file || ''));
+  const roots = [paths.downloads(), paths.installRoot()].map((r) => path.resolve(r));
+  if (!roots.some((r) => f.startsWith(r + path.sep))) return { error: 'not_ours' };
+  if (!exists(f)) return { error: 'gone', message: 'That installer is no longer in the downloads folder.' };
+  const r = await runInstaller(f);
+  return r.ok ? { ok: true } : { error: 'failed', message: r.error || 'The installer did not finish.' };
+});
+
 ipcMain.handle('hub:installed', async () => installedApps());
 
 ipcMain.handle('hub:launch', async (event, appId) => {
@@ -463,13 +476,48 @@ ipcMain.handle('hub:launch', async (event, appId) => {
   const r = records[appId];
   if (!r) return { error: 'not_installed' };
   if (r.kind === 'plugin') return { error: 'plugin', message: r.name + ' is a plug-in: open it inside your DAW.' };
-  if (!r.exe || !exists(r.exe)) return { error: 'no_launcher', message: 'Nothing to open was found for ' + r.name + '. Open it from your system as usual.' };
+  /* The Hub cannot find anything to open. Nearly always this means the
+     installer was started and never actually finished - cancelled at the
+     UAC prompt, closed, or failed - while the Hub recorded it as
+     installed the moment the installer LAUNCHED, which is all it can
+     observe about a .exe or a .pkg.
+
+     "Open it from your system as usual" was the old answer and it was
+     useless: the app is not there to open. Hand back the installer that
+     was downloaded so the page can point straight at it and offer to run
+     it again. */
+  if (!r.exe || !exists(r.exe)) {
+    const file = r.source && exists(r.source) ? r.source : null;
+    return {
+      error: 'no_launcher',
+      installer: file,
+      folder: paths.downloads(),
+      message: file
+        ? r.name + ' does not seem to have finished installing - there is nothing on this computer to open.'
+        : r.name + ' is not on this computer. Install it again from your library.'
+    };
+  }
   try {
     if (isMac) await run('open', ['-a', r.exe]);
     else { const child = spawn(r.exe, [], { cwd: path.dirname(r.exe), detached: true, stdio: 'ignore' }); child.unref(); }
     await recordUsage('app_open', appId, r.version);
     return { ok: true };
   } catch (e) { return { error: 'launch_failed', message: e.message }; }
+});
+
+/* Drop the Hub's note that an app is installed, and touch nothing else.
+   Not the same as uninstalling: there is nothing to uninstall. This is
+   for the case where an installer was started, never finished, and the
+   Hub wrote it down as installed anyway - the only thing it can observe
+   about a .exe is that it launched. Sending somebody to the system's
+   uninstall panel to remove something that was never installed is how
+   that dead end used to end. */
+ipcMain.handle('hub:forget', async (event, appId) => {
+  const records = await installedApps();
+  if (!records[appId]) return { ok: true };
+  delete records[appId];
+  await writeRecords(records);
+  return { ok: true };
 });
 
 ipcMain.handle('hub:uninstall', async (event, appId) => {
@@ -488,8 +536,25 @@ ipcMain.handle('hub:uninstall', async (event, appId) => {
   return { ok: true, removedFiles: r.kind === 'portable' };
 });
 
+/* "apps" or "downloads" opens that folder. Anything else is treated as
+   a single file to point AT - showItemInFolder opens the folder with
+   the file already selected, which is the difference between "it is
+   somewhere in here" and "that one, there".
+
+   Only ever inside the Hub's own two folders. This value arrives from
+   the page, and a renderer that has been got at should not be able to
+   ask the main process to open an arbitrary path on the disk. A file
+   that has been deleted falls back to opening the folder, because the
+   honest answer then is "it is not there any more". */
 ipcMain.handle('hub:reveal', async (event, which) => {
-  const p = which === 'apps' ? paths.installRoot() : paths.downloads();
+  const want = String(which || '');
+  if (want !== 'apps' && want !== 'downloads' && want) {
+    const f = path.resolve(want);
+    const roots = [paths.downloads(), paths.installRoot()].map((r) => path.resolve(r));
+    const inside = roots.some((r) => f === r || f.startsWith(r + path.sep));
+    if (inside && exists(f)) { shell.showItemInFolder(f); return { ok: true, path: f }; }
+  }
+  const p = want === 'apps' ? paths.installRoot() : paths.downloads();
   await fsp.mkdir(p, { recursive: true });
   shell.openPath(p);
   return { ok: true, path: p };

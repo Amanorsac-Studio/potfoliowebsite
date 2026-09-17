@@ -16,7 +16,12 @@ contextBridge.exposeInMainWorld('hub', {
   installed: () => ipcRenderer.invoke('hub:installed'),
   launch: (app) => ipcRenderer.invoke('hub:launch', app),
   uninstall: (app) => ipcRenderer.invoke('hub:uninstall', app),
+  // A folder name ("apps" / "downloads"), or a file path to point at.
   reveal: (which) => ipcRenderer.invoke('hub:reveal', which),
+  // Re-run an installer already sitting in the downloads folder.
+  runInstaller: (file) => ipcRenderer.invoke('hub:run-installer', file),
+  // Forget an app the Hub only THINKS is installed. Deletes nothing.
+  forget: (app) => ipcRenderer.invoke('hub:forget', app),
   external: (url) => ipcRenderer.invoke('hub:external', url),
   confirm: (args) => ipcRenderer.invoke('hub:confirm', args),
   // Usage notes. state() says whether the person has been asked and what
