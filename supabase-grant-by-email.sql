@@ -36,7 +36,8 @@ begin
     select p.oid::regprocedure::text as sig
     from pg_proc p join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
-      and p.proname in ('grant_app_to_email', 'ungrant_app_from_email', 'granted_list')
+      and p.proname in ('grant_app_to_email', 'ungrant_app_from_email',
+                        'granted_list', 'people_list')
   loop execute 'drop function if exists ' || f.sig; end loop;
 end $$;
 
@@ -173,3 +174,67 @@ end $$;
 revoke all on function public.granted_list(integer) from public;
 revoke all on function public.granted_list(integer) from anon;
 grant execute on function public.granted_list(integer) to authenticated;
+
+
+-- ---------------------------------------------------------------------
+--  WHO HAS AN ACCOUNT
+--
+--  Everyone who has ever signed up, searchable, so giving an app away
+--  is a matter of picking a person rather than typing an address and
+--  hoping. Typing is where this went wrong: an email that does not
+--  match exactly answers "no account here yet", and from that answer
+--  alone you cannot tell whether they never signed up or whether you
+--  are one character out.
+--
+--  Admin only, and it stays that way. This is a list of every customer
+--  the studio has; it is never to be called from a public page.
+--
+--  Every text column is cast. auth.users.email is character varying,
+--  not text, and RETURN QUERY compares types exactly - that mismatch is
+--  what broke granted_list, and it would break this the same way.
+-- ---------------------------------------------------------------------
+create or replace function public.people_list(
+  p_search text default '',
+  p_app    text default null,
+  p_limit  integer default 40
+) returns table (
+  email      text,
+  name       text,
+  joined     timestamptz,
+  apps_owned integer,
+  owns_this  boolean
+)
+language plpgsql security definer set search_path = '' as $$
+declare
+  v_q   text := lower(trim(coalesce(p_search, '')));
+  v_app text := lower(trim(coalesce(p_app, '')));
+begin
+  if not public.is_admin() then raise exception 'not permitted'; end if;
+
+  return query
+  select
+    u.email::text,
+    coalesce(pr.full_name, '')::text,
+    u.created_at,
+    (select count(*) from public.purchases p where p.user_id = u.id)::integer,
+    -- Shown beside each person so you do not give somebody a thing they
+    -- already have, and so a tester who swears a code did not work can
+    -- be checked in the same glance.
+    case when v_app = '' then false
+         else exists (select 1 from public.purchases p
+                      where p.user_id = u.id and p.app = v_app) end
+  from auth.users u
+  left join public.profiles pr on pr.id = u.id
+  where u.email is not null
+    and (v_q = ''
+         or lower(u.email) like '%' || v_q || '%'
+         or lower(coalesce(pr.full_name, '')) like '%' || v_q || '%')
+  -- Newest first when browsing, because the person you are looking for
+  -- is usually the one who just signed up and told you they had.
+  order by u.created_at desc
+  limit greatest(least(coalesce(p_limit, 40), 200), 1);
+end $$;
+
+revoke all on function public.people_list(text, text, integer) from public;
+revoke all on function public.people_list(text, text, integer) from anon;
+grant execute on function public.people_list(text, text, integer) to authenticated;

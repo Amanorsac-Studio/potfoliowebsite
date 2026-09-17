@@ -66,6 +66,23 @@
   .kill{font-size:12px;cursor:pointer;color:var(--muted);background:transparent;border:0;text-decoration:underline}
   .empty{color:var(--muted);font-size:13px;padding:16px 0}
   .msg:empty{display:none}
+  /* The account picker. Sits over the form rather than pushing it
+     down, so the fields below do not jump while you type. */
+  .who{position:absolute;z-index:30;top:100%;left:0;right:0;margin-top:4px;
+    max-height:300px;overflow:auto;background:var(--panel,#17141b);
+    border:1px solid var(--line,#332c3a);border-radius:10px;
+    box-shadow:0 18px 40px rgba(0,0,0,.45)}
+  .who[hidden]{display:none}
+  .who b{display:block;padding:9px 12px;font:600 11px/1 var(--mono,monospace);
+    letter-spacing:.12em;text-transform:uppercase;color:var(--muted,#9a8fa6);
+    border-bottom:1px solid var(--line,#332c3a)}
+  .who button{display:block;width:100%;text-align:left;background:none;border:0;
+    padding:9px 12px;font:inherit;font-size:13.5px;color:inherit;cursor:pointer;
+    border-bottom:1px solid color-mix(in srgb,var(--line,#332c3a) 50%,transparent)}
+  .who button:last-child{border-bottom:0}
+  .who button:hover,.who button.on{background:color-mix(in srgb,var(--accent,#d8a94a) 14%,transparent)}
+  .who .sub{display:block;font-size:12px;color:var(--muted,#9a8fa6);margin-top:2px}
+  .who .has{color:var(--accent,#d8a94a)}
 </style>
 </head>
 <body>
@@ -87,8 +104,12 @@
 
   <div class="card">
     <div class="form">
-      <div class="f"><label for="g-email">Their email</label>
-        <input id="g-email" type="email" placeholder="singer@choir.org" autocomplete="off"></div>
+      <div class="f" style="position:relative">
+        <label for="g-email">Who</label>
+        <input id="g-email" type="text" placeholder="Start typing a name or email…" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-controls="g-who" aria-autocomplete="list">
+        <div id="g-who" class="who" hidden role="listbox" aria-label="Accounts"></div>
+      </div>
       <div class="f"><label for="g-app">App</label>
         <select id="g-app"></select></div>
       <div class="f"><label for="g-days">Ends after (days)</label>
@@ -198,6 +219,87 @@
     no_app:        () => 'Pick an app first.',
   };
 
+  /* ---------- picking a person ----------
+     The box searches every account as you type. Typing an address by
+     hand still works and is still what gets sent - this only saves you
+     from getting it wrong, which is most of what went wrong.
+
+     Debounced, because a keystroke is not a question. Each search
+     cancels the last, so answers cannot arrive out of order and paint
+     stale results over fresh ones. */
+  let whoTimer = null, whoSeq = 0, whoRows = [], whoAt = -1;
+  const whoBox = $('#g-who'), whoIn = $('#g-email');
+
+  function whoClose(){
+    whoBox.hidden = true; whoAt = -1;
+    whoIn.setAttribute('aria-expanded','false');
+  }
+
+  function whoDraw(){
+    if(!whoRows.length){
+      whoBox.innerHTML = '<b>Nobody found</b>' +
+        '<button type="button" data-none>No account matches that. They may not have signed up yet \u2014 ' +
+        'you can still type the address in full and press Give it.</button>';
+      whoBox.hidden = false; whoIn.setAttribute('aria-expanded','true'); return;
+    }
+    whoBox.innerHTML = whoRows.map((r,i) =>
+      '<button type="button" data-pick="'+esc(r.email)+'"'+(i===whoAt?' class="on"':'')+'>' +
+        esc(r.name || r.email) +
+        '<span class="sub">' + (r.name ? esc(r.email) + ' \u00b7 ' : '') +
+          'joined ' + when(r.joined) +
+          (r.apps_owned ? ' \u00b7 ' + r.apps_owned + ' app' + (r.apps_owned===1?'':'s') : '') +
+          (r.owns_this ? ' <span class="has">\u00b7 already has this one</span>' : '') +
+        '</span></button>').join('');
+    whoBox.hidden = false; whoIn.setAttribute('aria-expanded','true');
+  }
+
+  async function whoSearch(){
+    const seq = ++whoSeq;
+    const { data, error } = await sb.rpc('people_list',
+      { p_search: whoIn.value.trim(), p_app: $('#g-app').value || null, p_limit: 40 });
+    if(seq !== whoSeq) return;                    // a newer search already ran
+    if(error){
+      whoBox.innerHTML = '<b>Cannot look people up</b><button type="button" data-none>' +
+        (/does not exist|schema cache/i.test(error.message)
+          ? 'Re-run supabase-grant-by-email.sql \u2014 it now carries the account search too.'
+          : esc(error.message)) + '</button>';
+      whoBox.hidden = false; return;
+    }
+    whoRows = data || []; whoAt = -1; whoDraw();
+  }
+
+  whoIn.addEventListener('input', () => {
+    clearTimeout(whoTimer);
+    whoTimer = setTimeout(whoSearch, 160);
+  });
+  whoIn.addEventListener('focus', () => { if(!whoRows.length) whoSearch(); else whoDraw(); });
+  /* Arrow keys and Enter, so this is usable without reaching for the
+     mouse - which is the whole reason to have it. */
+  whoIn.addEventListener('keydown', e => {
+    if(whoBox.hidden || !whoRows.length){
+      if(e.key === 'Enter'){ e.preventDefault(); give(); }
+      return;
+    }
+    if(e.key === 'ArrowDown'){ e.preventDefault(); whoAt = Math.min(whoAt+1, whoRows.length-1); whoDraw(); }
+    else if(e.key === 'ArrowUp'){ e.preventDefault(); whoAt = Math.max(whoAt-1, -1); whoDraw(); }
+    else if(e.key === 'Enter'){
+      e.preventDefault();
+      if(whoAt >= 0){ whoIn.value = whoRows[whoAt].email; whoClose(); }
+      else give();
+    }
+    else if(e.key === 'Escape'){ whoClose(); }
+  });
+  whoBox.addEventListener('click', e => {
+    const b = e.target.closest('[data-pick]');
+    if(b){ whoIn.value = b.getAttribute('data-pick'); whoClose(); whoIn.focus(); return; }
+    if(e.target.closest('[data-none]')) whoClose();
+  });
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#g-who') && e.target !== whoIn) whoClose();
+  });
+  // Changing the app re-asks, so "already has this one" stays true.
+  $('#g-app').addEventListener('change', () => { if(!whoBox.hidden) whoSearch(); });
+
   async function give(){
     const email = $('#g-email').value.trim();
     const app   = $('#g-app').value;
@@ -234,7 +336,12 @@
     loadGiven();
   }
   $('#g-go').addEventListener('click', give);
-  $('#g-email').addEventListener('keydown', e => { if(e.key === 'Enter') give(); });
+  /* Enter on the Who box belongs to the picker above, which uses it to
+     choose the highlighted person and only calls give() when nothing is
+     highlighted. There was a second handler here that called give() on
+     every Enter regardless; with both registered, pressing Enter to
+     PICK somebody also handed them the app in the same keystroke. One
+     owner for that key. */
 
   async function loadGiven(){
     const { data, error } = await sb.rpc('granted_list', { p_limit: 200 });
@@ -361,7 +468,13 @@
           '<td>' + esc(when(r.expires_at)) + '</td>' +
           '<td>' + esc(r.note || '') + '</td>' +
           '<td><span class="tag ' + esc(r.state.replace(/\s/g,'')) + '">' + esc(r.state) + '</span>' +
-            (r.disabled ? '' : ' <button class="kill" data-off="' + esc(r.code) + '">switch off</button>') +
+            /* A toggle, not a one-way door. Switching a code off used to
+               be permanent from this page - there was no button to put
+               it back - and two live codes sat switched off with no way
+               to undo it. */
+            ' <button class="kill" data-off="' + esc(r.code) + '" data-to="' +
+              (r.disabled ? 'on' : 'off') + '">' +
+              (r.disabled ? 'switch back on' : 'switch off') + '</button>' +
           '</td></tr>').join('')
       : '<tr><td class="empty">No codes yet. Make some above.</td></tr>';
 
@@ -377,8 +490,13 @@
     const b = e.target.closest('[data-off]');
     if(!b) return;
     b.disabled = true;
-    const { error } = await sb.rpc('set_code_disabled', { p_code: b.getAttribute('data-off'), p_off: true });
-    if(error){ m.textContent = 'Could not switch it off: ' + error.message; m.className='msg bad'; b.disabled=false; return; }
+    const back = b.getAttribute('data-to') === 'on';
+    const { error } = await sb.rpc('set_code_disabled',
+      { p_code: b.getAttribute('data-off'), p_off: !back });
+    if(error){
+      m.textContent = 'Could not switch it ' + (back ? 'on' : 'off') + ': ' + error.message;
+      m.className='msg bad'; b.disabled=false; return;
+    }
     draw();
   });
 
