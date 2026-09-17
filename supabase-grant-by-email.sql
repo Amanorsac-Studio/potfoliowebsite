@@ -162,12 +162,19 @@ begin
      table that might be declared varchar on somebody's database, and a
      cast that was never needed costs nothing. */
   return query
+  /* purchased_at, not created_at. The purchases table has always called
+     it purchased_at - product_recent and the notice job both read it
+     that way - and I wrote created_at here. It cost nothing at creation
+     and failed only when called, which is the same trap as the varchar
+     cast above: this function is checked when it runs, not when it is
+     made. My test database happened to carry both columns, which is why
+     this passed there and failed on the real one. */
   select u.email::text, p.app::text, p.license_key::text, p.granted_reason::text,
-         p.expires_at, p.created_at
+         p.expires_at, p.purchased_at
   from public.purchases p
   join auth.users u on u.id = p.user_id
   where p.granted_reason is not null
-  order by p.created_at desc
+  order by p.purchased_at desc
   limit greatest(coalesce(p_limit, 200), 1);
 end $$;
 
