@@ -333,7 +333,10 @@
       }
     },
     "alignpro": {
-      "name": "Align Pro", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
+      "_pull": "Pulled from the shop, same as AETHER. The tile goes; anyone who",
+      "_pull2": "bought it still downloads it from My Apps, because the Worker",
+      "_pull3": "checks ownership before it checks this.",
+      "name": "Align Pro", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "hidden",
       "tagline": "Align every mic. Hear exactly how much.",
       "icon": "images/apps/alignpro/icon.svg", "art": "images/apps/alignpro/auto.png", "page": "alignpro.html", "color": "#2E9BF0",
       "free": false, "price_cents": 3900, "list_price_cents": 7800, "licensed": true, "version": "1.0.0",
