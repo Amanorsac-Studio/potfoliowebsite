@@ -244,6 +244,7 @@ async function getCatalog(env) {
 
 const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)',
                          'mac-x64': 'Mac (Intel)',
+                         'windows-portable': 'Windows (portable)',
                          android: 'Android', ios: 'iPhone & iPad' };
 
 /* One app installer, in the shape the download code below has always used. */

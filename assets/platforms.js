@@ -47,6 +47,7 @@
      whatever order the catalog happens to list installers in. */
   var KNOWN = [
     { id: 'windows',   name: 'Windows',        icon: SCREEN },
+    { id: 'windows-portable', name: 'Windows',  icon: SCREEN },
     { id: 'mac',       name: 'macOS',          icon: SCREEN },
     { id: 'mac-arm64', name: 'macOS',          icon: SCREEN },
     { id: 'mac-x64',   name: 'macOS',          icon: SCREEN },
