@@ -49,6 +49,32 @@
                  alignpro: 'Buy — $39', chordlight88: 'Buy — $14' };
   var HUB_PROTOCOL = 'amanorsac';
   var OWNED_LABEL = 'Install in Amanorsac Hub';
+  /* Both maps above are a seed, not the truth. catalog.json is the
+     truth, and it is fetched below and merged over them, so a new app
+     needs no edit here and an old one cannot drift.
+
+     Without it the fallback title-cases the id, which is how a new
+     bundle introduced itself as "Amanorsacdigital" and how the redeem
+     page once said "Performlive" and "Afdgate". The seed stays for the
+     seconds before the catalog lands and for the case where it never
+     does - a stale name is a better answer than a mangled one. */
+  if (window.StoreState && window.StoreState.catalog) {
+    window.StoreState.catalog().then(function (c) {
+      var apps = (c && c.apps) || {};
+      Object.keys(apps).forEach(function (id) {
+        if (apps[id].name) APP_NAMES[id] = apps[id].name;
+        if (apps[id].free) { PRICES[id] = 'Download free'; return; }
+        var cents = apps[id].price_cents;
+        if (typeof cents === 'number' && cents > 0) {
+          PRICES[id] = apps[id].pay_what_you_want ? 'Name your price'
+            : 'Buy \u2014 $' + (cents % 100 ? (cents / 100).toFixed(2) : String(cents / 100));
+        }
+      });
+      /* Anything already drawn with a seeded name is redrawn now. */
+      if (typeof render === 'function') render();
+    }).catch(function () {});
+  }
+
   function labelFor(a) { return APP_NAMES[a] || (a.charAt(0).toUpperCase() + a.slice(1)); }
 
   function esc(s) {
@@ -78,13 +104,18 @@
     var p = (window.AmanorsacHub && window.AmanorsacHub.platform()) || 'windows';
     return '/download/hub/' + p;
   }
-  var OWNED_NOTE = 'You own ' + esc(labelFor(app)) + '. Install it through Amanorsac Hub — ' +
-    'don’t have the Hub yet? <a href="' + esc(hubDownloadUrl()) + '">Download it</a>. ' +
-    'Your license key is in <a href="/my-apps.html">My Apps</a>.';
+  /* A function, not a string. Built once at load it froze whatever name
+     was known before the catalog arrived, which defeated the merge
+     above entirely. */
+  function ownedNote() {
+    return 'You own ' + esc(labelFor(app)) + '. Install it through Amanorsac Hub — ' +
+      'don’t have the Hub yet? <a href="' + esc(hubDownloadUrl()) + '">Download it</a>. ' +
+      'Your license key is in <a href="/my-apps.html">My Apps</a>.';
+  }
 
   function showOwned(thanks) {
     setButtons(OWNED_LABEL, false, 'hub');
-    say((thanks ? 'Thank you — you’re in. ' : '') + OWNED_NOTE);
+    say((thanks ? 'Thank you — you’re in. ' : '') + ownedNote());
   }
 
   /* An app can be on sale on a preview build and not yet in public -

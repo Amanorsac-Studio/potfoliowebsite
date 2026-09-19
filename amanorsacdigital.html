@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-adsense-account" content="ca-pub-6190327414594776">
+<title>Amanorsac Digital: ten precision plug-ins | Amanorsac App Store</title>
+<meta name="description" content="Ten precision processors that show you exactly what they are doing to your sound. EQ, dynamics, de-essing, delay, reverb and imaging, each built around a live display you can grab. One key, ten plug-ins.">
+<meta property="og:title" content="Amanorsac Digital: ten precision plug-ins">
+<meta property="og:description" content="Every plug-in opens on a live picture of your audio. Grab what you see and move it. What you hear is what you drew.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/digital/prism-eq.png">
+<meta property="og:url" content="https://amanorsac.studio/amanorsacdigital.html">
+<link rel="icon" href="images/logo.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<style>
+@font-face{font-family:'Inter';font-style:normal;font-weight:400 600;font-display:swap;
+  src:url(fonts/inter-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Sora';font-style:normal;font-weight:400 800;font-display:swap;
+  src:url(fonts/sora-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 500;font-display:swap;
+  src:url(fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+
+/* =====================================================================
+   Dark, for the same reason the PerformLive page is: every screenshot
+   here is a dark instrument on a near-black field, and there are TEN of
+   them. On cream they would read as ten black rectangles punched into
+   the page. The accent is the blue the plug-ins themselves use.
+   ===================================================================== */
+:root{
+  --bg:#0A0F17; --panel:#111A26; --panel-2:#16202E; --line:#22303F;
+  --text:#EAF0F7; --muted:#93A3B6; --accent:#3B82F6; --accent-2:#8B5CF6;
+  --accent-soft:#132741;
+  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --ease:cubic-bezier(.23,1,.32,1);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{overflow-x:clip}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
+section{padding:clamp(56px,9vh,104px) 0}
+
+.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
+  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 88%,transparent);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none}
+.top .back:hover{color:var(--text)}
+.top .name{margin-left:auto;font-family:var(--display);font-weight:700;font-size:15px}
+.top .name b{color:var(--accent);font-weight:700}
+
+.hero{padding-top:clamp(48px,8vh,88px)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+.badges span{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.03;
+  font-size:clamp(36px,6vw,66px);margin:0 0 14px;max-width:18ch}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 20px}
+.one{font-family:var(--display);font-size:clamp(19px,2.3vw,25px);font-weight:600;
+  line-height:1.35;margin:0 0 16px;max-width:30ch}
+.sub{font-size:clamp(15px,1.5vw,18px);color:var(--muted);max-width:56ch;margin:0 0 28px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
+  text-decoration:none;border:0;cursor:pointer;border-radius:999px;padding:14px 28px;
+  background:var(--accent);color:#06101D;transition:transform .24s var(--ease)}
+.cta:hover{transform:translateY(-2px)}
+.cta[disabled]{opacity:.55;cursor:default;transform:none}
+.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:0}
+
+/* the three pillars */
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-top:8px}
+.pillar{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+.pillar h3{font-family:var(--display);font-size:18px;margin:0 0 10px}
+.pillar p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.6}
+
+h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(26px,3.4vw,38px);margin:0 0 14px}
+.lede{color:var(--muted);max-width:62ch;margin:0 0 34px}
+
+/* the ten */
+.ten{display:grid;gap:26px}
+.item{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.item .shot{background:#060A11;border-bottom:1px solid var(--line)}
+.item .shot img{width:100%;height:auto}
+.item .noshot{aspect-ratio:3/2;display:grid;place-items:center;text-align:center;padding:24px;
+  background:linear-gradient(140deg,#0D1622,#121D2C)}
+.item .noshot p{margin:0;color:var(--muted);font-size:13px;max-width:34ch}
+.item .body{padding:24px 26px 28px}
+.item h3{font-family:var(--display);font-size:22px;margin:0 0 4px}
+.item .role{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 14px}
+.item blockquote{margin:0 0 14px;padding:0 0 0 14px;border-left:2px solid var(--accent);
+  font-family:var(--display);font-size:16.5px;font-weight:600;line-height:1.45}
+.item .what{color:var(--muted);font-size:14.5px;margin:0 0 16px}
+.item ul{margin:0 0 16px;padding-left:18px;color:var(--muted);font-size:14px;line-height:1.6}
+.item li{margin:0 0 7px}
+.item .presets{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin:0}
+@media (min-width:860px){
+  .ten{grid-template-columns:1fr 1fr}
+  /* align-items:center and a natural height, NOT stretch-and-cover.
+     These are screenshots of dense interfaces and the point of each one
+     is a detail somewhere in it - a focus band, a set of taps, a row of
+     zones. Cropping to fill the column ate PRISM EQ's left edge and its
+     band panel, which is the half the caption is about. Better a little
+     dark space beside a whole picture than a tidy column with the
+     subject cut off. */
+  .item.wide{grid-column:1/-1;display:grid;grid-template-columns:1.1fr 1fr;align-items:center}
+  .item.wide .shot{border-bottom:0;border-right:1px solid var(--line);height:100%;
+    display:flex;align-items:center}
+  .item.wide .shot img{height:auto;width:100%}
+}
+
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{width:34%;color:var(--muted);font-weight:500}
+
+.note{color:var(--muted);font-size:14px;max-width:62ch}
+.foot{border-top:1px solid var(--line);padding:34px 0 60px;color:var(--muted);font-size:14px}
+.foot a{color:var(--muted)}
+</style>
+<link rel="stylesheet" href="/assets/sale.css">
+</head>
+<body data-app="amanorsacdigital">
+
+<div class="top">
+  <a class="back" href="apps.html">← App Store</a>
+  <span class="name">AMANORSAC <b>DIGITAL</b></span>
+  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+</div>
+
+<header class="hero wrap">
+  <div class="badges">
+    <span>$29</span><span>Ten plug-ins</span><span>VST3</span><span>AU</span>
+    <span>Standalone</span><span>Windows</span><span>macOS</span>
+  </div>
+  <h1>Ten precision tools that show you what they are doing.</h1>
+  <p class="kicker">Amanorsac Digital</p>
+  <p class="one">Where the analog line adds character, the digital line gives control.</p>
+  <p class="sub">Every plug-in opens on a live picture of your audio: the spectrum, the curve,
+    the bands, the echoes, the space. Grab what you see and move it. What you hear is what you drew.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $29</button>
+    <a class="cta ghost" href="#the-ten">See all ten</a>
+  </div>
+  <p class="plat-row" data-platforms hidden></p>
+  <p class="fine">$29 once · one key unlocks all ten · two computers per licence</p>
+  <p class="promo-line" data-promo hidden></p>
+  <p class="buy-status" data-buy-status hidden></p>
+  <p class="pay-alt-row" data-pay-alt hidden></p>
+  <p class="code-row" data-code-box hidden></p>
+  <ul class="assure" data-assure hidden></ul>
+</header>
+
+<section class="wrap">
+  <h2>You should never have to guess.</h2>
+  <p class="lede">The equalisers draw their curves over the real spectrum, before and after. The
+    dynamics show each band working as the music plays. The de-esser and resonance tools draw the
+    change they make, measured from the audio rather than estimated. The delay shows its echoes
+    travelling, the reverb shows its tail breathing, the imager shows your stereo field. Every
+    picture is also a control surface: drag a node, a crossover, a threshold or a tap, and the
+    panel below follows.</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <h3>See it, grab it.</h3>
+      <p>Bands, crossovers, thresholds, focus regions and delay taps are drawn where they act and
+        can be dragged directly. Click a band in the picture and the control panel switches to it.</p>
+    </div>
+    <div class="pillar">
+      <h3>Measured, not assumed.</h3>
+      <p>Echo timing to the sample. A decay control that is the real time to fall 60&nbsp;dB.
+        Modulation and time changes proven free of clicks. Every factory preset in every product is
+        loaded and run before a build can ship.</p>
+    </div>
+    <div class="pillar">
+      <h3>One key, ten plug-ins.</h3>
+      <p>Buy once, type the key into whichever plug-in you open first, and the whole bundle is
+        licensed on that machine. Two computers per licence, and it keeps working for thirty days
+        without an internet connection.</p>
+    </div>
+    <div class="pillar">
+      <h3>Presets sorted by source.</h3>
+      <p>120 presets across the bundle, twelve in every plug-in: Vocals, Drums, Bass, Guitars,
+        Keys, Strings&nbsp;&amp; Horns, Mix Bus, Master, Creative and Utility. They ship inside
+        the plug-in.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="the-ten">
+  <h2>The ten.</h2>
+  <p class="lede">In the order a mix uses them: shape, control, finish, then space and width.</p>
+
+  <div class="ten">
+
+    <article class="item wide">
+      <div class="shot"><img src="images/apps/digital/prism-eq.png" width="1536" height="1024" loading="lazy"
+        alt="PRISM EQ: a curve and coloured band shapes drawn over the live spectrum, with band, dynamics, colour and global panels below"></div>
+      <div class="body">
+        <h3>PRISM EQ</h3>
+        <p class="role">Precision Equalizer</p>
+        <blockquote>Twenty-four bands, and every one can live in the middle, the sides, the left or the right.</blockquote>
+        <p class="what">A precision equaliser you work by hand. The curve and a coloured shape for each
+          band sit over the live spectrum, input and output together. Drag a node to move a band, use
+          the wheel for Q, double-click to add or remove one.</p>
+        <ul>
+          <li>Up to 24 bands with eight shapes: bell, low and high shelf, low and high cut, notch, band pass and tilt</li>
+          <li>Per-band Stereo, Left, Right, Mid or Side placement, shown as a badge on the node</li>
+          <li>Dynamic bands, downward or upward, with the curve moving live as they work; four colour modes from clean to tape</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Guitars · Keys · Mix Bus · Master · Utility</p>
+      </div>
+    </article>
+
+    <article class="item wide">
+      <div class="shot"><img src="images/apps/digital/flux-dynamic-eq.png" width="1536" height="1024" loading="lazy"
+        alt="FLUX DYNAMIC EQ: numbered band nodes on the spectrum with band, dynamics, adaptive and global panels below"></div>
+      <div class="body">
+        <h3>FLUX DYNAMIC EQ</h3>
+        <p class="role">Adaptive Dynamic Equalizer</p>
+        <blockquote>An equaliser that only acts when the music needs it.</blockquote>
+        <p class="what">Up to twelve bands that sit flat until the signal crosses their threshold, then
+          cut or lift by as much as you allow. Adaptive mode follows the programme level so a setting
+          keeps working as the performance changes.</p>
+        <ul>
+          <li>Up to 12 dynamic bands, cutting or boosting, each with its own threshold, range, ratio, attack and release</li>
+          <li>Adaptive thresholds, auto learn, external sidechain, per-band listen and a delta monitor</li>
+          <li>Per-band Stereo, Left, Right, Mid or Side placement</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Guitars · Keys · Mix Bus · Master · Creative · Utility</p>
+      </div>
+    </article>
+
+    <article class="item">
+      <div class="noshot"><p>Screenshot coming — the plug-in is built, the picture is not in the repository yet.</p></div>
+      <div class="body">
+        <h3>SPECTRA MULTIBAND</h3>
+        <p class="role">Six-Band Dynamics</p>
+        <blockquote>Split the mix where you want, and watch every band work.</blockquote>
+        <p class="what">Two to six bands of dynamics over the live spectrum. Drag the crossover lines to
+          set the split, drag a band's line to set its threshold, and watch a bar in each band show its
+          gain change as the music plays.</p>
+        <ul>
+          <li>2 to 6 bands with draggable crossovers and thresholds, minimum or linear-phase split</li>
+          <li>Compress, expand up or expand down per band, with ratio, range, attack, release and makeup</li>
+          <li>Per-band solo, bypass and delta, a global link control and a wet/dry mix</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Guitars · Keys · Mix Bus · Master · Creative · Utility</p>
+      </div>
+    </article>
+
+    <article class="item">
+      <div class="noshot"><p>Screenshot coming — the plug-in is built, the picture is not in the repository yet.</p></div>
+      <div class="body">
+        <h3>PULSE LIMITER</h3>
+        <p class="role">True-Peak Limiter</p>
+        <blockquote>See exactly how hard you are hitting it.</blockquote>
+        <p class="what">A limiter with a scrolling history: input in grey, output in blue, gain reduction
+          in red from the top. The ceiling and threshold are lines you drag. Four styles, from
+          transparent to dense, and a transient control that decides how much punch survives.</p>
+        <ul>
+          <li>Draggable threshold and true-peak ceiling over a live input, output and gain reduction history</li>
+          <li>Four styles, adaptive or manual release, and lookahead reported to the host</li>
+          <li>Transient preserve, stereo link and a delta monitor to hear what is being removed</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Mix Bus · Master · Creative · Utility</p>
+      </div>
+    </article>
+
+    <article class="item wide">
+      <div class="shot"><img src="images/apps/digital/air-de-esser.png" width="1536" height="1024" loading="lazy"
+        alt="AIR DE-ESSER: a highlighted focus band over the spectrum with a threshold line, and detect, action and voice panels below"></div>
+      <div class="body">
+        <h3>AIR DE-ESSER</h3>
+        <p class="role">Intelligent De-Essing</p>
+        <blockquote>Point at the ess. Watch it go.</blockquote>
+        <p class="what">The focus band sits over the live spectrum: drag it to the sibilance, use the
+          wheel to widen or narrow it, and grab the threshold line to set where it starts working. A
+          curve shows the reduction actually being applied, measured from the audio, with the amount in dB.</p>
+        <ul>
+          <li>Draggable focus, bandwidth and threshold on the spectrum, with measured reduction drawn live</li>
+          <li>Wide, split and smart modes, and neutral, bright or dark voice profiles</li>
+          <li>Range, attack, release and sensitivity, stereo link, and a listen switch for the detector</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Guitars · Mix Bus · Utility</p>
+      </div>
+    </article>
+
+    <article class="item">
+      <div class="noshot"><p>Screenshot coming — the plug-in is built, the picture is not in the repository yet.</p></div>
+      <div class="body">
+        <h3>RESONANCE CTRL</h3>
+        <p class="role">Spectral Resonance Controller</p>
+        <blockquote>Takes the ring out and leaves the tone alone.</blockquote>
+        <p class="what">Tames resonances as they appear, inside a range you set by dragging its edges on
+          the spectrum. The display draws the change it is making, so you can see that it is working on
+          the honk and not the body.</p>
+        <ul>
+          <li>Draggable working range over the live spectrum, with the measured change drawn in real time</li>
+          <li>Depth, selectivity, speed, sensitivity and smoothing, plus a control to keep transients</li>
+          <li>Learn, freeze and delta, and stereo, mid, side, left or right operation</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Guitars · Keys · Mix Bus · Master · Creative · Utility</p>
+      </div>
+    </article>
+
+    <article class="item wide">
+      <div class="shot"><img src="images/apps/digital/freq-shaper.png" width="1536" height="1024" loading="lazy"
+        alt="FREQ SHAPER: six coloured harmonic zones across the spectrum with zone, split and blend panels below"></div>
+      <div class="body">
+        <h3>FREQ SHAPER</h3>
+        <p class="role">Harmonic Spectral Shaper</p>
+        <blockquote>Add harmonics exactly where the track is missing them.</blockquote>
+        <p class="what">Six zones across the spectrum, each with its own harmonics, density and width.
+          Drag a zone up for more, drag the lines between zones to move the splits. Put weight into a
+          bass without touching the top, or air onto a vocal without touching the chest.</p>
+        <ul>
+          <li>Six zones with draggable crossovers, each with harmonics, density, width, solo and its own on switch</li>
+          <li>A punch control, direct level and wet/dry mix, with auto gain</li>
+          <li>The measured change drawn over the live spectrum</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Guitars · Keys · Mix Bus · Master · Creative · Utility</p>
+      </div>
+    </article>
+
+    <article class="item wide">
+      <div class="shot"><img src="images/apps/digital/orbit-delay.png" width="1536" height="1024" loading="lazy"
+        alt="ORBIT DELAY: numbered delay taps placed along a time axis with delay, taps, motion and mix panels below"></div>
+      <div class="body">
+        <h3>ORBIT DELAY</h3>
+        <p class="role">Multi-Tap Creative Delay</p>
+        <blockquote>A delay you can see travelling.</blockquote>
+        <p class="what">A main echo with feedback, plus up to eight taps you place by hand: drag a tap
+          sideways for time and up and down for level. Each tap has its own pan and filter. Changing
+          the time while it plays bends the pitch like a tape echo instead of clicking.</p>
+        <ul>
+          <li>A feedback echo plus 8 taps, each with time, level, pan and filter, placed by dragging</li>
+          <li>Sync to host tempo, smooth modulation, and ducking that clears the echoes while you play</li>
+          <li>Freeze to hold the loop, with pitch-bending time changes and no clicks</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Guitars · Keys · Creative</p>
+      </div>
+    </article>
+
+    <article class="item">
+      <div class="noshot"><p>Screenshot coming — the plug-in is built, the picture is not in the repository yet.</p></div>
+      <div class="body">
+        <h3>SPACEVERB PRO</h3>
+        <p class="role">Algorithmic Reverb</p>
+        <blockquote>Set two seconds. Get two seconds.</blockquote>
+        <p class="what">A true stereo reverb: early reflections and diffusion feeding an eight-line
+          network, so tails are dense rather than metallic and a mono source comes back wide. The decay
+          control is the real time the tail takes to fall 60&nbsp;dB, from a tight room to forty seconds.</p>
+        <ul>
+          <li>True stereo with early reflections, pre-delay to 500 ms and decay from 0.1 to 40 seconds</li>
+          <li>Size, density, diffusion, early/late balance, and separate low and high damping</li>
+          <li>Smooth modulation, ducking, width to 200 % and a freeze that holds the space</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Guitars · Keys · Strings &amp; Horns · Mix Bus · Creative</p>
+      </div>
+    </article>
+
+    <article class="item">
+      <div class="noshot"><p>Screenshot coming — the plug-in is built, the picture is not in the repository yet.</p></div>
+      <div class="body">
+        <h3>WIDE IMAGER</h3>
+        <p class="role">Frequency-Dependent Stereo</p>
+        <blockquote>Wide where it helps. Mono where it matters.</blockquote>
+        <p class="what">Five bands of stereo width with a bass-mono control underneath, so the top can
+          open out while the low end stays solid. A vectorscope and a correlation meter show what you
+          are doing to the image, and a safe-width switch and a mono check keep it honest.</p>
+        <ul>
+          <li>Five width bands from 0 to 250 % with draggable crossovers, plus a bass-mono frequency</li>
+          <li>Rotation, mid/side balance and focus</li>
+          <li>Live vectorscope and correlation meter, safe width and a one-click mono check</li>
+        </ul>
+        <p class="presets">12 presets · Vocals · Drums · Bass · Guitars · Keys · Mix Bus · Master · Creative · Utility</p>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Specifications.</h2>
+  <table>
+    <tr><th>Formats</th><td>VST3 and Standalone on Windows; VST3, Audio Unit and Standalone on macOS</td></tr>
+    <tr><th>Platform</th><td>Windows 10 and 11, 64-bit; macOS on Apple silicon and Intel (universal)</td></tr>
+    <tr><th>Channels</th><td>Mono in, mono out; stereo in, stereo out. External sidechain on FLUX DYNAMIC EQ</td></tr>
+    <tr><th>Latency</th><td>Zero, except PULSE LIMITER (its lookahead) and SPECTRA MULTIBAND in linear-phase mode, both reported to the host</td></tr>
+    <tr><th>Interface</th><td>Resizable, 768 to 1920 px wide, fixed aspect</td></tr>
+    <tr><th>Presets</th><td>120 factory presets, 12 per product, grouped by source</td></tr>
+    <tr><th>Preset format</th><td><code>.amanorsacpreset</code>, plain XML, portable between machines</td></tr>
+    <tr><th>Licence</th><td>One key unlocks the whole digital bundle; 2 computers per licence; 30-day offline grace. Separate from the analog bundle's key</td></tr>
+    <tr><th>macOS installer</th><td>Signed with Developer ID and notarised by Apple</td></tr>
+  </table>
+  <p class="note" style="margin-top:22px">The Windows installer is not yet code-signed, so Windows
+    SmartScreen will warn the first time you run it. Choose <b>More info</b> then <b>Run anyway</b>.
+    A certificate is on the way.</p>
+</section>
+
+<section class="wrap">
+  <h2>Ten plug-ins. One key. $29.</h2>
+  <p class="lede">Type the key into whichever one you open first and the whole bundle unlocks on that
+    machine. Two computers per licence.</p>
+  <div class="cta-row">
+    <button class="cta" data-buy type="button">Buy — $29</button>
+    <a class="cta ghost" href="apps.html">Back to the App Store</a>
+  </div>
+  <p class="code-row" data-code-box hidden></p>
+</section>
+
+<footer class="foot wrap">
+  <p><a href="apps.html">App Store</a> · <a href="ambanalog.html">AMB Analog</a> ·
+     <a href="index.html">Studio</a> · <a href="legal.html">Terms</a> ·
+     <a href="privacy.html">Privacy</a></p>
+  <p>Amanorsac Studio · Accra, Ghana</p>
+</footer>
+
+<script src="assets/track.js" defer></script>
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/store-state.js" defer></script>
+<script src="assets/promo.js" defer></script>
+<script src="assets/assure.js" defer></script>
+<script src="assets/buy-dock.js" defer></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/app-purchase.js" defer></script>
+<script src="assets/platforms.js" defer></script>
+</body>
+</html>
