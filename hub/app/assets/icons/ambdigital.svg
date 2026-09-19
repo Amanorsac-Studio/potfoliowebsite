@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Amanorsac Digital">
+  <!-- A spectrum read left to right, which is what every one of these ten
+       plug-ins puts in front of you. Sized by attribute as well as viewBox:
+       an SVG with only a viewBox fills its container the moment a stylesheet
+       is missing, and this site has drawn a 16px tick at 936px that way. -->
+  <rect width="64" height="64" rx="14" fill="#0E1520"/>
+  <g fill="#3B82F6">
+    <rect x="10" y="34" width="4" height="16" rx="2"/>
+    <rect x="18" y="26" width="4" height="24" rx="2"/>
+    <rect x="26" y="14" width="4" height="36" rx="2"/>
+    <rect x="34" y="22" width="4" height="28" rx="2"/>
+  </g>
+  <g fill="#8B5CF6">
+    <rect x="42" y="30" width="4" height="20" rx="2"/>
+    <rect x="50" y="38" width="4" height="12" rx="2"/>
+  </g>
+</svg>

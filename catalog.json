@@ -439,7 +439,7 @@
       }
     },
     
-    "amanorsacdigital": {
+    "ambdigital": {
       "_d": "The digital line: ten plug-ins, one key, one price. Listed as a",
       "_d2": "single product because that is how it is sold and how it is",
       "_d3": "licensed - one key unlocks all ten.",
@@ -452,13 +452,13 @@
       "_d10": "",
       "_d11": "No list_price_cents above the price: this is new, not discounted,",
       "_d12": "and a struck-through figure on a launch is a lie about a sale.",
-      "name": "Amanorsac Digital", "vendor": "Amanorsac Studio", "kind": "plugin",
+      "name": "AMB Digital", "vendor": "Amanorsac Studio", "kind": "plugin",
       "status": "coming_soon",
       "soon_note": "Ten plug-ins, nearly ready. The installers are the last piece.",
       "tagline": "Ten precision tools that show you exactly what they are doing to your sound.",
       "icon": "images/apps/digital/icon.svg",
       "art": "images/apps/digital/prism-eq.png",
-      "page": "amanorsacdigital.html",
+      "page": "ambdigital.html",
       "color": "#3B82F6",
       "free": false, "licensed": true,
       "price_cents": 2900, "list_price_cents": 2900,

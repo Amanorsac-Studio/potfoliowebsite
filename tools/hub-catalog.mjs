@@ -50,6 +50,7 @@ const ICONS = {
   pulseroom:    'assets/pulseroom-logo.svg',
   nebulatide2:  'assets/nt-logo.webp',
   nebulatide:   'assets/nt-logo.webp',
+  ambdigital:   'assets/icons/ambdigital.svg',
   harmoniemd:   'assets/harmoniemd.png',
 };
 
@@ -65,6 +66,7 @@ const BLURBS = {
   pulseroom:    'Your reference desk: delay and reverb times, EQ cheat sheet, compression, mix chains.',
   nebulatide2:  'The second tide: new beds, a wider stage, and a price you set yourself.',
   nebulatide:   'Endless, seamless drone pads recorded in all twelve keys. Deep Current included.',
+  ambdigital:   'Ten precision plug-ins: EQ, dynamics, de-essing, delay, reverb and imaging. One key.',
   harmoniemd:   'The choir rehearsal studio: parts, setlists and a multi-track editor.',
 };
 
