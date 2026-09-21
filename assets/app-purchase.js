@@ -355,16 +355,46 @@
     history.replaceState(null, '', location.pathname);
     // The webhook usually lands well before this redirect completes;
     // a few retries covers the rare case it has not yet.
-    var tries = 0;
+    var session = params.get('cs') || '';
+    var tries = 0, asked = false;
+
+    /* Ask Stripe ourselves. Reached only when the webhook has not
+       written the purchase after several seconds, which used to be the
+       end of the road: the page said "still confirming on our end" and
+       meant it forever, because nothing else on the site could record a
+       purchase. A webhook pointed at the wrong address cost exactly
+       that, to every buyer, for two days.
+
+       confirm-checkout asks Stripe whether this session is paid and
+       whether it belongs to this account, and writes the licence if it
+       does. It is idempotent, so it costs nothing when the webhook was
+       merely slow rather than broken. */
+    function askStripe() {
+      asked = true;
+      say('Checking with the payment provider…');
+      return sb.functions.invoke('confirm-checkout', { body: { session_id: session } })
+        .then(function (r) {
+          var d = (r && r.data) || {};
+          if (d.ok) { showOwned(true); return true; }
+          return false;
+        })
+        .catch(function () { return false; });
+    }
+
     (function poll() {
       checkAccess().then(function (owns) {
-        if (owns) {
-          showOwned(true);
-        } else if (tries++ < 5) {
-          setTimeout(poll, 1500);
-        } else {
-          say('Payment received — still confirming on our end. Refresh in a minute, or contact the studio if this sticks around.', true);
+        if (owns) { showOwned(true); return; }
+        if (tries++ < 5) { setTimeout(poll, 1500); return; }
+        if (session && !asked) {
+          askStripe().then(function (won) {
+            if (won) return;
+            say('Payment received — still confirming on our end. ' +
+                'Nothing is lost: email the studio with this reference and it will be sorted. ' +
+                '<span class="ref">' + esc(session) + '</span>', true);
+          });
+          return;
         }
+        say('Payment received — still confirming on our end. Refresh in a minute, or contact the studio if this sticks around.', true);
       });
     })();
   } else if (params.get('checkout') === 'cancelled') {

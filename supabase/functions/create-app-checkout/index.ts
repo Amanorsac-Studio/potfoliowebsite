@@ -225,7 +225,16 @@ Deno.serve(async (req) => {
       "metadata[discount_cents]": String(Math.max(0, (item.amount_cents ?? 0) - (amount ?? 0))),
       // Back to the app's own page, not the portal - there is no "My
       // Apps" section there yet for this to land in usefully.
-      success_url: back + "/" + app + "?purchased=1",
+      /* The session id comes back with them. Stripe substitutes
+         {CHECKOUT_SESSION_ID} itself, so this is not something the
+         browser can forge - and confirm-checkout asks Stripe about it
+         anyway rather than believing it.
+
+         It is here so the page has something to ask about when the
+         webhook has not landed. Without it, a buyer whose webhook
+         failed has paid and the site has no idea which payment they
+         are talking about. */
+      success_url: back + "/" + app + "?purchased=1&cs={CHECKOUT_SESSION_ID}",
       cancel_url: back + "/" + app + "?checkout=cancelled",
     });
     return json({ url: session.url, discount });

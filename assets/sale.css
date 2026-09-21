@@ -229,3 +229,9 @@
 .pay-wa:hover,
 .pay-wa:focus-visible{ opacity:1; transform:translateY(-1px); }
 .pay-wa svg{ flex:0 0 auto; }
+
+/* The Stripe session reference, shown only when a purchase could not be
+   confirmed any other way. Selectable and monospaced because its whole
+   job is to be copied into an email. */
+.ref{display:inline-block;margin-top:6px;font-family:var(--mono,ui-monospace,Menlo,Consolas,monospace);
+  font-size:12px;word-break:break-all;-webkit-user-select:all;user-select:all;opacity:.85}
