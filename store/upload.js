@@ -197,7 +197,7 @@
   /* ---------------- 3 · the tracks ---------------- */
   function drawTracks() {
     var box = $('#tracks');
-    box.innerHTML = '<p class="dim">WAV files, one per slot, all the same length and starting at the same moment. Click and Guide are the two the band hears in their ears; the other eight are the music. Click, Guide, Drums, Bass, Keys and Backing vocals are needed; Guitars, Piano, Aux piano and Horns can stay empty if the song has none. No lead vocal: the Guide is the voice in the ear.</p>' +
+    box.innerHTML = '<p class="dim">WAV files, one per slot, all the same length and starting at the same moment. Click and Guide are the two the band hears in their ears; the other eight are the music. Click, Guide, Drums, Bass, Keys and Backing vocals are needed; Guitars, Piano, Aux keys and Horns can stay empty if the song has none. No lead vocal: the Guide is the voice in the ear.</p>' +
       '<div class="slots">' + S.SLOTS.map(function (slot) {
         var t = tracks[slot];
         var needed = ['click', 'guide', 'drums', 'bass', 'keys', 'bgv'].indexOf(slot) >= 0;

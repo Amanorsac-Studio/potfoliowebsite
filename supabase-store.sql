@@ -190,7 +190,7 @@ grant all on public.store_songs to service_role;
 -- The ten slots, in the order PerformLive lays them out.
 create or replace function public.store_track_slots()
 returns text[] language sql immutable as $$
-  select array['click','guide','drums','bass','keys','guitars','piano','aux_piano','horns','bgv'];
+  select array['click','guide','drums','bass','keys','guitars','piano','aux_keys','horns','bgv'];
 $$;
 grant execute on function public.store_track_slots() to anon, authenticated;
 
@@ -375,7 +375,7 @@ begin
   if v.status not in ('draft','rejected') then raise exception 'already submitted'; end if;
   if v.kind = 'song' then
     -- click and guide for the band's ears, the core of the music, and
-    -- the backing vocals. guitars, piano, aux piano and horns may be
+    -- the backing vocals. guitars, piano, aux keys and horns may be
     -- empty: not every song has them. There is no lead vocal: the guide
     -- is the voice in the ear. Sections are not required here: the
     -- studio marks and checks them in review, against the audio.
