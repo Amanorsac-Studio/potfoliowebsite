@@ -318,16 +318,18 @@
       "name": "AMB Analog", "vendor": "Amanorsac Studio", "kind": "plugin", "status": "available",
       "tagline": "Ten analog machines, built from the ground up.",
       "icon": "images/apps/analog/icon.svg", "art": "images/apps/analog/A01.webp", "page": "ambanalog.html", "color": "#D4A24C",
-      "free": false, "price_cents": 3900, "list_price_cents": 7800, "licensed": true, "version": "1.0.1",
+      "free": false, "price_cents": 3900, "list_price_cents": 7800, "licensed": true, "version": "1.0.2",
       "installers": {
-        "windows": { "key": "ambanalog/Amanorsac_Analog_Bundle_1.0.0_Windows.exe",
-                     "alt_keys": ["AMB Analog/Amanorsac_Analog_Bundle_1.0.0_Windows.exe"],
-                     "as": "Amanorsac_Analog_Bundle_Windows.exe",
+        "windows": { "key": "ambanalog/AMBAnalog-1.0.0-Windows.exe",
+                     "alt_keys": ["AMB Analog/AMBAnalog-1.0.0-Windows.exe",
+                                  "ambanalog/Amanorsac_Analog_Bundle_1.0.0_Windows.exe"],
+                     "as": "AMBAnalog-1.0.0-Windows.exe",
                      "type": "application/x-msdownload",
-                     "label": "Windows \u00b7 VST3", "size": "384 MB" },
-        "mac":     { "key": "ambanalog/Amanorsac_Analog_Bundle_1.0.0_macOS.pkg",
-                     "alt_keys": ["AMB Analog/Amanorsac_Analog_Bundle_1.0.0_macOS.pkg"],
-                     "as": "Amanorsac_Analog_Bundle_macOS.pkg",
+                     "label": "Windows \u00b7 VST3", "size": "393 MB" },
+        "mac":     { "key": "ambanalog/AMBAnalog-1.0.0-macOS.pkg",
+                     "alt_keys": ["AMB Analog/AMBAnalog-1.0.0-macOS.pkg",
+                                  "ambanalog/Amanorsac_Analog_Bundle_1.0.0_macOS.pkg"],
+                     "as": "AMBAnalog-1.0.0-macOS.pkg",
                      "type": "application/octet-stream",
                      "label": "macOS \u00b7 VST3 & AU", "size": "749 MB" }
       }
@@ -463,7 +465,16 @@
       "free": false, "licensed": true,
       "price_cents": 2900, "list_price_cents": 2900,
       "version": "1.0.0",
-      "installers": {}
+      "installers": {
+        "windows": { "key": "ambdigital/AMBDigital-1.0.0-Windows.exe",
+                     "alt_keys": ["AMB Digital/AMBDigital-1.0.0-Windows.exe"],
+                     "as": "AMBDigital-1.0.0-Windows.exe", "type": "application/x-msdownload",
+                     "label": "Windows \u00b7 VST3 & Standalone", "size": "260 MB" },
+        "mac":     { "key": "ambdigital/AMBDigital-1.0.0-macOS.pkg",
+                     "alt_keys": ["AMB Digital/AMBDigital-1.0.0-macOS.pkg"],
+                     "as": "AMBDigital-1.0.0-macOS.pkg", "type": "application/octet-stream",
+                     "label": "macOS \u00b7 VST3, AU & Standalone", "size": "348 MB" }
+      }
     },
 
     "harmoniemd": {
