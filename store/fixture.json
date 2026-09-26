@@ -138,28 +138,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-26",
    "sales": 41,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0001",
@@ -179,28 +189,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-20",
    "sales": 312,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": "b2L8O7DAJtA",
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0002",
@@ -220,28 +240,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-18",
    "sales": 248,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0003",
@@ -261,28 +291,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-16",
    "sales": 190,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": "7xkyTCStRhs",
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0004",
@@ -302,28 +342,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-24",
    "sales": 131,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": "HRBRCWdqH9s",
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0005",
@@ -343,28 +393,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-12",
    "sales": 204,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0006",
@@ -384,28 +444,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-10",
    "sales": 176,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0007",
@@ -425,28 +495,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-08",
    "sales": 289,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": "8UkWMnzuKZg",
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0008",
@@ -466,28 +546,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-06",
    "sales": 341,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0009",
@@ -507,28 +597,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-05",
    "sales": 158,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": "EcI7B8Es45k",
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0010",
@@ -548,28 +648,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-04",
    "sales": 223,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0011",
@@ -589,28 +699,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-03",
    "sales": 97,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0012",
@@ -630,28 +750,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-02",
    "sales": 142,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0013",
@@ -671,28 +801,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-14",
    "sales": 264,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0014",
@@ -712,28 +852,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-01",
    "sales": 118,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0015",
@@ -753,28 +903,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-08-30",
    "sales": 133,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0016",
@@ -794,28 +954,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-22",
    "sales": 276,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0017",
@@ -835,28 +1005,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-15",
    "sales": 201,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0018",
@@ -876,28 +1056,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-09",
    "sales": 164,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": "R7g2Z68qssA",
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0019",
@@ -917,28 +1107,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-23",
    "sales": 388,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "sg_0020",
@@ -958,28 +1158,38 @@
    "currency": "USD",
    "products": [
     {
-     "id": "multitracks",
-     "name": "MultiTracks",
+     "id": "rent",
+     "name": "Rent for 14 days",
+     "price_cents": 400,
+     "note": "Full multitracks in PerformLive for two weeks."
+    },
+    {
+     "id": "buy",
+     "name": "Buy",
      "price_cents": 1200,
-     "note": "Every instrument on its own track. Opens in PerformLive."
-    },
-    {
-     "id": "stems",
-     "name": "Stems",
-     "price_cents": 900,
-     "note": "Four grouped tracks for a small desk."
-    },
-    {
-     "id": "chart",
-     "name": "Chord chart",
-     "price_cents": 300,
-     "note": "PDF, in the recorded key."
+     "note": "Yours to keep, on every machine you sign in on."
     }
    ],
-   "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-11",
    "sales": 146,
-   "rating": null
+   "rating": null,
+   "coming": [
+    "Chord chart"
+   ],
+   "status": "coming_soon",
+   "youtube": null,
+   "tracks": [
+    "Click",
+    "Guide",
+    "Drums",
+    "Bass",
+    "Keys",
+    "Guitars",
+    "Piano",
+    "Aux piano",
+    "Horns",
+    "Vocals"
+   ]
   },
   {
    "id": "it_0007",
@@ -993,7 +1203,8 @@
    "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-08",
    "sales": 97,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0008",
@@ -1007,7 +1218,8 @@
    "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-11",
    "sales": 154,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0009",
@@ -1021,7 +1233,8 @@
    "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-09",
    "sales": 88,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0010",
@@ -1035,7 +1248,8 @@
    "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-13",
    "sales": 201,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0011",
@@ -1049,7 +1263,8 @@
    "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-16",
    "sales": 74,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0012",
@@ -1063,7 +1278,8 @@
    "preview": "/audio/lead-mixed.mp3",
    "released_at": "2026-09-19",
    "sales": 39,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0013",
@@ -1077,7 +1293,8 @@
    "preview": null,
    "released_at": "2026-09-17",
    "sales": 133,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0014",
@@ -1091,7 +1308,8 @@
    "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-21",
    "sales": 58,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0015",
@@ -1105,7 +1323,8 @@
    "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-14",
    "sales": 91,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0016",
@@ -1119,7 +1338,8 @@
    "preview": "/audio/drums-mixed.mp3",
    "released_at": "2026-09-22",
    "sales": 27,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   },
   {
    "id": "it_0017",
@@ -1133,7 +1353,8 @@
    "preview": "/audio/backing-mixed.mp3",
    "released_at": "2026-09-23",
    "sales": 19,
-   "kind": "pack"
+   "kind": "pack",
+   "status": "available"
   }
  ],
  "sections": [

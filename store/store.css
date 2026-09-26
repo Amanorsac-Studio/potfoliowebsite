@@ -316,3 +316,16 @@ main{padding-top:24px}
 @media (max-width:1100px){ .shelf{grid-auto-columns:calc((100% - 4 * 16px) / 5)} }
 @media (max-width:860px){ .shelf{grid-auto-columns:calc((100% - 3 * 14px) / 4);gap:14px} }
 @media (max-width:640px){ .shelf{grid-auto-columns:calc((100% - 12px) / 2.3);gap:12px} .lanes{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;margin-left:-16px;margin-right:-16px;padding:0 16px} .lanes::-webkit-scrollbar{display:none} }
+
+/* the video under the art, and the two ways to have a song */
+.video{margin-top:16px;aspect-ratio:16/9;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border);background:var(--sunken)}
+.video iframe{width:100%;height:100%;border:0;display:block}
+.video.none{display:grid;place-items:center;color:var(--faint);font-size:13px}
+.tracks{margin-top:12px;color:var(--faint);font-size:12.5px;line-height:1.6}
+.tracks b{color:var(--dim);font-weight:600;margin-right:4px}
+.price.soon{color:var(--amber)}
+.prod.off{cursor:default;color:var(--dim)}
+.prod.off:hover{background:none}
+.buy.soonbox{display:grid;gap:4px}
+.buy.soonbox .pn{font-family:var(--head);font-weight:600;font-size:18px;color:var(--amber)}
+.buy.soonbox .pnote{color:var(--dim);font-size:14px}

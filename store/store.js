@@ -289,7 +289,9 @@
     return '<a class="card" href="/store/item?p=' + esc(it.slug) + '">' +
       '<div class="cover">' + cover(it, c, l) + '</div>' +
       '<div class="body"><h3>' + esc(it.title) + '</h3><span class="by">' + esc(sub) + '</span>' +
-      (owned ? '<span class="owned">In your library</span>' : '<span class="price">' + money(it.price_cents, it.currency) + '</span>') +
+      (owned ? '<span class="owned">In your library</span>'
+        : it.status === 'coming_soon' ? '<span class="price soon">Coming soon</span>'
+        : '<span class="price">' + money(it.price_cents, it.currency) + '</span>') +
       '</div></a>';
   }
   function personHTML(c, count) {
@@ -380,17 +382,26 @@
         if (it.summary) facts.push(it.summary);
       }
       var products = it.products || [{ id: 'pack', name: l.name || 'Pack', price_cents: it.price_cents }];
-      var buy = mine
+      var buy = it.status === 'coming_soon'
+        ? '<div class="buy soonbox"><span class="pn">Coming soon</span><span class="pnote">Rent for 14 days or buy, once the stems are in.</span></div>'
+        : mine
         ? '<div class="buy"><span class="price" style="color:var(--green);font-size:18px">In your library</span>' +
           '<button class="btn" data-open="' + esc(it.id) + '">Open in PerformLive</button><a class="btn ghost" href="/store/library">Library</a></div>'
         : '<div class="buy products">' + products.map(function (p, i) {
             return '<label class="prod"><input type="radio" name="prod" value="' + esc(p.id) + '" ' + (i ? '' : 'checked') + '>' +
               '<span class="pn">' + esc(p.name) + '</span>' + (p.note ? '<span class="pnote">' + esc(p.note) + '</span>' : '') +
               '<span class="price">' + money(p.price_cents, it.currency) + '</span></label>';
-          }).join('') + '<button class="btn" data-buy="' + esc(it.id) + '">Buy</button></div>';
+          }).join('') + (it.coming || []).map(function (n) {
+            return '<div class="prod off"><span></span><span class="pn">' + esc(n) + '</span><span class="price soon">Coming soon</span></div>';
+          }).join('') + '<button class="btn" data-buy="' + esc(it.id) + '">Continue</button></div>';
 
       main.innerHTML = '<div class="wrap"><div class="item">' +
-        '<div><div class="cover">' + cover(it, c, l) + '</div>' + (it.preview ? player(it) : '') + '</div>' +
+        '<div><div class="cover">' + cover(it, c, l) + '</div>' +
+        (it.kind === 'song'
+          ? (it.youtube ? '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.youtube) + '" title="' + esc(it.title) + ' on YouTube" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
+                        : '<div class="video none">Video coming</div>')
+          : (it.preview ? player(it) : '')) +
+        (it.kind === 'song' && it.tracks ? '<p class="tracks"><b>Tracks</b> ' + it.tracks.map(esc).join(' · ') + '</p>' : '') + '</div>' +
         '<div><h1>' + esc(it.title) + '</h1>' +
         '<p class="artist"><a href="/store/creator?c=' + esc(c.slug) + '">' + esc(c.name) + '</a>' + (it.feat ? ' <span class="dim">feat. ' + esc(it.feat) + '</span>' : '') + '</p>' +
         (facts.length ? '<p class="facts-line">' + facts.map(esc).join(' · ') + '</p>' : '') +
@@ -444,7 +455,7 @@
         out.hidden = false; out.className = 'msg ok';
         out.textContent = res.test
           ? 'Received - in the test build it stays in this browser and is not sent anywhere. The real form will need a signed-in account.'
-          : 'Received. Stephen reads every one; you will hear back by email.';
+          : 'Received. You will hear back by email.';
       }, function (err) {
         out.hidden = false; out.className = 'msg bad';
         out.textContent = 'That did not go through: ' + (err && err.message || err);
