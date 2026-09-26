@@ -36,7 +36,7 @@
       "tag": "New",
       "app": "ambdigital",
       "title": "AMB Digital: ten precision plug-ins, one key",
-      "body": "Where AMB Analog adds character, this gives control. Ten separate plug-ins built around one idea: you should never have to guess. The equalisers draw their curves over the real spectrum, before and after. The de-esser draws the reduction it is actually applying, measured from the audio. The delay shows its echoes travelling. Every picture is also a control surface - drag a node, a crossover, a threshold or a tap, and the panel below follows. 120 presets, twelve in each. One key unlocks all ten, on two computers. $29.",
+      "body": "Where AMB Analog adds character, this gives control. Ten separate plug-ins built around one idea: you should never have to guess. The equalisers draw their curves over the real spectrum, before and after. The de-esser draws the reduction it is actually applying, measured from the audio. The delay shows its echoes travelling. Every picture is also a control surface - drag a node, a crossover, a threshold or a tap, and the panel below follows. 120 presets, twelve in each. One key unlocks all ten, on two computers. $39.",
       "url": "ambdigital.html"
     },
     {
@@ -469,7 +469,7 @@
       "page": "ambdigital.html",
       "color": "#3B82F6",
       "free": false, "licensed": true,
-      "price_cents": 2900, "list_price_cents": 2900,
+      "price_cents": 3900, "list_price_cents": 3900,
       "version": "1.0.0",
       "installers": {
         "windows": { "key": "ambdigital/AMBDigital-1.0.0-Windows.exe",
