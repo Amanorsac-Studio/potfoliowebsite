@@ -73,28 +73,36 @@
     return '<span class="av ' + (size || '') + '" style="background:' + personColour(c.slug) + '" aria-hidden="true">' + esc(initials(c.name)) + '</span>';
   }
 
-  /* A cover for a pack that has no artwork yet: the lane's colour, the
-     creator's initials, and a waveform drawn from the pack's id so it is
-     always the same one. Inline SVG, so no image files and no CSP work. */
+  /* Album art for a song or pack that has none yet: the artist's colour,
+     the title set large, the name small. Inline SVG, so no image files.
+     Real artwork replaces this per item through `art` in the data. */
+  function wrapWords(t, max) {
+    var out = [], line = '';
+    String(t || '').split(/\s+/).forEach(function (w) {
+      if ((line + ' ' + w).trim().length > max && line) { out.push(line); line = w; } else line = (line + ' ' + w).trim();
+    });
+    if (line) out.push(line);
+    // a one-word tail like "1" or "2" goes back on the line above
+    if (out.length > 1 && out[out.length - 1].length <= 2) { out[out.length - 2] += ' ' + out.pop(); }
+    return out.slice(0, 4);
+  }
   function cover(item, creator, lane) {
-    var c = (lane && lane.colour) || '#7C5CFF';
+    if (item.art) return '<img src="' + esc(item.art) + '" alt="" loading="lazy">';
+    var c = personColour(creator ? creator.slug : '');
     var seed = hash(item.id || item.slug || 'x');
-    var bars = '';
-    for (var i = 0; i < 40; i++) {
-      seed = (seed * 1103515245 + 12345) >>> 0;
-      var h = 12 + (seed % 100) * 1.4;
-      bars += '<rect x="' + (28 + i * 8.6) + '" y="' + (250 - h / 2) + '" width="5" height="' + h + '" rx="2"/>';
-    }
     var id = 'g' + (item.id || '').replace(/\W/g, '');
+    var lines = wrapWords(item.title, 13);
+    var size = lines.length > 2 ? 34 : 40;
+    var y0 = 300 - (lines.length - 1) * size;
+    var text = lines.map(function (l, i) {
+      return '<text x="28" y="' + (y0 + i * size) + '" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="' + size + '" fill="#F2F0FF">' + esc(l) + '</text>';
+    }).join('');
+    var rings = '';
+    for (var i = 0; i < 3; i++) { seed = (seed * 1103515245 + 12345) >>> 0; rings += '<circle cx="' + (240 + (seed >>> 0) % 140) + '" cy="' + (60 + (seed >>> 8) % 120) + '" r="' + (70 + (seed >>> 16) % 90) + '" fill="none" stroke="#F2F0FF" stroke-opacity=".12" stroke-width="1.5"/>'; }
     return '<svg viewBox="0 0 400 400" role="img" aria-label="">' +
-      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="' + c + '" stop-opacity=".95"/><stop offset="1" stop-color="' + c + '" stop-opacity=".35"/></linearGradient></defs>' +
-      '<rect width="400" height="400" fill="#0F0F1D"/>' +
-      '<rect width="400" height="400" fill="url(#' + id + ')"/>' +
-      '<circle cx="330" cy="70" r="120" fill="#07070F" fill-opacity=".18"/>' +
-      '<g fill="#07070F" fill-opacity=".55">' + bars + '</g>' +
-      '<text x="28" y="76" font-family="Sora,system-ui,sans-serif" font-weight="700" font-size="44" fill="#07070F" fill-opacity=".85">' + esc(initials(creator ? creator.name : '')) + '</text>' +
-      '<text x="28" y="356" font-family="JetBrains Mono,monospace" font-size="14" fill="#07070F" fill-opacity=".8" letter-spacing="1">' + esc((lane ? lane.name : '').toUpperCase()) + '</text>' +
+      '<defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c + '"/><stop offset="1" stop-color="#0F0F1D"/></linearGradient></defs>' +
+      '<rect width="400" height="400" fill="url(#' + id + ')"/>' + rings + text +
+      '<text x="28" y="356" font-family="Inter,system-ui,sans-serif" font-size="15" fill="#F2F0FF" fill-opacity=".8">' + esc(creator ? creator.name : '') + '</text>' +
       '</svg>';
   }
 
@@ -131,10 +139,11 @@
         var q = (o.q || '').trim().toLowerCase();
         var list = d.items.filter(function (it) {
           if (o.lane && it.lane !== o.lane) return false;
+          if (o.kind && it.kind !== o.kind) return false;
           if (o.creator && it.creator !== o.creator) return false;
           if (!q) return true;
           var c = d.creatorBy[it.creator] || {};
-          var hay = [it.title, it.summary, it.tags.join(' '), c.name, (d.laneBy[it.lane] || {}).name].join(' ').toLowerCase();
+          var hay = [it.title, it.summary, it.album, it.feat, c.name, (d.laneBy[it.lane] || {}).name].join(' ').toLowerCase();
           return hay.indexOf(q) >= 0;
         });
         if (o.sort === 'released_at') list = list.slice().sort(function (a, b) { return a.released_at < b.released_at ? 1 : -1; });
@@ -276,22 +285,23 @@
     var c = d.creatorBy[it.creator] || { name: '?', slug: '' };
     var l = d.laneBy[it.lane] || {};
     var owned = ownedIds && ownedIds.indexOf(it.id) >= 0;
+    var sub = it.kind === 'song' ? c.name + (it.feat ? ' feat. ' + it.feat : '') : c.name + ' · ' + (l.name || '');
     return '<a class="card" href="/store/item?p=' + esc(it.slug) + '">' +
       '<div class="cover">' + cover(it, c, l) + '</div>' +
-      '<div class="body"><h3>' + esc(it.title) + '</h3>' +
-      '<div class="by">' + avatar(c) + '<span>' + esc(c.name) + ' ' + esc(c.flag || '') + '</span></div>' +
-      '<div class="foot"><span class="lane-pill" style="--c:' + esc(l.colour || '') + '"><i></i>' + esc(l.name || '') + '</span>' +
-      (owned ? '<span class="owned">In your library</span>' : '<span class="price' + (it.price_cents ? '' : ' free') + '">' + money(it.price_cents, it.currency) + '</span>') +
-      '</div></div></a>';
+      '<div class="body"><h3>' + esc(it.title) + '</h3><span class="by">' + esc(sub) + '</span>' +
+      (owned ? '<span class="owned">In your library</span>' : '<span class="price">' + money(it.price_cents, it.currency) + '</span>') +
+      '</div></a>';
   }
   function personHTML(c, count) {
     return '<a class="person" href="/store/creator?c=' + esc(c.slug) + '">' + avatar(c, 'lg') +
-      '<div class="who"><b>' + esc(c.name) + '</b><span>' + esc(c.flag || '') + ' ' + esc(c.country || '') +
-      (c.kind === 'artist' ? ' · Artist' : ' · Creator') + '</span></div>' +
+      '<div class="who"><b>' + esc(c.name) + '</b><span>' + esc(c.flag || '') + ' ' + esc(c.country || '') + '</span></div>' +
       (count != null ? '<span class="n">' + count + ' pack' + (count === 1 ? '' : 's') + '</span>' : '') + '</a>';
   }
   function grid(items, d, owned, cls) {
     return '<div class="grid ' + (cls || '') + '">' + items.map(function (it) { return cardHTML(it, d, owned); }).join('') + '</div>';
+  }
+  function row(items, d, owned) {
+    return '<div class="shelf">' + items.map(function (it) { return cardHTML(it, d, owned); }).join('') + '</div>';
   }
   function section(title, blurb, inner, more) {
     return '<section class="sec"><div class="sec-head"><div><h2>' + esc(title) + '</h2>' +
@@ -310,51 +320,38 @@
   var pages = {};
 
   pages.index = function (main) {
-    var q = param('q'), lane = param('lane');
+    var q = param('q'), lane = param('lane'), who = param('artist');
     Promise.all([fixture(), ownedIds()]).then(function (r) {
       var d = r[0], owned = r[1];
-      var lanesHTML = '<div class="lanes" role="group" aria-label="Lanes">' +
-        '<a class="lane" href="/store/" aria-pressed="' + (!lane && !q) + '"><i style="background:var(--text)"></i>Everything</a>' +
-        d.lanes.map(function (l) {
+      var chips = '<div class="lanes">' +
+        '<a class="lane" href="/store/" aria-pressed="' + (!lane && !q && !who) + '">All</a>' +
+        d.lanes.slice(0, 6).map(function (l) {
           return '<a class="lane" style="--c:' + l.colour + '" href="/store/?lane=' + l.id + '" aria-pressed="' + (lane === l.id) + '"><i></i>' + esc(l.name) + '</a>';
         }).join('') + '</div>';
 
-      if (q || lane) {
-        API.catalog({ q: q, lane: lane, sort: 'sales' }).then(function (res) {
-          var l = d.laneBy[lane];
-          var title = q ? 'Results for “' + q + '”' : (l ? l.name : 'Everything');
-          var blurb = q ? res.total + ' pack' + (res.total === 1 ? '' : 's') : (l ? l.blurb : '');
-          main.innerHTML = '<div class="wrap">' + lanesHTML +
-            section(title, blurb, res.items.length ? grid(res.items, d, owned)
-              : '<div class="empty">Nothing matched. Try a shorter word, or a lane above.</div>') + '</div>';
+      if (q || lane || who) {
+        API.catalog({ q: q, lane: lane, creator: who, sort: 'sales' }).then(function (res) {
+          var l = d.laneBy[lane], c = d.creatorBy[who];
+          var title = q ? '“' + q + '”' : c ? c.name : l ? l.name : 'Everything';
+          main.innerHTML = '<div class="wrap">' + chips +
+            section(title, res.total + (res.total === 1 ? ' result' : ' results'), res.items.length ? grid(res.items, d, owned)
+              : '<div class="empty">Nothing matched.</div>') + '</div>';
         });
         return;
       }
 
-      var byCreator = {};
-      d.items.forEach(function (it) { byCreator[it.creator] = (byCreator[it.creator] || 0) + 1; });
-      var html = '<div class="wrap">' +
-        '<div class="hero"><div><h1>Multitracks, pads and sets <br>from people who play on Sunday.</h1>' +
-        '<p class="lead">Buy it once, open it in PerformLive, run the service. Made by artists and creators across Ghana, Nigeria and South Africa, and paid straight to them.</p>' +
-        '<div class="cta"><a class="btn" href="/store/?lane=multitracks">Browse multitracks</a><a class="btn ghost" href="/store/creators">Sell on the store</a></div></div>' +
-        '<div class="stats">' +
-        '<div class="stat"><b class="num">' + d.items.length + '</b><span>packs on the shelf</span></div>' +
-        '<div class="stat"><b class="num">' + d.creators.length + '</b><span>artists and creators</span></div>' +
-        '<div class="stat"><b class="num">70%</b><span>of every sale goes to the maker</span></div>' +
-        '<div class="stat"><b class="num">1 click</b><span>from the store into PerformLive</span></div>' +
-        '</div></div>' + lanesHTML;
-
+      var html = '<div class="wrap">' + chips;
       d.sections.forEach(function (s) {
-        if (s.items) {
-          var items = s.items.map(function (id) { return d.byId[id]; }).filter(Boolean);
-          html += section(s.title, s.blurb, grid(items, d, owned));
-        } else if (s.creators) {
-          var people = s.creators.map(function (sl) { return d.creatorBy[sl]; }).filter(Boolean);
-          html += section(s.title, s.blurb, '<div class="grid wide">' + people.map(function (c) { return personHTML(c, byCreator[c.slug] || 0); }).join('') + '</div>');
-        } else if (s.sort) {
-          var list = d.items.slice().sort(function (a, b) { return a.released_at < b.released_at ? 1 : -1; }).slice(0, 8);
-          html += section(s.title, s.blurb, grid(list, d, owned), { href: '/store/?lane=', text: 'See everything' });
-        }
+        var list = d.items.slice();
+        if (s.kind) list = list.filter(function (it) { return it.kind === s.kind; });
+        if (s.creator) list = list.filter(function (it) { return it.creator === s.creator; });
+        if (s.sort === 'released_at') list.sort(function (a, b) { return (a.released_at || '') < (b.released_at || '') ? 1 : -1; });
+        if (s.sort === 'sales') list.sort(function (a, b) { return b.sales - a.sales; });
+        if (s.limit) list = list.slice(0, s.limit);
+        if (!list.length) return;
+        var more = s.creator ? { href: '/store/creator?c=' + s.creator, text: 'See all' }
+                 : s.kind === 'pack' ? { href: '/store/?lane=pads', text: 'See all' } : null;
+        html += section(s.title, '', row(list, d, owned), more);
       });
       main.innerHTML = html + '</div>';
     }).catch(fail(main));
@@ -364,40 +361,41 @@
     var slug = param('p');
     Promise.all([fixture(), API.item(slug), ownedIds()]).then(function (r) {
       var d = r[0], it = r[1], owned = r[2];
-      if (!it) { main.innerHTML = '<div class="wrap"><div class="empty">That pack is not here. <a href="/store/">Back to the store</a></div></div>'; return; }
+      if (!it) { main.innerHTML = '<div class="wrap"><div class="empty">Not here. <a href="/store/">Back to the store</a></div></div>'; return; }
       var c = d.creatorBy[it.creator] || { name: '?', slug: '' };
       var l = d.laneBy[it.lane] || {};
       var mine = owned.indexOf(it.id) >= 0;
       document.title = it.title + ' · ' + c.name + ' · Amanorsac Store';
-      var related = d.items.filter(function (x) { return x.id !== it.id && (x.creator === it.creator || x.lane === it.lane); }).slice(0, 4);
+      var more = d.items.filter(function (x) { return x.id !== it.id && x.creator === it.creator; }).slice(0, 6);
+      var facts = [];
+      if (it.kind === 'song') {
+        if (it.album) facts.push(it.album);
+        if (it.year) facts.push(String(it.year));
+        if (it.key) facts.push('Key ' + it.key);
+        if (it.bpm) facts.push(it.bpm + ' BPM');
+        if (it.length) facts.push(it.length);
+        if (it.live) facts.push('Live');
+      } else {
+        if (l.name) facts.push(l.name);
+        if (it.summary) facts.push(it.summary);
+      }
+      var products = it.products || [{ id: 'pack', name: l.name || 'Pack', price_cents: it.price_cents }];
+      var buy = mine
+        ? '<div class="buy"><span class="price" style="color:var(--green);font-size:18px">In your library</span>' +
+          '<button class="btn" data-open="' + esc(it.id) + '">Open in PerformLive</button><a class="btn ghost" href="/store/library">Library</a></div>'
+        : '<div class="buy products">' + products.map(function (p, i) {
+            return '<label class="prod"><input type="radio" name="prod" value="' + esc(p.id) + '" ' + (i ? '' : 'checked') + '>' +
+              '<span class="pn">' + esc(p.name) + '</span>' + (p.note ? '<span class="pnote">' + esc(p.note) + '</span>' : '') +
+              '<span class="price">' + money(p.price_cents, it.currency) + '</span></label>';
+          }).join('') + '<button class="btn" data-buy="' + esc(it.id) + '">Buy</button></div>';
 
       main.innerHTML = '<div class="wrap"><div class="item">' +
-        '<div><div class="cover">' + cover(it, c, l) + '</div>' +
-        (it.preview ? player(it) : '<p class="faint" style="margin-top:12px;font-size:13px">No audio preview for this one.</p>') +
-        '<div class="facts">' +
-        '<div class="fact"><b>' + (it.songs || '—') + '</b><span>' + (it.lane === 'loops' ? 'loops' : it.lane === 'pads' ? 'pads' : it.lane === 'charts' ? 'charts' : 'songs') + '</span></div>' +
-        '<div class="fact"><b>' + mb(it.size_mb) + '</b><span>download</span></div>' +
-        '<div class="fact"><b>' + it.rating.toFixed(1) + '</b><span>' + it.sales + ' sold</span></div>' +
-        '</div></div>' +
-        '<div><div class="head"><span class="lane-pill" style="--c:' + esc(l.colour || '') + '"><i></i>' + esc(l.name) + '</span>' +
-        '<h1>' + esc(it.title) + '</h1>' +
-        '<div class="meta"><a class="by" href="/store/creator?c=' + esc(c.slug) + '">' + avatar(c) + '<span>' + esc(c.name) + ' ' + esc(c.flag || '') + '</span></a>' +
-        '<span>Released ' + dateShort(it.released_at) + '</span></div></div>' +
-        '<div class="buy">' + (mine
-          ? '<span class="price" style="color:var(--green);font-size:18px">In your library</span>' +
-            '<button class="btn" data-open="' + esc(it.id) + '">Open in PerformLive</button><a class="btn ghost" href="/store/library">Library</a>'
-          : '<span class="price">' + money(it.price_cents, it.currency) + '</span>' +
-            '<button class="btn" data-buy="' + esc(it.id) + '">Buy this pack</button>' +
-            '<span class="note">One payment. Yours on every machine you sign in on.</span>') + '</div>' +
-        '<p class="desc">' + esc(it.description) + '</p>' +
-        '<div class="tags">' + (it.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div>' +
-        '<h2>What is inside</h2><ul class="contents">' + (it.contents || []).map(function (x) {
-          return '<li><span class="k">' + esc(x.kind) + '</span><span>' + esc(x.name) + '</span>' + (x.length ? '<span class="l">' + esc(x.length) + '</span>' : '') + '</li>';
-        }).join('') + '</ul>' +
-        '<h2>About ' + esc(c.name.split(' ')[0]) + '</h2><p class="desc">' + esc(c.bio) + '</p>' +
-        (c.youtube ? '<p style="margin-top:10px"><a href="' + esc(c.youtube) + '" rel="noopener" target="_blank">Watch on YouTube →</a></p>' : '') +
-        '</div></div>' +
-        (related.length ? section('More like this', '', grid(related, d, owned)) : '') +
+        '<div><div class="cover">' + cover(it, c, l) + '</div>' + (it.preview ? player(it) : '') + '</div>' +
+        '<div><h1>' + esc(it.title) + '</h1>' +
+        '<p class="artist"><a href="/store/creator?c=' + esc(c.slug) + '">' + esc(c.name) + '</a>' + (it.feat ? ' <span class="dim">feat. ' + esc(it.feat) + '</span>' : '') + '</p>' +
+        (facts.length ? '<p class="facts-line">' + facts.map(esc).join(' · ') + '</p>' : '') +
+        buy + '</div></div>' +
+        (more.length ? section('More from ' + c.name, '', row(more, d, owned), { href: '/store/creator?c=' + c.slug, text: 'See all' }) : '') +
         '</div>';
       wirePlayer(main);
       wireBuy(main, d);
@@ -408,18 +406,15 @@
     var slug = param('c');
     Promise.all([fixture(), API.creator(slug), ownedIds()]).then(function (r) {
       var d = r[0], res = r[1], owned = r[2];
-      if (!res) { main.innerHTML = '<div class="wrap"><div class="empty">No one by that name here. <a href="/store/creators">See the creators</a></div></div>'; return; }
+      if (!res) { main.innerHTML = '<div class="wrap"><div class="empty">No one by that name. <a href="/store/">Back to the store</a></div></div>'; return; }
       var c = res.creator, items = res.items;
       document.title = c.name + ' · Amanorsac Store';
-      var sold = items.reduce(function (n, it) { return n + (it.sales || 0); }, 0);
       main.innerHTML = '<div class="wrap">' +
-        '<div class="profile">' + avatar(c, 'xl') + '<div class="who"><h1>' + esc(c.name) + ' ' +
-        (c.verified ? '<span class="badge">✓ Verified</span> ' : '') + '<span class="badge kind">' + (c.kind === 'artist' ? 'Artist' : 'Creator') + '</span></h1>' +
-        '<div class="line">' + esc(c.flag || '') + ' ' + esc(c.city ? c.city + ', ' : '') + esc(c.country) + ' · On the store since ' + dateShort(c.joined) + '</div>' +
-        '<p class="bio">' + esc(c.bio) + '</p>' +
-        '<div class="links">' + (c.youtube ? '<a class="btn ghost sm" href="' + esc(c.youtube) + '" rel="noopener" target="_blank">YouTube</a>' : '') + '</div></div>' +
-        '<div class="stats"><div><b>' + items.length + '</b><span>packs</span></div><div><b>' + sold + '</b><span>sold</span></div></div></div>' +
-        section('Packs by ' + c.name.split(' ')[0], '', items.length ? grid(items, d, owned) : '<div class="empty">Nothing on the shelf yet.</div>') +
+        '<div class="profile">' + avatar(c, 'xl') + '<div class="who"><h1>' + esc(c.name) + '</h1>' +
+        '<div class="line">' + esc(c.flag || '') + ' ' + esc(c.country || '') + ' · ' + items.length + (items.length === 1 ? ' title' : ' titles') + '</div>' +
+        (c.youtube ? '<div class="links"><a class="btn ghost sm" href="' + esc(c.youtube) + '" rel="noopener" target="_blank">YouTube</a></div>' : '') +
+        '</div></div>' +
+        (items.length ? grid(items, d, owned) : '<div class="empty">Nothing on the shelf yet.</div>') +
         '</div>';
     }).catch(fail(main));
   };
@@ -467,7 +462,7 @@
         (items.length ? '<div class="rows">' + items.map(function (it) {
           var c = d.creatorBy[it.creator] || {}; var l = d.laneBy[it.lane] || {};
           return '<div class="row"><div class="cover">' + cover(it, c, l) + '</div>' +
-            '<div class="t"><b><a href="/store/item?p=' + esc(it.slug) + '" style="color:inherit">' + esc(it.title) + '</a></b><span>' + esc(c.name) + ' · ' + esc(l.name) + ' · ' + mb(it.size_mb) + '</span></div>' +
+            '<div class="t"><b><a href="/store/item?p=' + esc(it.slug) + '" style="color:inherit">' + esc(it.title) + '</a></b><span>' + esc(c.name) + (it.kind === 'song' ? '' : ' · ' + esc(l.name)) + '</span></div>' +
             '<div class="acts"><button class="btn sm" data-open="' + esc(it.id) + '">Open in PerformLive</button>' +
             '<button class="btn ghost sm" data-dl="' + esc(it.id) + '">Download</button></div></div>';
         }).join('') + '</div>'
@@ -516,7 +511,7 @@
           '</tbody></table>') +
         section('Your packs', '', '<div class="rows">' + items.map(function (it) {
           var l = d.laneBy[it.lane] || {};
-          return '<div class="row"><div class="cover">' + cover(it, c, l) + '</div><div class="t"><b>' + esc(it.title) + '</b><span>' + esc(l.name) + ' · ' + money(it.price_cents) + ' · ' + it.sales + ' sold · ' + it.rating.toFixed(1) + '</span></div>' +
+          return '<div class="row"><div class="cover">' + cover(it, c, l) + '</div><div class="t"><b>' + esc(it.title) + '</b><span>' + esc(l.name) + ' · ' + money(it.price_cents) + ' · ' + it.sales + ' sold' + '</span></div>' +
             '<div class="acts"><a class="btn ghost sm" href="/store/item?p=' + esc(it.slug) + '">View</a><button class="btn quiet sm" disabled title="Editing comes with the live build">Edit</button></div></div>';
         }).join('') + '</div>') +
         section('Payouts', '', '<table class="tbl"><thead><tr><th>Date</th><th>Method</th><th>Status</th><th class="num">Amount</th></tr></thead><tbody>' +
@@ -578,10 +573,13 @@
       b.addEventListener('click', function () {
         var id = b.getAttribute('data-buy');
         var it = d.byId[id];
+        var chosen = $('input[name=prod]:checked', root);
+        var prod = (it.products || []).filter(function (p) { return chosen && p.id === chosen.value; })[0];
+        var price = prod ? prod.price_cents : it.price_cents;
         if (TEST) {
           modal('Test build', '<p>Checkout is switched off. Live, this button sends <code>' + esc(id) + '</code> to <code>create-store-checkout</code> and comes back to /store/success with the pack in your library.</p>' +
             '<p style="margin-top:10px">You can pretend, to test the rest of the flow.</p>',
-            [{ text: 'Not now', ghost: true }, { text: 'Pretend I paid ' + money(it.price_cents), run: function () {
+            [{ text: 'Not now', ghost: true }, { text: 'Pretend I paid ' + money(price), run: function () {
               API.checkout([id]).then(function (r) { location.href = r.url; });
             } }]);
           return;
@@ -590,7 +588,7 @@
           if (!user) { location.href = '/client?next=' + encodeURIComponent(location.pathname + location.search); return; }
           b.disabled = true; b.textContent = 'One moment';
           API.checkout([id]).then(function (r) { location.href = r.url; }, function (err) {
-            b.disabled = false; b.textContent = 'Buy this pack';
+            b.disabled = false; b.textContent = 'Buy';
             modal('That did not work', '<p>' + esc(err && err.message || err) + '</p>', [{ text: 'OK' }]);
           });
         });
