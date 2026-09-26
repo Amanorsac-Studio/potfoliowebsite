@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sell on the Amanorsac Store</title>
+<meta name="description" content="Sell your multitracks, pads, loops and PerformLive sets. 70% of every sale is yours.">
+<!-- Test build. Not for search engines until the store is live. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="stylesheet" href="/store/store.css">
+<link rel="stylesheet" href="/assets/site-auth.css">
+</head>
+<body data-page="creators">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="/store/"><img src="/images/logo-onDark.svg" alt=""><span>Amanorsac</span><small>Store</small></a>
+  <nav class="topnav" aria-label="Store">
+    <a href="/store/" data-nav="index">Store</a>
+    <a href="/store/creators" data-nav="creators">Creators</a>
+    <a href="/store/library" data-nav="library">Library</a>
+  </nav>
+  <span class="grow"></span>
+  <label class="topsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" placeholder="Search packs, creators, lanes" aria-label="Search the store"></label>
+  <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
+</div></header>
+
+<main id="main">
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <h1>Your Sunday, sold to every other Sunday.</h1>
+      <p class="lead">You already make the multitracks, the pads, the sets. Put them on the store, keep 70% of every sale, and let PerformLive deliver them into a band's hands in one click.</p>
+      <div class="cta"><a class="btn" href="#apply">Apply to sell</a><a class="btn ghost" href="/store/">See the store</a></div>
+    </div>
+    <div class="strip">
+      <div class="stat"><b class="num">70%</b><span>of every sale is yours</span></div>
+      <div class="stat"><b class="num">$0</b><span>to list. No monthly fee.</span></div>
+      <div class="stat"><b class="num">Monthly</b><span>payouts, bank or mobile money</span></div>
+      <div class="stat"><b class="num">Yours</b><span>the rights stay with you</span></div>
+    </div>
+  </div>
+
+  <section class="pitch">
+    <div class="p"><b>What sells here</b><span>Multitracks and stems of your own songs. Pads in every key. Loops and kits. PerformLive sets and templates. Click and cue packs. Charts.</span></div>
+    <div class="p"><b>Who buys</b><span>Worship teams, music directors and bands who run PerformLive on Sunday and need it to sound right with the people they have.</span></div>
+    <div class="p"><b>How you get paid</b><span>Every sale is split when it happens. Payouts go out monthly by bank transfer or mobile money, with a statement you can read.</span></div>
+  </section>
+
+  <h2>How it works</h2>
+  <div class="steps">
+    <div><p><b>Apply, with your account</b>Sign in with the account you use on amanorsac.studio, or make one. Tell us who you are, what you make, and where we can hear it.</p></div>
+    <div><p><b>Get let in</b>Stephen reviews every application himself. If it fits, your account becomes a creator account and the dashboard opens.</p></div>
+    <div><p><b>Upload and price</b>Add a pack, set the price within its tier, write what is inside. It is checked once, then it is on the shelf.</p></div>
+    <div><p><b>Get paid</b>Watch sales come in on the dashboard. Money goes out every month.</p></div>
+  </div>
+
+  <section class="sec" id="apply">
+    <div class="sec-head"><div><h2>Apply to sell</h2><p>Takes about five minutes. Every application is read by a person.</p></div></div>
+    <!-- APPLY FORM: the fields below are a first shape. The real
+         requirements for who qualifies and what to ask are still to
+         come from Stephen; change the fields here and store.js sends
+         whatever the form contains. Live, this needs a signed-in
+         account and inserts into creator_applications. -->
+    <form class="form" id="apply-form" autocomplete="on">
+      <div class="row">
+        <label>Your name <span class="req">*</span><input name="name" required maxlength="80"></label>
+        <label>Artist or brand name <span class="hint">(if different)</span><input name="brand" maxlength="80"></label>
+      </div>
+      <div class="row">
+        <label>Email <span class="req">*</span><input name="email" type="email" required></label>
+        <label>Country <span class="req">*</span>
+          <select name="country" required>
+            <option value="">Choose</option>
+            <option>Ghana</option><option>Nigeria</option><option>South Africa</option><option>Kenya</option><option>United Kingdom</option><option>United States</option><option>Other</option>
+          </select></label>
+      </div>
+      <label>Where can we hear you? <span class="req">*</span><span class="hint">YouTube, Spotify, Instagram, a website - one per line</span><textarea name="links" required></textarea></label>
+      <label>What would you sell? <span class="req">*</span>
+        <span class="checks">
+          <label><input type="checkbox" name="lanes" value="multitracks">Multitracks</label>
+          <label><input type="checkbox" name="lanes" value="stems">Stems</label>
+          <label><input type="checkbox" name="lanes" value="pads">Pads</label>
+          <label><input type="checkbox" name="lanes" value="loops">Loops &amp; kits</label>
+          <label><input type="checkbox" name="lanes" value="templates">Templates</label>
+          <label><input type="checkbox" name="lanes" value="clicks">Click &amp; guide</label>
+          <label><input type="checkbox" name="lanes" value="charts">Charts</label>
+        </span></label>
+      <label>Do you own the rights to what you would sell? <span class="req">*</span>
+        <select name="rights" required>
+          <option value="">Choose</option>
+          <option value="own">Yes, all of it is mine</option>
+          <option value="shared">Some is shared with co-writers or a label</option>
+          <option value="no">Not sure</option>
+        </select></label>
+      <label>Anything else <span class="hint">what you make, who it is for, how you would price it</span><textarea name="message"></textarea></label>
+      <div><button class="btn" type="submit">Send application</button></div>
+      <p class="msg" id="apply-out" hidden></p>
+    </form>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><div><h2>Already selling</h2><p>The artists and creators on the store today.</p></div></div>
+    <div class="grid wide" id="creator-list"></div>
+  </section>
+</div>
+</main>
+
+<footer class="store"><div class="wrap">
+  <span>© Amanorsac Studio · <a href="/">amanorsac.studio</a> · <a href="/apps.html">Apps</a></span>
+  <span><a href="/store/creators">Sell on the store</a> · <a href="/privacy">Privacy</a> · <a href="/legal.html">Terms</a></span>
+</div></footer>
+
+<script src="/assets/vendor/supabase-2.116.0.js" defer></script>
+<script src="/assets/supabase-client.js" defer></script>
+<script src="/assets/site-auth.js" defer></script>
+<script src="/store/store.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,360 @@
+{
+  "_about": "Test data for the store build. Nothing in here is for sale. The artists are named with their permission still to be asked; every pack title is generic on purpose - no song titles have been invented for anyone. Delete this file the day the store reads from Supabase.",
+
+  "lanes": [
+    { "id": "multitracks", "name": "Multitracks",   "colour": "#00D9FF", "blurb": "Full performances, every instrument on its own fader." },
+    { "id": "stems",       "name": "Stems",         "colour": "#4D7CFF", "blurb": "Grouped parts - drums, bass, keys - for a quick mix." },
+    { "id": "pads",        "name": "Pads",          "colour": "#A855F7", "blurb": "Ambient beds in every key. Sits under anything." },
+    { "id": "loops",       "name": "Loops & kits",  "colour": "#FF2D95", "blurb": "Drum loops, percussion, one-shots. Tempo-tagged." },
+    { "id": "templates",   "name": "Templates",     "colour": "#FFA62B", "blurb": "PerformLive sets, ready to open and run." },
+    { "id": "clicks",      "name": "Click & guide", "colour": "#3DFFC0", "blurb": "Clicks, counts and spoken cues for the band." },
+    { "id": "charts",      "name": "Charts",        "colour": "#B6FF2E", "blurb": "Chord charts and lead sheets, PDF and text." },
+    { "id": "bundles",     "name": "Bundles",       "colour": "#FF5C3B", "blurb": "Several packs together, priced as one." }
+  ],
+
+  "creators": [
+    {
+      "slug": "kingsley-anyenor", "name": "Kingsley Anyenor", "kind": "artist",
+      "country": "Ghana", "flag": "🇬🇭", "city": "Accra",
+      "youtube": "https://www.youtube.com/channel/UCkjUIJjNjY6sa2VYT1ZumGw",
+      "bio": "Gospel artist and worship leader. Live sets recorded with his own band, released here as multitracks so any church can run them.",
+      "joined": "2026-09-01", "verified": true
+    },
+    {
+      "slug": "viivi-adjei", "name": "Viivi Adjei", "kind": "artist",
+      "country": "Ghana", "flag": "🇬🇭", "city": "Accra",
+      "youtube": "https://www.youtube.com/@viviadjei",
+      "bio": "Singer and songwriter. Her multitracks come straight from the sessions, with the vocal guide left in so your team can learn the parts.",
+      "joined": "2026-09-01", "verified": true
+    },
+    {
+      "slug": "isaac-narh", "name": "Isaac Narh", "kind": "artist",
+      "country": "Ghana", "flag": "🇬🇭", "city": "Accra",
+      "youtube": "https://www.youtube.com/@isaacnarhofficial",
+      "bio": "Worship artist. Sets built for a full band, with pads and click already in place, so the whole thing opens in PerformLive and just goes.",
+      "joined": "2026-09-01", "verified": true
+    },
+    {
+      "slug": "kwame-asante", "name": "Kwame Asante", "kind": "creator",
+      "country": "Ghana", "flag": "🇬🇭", "city": "Kumasi",
+      "bio": "Drummer and producer. Highlife and gospel grooves, played by hand, cut into loops that sit right at church tempos.",
+      "joined": "2026-09-04", "verified": true
+    },
+    {
+      "slug": "akosua-mensah", "name": "Akosua Mensah", "kind": "creator",
+      "country": "Ghana", "flag": "🇬🇭", "city": "Accra",
+      "bio": "Music director. Builds PerformLive templates and cue packs for teams that have a Sunday to get through and no time to set up.",
+      "joined": "2026-09-04", "verified": true
+    },
+    {
+      "slug": "chinedu-okafor", "name": "Chinedu Okafor", "kind": "creator",
+      "country": "Nigeria", "flag": "🇳🇬", "city": "Lagos",
+      "bio": "Producer. Afrobeats and praise-night percussion, and full-band multitracks recorded in his Lagos room.",
+      "joined": "2026-09-06", "verified": true
+    },
+    {
+      "slug": "ama-serwaa-boateng", "name": "Ama Serwaa Boateng", "kind": "creator",
+      "country": "Ghana", "flag": "🇬🇭", "city": "Takoradi",
+      "bio": "Choir director and pianist. Hymn pads, charts and arrangements written for real choirs with real ranges.",
+      "joined": "2026-09-08", "verified": true
+    },
+    {
+      "slug": "thabo-mokoena", "name": "Thabo Mokoena", "kind": "creator",
+      "country": "South Africa", "flag": "🇿🇦", "city": "Johannesburg",
+      "bio": "Bassist and producer. Gospel bass stems, amapiano kits and ready-to-run Sunday templates from Joburg.",
+      "joined": "2026-09-10", "verified": true
+    }
+  ],
+
+  "items": [
+    {
+      "id": "it_0001", "slug": "kingsley-anyenor-live-set-vol-1",
+      "title": "Live Set Multitracks, Vol. 1", "creator": "kingsley-anyenor", "lane": "multitracks",
+      "price_cents": 1200, "currency": "USD", "tags": ["gospel", "worship", "live", "full band"],
+      "summary": "A full live set from the band, one fader per instrument.",
+      "description": "Every instrument from a live set, on its own track, lined up to the click. Open the set in PerformLive, mute what your band is playing, and run the rest. Vocal guides are included on their own tracks so the team can rehearse with them and drop them on the day.",
+      "contents": [
+        { "name": "Drums",             "kind": "wav", "length": "42:10" },
+        { "name": "Bass",              "kind": "wav", "length": "42:10" },
+        { "name": "Keys",              "kind": "wav", "length": "42:10" },
+        { "name": "Pads",              "kind": "wav", "length": "42:10" },
+        { "name": "Electric guitar",   "kind": "wav", "length": "42:10" },
+        { "name": "Lead vocal guide",  "kind": "wav", "length": "42:10" },
+        { "name": "Backing vocals",    "kind": "wav", "length": "42:10" },
+        { "name": "Click & cues",      "kind": "wav", "length": "42:10" },
+        { "name": "PerformLive set",   "kind": "plset" }
+      ],
+      "songs": 7, "size_mb": 1840, "preview": "/audio/drums-mixed.mp3",
+      "featured": true, "released_at": "2026-09-12", "sales": 148, "rating": 4.9
+    },
+    {
+      "id": "it_0002", "slug": "kingsley-anyenor-worship-stems",
+      "title": "Worship Stems Pack", "creator": "kingsley-anyenor", "lane": "stems",
+      "price_cents": 900, "currency": "USD", "tags": ["gospel", "worship", "stems"],
+      "summary": "The same set, grouped into four stems for a smaller desk.",
+      "description": "Four stems - rhythm, keys and pads, vocals, click - for teams that run from a phone or a small mixer. Same performances as the multitracks, already balanced.",
+      "contents": [
+        { "name": "Rhythm section", "kind": "wav", "length": "42:10" },
+        { "name": "Keys & pads",    "kind": "wav", "length": "42:10" },
+        { "name": "Vocals",         "kind": "wav", "length": "42:10" },
+        { "name": "Click & cues",   "kind": "wav", "length": "42:10" }
+      ],
+      "songs": 7, "size_mb": 920, "preview": "/audio/backing-mixed.mp3",
+      "featured": false, "released_at": "2026-09-14", "sales": 63, "rating": 4.8
+    },
+    {
+      "id": "it_0003", "slug": "viivi-adjei-live-set-vol-1",
+      "title": "Live Set Multitracks, Vol. 1", "creator": "viivi-adjei", "lane": "multitracks",
+      "price_cents": 1200, "currency": "USD", "tags": ["gospel", "worship", "live", "full band"],
+      "summary": "From the session, with the vocal guide left in.",
+      "description": "Eight tracks per song, recorded live. The lead vocal guide is on its own track so a new singer can learn the part and the sound person can pull it on the day.",
+      "contents": [
+        { "name": "Drums",            "kind": "wav", "length": "38:40" },
+        { "name": "Bass",             "kind": "wav", "length": "38:40" },
+        { "name": "Keys",             "kind": "wav", "length": "38:40" },
+        { "name": "Pads",             "kind": "wav", "length": "38:40" },
+        { "name": "Acoustic guitar",  "kind": "wav", "length": "38:40" },
+        { "name": "Lead vocal guide", "kind": "wav", "length": "38:40" },
+        { "name": "Backing vocals",   "kind": "wav", "length": "38:40" },
+        { "name": "Click & cues",     "kind": "wav", "length": "38:40" },
+        { "name": "PerformLive set",  "kind": "plset" }
+      ],
+      "songs": 6, "size_mb": 1610, "preview": "/audio/lead-mixed.mp3",
+      "featured": true, "released_at": "2026-09-15", "sales": 121, "rating": 5.0
+    },
+    {
+      "id": "it_0004", "slug": "viivi-adjei-pads-and-ambience",
+      "title": "Pads & Ambience Kit", "creator": "viivi-adjei", "lane": "pads",
+      "price_cents": 600, "currency": "USD", "tags": ["pads", "ambient", "all keys"],
+      "summary": "The pads from her sets, in all twelve keys.",
+      "description": "Twelve keys, major and minor, each a ten-minute loop with a clean seam. Warm, not bright - made to sit under a sermon or a quiet moment without anyone noticing it is there.",
+      "contents": [
+        { "name": "12 major keys", "kind": "wav", "length": "10:00 each" },
+        { "name": "12 minor keys", "kind": "wav", "length": "10:00 each" },
+        { "name": "PerformLive pad bank", "kind": "plpads" }
+      ],
+      "songs": 24, "size_mb": 690, "preview": "/audio/backing-mixed.mp3",
+      "featured": false, "released_at": "2026-09-18", "sales": 210, "rating": 4.9
+    },
+    {
+      "id": "it_0005", "slug": "isaac-narh-live-set-vol-1",
+      "title": "Live Set Multitracks, Vol. 1", "creator": "isaac-narh", "lane": "multitracks",
+      "price_cents": 1200, "currency": "USD", "tags": ["gospel", "worship", "live", "full band"],
+      "summary": "Full band, pads and click already placed.",
+      "description": "Opens in PerformLive as a finished set: songs in order, pads under the transitions, click on the count. Mute the band you have, keep the rest.",
+      "contents": [
+        { "name": "Drums",            "kind": "wav", "length": "45:20" },
+        { "name": "Bass",             "kind": "wav", "length": "45:20" },
+        { "name": "Keys",             "kind": "wav", "length": "45:20" },
+        { "name": "Organ",            "kind": "wav", "length": "45:20" },
+        { "name": "Pads",             "kind": "wav", "length": "45:20" },
+        { "name": "Electric guitar",  "kind": "wav", "length": "45:20" },
+        { "name": "Lead vocal guide", "kind": "wav", "length": "45:20" },
+        { "name": "Backing vocals",   "kind": "wav", "length": "45:20" },
+        { "name": "Click & cues",     "kind": "wav", "length": "45:20" },
+        { "name": "PerformLive set",  "kind": "plset" }
+      ],
+      "songs": 8, "size_mb": 2050, "preview": "/audio/drums-mixed.mp3",
+      "featured": true, "released_at": "2026-09-10", "sales": 176, "rating": 4.9
+    },
+    {
+      "id": "it_0006", "slug": "isaac-narh-full-set-bundle",
+      "title": "Full Set Bundle", "creator": "isaac-narh", "lane": "bundles",
+      "price_cents": 3000, "currency": "USD", "tags": ["bundle", "multitracks", "stems", "charts"],
+      "summary": "Multitracks, stems and charts for the whole set, as one.",
+      "description": "Everything for the set in a single purchase: the multitracks, the four-stem version, and chord charts for every song. Cheaper than the three apart.",
+      "contents": [
+        { "name": "Live Set Multitracks, Vol. 1", "kind": "pack" },
+        { "name": "Four-stem version",            "kind": "pack" },
+        { "name": "Chord charts, 8 songs",        "kind": "pdf" }
+      ],
+      "songs": 8, "size_mb": 3100, "preview": "/audio/drums-mixed.mp3",
+      "featured": false, "released_at": "2026-09-20", "sales": 42, "rating": 5.0
+    },
+    {
+      "id": "it_0007", "slug": "kwame-asante-highlife-drum-loops",
+      "title": "Highlife Drum Loops", "creator": "kwame-asante", "lane": "loops",
+      "price_cents": 800, "currency": "USD", "tags": ["highlife", "drums", "loops", "96-124 bpm"],
+      "summary": "Played by hand. Forty loops, four tempos, tempo-tagged.",
+      "description": "Forty highlife and gospel-highlife grooves, played on a real kit and cut to the bar. Each loop is tagged with its tempo and comes in full, no-kick and hats-only versions.",
+      "contents": [
+        { "name": "40 full loops",   "kind": "wav", "length": "8 bars" },
+        { "name": "40 no-kick",      "kind": "wav", "length": "8 bars" },
+        { "name": "40 hats only",    "kind": "wav", "length": "8 bars" },
+        { "name": "Fills, 24",       "kind": "wav", "length": "1-2 bars" }
+      ],
+      "songs": 40, "size_mb": 410, "preview": "/audio/drums-mixed.mp3",
+      "featured": true, "released_at": "2026-09-08", "sales": 97, "rating": 4.7
+    },
+    {
+      "id": "it_0008", "slug": "kwame-asante-sunday-pads",
+      "title": "Sunday Pads, 12 keys", "creator": "kwame-asante", "lane": "pads",
+      "price_cents": 600, "currency": "USD", "tags": ["pads", "all keys", "warm"],
+      "summary": "One pad per key. Nothing fancy. Always works.",
+      "description": "A single warm pad in each of the twelve keys, looped clean. This is the one you leave running.",
+      "contents": [
+        { "name": "12 keys",              "kind": "wav", "length": "8:00 each" },
+        { "name": "PerformLive pad bank", "kind": "plpads" }
+      ],
+      "songs": 12, "size_mb": 330, "preview": "/audio/backing-mixed.mp3",
+      "featured": false, "released_at": "2026-09-11", "sales": 154, "rating": 4.8
+    },
+    {
+      "id": "it_0009", "slug": "akosua-mensah-worship-set-template",
+      "title": "Worship Set Template", "creator": "akosua-mensah", "lane": "templates",
+      "price_cents": 1000, "currency": "USD", "tags": ["performlive", "template", "sunday"],
+      "summary": "A whole Sunday, laid out. Drop your songs in.",
+      "description": "A PerformLive set with the running order, pad transitions, click routing and cue markers already built. Replace the placeholder songs with yours and the structure holds.",
+      "contents": [
+        { "name": "PerformLive set",        "kind": "plset" },
+        { "name": "Transition pads, 12 keys", "kind": "wav" },
+        { "name": "Setup notes",            "kind": "pdf" }
+      ],
+      "songs": 0, "size_mb": 280, "preview": "/audio/backing-mixed.mp3",
+      "featured": true, "released_at": "2026-09-09", "sales": 88, "rating": 4.9
+    },
+    {
+      "id": "it_0010", "slug": "akosua-mensah-click-and-cue-pack",
+      "title": "Click & Cue Pack", "creator": "akosua-mensah", "lane": "clicks",
+      "price_cents": 400, "currency": "USD", "tags": ["click", "cues", "spoken"],
+      "summary": "Counts, section calls and a click the drummer will not hate.",
+      "description": "Spoken section cues - verse, chorus, bridge, out - recorded clearly and cut to the bar, with a click in three sounds and every common tempo.",
+      "contents": [
+        { "name": "Spoken cues, 60", "kind": "wav" },
+        { "name": "Click, 3 sounds, 60-180 bpm", "kind": "wav" }
+      ],
+      "songs": 0, "size_mb": 95, "preview": "/audio/drums-mixed.mp3",
+      "featured": false, "released_at": "2026-09-13", "sales": 201, "rating": 4.8
+    },
+    {
+      "id": "it_0011", "slug": "chinedu-okafor-afrobeats-percussion-kit",
+      "title": "Afrobeats Percussion Kit", "creator": "chinedu-okafor", "lane": "loops",
+      "price_cents": 900, "currency": "USD", "tags": ["afrobeats", "percussion", "loops", "one-shots"],
+      "summary": "Shakers, congas, log drums and the bits between.",
+      "description": "Sixty percussion loops and two hundred one-shots from a Lagos session. Dry, close, ready for your own room.",
+      "contents": [
+        { "name": "60 loops",      "kind": "wav", "length": "4-8 bars" },
+        { "name": "200 one-shots", "kind": "wav" }
+      ],
+      "songs": 60, "size_mb": 520, "preview": "/audio/drums-mixed.mp3",
+      "featured": true, "released_at": "2026-09-16", "sales": 74, "rating": 4.7
+    },
+    {
+      "id": "it_0012", "slug": "chinedu-okafor-praise-night-multitracks",
+      "title": "Praise Night Multitracks", "creator": "chinedu-okafor", "lane": "multitracks",
+      "price_cents": 1500, "currency": "USD", "tags": ["praise", "full band", "live", "high energy"],
+      "summary": "Six high-energy praise arrangements, full band.",
+      "description": "Six praise arrangements recorded with a full band, nine tracks each. Built for the loud part of the service.",
+      "contents": [
+        { "name": "Drums",           "kind": "wav", "length": "31:00" },
+        { "name": "Percussion",      "kind": "wav", "length": "31:00" },
+        { "name": "Bass",            "kind": "wav", "length": "31:00" },
+        { "name": "Keys",            "kind": "wav", "length": "31:00" },
+        { "name": "Horns",           "kind": "wav", "length": "31:00" },
+        { "name": "Guitar",          "kind": "wav", "length": "31:00" },
+        { "name": "Lead vocal guide","kind": "wav", "length": "31:00" },
+        { "name": "Backing vocals",  "kind": "wav", "length": "31:00" },
+        { "name": "Click & cues",    "kind": "wav", "length": "31:00" },
+        { "name": "PerformLive set", "kind": "plset" }
+      ],
+      "songs": 6, "size_mb": 1720, "preview": "/audio/lead-mixed.mp3",
+      "featured": false, "released_at": "2026-09-19", "sales": 39, "rating": 4.8
+    },
+    {
+      "id": "it_0013", "slug": "ama-serwaa-boateng-choir-charts-bundle",
+      "title": "Choir Charts Bundle", "creator": "ama-serwaa-boateng", "lane": "charts",
+      "price_cents": 500, "currency": "USD", "tags": ["charts", "choir", "SATB", "pdf"],
+      "summary": "Twenty arrangements, SATB, in ranges a real choir can sing.",
+      "description": "Twenty choir arrangements as PDF and plain text, with parts marked and keys chosen for actual voices rather than for the piano.",
+      "contents": [
+        { "name": "20 arrangements", "kind": "pdf" },
+        { "name": "Plain-text charts", "kind": "txt" }
+      ],
+      "songs": 20, "size_mb": 12, "preview": null,
+      "featured": false, "released_at": "2026-09-17", "sales": 133, "rating": 4.9
+    },
+    {
+      "id": "it_0014", "slug": "ama-serwaa-boateng-hymn-pads",
+      "title": "Hymn Pads, warm", "creator": "ama-serwaa-boateng", "lane": "pads",
+      "price_cents": 500, "currency": "USD", "tags": ["pads", "hymns", "warm", "all keys"],
+      "summary": "Softer pads, voiced for hymns and quiet services.",
+      "description": "Twelve keys, voiced low and slow so they sit under a hymn without pulling it anywhere modern.",
+      "contents": [
+        { "name": "12 keys",              "kind": "wav", "length": "8:00 each" },
+        { "name": "PerformLive pad bank", "kind": "plpads" }
+      ],
+      "songs": 12, "size_mb": 310, "preview": "/audio/backing-mixed.mp3",
+      "featured": false, "released_at": "2026-09-21", "sales": 58, "rating": 4.9
+    },
+    {
+      "id": "it_0015", "slug": "thabo-mokoena-gospel-bass-stems",
+      "title": "Gospel Bass Stems", "creator": "thabo-mokoena", "lane": "stems",
+      "price_cents": 800, "currency": "USD", "tags": ["bass", "gospel", "stems", "all keys"],
+      "summary": "Bass lines for common progressions, every key, played.",
+      "description": "Real bass over twenty-four common gospel progressions, in every key, at three tempos each. For the team without a bassist this week.",
+      "contents": [
+        { "name": "24 progressions × 12 keys × 3 tempos", "kind": "wav" },
+        { "name": "Chart of each progression", "kind": "pdf" }
+      ],
+      "songs": 24, "size_mb": 780, "preview": "/audio/backing-mixed.mp3",
+      "featured": true, "released_at": "2026-09-14", "sales": 91, "rating": 4.8
+    },
+    {
+      "id": "it_0016", "slug": "thabo-mokoena-amapiano-log-drum-kit",
+      "title": "Amapiano Log Drum Kit", "creator": "thabo-mokoena", "lane": "loops",
+      "price_cents": 900, "currency": "USD", "tags": ["amapiano", "log drum", "loops", "110-115 bpm"],
+      "summary": "Log drums, shakers and the swing. Joburg made.",
+      "description": "Fifty log-drum loops and a hundred one-shots at amapiano tempos, with the swing baked in. Clean tails, cut to the bar.",
+      "contents": [
+        { "name": "50 loops",      "kind": "wav", "length": "4-8 bars" },
+        { "name": "100 one-shots", "kind": "wav" }
+      ],
+      "songs": 50, "size_mb": 440, "preview": "/audio/drums-mixed.mp3",
+      "featured": false, "released_at": "2026-09-22", "sales": 27, "rating": 4.6
+    },
+    {
+      "id": "it_0017", "slug": "thabo-mokoena-sunday-set-template",
+      "title": "Ready-to-run Sunday Set", "creator": "thabo-mokoena", "lane": "templates",
+      "price_cents": 1200, "currency": "USD", "tags": ["performlive", "template", "pads", "click"],
+      "summary": "Open it, load your songs, run the service.",
+      "description": "A PerformLive template with pads, click and cue routing done. Comes with his bass stems already placed under the transitions.",
+      "contents": [
+        { "name": "PerformLive set",     "kind": "plset" },
+        { "name": "Transition pads",     "kind": "wav" },
+        { "name": "Bass under-beds",     "kind": "wav" },
+        { "name": "Setup notes",         "kind": "pdf" }
+      ],
+      "songs": 0, "size_mb": 360, "preview": "/audio/backing-mixed.mp3",
+      "featured": false, "released_at": "2026-09-23", "sales": 19, "rating": 5.0
+    }
+  ],
+
+  "sections": [
+    { "id": "featured", "title": "Featured this week",  "blurb": "Picked by hand.", "items": ["it_0003", "it_0001", "it_0009", "it_0015", "it_0007", "it_0011"] },
+    { "id": "artists",  "title": "From the artists",    "blurb": "Their own sets, on their own faders.", "creators": ["kingsley-anyenor", "viivi-adjei", "isaac-narh"] },
+    { "id": "new",      "title": "New arrivals",        "blurb": "Newest first.", "sort": "released_at" },
+    { "id": "creators", "title": "Creators",            "blurb": "The people building for your Sunday.", "creators": ["kwame-asante", "akosua-mensah", "chinedu-okafor", "ama-serwaa-boateng", "thabo-mokoena"] }
+  ],
+
+  "test_library": ["it_0004", "it_0010"],
+
+  "dashboard": {
+    "creator": "akosua-mensah",
+    "month": "September 2026",
+    "sales_this_month": 61,
+    "gross_cents": 48200,
+    "split": 0.7,
+    "next_payout": "2026-10-05",
+    "payouts": [
+      { "date": "2026-09-05", "amount_cents": 21840, "status": "paid",    "method": "Bank transfer" },
+      { "date": "2026-08-05", "amount_cents": 16590, "status": "paid",    "method": "Bank transfer" }
+    ],
+    "recent": [
+      { "date": "2026-09-25", "item": "it_0009", "country": "Ghana",         "amount_cents": 1000 },
+      { "date": "2026-09-25", "item": "it_0010", "country": "United States", "amount_cents": 400 },
+      { "date": "2026-09-24", "item": "it_0010", "country": "Nigeria",       "amount_cents": 400 },
+      { "date": "2026-09-24", "item": "it_0009", "country": "United Kingdom","amount_cents": 1000 },
+      { "date": "2026-09-23", "item": "it_0009", "country": "Ghana",         "amount_cents": 1000 }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank you · Amanorsac Store</title>
+<meta name="description" content="Your purchase is complete.">
+<!-- Test build. Not for search engines until the store is live. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="stylesheet" href="/store/store.css">
+<link rel="stylesheet" href="/assets/site-auth.css">
+</head>
+<body data-page="success">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="/store/"><img src="/images/logo-onDark.svg" alt=""><span>Amanorsac</span><small>Store</small></a>
+  <nav class="topnav" aria-label="Store">
+    <a href="/store/" data-nav="index">Store</a>
+    <a href="/store/creators" data-nav="creators">Creators</a>
+    <a href="/store/library" data-nav="library">Library</a>
+  </nav>
+  <span class="grow"></span>
+  <label class="topsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" placeholder="Search packs, creators, lanes" aria-label="Search the store"></label>
+  <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
+</div></header>
+
+<main id="main">
+<div class="wrap"><div class="result">
+  <div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+  <h1>It is yours.</h1>
+  <p>The pack is in your library on every machine you sign in on. Open it in PerformLive and it fetches itself; or download it here.</p>
+  <div class="rows" id="bought"></div>
+  <div class="cta"><a class="btn" href="/store/library">Go to my library</a><a class="btn ghost" href="/store/">Keep browsing</a></div>
+</div></div>
+</main>
+
+<footer class="store"><div class="wrap">
+  <span>© Amanorsac Studio · <a href="/">amanorsac.studio</a> · <a href="/apps.html">Apps</a></span>
+  <span><a href="/store/creators">Sell on the store</a> · <a href="/privacy">Privacy</a> · <a href="/legal.html">Terms</a></span>
+</div></footer>
+
+<script src="/assets/vendor/supabase-2.116.0.js" defer></script>
+<script src="/assets/supabase-client.js" defer></script>
+<script src="/assets/site-auth.js" defer></script>
+<script src="/store/store.js" defer></script>
+</body>
+</html>
