@@ -115,7 +115,7 @@
       return '<tr><td><b>'+esc(s.title)+'</b> · '+esc(v.label)+'<small>'+esc((v.store_creators||{}).name)+' · sent '+when(v.submitted_at)+(s.writers?'\nwritten by '+esc(s.writers):'')+(v.consent?'\nrights: '+esc(v.consent):'')+'</small></td>'+
         '<td>'+esc(v.key||'?')+' · '+(v.bpm?Number(v.bpm)+' BPM':'?')+' · '+esc(v.time_sig||'')+'<small>'+(v.store_tracks||[]).length+' of 10 tracks · '+secs.length+' sections\n'+
         secs.map(x=>esc(x.name)+' @ '+Number(x.seconds).toFixed(1)+'s'+(x.bar?' (bar '+x.bar+')':'')).join(' · ')+'\nrent '+money(v.rent_cents)+' · buy '+money(v.buy_cents)+'</small></td>'+
-        '<td><div class="acts"><select data-slot="'+v.id+'">'+['guide','click','drums','bass','keys','guitars','piano','aux_piano','horns','vocals'].map(x=>'<option>'+x+'</option>').join('')+'</select><button class="b" data-listen="'+v.id+'">Load</button></div><div data-audio="'+v.id+'"></div>'+
+        '<td><div class="acts"><select data-slot="'+v.id+'">'+['guide','click','drums','bass','keys','guitars','piano','aux_piano','horns','bgv'].map(x=>'<option>'+x+'</option>').join('')+'</select><button class="b" data-listen="'+v.id+'">Load</button></div><div data-audio="'+v.id+'"></div>'+
         '<div class="secs" data-secs="'+v.id+'" data-bpm="'+(v.bpm||'')+'" data-sig="'+esc(v.time_sig||'4/4')+'">'+sectionsHtml(v.id, secs)+'</div></td>'+
         '<td><div class="acts"><button class="b go" data-ok="'+v.id+'">Approve</button><button class="b" data-back="'+v.id+'">Send back</button></div></td></tr>';
     }).join('');

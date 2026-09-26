@@ -190,7 +190,7 @@ grant all on public.store_songs to service_role;
 -- The ten slots, in the order PerformLive lays them out.
 create or replace function public.store_track_slots()
 returns text[] language sql immutable as $$
-  select array['click','guide','drums','bass','keys','guitars','piano','aux_piano','horns','vocals'];
+  select array['click','guide','drums','bass','keys','guitars','piano','aux_piano','horns','bgv'];
 $$;
 grant execute on function public.store_track_slots() to anon, authenticated;
 
@@ -374,11 +374,12 @@ begin
   if v.id is null or not public.owns_creator(v.creator_slug) then raise exception 'not yours'; end if;
   if v.status not in ('draft','rejected') then raise exception 'already submitted'; end if;
   if v.kind = 'song' then
-    -- click and guide for the band's ears, and the core of the music.
-    -- guitars, piano, aux piano, horns and vocals may be empty: not
-    -- every song has them. Sections are not required here: the studio
-    -- marks and checks them in review, against the audio.
-    select array_agg(s) into missing from unnest(array['click','guide','drums','bass','keys']) s
+    -- click and guide for the band's ears, the core of the music, and
+    -- the backing vocals. guitars, piano, aux piano and horns may be
+    -- empty: not every song has them. There is no lead vocal: the guide
+    -- is the voice in the ear. Sections are not required here: the
+    -- studio marks and checks them in review, against the audio.
+    select array_agg(s) into missing from unnest(array['click','guide','drums','bass','keys','bgv']) s
       where not exists (select 1 from public.store_tracks t where t.version_id = v.id and t.slot = s);
     if missing is not null then raise exception 'tracks missing: %', array_to_string(missing, ', '); end if;
     if v.bpm is null or v.key is null then raise exception 'key and tempo are needed'; end if;

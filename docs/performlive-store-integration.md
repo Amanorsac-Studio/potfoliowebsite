@@ -74,13 +74,13 @@ alongside the files; it is the record of what was fetched.
                "art": "https://amanorsac.studio/store-art/0d6b1e5c-…" },
   "creator": { "slug": "kingsley-anyenor", "name": "Kingsley Anyenor", "kind": "artist" },
   "licence": { "kind": "rent", "purchased_at": "2026-09-27T10:00:00Z", "expires_at": "2026-10-11T10:00:00Z" },
-  "slots":   ["click","guide","drums","bass","keys","guitars","piano","aux_piano","horns","vocals"],
+  "slots":   ["click","guide","drums","bass","keys","guitars","piano","aux_piano","horns","bgv"],
   "tracks": [
     { "slot": "click",  "order": 0, "url": "https://amanorsac.studio/download/store/0d6b…/click?e=…&s=…",
       "bytes": 72643244, "etag": "\"…\"", "sample_rate": 48000, "channels": 2, "duration_seconds": 412.4 },
     { "slot": "guide",  "order": 1, "url": "…" },
     …
-    { "slot": "vocals", "order": 9, "url": "…" }
+    { "slot": "bgv",    "order": 9, "url": "…" }
   ],
   "sections": [
     { "position": 1, "name": "Intro",  "seconds": 0.0,   "bar": 1  },
@@ -96,9 +96,10 @@ Notes:
 
 - **Slots.** Always these ten, always in this order. `click` and
   `guide` are the two the band hears in their ears; the other eight
-  are the music. `click`, `guide`, `drums`, `bass` and `keys` are
-  always present; `guitars`, `piano`, `aux_piano`, `horns` and
-  `vocals` are absent when the song has none. Lay out the lanes from
+  are the music. `click`, `guide`, `drums`, `bass`, `keys` and `bgv`
+  (backing vocals) are always present; `guitars`, `piano`,
+  `aux_piano` and `horns` are absent when the song has none. There is
+  no lead vocal lane: the guide is the voice in the ear. Lay out the lanes from
   `slots`, fill the ones present in `tracks`, and leave the others
   empty rather than shifting everything up.
 - **Tracks** are PCM WAV, all the same length, all starting at the

@@ -197,10 +197,10 @@
   /* ---------------- 3 · the tracks ---------------- */
   function drawTracks() {
     var box = $('#tracks');
-    box.innerHTML = '<p class="dim">WAV files, one per slot, all the same length and starting at the same moment. Click and Guide are the two the band hears in their ears; the other eight are the music. Click, Guide, Drums, Bass and Keys are needed; the rest can stay empty if the song has none.</p>' +
+    box.innerHTML = '<p class="dim">WAV files, one per slot, all the same length and starting at the same moment. Click and Guide are the two the band hears in their ears; the other eight are the music. Click, Guide, Drums, Bass, Keys and Backing vocals are needed; Guitars, Piano, Aux piano and Horns can stay empty if the song has none. No lead vocal: the Guide is the voice in the ear.</p>' +
       '<div class="slots">' + S.SLOTS.map(function (slot) {
         var t = tracks[slot];
-        var needed = ['click', 'guide', 'drums', 'bass', 'keys'].indexOf(slot) >= 0;
+        var needed = ['click', 'guide', 'drums', 'bass', 'keys', 'bgv'].indexOf(slot) >= 0;
         return '<div class="slotrow" data-slot="' + slot + '"><b>' + esc(S.SLOT_NAMES[slot]) + (needed ? '' : ' <span class="faint" style="font-weight:400;font-size:11px">optional</span>') + '</b>' +
           '<span class="st">' + (t ? mb(t.bytes) + ' · ' + (t.sample_rate ? (t.sample_rate / 1000) + ' kHz' : '') + (t.duration_seconds ? ' · ' + fmt(Number(t.duration_seconds)) : '') : 'Not yet') + '</span>' +
           '<div class="bar" hidden><i></i></div>' +

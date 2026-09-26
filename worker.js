@@ -1954,7 +1954,7 @@ async function notFound(env, request) {
    supabase-store.sql.
    --------------------------------------------------------------------- */
 
-const STORE_SLOTS = ['click', 'guide', 'drums', 'bass', 'keys', 'guitars', 'piano', 'aux_piano', 'horns', 'vocals'];
+const STORE_SLOTS = ['click', 'guide', 'drums', 'bass', 'keys', 'guitars', 'piano', 'aux_piano', 'horns', 'bgv'];
 const STORE_TICKET_MINUTES = 60;
 const STORE_PART_BYTES = 50 * 1024 * 1024;
 

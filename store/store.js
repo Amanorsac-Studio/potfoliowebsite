@@ -20,9 +20,9 @@
 (function () {
   'use strict';
 
-  var SLOTS = ['click', 'guide', 'drums', 'bass', 'keys', 'guitars', 'piano', 'aux_piano', 'horns', 'vocals'];
+  var SLOTS = ['click', 'guide', 'drums', 'bass', 'keys', 'guitars', 'piano', 'aux_piano', 'horns', 'bgv'];
   var SLOT_NAMES = { click: 'Click', guide: 'Guide', drums: 'Drums', bass: 'Bass', keys: 'Keys', guitars: 'Guitars',
-                     piano: 'Piano', aux_piano: 'Aux piano', horns: 'Horns', vocals: 'Vocals' };
+                     piano: 'Piano', aux_piano: 'Aux piano', horns: 'Horns', bgv: 'Backing vocals' };
   var LANES = [
     { id: 'songs',     name: 'Songs',         colour: '#00D9FF' },
     { id: 'pads',      name: 'Pads',          colour: '#A855F7' },
