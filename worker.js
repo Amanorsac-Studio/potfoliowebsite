@@ -35,6 +35,13 @@ const SITE = 'https://amanorsac.studio';
 export default {
   async fetch(request, env, ctx) {
     try {
+      /* The store: uploads from creators, manifests and stems for
+         PerformLive, cover art. All under three prefixes, answered
+         before anything else so a PUT of a fifty-megabyte part never
+         wanders into the asset layer. */
+      const store = await storeRoutes(request, env, ctx);
+      if (store) return store;
+
       if (request.method === 'GET' || request.method === 'HEAD') {
         const path = new URL(request.url).pathname;
 
@@ -1915,4 +1922,309 @@ async function notFound(env, request) {
   } catch (e) {
     return new Response('Not found', { status: 404 });
   }
+}
+
+
+/* ---------------------------------------------------------------------
+   the store
+
+   Three jobs, all on this Worker because R2 is bound here and nowhere
+   else:
+
+     uploads    a creator's browser sends each stem in parts, straight
+                into R2 under store/<version>/<slot>.wav. The browser
+                never holds a bucket credential; it holds a Supabase
+                session, and every call below checks that the session
+                belongs to the creator who owns the version.
+
+     manifests  GET /api/store/manifest/<version> is what PerformLive
+                asks for after a purchase: the song, the sections, and
+                a signed link for each of the ten tracks. The links are
+                tickets, same as app installers - an hour, then gone.
+                Access is decided by has_version_access in the database,
+                which knows about rentals and their dates.
+
+     files      GET /download/store/<version>/<slot> checks the ticket
+                and streams the WAV out of R2, with Range support so a
+                dropped download resumes.
+
+   Nothing here trusts a request's word for who it is: the session is
+   asked about at Supabase every time, and ownership and access are
+   answered by row-level security and the two functions in
+   supabase-store.sql.
+   --------------------------------------------------------------------- */
+
+const STORE_SLOTS = ['click', 'guide', 'drums', 'bass', 'keys', 'guitars', 'piano', 'aux_keys', 'horns', 'bgv'];
+const STORE_TICKET_MINUTES = 60;
+const STORE_PART_BYTES = 50 * 1024 * 1024;
+
+function storeSay(obj, status) {
+  // a 204 may not carry a body, and a preflight is one
+  const r = withCors(new Response(status === 204 ? null : JSON.stringify(obj), {
+    status: status || 200,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
+  }));
+  r.headers.set('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  return r;
+}
+
+/* Who is asking. The token is shown to Supabase, not decoded here, so a
+   forged or expired one is refused by the party that issued it. */
+async function storeUser(request) {
+  const jwt = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '').trim();
+  if (!jwt) return null;
+  try {
+    const r = await fetch(SUPABASE_URL + '/auth/v1/user', {
+      headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + jwt }
+    });
+    if (!r.ok) return null;
+    const u = await r.json();
+    return u && u.id ? { id: u.id, email: u.email || '', jwt } : null;
+  } catch (e) { return null; }
+}
+
+/* A call to the database as the person (their RLS applies). */
+async function asUser(user, path, init) {
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, Object.assign({}, init, {
+    headers: Object.assign({ 'content-type': 'application/json', apikey: SUPABASE_KEY,
+                             Authorization: 'Bearer ' + user.jwt }, (init && init.headers) || {})
+  }));
+  const text = await r.text();
+  let body = null; try { body = text ? JSON.parse(text) : null; } catch (e) { body = text; }
+  return { ok: r.ok, status: r.status, body };
+}
+
+/* A call as the Worker itself (no RLS). Only for writes the browser must
+   not be able to make - track rows - and reads of things the shelf does
+   not show, such as a submitted version the studio is reviewing. */
+async function asService(env, path, init) {
+  if (!env.SUPABASE_SERVICE_KEY) return { ok: false, status: 503, body: 'no service key' };
+  const r = await fetch(SUPABASE_URL + '/rest/v1/' + path, Object.assign({}, init, {
+    headers: Object.assign({ 'content-type': 'application/json', apikey: env.SUPABASE_SERVICE_KEY,
+                             Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY }, (init && init.headers) || {})
+  }));
+  const text = await r.text();
+  let body = null; try { body = text ? JSON.parse(text) : null; } catch (e) { body = text; }
+  return { ok: r.ok, status: r.status, body };
+}
+
+const isUuid = v => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(v || ''));
+
+/* The version, if this person may edit it: theirs, and not yet on the
+   shelf. Everything an upload does starts here. */
+async function editableVersion(user, versionId) {
+  if (!isUuid(versionId)) return null;
+  const v = await asUser(user, 'store_versions?id=eq.' + versionId + '&select=id,creator_slug,status,kind');
+  const row = v.ok && Array.isArray(v.body) && v.body[0];
+  if (!row) return null;
+  if (row.status !== 'draft' && row.status !== 'rejected') return null;
+  const own = await asUser(user, 'rpc/owns_creator', { method: 'POST', body: JSON.stringify({ p_slug: row.creator_slug }) });
+  return own.ok && own.body === true ? row : null;
+}
+
+async function storeRoutes(request, env, ctx) {
+  const url = new URL(request.url);
+  const path = url.pathname;
+  const api = path.startsWith('/api/store/');
+  if (!api && !path.startsWith('/download/store/') && !path.startsWith('/store-art/')) return null;
+
+  if (request.method === 'OPTIONS') return storeSay({}, 204);
+
+  // ---- cover art, public, cached ----
+  const art = path.match(/^\/store-art\/([0-9a-f-]{36})$/i);
+  if (art && request.method === 'GET') {
+    if (!env.DOWNLOADS) return null;
+    const obj = await env.DOWNLOADS.get('store/' + art[1].toLowerCase() + '/art');
+    if (!obj) return null;
+    const h = new Headers(); obj.writeHttpMetadata(h);
+    h.set('cache-control', 'public, max-age=3600');
+    h.set('etag', obj.httpEtag);
+    return new Response(obj.body, { status: 200, headers: h });
+  }
+
+  // ---- a ticketed track ----
+  const dl = path.match(/^\/download\/store\/([0-9a-f-]{36})\/([a-z_]+)$/i);
+  if (dl && (request.method === 'GET' || request.method === 'HEAD')) {
+    return await serveTrack(dl[1].toLowerCase(), dl[2], url, env, request);
+  }
+
+  if (!api) return null;
+  if (!env.DOWNLOADS || !env.DOWNLOAD_SECRET) return storeSay({ error: 'unavailable', message: 'The store is not set up on this Worker yet.' }, 503);
+
+  const user = await storeUser(request);
+  if (!user) return storeSay({ error: 'sign_in', message: 'Sign in first.' }, 401);
+
+  // ---- the library: what this account can open ----
+  if (path === '/api/store/library' && request.method === 'GET') {
+    const r = await asUser(user, 'rpc/store_library', { method: 'POST', body: '{}' });
+    if (!r.ok) return storeSay({ error: 'upstream_error', message: String(r.body && r.body.message || r.body) }, 502);
+    return storeSay({ items: (r.body || []).map(it => Object.assign({}, it, {
+      manifest: SITE + '/api/store/manifest/' + it.version_id,
+      art: it.art_key ? SITE + '/store-art/' + it.version_id : null
+    })) });
+  }
+
+  // ---- the manifest ----
+  const mf = path.match(/^\/api\/store\/manifest\/([0-9a-f-]{36})$/i);
+  if (mf && request.method === 'GET') return await storeManifest(user, mf[1].toLowerCase(), env, request);
+
+  // ---- uploads ----
+  let body = {};
+  if (request.method === 'POST') { try { body = await request.json(); } catch (e) { body = {}; } }
+
+  if (path === '/api/store/upload/start' && request.method === 'POST') {
+    const v = await editableVersion(user, body.version);
+    if (!v) return storeSay({ error: 'not_yours', message: 'That version is not yours to edit, or it is already submitted.' }, 403);
+    const slot = String(body.slot || '');
+    const isArt = slot === 'art';
+    if (!isArt && STORE_SLOTS.indexOf(slot) < 0) return storeSay({ error: 'bad_slot', message: 'No such track slot.' }, 400);
+    const key = 'store/' + v.id + '/' + (isArt ? 'art' : slot + '.wav');
+    const type = isArt ? String(body.type || 'image/jpeg').slice(0, 60) : 'audio/wav';
+    const mpu = await env.DOWNLOADS.createMultipartUpload(key, { httpMetadata: { contentType: type } });
+    return storeSay({ key, upload_id: mpu.uploadId, part_bytes: STORE_PART_BYTES });
+  }
+
+  if (path === '/api/store/upload/part' && request.method === 'PUT') {
+    const key = url.searchParams.get('key') || '', id = url.searchParams.get('id') || '';
+    const n = parseInt(url.searchParams.get('n') || '0', 10);
+    const m = key.match(/^store\/([0-9a-f-]{36})\/(art|[a-z_]+\.wav)$/i);
+    if (!m || !id || !(n >= 1 && n <= 10000)) return storeSay({ error: 'bad_request' }, 400);
+    if (!(await editableVersion(user, m[1]))) return storeSay({ error: 'not_yours' }, 403);
+    try {
+      const part = await env.DOWNLOADS.resumeMultipartUpload(key, id).uploadPart(n, request.body);
+      return storeSay({ part_number: part.partNumber, etag: part.etag });
+    } catch (e) {
+      return storeSay({ error: 'part_failed', message: String(e && e.message) }, 502);
+    }
+  }
+
+  if (path === '/api/store/upload/abort' && request.method === 'POST') {
+    const key = String(body.key || ''), id = String(body.upload_id || '');
+    const m = key.match(/^store\/([0-9a-f-]{36})\//i);
+    if (!m || !id) return storeSay({ error: 'bad_request' }, 400);
+    if (!(await editableVersion(user, m[1]))) return storeSay({ error: 'not_yours' }, 403);
+    try { await env.DOWNLOADS.resumeMultipartUpload(key, id).abort(); } catch (e) {}
+    return storeSay({ ok: true });
+  }
+
+  if (path === '/api/store/upload/complete' && request.method === 'POST') {
+    const key = String(body.key || ''), id = String(body.upload_id || '');
+    const m = key.match(/^store\/([0-9a-f-]{36})\/(art|([a-z_]+)\.wav)$/i);
+    if (!m || !id || !Array.isArray(body.parts) || !body.parts.length) return storeSay({ error: 'bad_request' }, 400);
+    const v = await editableVersion(user, m[1]);
+    if (!v) return storeSay({ error: 'not_yours' }, 403);
+    let obj;
+    try {
+      obj = await env.DOWNLOADS.resumeMultipartUpload(key, id)
+        .complete(body.parts.map(p => ({ partNumber: Number(p.part_number), etag: String(p.etag) })));
+    } catch (e) {
+      return storeSay({ error: 'complete_failed', message: String(e && e.message) }, 502);
+    }
+    if (m[2] === 'art') {
+      const r = await asService(env, 'store_versions?id=eq.' + v.id, {
+        method: 'PATCH', headers: { Prefer: 'return=minimal' }, body: JSON.stringify({ art_key: key })
+      });
+      if (!r.ok) return storeSay({ error: 'db', message: String(r.body && r.body.message || r.body) }, 502);
+      return storeSay({ ok: true, art: SITE + '/store-art/' + v.id });
+    }
+    const slot = m[3];
+    const row = {
+      version_id: v.id, slot, r2_key: key, bytes: obj.size, etag: obj.httpEtag,
+      sample_rate: Number(body.sample_rate) || null, channels: Number(body.channels) || null,
+      duration_seconds: Number(body.duration) || null, uploaded_at: new Date().toISOString()
+    };
+    const r = await asService(env, 'store_tracks?on_conflict=version_id,slot', {
+      method: 'POST', headers: { Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(row)
+    });
+    if (!r.ok) return storeSay({ error: 'db', message: String(r.body && r.body.message || r.body) }, 502);
+    return storeSay({ ok: true, slot, bytes: obj.size });
+  }
+
+  if (path === '/api/store/upload/remove' && request.method === 'POST') {
+    const v = await editableVersion(user, body.version);
+    const slot = String(body.slot || '');
+    if (!v || STORE_SLOTS.indexOf(slot) < 0) return storeSay({ error: 'bad_request' }, 400);
+    await env.DOWNLOADS.delete('store/' + v.id + '/' + slot + '.wav');
+    await asService(env, 'store_tracks?version_id=eq.' + v.id + '&slot=eq.' + slot, { method: 'DELETE', headers: { Prefer: 'return=minimal' } });
+    return storeSay({ ok: true });
+  }
+
+  return storeSay({ error: 'no_such_door' }, 404);
+}
+
+/* Everything PerformLive needs to build the song, for someone who may
+   have it. The shape is documented in docs/performlive-store-integration.md
+   and must not change without that file changing with it. */
+async function storeManifest(user, versionId, env, request) {
+  const access = await asUser(user, 'rpc/has_version_access', { method: 'POST', body: JSON.stringify({ p_version: versionId }) });
+  if (!access.ok) return storeSay({ error: 'upstream_error', message: 'Could not check your account.' }, 502);
+  if (access.body !== true) return storeSay({ error: 'not_owned', message: 'This account does not have that song.' }, 403);
+
+  const [vr, tr, sr, pr] = await Promise.all([
+    asService(env, 'store_versions?id=eq.' + versionId + '&select=*,store_songs(slug,title,writers),store_creators(slug,name,kind)'),
+    asService(env, 'store_tracks?version_id=eq.' + versionId + '&select=slot,bytes,etag,sample_rate,channels,duration_seconds'),
+    asService(env, 'store_sections?version_id=eq.' + versionId + '&select=position,name,seconds,bar&order=position'),
+    asUser(user, 'store_purchases?version_id=eq.' + versionId + '&select=kind,expires_at,purchased_at&order=purchased_at.desc&limit=1')
+  ]);
+  const v = vr.ok && Array.isArray(vr.body) && vr.body[0];
+  if (!v) return storeSay({ error: 'no_such_version' }, 404);
+
+  const t = Date.now() + STORE_TICKET_MINUTES * 60 * 1000;
+  const tracks = [];
+  for (const row of (tr.ok && Array.isArray(tr.body) ? tr.body : [])) {
+    const p = '/download/store/' + versionId + '/' + row.slot;
+    tracks.push({
+      slot: row.slot, order: STORE_SLOTS.indexOf(row.slot),
+      url: SITE + p + '?e=' + t + '&s=' + (await sign(env.DOWNLOAD_SECRET, p + ':' + t)),
+      bytes: row.bytes, etag: row.etag, sample_rate: row.sample_rate, channels: row.channels,
+      duration_seconds: row.duration_seconds == null ? null : Number(row.duration_seconds)
+    });
+  }
+  tracks.sort((a, b) => a.order - b.order);
+  const purchase = pr.ok && Array.isArray(pr.body) && pr.body[0] || null;
+  const song = v.store_songs || {}, maker = v.store_creators || {};
+
+  return storeSay({
+    manifest_version: 1,
+    version_id: v.id,
+    song: { id: v.song_id, slug: song.slug, title: song.title, writers: song.writers || null },
+    version: { label: v.label, is_original: !!v.is_original, kind: v.kind, lane: v.lane,
+               key: v.key, bpm: v.bpm == null ? null : Number(v.bpm), time_sig: v.time_sig || '4/4',
+               length_seconds: v.length_seconds, year: v.year, album: v.album, feat: v.feat,
+               youtube: v.youtube, art: v.art_key ? SITE + '/store-art/' + v.id : null },
+    creator: { slug: maker.slug, name: maker.name, kind: maker.kind },
+    licence: purchase
+      ? { kind: purchase.kind, purchased_at: purchase.purchased_at, expires_at: purchase.expires_at || null }
+      : { kind: 'owner', purchased_at: null, expires_at: null },
+    slots: STORE_SLOTS,
+    tracks,
+    sections: (sr.ok && Array.isArray(sr.body) ? sr.body : []).map(x => ({
+      position: x.position, name: x.name, seconds: Number(x.seconds), bar: x.bar
+    })),
+    links_expire_at: new Date(t).toISOString(),
+    page: SITE + '/store/item?p=' + encodeURIComponent(song.slug || '')
+  });
+}
+
+async function serveTrack(versionId, slot, url, env, request) {
+  if (!env.DOWNLOADS || !env.DOWNLOAD_SECRET) return null;
+  const expires = parseInt(url.searchParams.get('e') || '0', 10);
+  const sig = url.searchParams.get('s') || '';
+  if (!expires || Date.now() > expires) return null;
+  const want = await sign(env.DOWNLOAD_SECRET, url.pathname + ':' + expires);
+  if (!sameString(sig, want)) return null;
+  if (STORE_SLOTS.indexOf(slot) < 0) return null;
+
+  const object = await env.DOWNLOADS.get('store/' + versionId + '/' + slot + '.wav', { range: request.headers, onlyIf: request.headers });
+  if (!object) return null;
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set('etag', object.httpEtag);
+  headers.set('content-type', 'audio/wav');
+  headers.set('content-disposition', 'attachment; filename="' + slot + '.wav"');
+  headers.set('cache-control', 'private, no-store');
+  headers.set('accept-ranges', 'bytes');
+  headers.set('access-control-allow-origin', '*');
+  const partial = object.range && ('body' in object);
+  return new Response(object.body, { status: partial && request.headers.has('range') ? 206 : 200, headers });
 }

@@ -104,6 +104,7 @@ async function mountChrome(active){
       '<a href="admin-billing.html"  class="'+(active==='admin-billing'  ?'on':'')+'">Billing</a>'+
       '<a href="admin-analytics.html" class="'+(active==='admin-analytics'?'on':'')+'">Business</a>'+
       '<a href="admin-codes.html"    class="'+(active==='admin-codes'    ?'on':'')+'">Codes</a>'+
+      '<a href="admin-store.html"    class="'+(active==='admin-store'    ?'on':'')+'">Store</a>'+
       '<a href="admin-traffic.html"  class="'+(active==='admin-traffic'  ?'on':'')+'">Traffic</a>'+
       '<a href="admin-downloads.html" class="'+(active==='admin-downloads'?'on':'')+'">Downloads</a>'+
       '<a href="admin-blog.html"     class="'+(active==='admin-blog'     ?'on':'')+'">Writing</a>'+

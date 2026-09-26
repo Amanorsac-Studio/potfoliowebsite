@@ -13,6 +13,10 @@
 //    metadata.app + metadata.user_id   an App Store purchase, created
 //                                    by create-app-checkout. Records a
 //                                    row in purchases for that account.
+//    metadata.store_version + user_id  a song from the store, rented or
+//                                    bought, created by
+//                                    create-store-checkout. Recorded by
+//                                    record_store_sale.
 //
 //  Nobody clicks anything either way - this is the one place both
 //  purchases actually complete.
@@ -99,6 +103,22 @@ Deno.serve(async (req) => {
   const invoiceId = session.metadata?.invoice_id;
   const app = session.metadata?.app;
   const userId = session.metadata?.user_id;
+  const storeVersion = session.metadata?.store_version;
+
+  if (storeVersion && userId) {
+    // A song from the store, rented or bought. record_store_sale sets
+    // the rental's end date and is a no-op on a retried delivery.
+    const { error } = await db.rpc("record_store_sale", {
+      p_user: String(userId),
+      p_version: String(storeVersion),
+      p_kind: session.metadata?.store_kind === "rent" ? "rent" : "buy",
+      p_amount: Number(session.amount_total ?? 0),
+      p_currency: String(session.currency ?? "usd"),
+      p_session: String(session.id ?? ""),
+    });
+    if (error) return json({ error: error.message }, 500);
+    return json({ ok: true, store_version: storeVersion, user_id: userId });
+  }
 
   if (app && userId) {
     // An App Store purchase. unique(stripe_session_id) is the real

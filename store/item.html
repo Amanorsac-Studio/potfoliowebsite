@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pack · Amanorsac Store</title>
+<meta name="description" content="A pack on the Amanorsac Store.">
+<!-- Test build. Not for search engines until the store is live. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/sora-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="stylesheet" href="/store/store.css">
+<link rel="stylesheet" href="/assets/site-auth.css">
+<link rel="stylesheet" href="/store/site-shell.css">
+</head>
+<body data-page="item">
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="rack" aria-label="Rooms">
+  <a class="rack-brand" href="/index.html" aria-label="Studio Amanorsac — home"><img src="/images/logo-dark.svg" alt="Studio Amanorsac"></a>
+  <div class="rack-nav">
+    <a class="strip" href="/index.html"><span class="strip-name">Home</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/mixing.html"><span class="strip-name">Mixing</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/blog.html"><span class="strip-name">Blog</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/apps.html"><span class="strip-name">Apps</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip on" href="/store/"><span class="strip-name">Store</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/client"><span class="strip-name">Clients</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/about.html"><span class="strip-name">About</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+  </div>
+  <div class="rack-foot">EST</div>
+</nav>
+
+<div class="sitehead">
+  <a class="sitehead-name" href="/index.html">
+    <img class="sh-mark" src="/images/logo-dark.svg" alt="Amanorsac Studio">
+    <span class="txt">Stephen Amanor Sackey</span>
+  </a>
+  <div class="sitehead-actions">
+    <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
+  </div>
+</div>
+
+<header class="top"><div class="wrap">
+  <a class="brand" href="/store/"><img src="/images/logo-onDark.svg" alt=""><span>Amanorsac</span><small>Store</small></a>
+  <nav class="topnav" aria-label="Store">
+    <a href="/store/" data-nav="index">Store</a>
+    <a href="/store/creators" data-nav="creators">Creators</a>
+    <a href="/store/library" data-nav="library">Library</a>
+  </nav>
+  <span class="grow"></span>
+  <label class="topsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" placeholder="Search packs, creators, lanes" aria-label="Search the store"></label>
+</div></header>
+
+<main id="main">
+<div class="wrap"><p class="dim">Loading…</p></div>
+</main>
+
+<footer class="store"><div class="wrap">
+  <span>© Amanorsac Studio · <a href="/">amanorsac.studio</a> · <a href="/apps.html">Apps</a></span>
+  <span><a href="/store/creators">Sell on the store</a> · <a href="/privacy">Privacy</a> · <a href="/legal.html">Terms</a></span>
+</div></footer>
+
+<script src="/assets/vendor/supabase-2.116.0.js" defer></script>
+<script src="/assets/supabase-client.js" defer></script>
+<script src="/assets/site-auth.js" defer></script>
+<script src="/store/store.js" defer></script>
+</body>
+</html>
