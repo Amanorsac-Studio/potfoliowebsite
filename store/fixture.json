@@ -121,6 +121,47 @@
  ],
  "items": [
   {
+   "id": "sg_0021",
+   "slug": "kingsley-anyenor-praise-the-lord",
+   "kind": "song",
+   "title": "Praise The Lord",
+   "creator": "kingsley-anyenor",
+   "lane": "songs",
+   "album": null,
+   "year": 2026,
+   "length": null,
+   "feat": null,
+   "live": false,
+   "key": null,
+   "bpm": null,
+   "price_cents": 1200,
+   "currency": "USD",
+   "products": [
+    {
+     "id": "multitracks",
+     "name": "MultiTracks",
+     "price_cents": 1200,
+     "note": "Every instrument on its own track. Opens in PerformLive."
+    },
+    {
+     "id": "stems",
+     "name": "Stems",
+     "price_cents": 900,
+     "note": "Four grouped tracks for a small desk."
+    },
+    {
+     "id": "chart",
+     "name": "Chord chart",
+     "price_cents": 300,
+     "note": "PDF, in the recorded key."
+    }
+   ],
+   "preview": "/audio/drums-mixed.mp3",
+   "released_at": "2026-09-26",
+   "sales": 41,
+   "rating": null
+  },
+  {
    "id": "sg_0001",
    "slug": "kingsley-anyenor-deeper-worship-vol-1",
    "kind": "song",
