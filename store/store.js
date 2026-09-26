@@ -334,10 +334,10 @@
       var byCreator = {};
       d.items.forEach(function (it) { byCreator[it.creator] = (byCreator[it.creator] || 0) + 1; });
       var html = '<div class="wrap">' +
-        '<div class="hero"><div><h1>Multitracks, pads and sets<br>from people who play on Sunday.</h1>' +
+        '<div class="hero"><div><h1>Multitracks, pads and sets <br>from people who play on Sunday.</h1>' +
         '<p class="lead">Buy it once, open it in PerformLive, run the service. Made by artists and creators across Ghana, Nigeria and South Africa, and paid straight to them.</p>' +
         '<div class="cta"><a class="btn" href="/store/?lane=multitracks">Browse multitracks</a><a class="btn ghost" href="/store/creators">Sell on the store</a></div></div>' +
-        '<div class="strip">' +
+        '<div class="stats">' +
         '<div class="stat"><b class="num">' + d.items.length + '</b><span>packs on the shelf</span></div>' +
         '<div class="stat"><b class="num">' + d.creators.length + '</b><span>artists and creators</span></div>' +
         '<div class="stat"><b class="num">70%</b><span>of every sale goes to the maker</span></div>' +

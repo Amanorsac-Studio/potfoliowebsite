@@ -12,9 +12,34 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
 <link rel="stylesheet" href="/store/store.css">
 <link rel="stylesheet" href="/assets/site-auth.css">
+<link rel="stylesheet" href="/store/site-shell.css">
 </head>
 <body data-page="dashboard">
 <a class="skip" href="#main">Skip to content</a>
+
+<nav class="rack" aria-label="Rooms">
+  <a class="rack-brand" href="/index.html" aria-label="Studio Amanorsac — home"><img src="/images/logo-dark.svg" alt="Studio Amanorsac"></a>
+  <div class="rack-nav">
+    <a class="strip" href="/index.html"><span class="strip-name">Home</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/mixing.html"><span class="strip-name">Mixing</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/blog.html"><span class="strip-name">Blog</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/apps.html"><span class="strip-name">Apps</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip on" href="/store/"><span class="strip-name">Store</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/client"><span class="strip-name">Clients</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+    <a class="strip" href="/about.html"><span class="strip-name">About</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
+  </div>
+  <div class="rack-foot">EST</div>
+</nav>
+
+<div class="sitehead">
+  <a class="sitehead-name" href="/index.html">
+    <img class="sh-mark" src="/images/logo-dark.svg" alt="Amanorsac Studio">
+    <span class="txt">Stephen Amanor Sackey</span>
+  </a>
+  <div class="sitehead-actions">
+    <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
+  </div>
+</div>
 
 <header class="top"><div class="wrap">
   <a class="brand" href="/store/"><img src="/images/logo-onDark.svg" alt=""><span>Amanorsac</span><small>Store</small></a>
@@ -25,7 +50,6 @@
   </nav>
   <span class="grow"></span>
   <label class="topsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" placeholder="Search packs, creators, lanes" aria-label="Search the store"></label>
-  <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
 </div></header>
 
 <main id="main">
