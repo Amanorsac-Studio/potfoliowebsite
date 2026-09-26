@@ -194,6 +194,7 @@ body[data-test] main{padding-bottom:96px}
 /* ---------- forms ---------- */
 .form{display:grid;gap:16px;max-width:640px}
 .form label{display:block;font-size:13px;font-weight:600;color:var(--dim)}
+.form label[hidden]{display:none}
 .form label>input,.form label>textarea,.form label>select,.form label>.checks{display:block;width:100%;margin-top:6px}
 .form input,.form textarea,.form select{height:40px;padding:0 12px;background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font:inherit;font-size:14px;outline:0}
 .form textarea{height:auto;min-height:120px;padding:10px 12px;resize:vertical}
@@ -329,3 +330,27 @@ main{padding-top:24px}
 .buy.soonbox{display:grid;gap:4px}
 .buy.soonbox .pn{font-family:var(--head);font-weight:600;font-size:18px;color:var(--amber)}
 .buy.soonbox .pnote{color:var(--dim);font-size:14px}
+
+/* ---------- the creator's upload page ---------- */
+.wizard section{margin:24px 0;padding:24px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg)}
+.wizard section.locked{opacity:.45;pointer-events:none}
+.wizard h2{display:flex;align-items:center;gap:12px;font-size:18px;margin-bottom:16px}
+.wizard h2 .n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--indigo-dim);font:500 13px var(--mono)}
+.wizard .form{max-width:none}
+.coverpick{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
+.coverpick .cover{border-radius:var(--r-sm);overflow:hidden;aspect-ratio:1}
+.bar{height:6px;background:var(--sunken);border-radius:3px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;width:0;background:var(--indigo);transition:width .2s}
+.slots{display:grid;gap:8px;margin-top:12px}
+.slotrow{display:grid;grid-template-columns:110px 1fr auto auto;gap:8px 14px;align-items:center;padding:10px 14px;background:var(--sunken);border:1px solid var(--border);border-radius:var(--r-sm)}
+.slotrow b{font-family:var(--head);font-weight:600;font-size:14px}
+.slotrow .st{color:var(--dim);font-size:13px}
+.slotrow .bar{grid-column:2;margin:0}
+.slotrow .msg{grid-column:1/-1;padding:8px 10px;font-size:13px}
+.slotrow .msg[hidden],.bar[hidden]{display:none}
+.taps{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.sections input{height:32px;padding:0 8px;background:var(--sunken);border:1px solid var(--border);border-radius:6px;color:var(--text);font:inherit;font-size:13px;width:100%;max-width:140px}
+.msg[hidden]{display:none}
+span.msg{display:inline-block;padding:6px 10px;font-size:13px;margin-left:8px}
+.ok{color:var(--green)} .bad{color:var(--danger)}
+@media (max-width:640px){ .coverpick{grid-template-columns:1fr} .slotrow{grid-template-columns:1fr 1fr} .slotrow .bar{grid-column:1/-1} }
