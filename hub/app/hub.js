@@ -657,7 +657,60 @@
       : bits[0] + sep + '…' + sep + bits.slice(-2).join(sep);
   }
 
+  /* ---------- a newer Hub than this one ----------
+     /api/catalog has always carried hub.version and the Hub has always
+     read it into S.hubVersion and then done nothing with it. So the one
+     app that tells people about every other app's updates could not
+     mention its own: 1.3.0 shipped, 1.3.1 shipped, and anybody running
+     the older one would have gone on running it forever.
+
+     Compared numerically, not as text. "1.3.10" is newer than "1.3.9"
+     and a string comparison says the opposite - which would go wrong
+     silently, on the tenth release, long after anyone was looking. */
+  function newerVersion(a, b) {
+    /* Both sides must actually be versions. Without this, an unknown
+       local version made every remote one look newer, and the only
+       thing standing between that and a bar reading "You are on ." was
+       a guard at the single call site - which is exactly the kind of
+       thing that holds until somebody adds a second caller. */
+    const ok = (v) => /^\d+(\.\d+)*$/.test(String(v || '').trim());
+    if (!ok(a) || !ok(b)) return false;
+    const pa = String(a).split('.').map(Number);
+    const pb = String(b).split('.').map(Number);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const x = pa[i] || 0, y = pb[i] || 0;
+      if (x !== y) return x > y;
+    }
+    return false;
+  }
+
+  function hubUpdateSeen(v) {
+    try { return localStorage.getItem('hub-update-seen') === v; } catch (e) { return false; }
+  }
+
+  function renderHubUpdate() {
+    const slot = $('#hub-update');
+    if (!slot) return;
+    const there = S.hubVersion, here = window.hub.version;
+    /* Dismissed per version, so saying "not now" to one release does not
+       hide the next. */
+    if (!there || !here || !newerVersion(there, here) || hubUpdateSeen(there)) {
+      slot.innerHTML = ''; return;
+    }
+    slot.innerHTML =
+      '<div class="hubup">' +
+        '<div><strong>Amanorsac Hub ' + esc(there) + ' is out.</strong>' +
+        '<span> You are on ' + esc(here) + '. Updating replaces this app; ' +
+        'your apps, licences and downloads stay where they are.</span></div>' +
+        '<div class="right">' +
+          '<button class="primary" data-get-hub>Get it</button> ' +
+          '<button data-skip-hub="' + esc(there) + '">Not now</button>' +
+        '</div>' +
+      '</div>';
+  }
+
   function renderLibrary() {
+    renderHubUpdate();
     $('#consent-slot').innerHTML = consentCard();
     const q = ($('#search').value || '').toLowerCase();
     // A build that is not downloadable stays on the shelf, greyed,
@@ -1004,6 +1057,17 @@
     if (d.cancel) { window.hub.cancel(d.cancel); }
     if (d.closeNotice) closeNotice(d.closeNotice);
     if (d.info) { const app = byId(d.info); modal(app.name, '<p>' + esc(app.name) + ' is a plug-in. It is installed on this computer; open it inside your DAW like any other plug-in.' + (app.licensed ? ' When it asks for a license key, it is under License keys here.' : '') + '</p>'); }
+    if (d.getHub !== undefined) {
+      /* Sent to the site rather than downloaded in place: installing a
+         new Hub means replacing the app that would be doing the
+         downloading, which is not a thing it can do to itself. */
+      const p = window.hub.platform === 'mac' ? 'mac' : 'windows';
+      window.hub.external('https://amanorsac.studio/download/hub/' + p);
+    }
+    if (d.skipHub) {
+      try { localStorage.setItem('hub-update-seen', d.skipHub); } catch (e) {}
+      renderHubUpdate();
+    }
     if (d.reveal) window.hub.reveal(d.reveal);
     if (d.runInstaller) {
       const f = d.runInstaller;

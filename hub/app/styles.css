@@ -242,3 +242,15 @@ dialog form{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
   text-align:left;opacity:.85;
 }
 .linky:hover{opacity:1}
+
+/* The "a newer Hub is out" bar. Above everything in the library,
+   because an out-of-date Hub is the one problem that hides all the
+   others: it cannot show a new app properly, cannot report a failed
+   install, and cannot tell you any of that. */
+.hubup{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;
+  margin:0 0 16px;padding:14px 18px;border-radius:12px;
+  background:color-mix(in srgb,var(--accent,#eeae61) 12%,transparent);
+  border:1px solid color-mix(in srgb,var(--accent,#eeae61) 34%,transparent)}
+.hubup strong{display:block;font-size:14.5px}
+.hubup span{display:block;font-size:13px;color:var(--muted,#9C9AAF);margin-top:2px}
+.hubup .right{display:flex;gap:8px;flex-shrink:0}
