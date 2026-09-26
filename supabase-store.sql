@@ -362,23 +362,25 @@ grant select on public.store_shelf to anon, authenticated;
 --  3 · SUBMIT AND REVIEW
 -- =====================================================================
 
--- The creator says "this one is ready". Refused until all ten tracks
--- are in and at least one section is marked, so the queue never holds
--- something the studio cannot listen to.
+-- The creator says "this one is ready". Refused until the tracks that
+-- every song needs are in, so the queue never holds something the
+-- studio cannot listen to.
 create or replace function public.submit_version(p_version uuid)
 returns public.store_versions
 language plpgsql security definer set search_path = '' as $$
-declare v public.store_versions; n int; missing text[];
+declare v public.store_versions; missing text[];
 begin
   select * into v from public.store_versions where id = p_version;
   if v.id is null or not public.owns_creator(v.creator_slug) then raise exception 'not yours'; end if;
   if v.status not in ('draft','rejected') then raise exception 'already submitted'; end if;
   if v.kind = 'song' then
-    select array_agg(s) into missing from unnest(public.store_track_slots()) s
+    -- click and guide for the band's ears, and the core of the music.
+    -- guitars, piano, aux piano, horns and vocals may be empty: not
+    -- every song has them. Sections are not required here: the studio
+    -- marks and checks them in review, against the audio.
+    select array_agg(s) into missing from unnest(array['click','guide','drums','bass','keys']) s
       where not exists (select 1 from public.store_tracks t where t.version_id = v.id and t.slot = s);
     if missing is not null then raise exception 'tracks missing: %', array_to_string(missing, ', '); end if;
-    select count(*) into n from public.store_sections where version_id = v.id;
-    if n = 0 then raise exception 'mark at least one section'; end if;
     if v.bpm is null or v.key is null then raise exception 'key and tempo are needed'; end if;
   end if;
   update public.store_versions

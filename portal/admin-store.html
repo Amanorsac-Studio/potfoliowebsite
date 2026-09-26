@@ -30,6 +30,8 @@
   audio{width:100%;max-width:360px;height:32px;margin-top:6px}
   .empty{color:var(--muted);font-size:13.5px;padding:8px 0}
   .out{font-size:13px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
+  .secs input{font:inherit;font-size:12.5px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+  .secs .tbl td{padding:4px 8px 4px 0;border:0;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -43,7 +45,7 @@
   <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
 
   <p class="sec">Songs in review</p>
-  <p class="why">Listen to the guide and a couple of stems; check the sections land where they say. Approve puts it on the shelf; send back returns it with your note.</p>
+  <p class="why">Load the guide and a couple of stems and listen. The sections are yours to finish: tap a name while the track plays, or type the seconds, then save. Approve puts it on the shelf; send back returns it with your note.</p>
   <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="queue"></tbody></table></div></div>
 
   <p class="sec">On the shelf</p>
@@ -113,9 +115,11 @@
       return '<tr><td><b>'+esc(s.title)+'</b> · '+esc(v.label)+'<small>'+esc((v.store_creators||{}).name)+' · sent '+when(v.submitted_at)+(s.writers?'\nwritten by '+esc(s.writers):'')+(v.consent?'\nrights: '+esc(v.consent):'')+'</small></td>'+
         '<td>'+esc(v.key||'?')+' · '+(v.bpm?Number(v.bpm)+' BPM':'?')+' · '+esc(v.time_sig||'')+'<small>'+(v.store_tracks||[]).length+' of 10 tracks · '+secs.length+' sections\n'+
         secs.map(x=>esc(x.name)+' @ '+Number(x.seconds).toFixed(1)+'s'+(x.bar?' (bar '+x.bar+')':'')).join(' · ')+'\nrent '+money(v.rent_cents)+' · buy '+money(v.buy_cents)+'</small></td>'+
-        '<td><div class="acts"><select data-slot="'+v.id+'">'+['guide','click','drums','bass','keys','guitars','piano','aux_piano','horns','vocals'].map(x=>'<option>'+x+'</option>').join('')+'</select><button class="b" data-listen="'+v.id+'">Load</button></div><div data-audio="'+v.id+'"></div></td>'+
+        '<td><div class="acts"><select data-slot="'+v.id+'">'+['guide','click','drums','bass','keys','guitars','piano','aux_piano','horns','vocals'].map(x=>'<option>'+x+'</option>').join('')+'</select><button class="b" data-listen="'+v.id+'">Load</button></div><div data-audio="'+v.id+'"></div>'+
+        '<div class="secs" data-secs="'+v.id+'" data-bpm="'+(v.bpm||'')+'" data-sig="'+esc(v.time_sig||'4/4')+'">'+sectionsHtml(v.id, secs)+'</div></td>'+
         '<td><div class="acts"><button class="b go" data-ok="'+v.id+'">Approve</button><button class="b" data-back="'+v.id+'">Send back</button></div></td></tr>';
     }).join('');
+    el.querySelectorAll('[data-secs]').forEach(wireSections);
     el.querySelectorAll('[data-listen]').forEach(b => b.onclick = async () => {
       const id = b.dataset.listen, slot = el.querySelector('[data-slot="'+id+'"]').value, box = el.querySelector('[data-audio="'+id+'"]');
       box.innerHTML = '<small>Fetching…</small>';
@@ -138,6 +142,48 @@
       if(r.error) return tell(r.error.message, true);
       tell('Sent back.'); queue();
     });
+  }
+
+  // ---- sections, marked or fixed here ----
+  // The creator's sections are a first pass; this is where they are
+  // made right against the audio before anyone buys the song. Tap a
+  // name while the loaded track plays, or type the seconds.
+  const NAMES = ['Intro','Verse','Pre-chorus','Chorus','Bridge','Interlude','Tag','Vamp','Out'];
+  function sectionsHtml(id, secs){
+    return '<div class="acts" style="margin-top:8px">'+NAMES.map(n=>'<button class="b" data-tap="'+esc(n)+'">'+esc(n)+'</button>').join('')+'</div>'+
+      '<table class="tbl secs-tbl" style="margin-top:6px"><tbody>'+(secs.length?secs.map(x=>secRow(x)).join(''):'<tr><td class="empty">No sections yet.</td></tr>')+'</tbody></table>'+
+      '<div class="acts" style="margin-top:6px"><button class="b go" data-save-secs="'+id+'">Save sections</button><span class="out" data-secs-out="'+id+'"></span></div>';
+  }
+  function secRow(x){
+    return '<tr><td><input value="'+esc(x.name)+'" data-f="name" style="width:110px"></td>'+
+      '<td><input type="number" step="0.001" min="0" value="'+Number(x.seconds)+'" data-f="seconds" style="width:90px"> s</td>'+
+      '<td><input type="number" step="1" min="1" value="'+(x.bar||'')+'" data-f="bar" style="width:70px"> bar</td>'+
+      '<td><button class="b" data-del>Remove</button></td></tr>';
+  }
+  function wireSections(box){
+    const id = box.dataset.secs, bpm = Number(box.dataset.bpm)||0, beats = parseInt(box.dataset.sig,10)||4;
+    const tbody = box.querySelector('tbody');
+    const barAt = s => bpm ? Math.floor(s*bpm/60/beats)+1 : '';
+    const rows = () => Array.from(tbody.querySelectorAll('tr')).filter(r => r.querySelector('[data-f]'));
+    const read = () => rows().map(r => ({ name: r.querySelector('[data-f=name]').value.trim()||'Section', seconds: Number(r.querySelector('[data-f=seconds]').value)||0, bar: Number(r.querySelector('[data-f=bar]').value)||null }));
+    const draw = list => { list.sort((a,b)=>a.seconds-b.seconds); tbody.innerHTML = list.length ? list.map(secRow).join('') : '<tr><td class="empty">No sections yet.</td></tr>'; wireRows(); };
+    const wireRows = () => {
+      tbody.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { const l = read(); l.splice(rows().indexOf(b.closest('tr')),1); draw(l); });
+      tbody.querySelectorAll('[data-f=seconds]').forEach(i => i.onchange = () => { const r = i.closest('tr'); r.querySelector('[data-f=bar]').value = barAt(Number(i.value)||0); });
+    };
+    wireRows();
+    box.querySelectorAll('[data-tap]').forEach(b => b.onclick = () => {
+      const a = document.querySelector('[data-audio="'+id+'"] audio');
+      const t = a ? a.currentTime : 0;
+      const l = read(); l.push({ name: b.dataset.tap, seconds: Math.round(t*1000)/1000, bar: barAt(t) }); draw(l);
+    });
+    box.querySelector('[data-save-secs]').onclick = async () => {
+      const out = box.querySelector('[data-secs-out]'); out.textContent = 'Saving…';
+      const list = read();
+      let r = await sb.from('store_sections').delete().eq('version_id', id);
+      if(!r.error && list.length) r = await sb.from('store_sections').insert(list.map((x,i)=>({ version_id:id, position:i+1, name:x.name, seconds:x.seconds, bar:x.bar })));
+      out.textContent = r.error ? r.error.message : 'Saved.';
+    };
   }
 
   // ---- the shelf ----

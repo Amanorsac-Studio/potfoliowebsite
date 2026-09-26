@@ -197,10 +197,11 @@
   /* ---------------- 3 · the tracks ---------------- */
   function drawTracks() {
     var box = $('#tracks');
-    box.innerHTML = '<p class="dim">Ten WAV files, one per slot, all the same length and starting at the same moment. Click and Guide are the two the band hears in their ears; the other eight are the music.</p>' +
+    box.innerHTML = '<p class="dim">WAV files, one per slot, all the same length and starting at the same moment. Click and Guide are the two the band hears in their ears; the other eight are the music. Click, Guide, Drums, Bass and Keys are needed; the rest can stay empty if the song has none.</p>' +
       '<div class="slots">' + S.SLOTS.map(function (slot) {
         var t = tracks[slot];
-        return '<div class="slotrow" data-slot="' + slot + '"><b>' + esc(S.SLOT_NAMES[slot]) + '</b>' +
+        var needed = ['click', 'guide', 'drums', 'bass', 'keys'].indexOf(slot) >= 0;
+        return '<div class="slotrow" data-slot="' + slot + '"><b>' + esc(S.SLOT_NAMES[slot]) + (needed ? '' : ' <span class="faint" style="font-weight:400;font-size:11px">optional</span>') + '</b>' +
           '<span class="st">' + (t ? mb(t.bytes) + ' · ' + (t.sample_rate ? (t.sample_rate / 1000) + ' kHz' : '') + (t.duration_seconds ? ' · ' + fmt(Number(t.duration_seconds)) : '') : 'Not yet') + '</span>' +
           '<div class="bar" hidden><i></i></div>' +
           '<label class="btn ' + (t ? 'ghost' : '') + ' sm">' + (t ? 'Replace' : 'Choose file') + '<input type="file" accept=".wav,audio/wav,audio/x-wav" hidden></label>' +
@@ -256,8 +257,8 @@
   }
   function drawSections() {
     var box = $('#sections');
-    if (!tracks.guide) { box.innerHTML = '<p class="dim">Upload the Guide track first; the sections are marked against it.</p>'; return; }
-    box.innerHTML = '<p class="dim">Press play, and tap a section name the moment it starts. Bars are worked out from the tempo (' + (version.bpm ? Number(version.bpm) + ' BPM, ' + (version.time_sig || '4/4') : 'set the tempo above') + '). You can fix the numbers by hand.</p>' +
+    if (!tracks.guide) { box.innerHTML = '<p class="dim">Upload the Guide track first; the sections are marked against it. This step is optional: the studio checks and finalises the sections in review.</p>'; return; }
+    box.innerHTML = '<p class="dim">Optional, but a help: press play and tap a section name the moment it starts. The studio checks and finalises these in review. Bars are worked out from the tempo (' + (version.bpm ? Number(version.bpm) + ' BPM, ' + (version.time_sig || '4/4') : 'set the tempo above') + '). You can fix the numbers by hand.</p>' +
       '<div class="player"><button type="button" id="sec-play" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></button><div class="bars" id="sec-bars"></div><span class="t" id="sec-t">0:00.0</span></div>' +
       '<div class="taps">' + SECTION_NAMES.map(function (n) { return '<button type="button" class="btn ghost sm" data-tap="' + n + '">' + n + '</button>'; }).join('') + '</div>' +
       '<table class="tbl sections"><thead><tr><th>#</th><th>Section</th><th>Starts at</th><th>Bar</th><th></th></tr></thead><tbody id="sec-rows"></tbody></table>' +

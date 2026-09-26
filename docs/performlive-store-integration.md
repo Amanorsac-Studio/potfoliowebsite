@@ -1,5 +1,11 @@
 # PerformLive ↔ Amanorsac Store
 
+The shared, current copy of this contract is the Claude doc
+"PerformLive ↔ Amanorsac Store integration"; this file mirrors its
+install half. The publish half (uploading from inside PerformLive)
+is in the doc and, in code, in store/upload.js and storeRoutes in
+worker.js.
+
 What PerformLive needs to do so that a song rented or bought on
 amanorsac.studio/store opens inside it with the tracks on the right
 lanes and the sections on the timeline.
@@ -90,10 +96,11 @@ Notes:
 
 - **Slots.** Always these ten, always in this order. `click` and
   `guide` are the two the band hears in their ears; the other eight
-  are the music. A song may be missing a slot only if the creator had
-  nothing for it — a song with no horns has no `horns` entry. Lay out
-  the lanes from `slots`, fill the ones present in `tracks`, and leave
-  the others empty rather than shifting everything up.
+  are the music. `click`, `guide`, `drums`, `bass` and `keys` are
+  always present; `guitars`, `piano`, `aux_piano`, `horns` and
+  `vocals` are absent when the song has none. Lay out the lanes from
+  `slots`, fill the ones present in `tracks`, and leave the others
+  empty rather than shifting everything up.
 - **Tracks** are PCM WAV, all the same length, all starting at the
   same sample, 44.1 or 48 kHz (88.2 and 96 are allowed but rare).
   `duration_seconds` and `sample_rate` are what the creator's browser
