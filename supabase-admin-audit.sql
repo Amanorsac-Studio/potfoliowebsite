@@ -909,6 +909,19 @@ grant execute on function public.analytics_summary(int) to authenticated;
    the count behind the filter, so the page can say "of 914".
    looks_wrong flags an address that cannot be delivered to: gmail.coom,
    gmacil.com and their cousins. */
+-- The list was made before confirming an address was part of the
+-- arrangement, and the confirm step was never run on this database -
+-- which is also why "Confirmed" has always read zero. The columns the
+-- list needs are added here so the report never depends on which
+-- version of supabase-downloads.sql was run.
+alter table public.subscribers add column if not exists confirmed_at    timestamptz;
+alter table public.subscribers add column if not exists unsubscribed_at timestamptz;
+alter table public.subscribers add column if not exists consented       boolean not null default false;
+alter table public.subscribers add column if not exists consented_at    timestamptz;
+alter table public.subscribers add column if not exists source          text;
+alter table public.subscribers add column if not exists app             text;
+alter table public.subscribers add column if not exists last_seen_at    timestamptz not null default now();
+
 create or replace function public.admin_mailing_list(
   p_q text default null, p_limit int default 50, p_offset int default 0, p_confirmed_only boolean default false
 )
