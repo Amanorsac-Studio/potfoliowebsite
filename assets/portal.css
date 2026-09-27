@@ -82,20 +82,25 @@
 }
 
 :root{
-  --bg:#F7F5F1; --surface:#FFFFFF; --surface-2:#F1EDE6; --line:#E3DDD2;
-  --ink:#1C1916; --muted:#6B655C; --accent:#8A6A3C; --accent-soft:#F0E6D6;
-  --ok:#4E7C6B; --ok-soft:#E4EFE9; --warn:#C4574B; --warn-soft:#F8E7E4;
-  --shadow:0 1px 2px rgba(28,25,22,.05), 0 8px 24px rgba(28,25,22,.06);
-  --display:'Instrument Serif',Georgia,serif;
+  /* Apple's grey scale: a near-white page, pure white cards, one blue.
+     The type is Inter at Apple's weights and tracking rather than a
+     serif; the numbers are what the pages are for, and they read best
+     big, tight and sans. */
+  --bg:#F5F5F7; --surface:#FFFFFF; --surface-2:#F0F0F4; --line:#E5E5EA;
+  --ink:#1D1D1F; --muted:#6E6E73; --accent:#0071E3; --accent-soft:#E8F1FD;
+  --ok:#1F9D55; --ok-soft:#E6F6EC; --warn:#D93025; --warn-soft:#FCEBEA;
+  --shadow:0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.05);
+  --display:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
   --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --r:10px;
+  --r:16px;
+  --ease-out:cubic-bezier(.2,.8,.3,1);
 }
 [data-theme="dark"]{
-  --bg:#16110D; --surface:#1E1712; --surface-2:#2A211A; --line:#3A2E24;
-  --ink:#F0E9DE; --muted:#9B8A79; --accent:#D0A24C; --accent-soft:#2E2419;
-  --ok:#7FA88C; --ok-soft:#20291F; --warn:#D98A6A; --warn-soft:#2E1E1A;
-  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  --bg:#000000; --surface:#1C1C1E; --surface-2:#2C2C2E; --line:#38383A;
+  --ink:#F5F5F7; --muted:#98989D; --accent:#0A84FF; --accent-soft:#132A44;
+  --ok:#30D158; --ok-soft:#1B2E20; --warn:#FF453A; --warn-soft:#3A1F1D;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.45);
 }
 
 *{box-sizing:border-box}
@@ -108,14 +113,15 @@ img{display:block;max-width:100%}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
 /* ---------- top bar ---------- */
-.top{position:sticky;top:0;z-index:30;background:var(--surface);
+.top{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--surface) 78%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
   border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;
-  padding:0 clamp(16px,4vw,34px);height:62px}
+  padding:0 clamp(16px,4vw,34px);height:60px}
 .brand{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--accent);text-decoration:none}
 .top nav{display:flex;gap:4px;margin-left:12px;flex:1;overflow-x:auto}
-.top nav a{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:6px;white-space:nowrap;
+.top nav a{font-family:var(--body);font-size:13px;font-weight:500;letter-spacing:-.005em;
+  color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;white-space:nowrap;
   transition:background .2s,color .2s}
 .top nav a:hover{background:var(--surface-2);color:var(--ink)}
 .top nav a.on{background:var(--accent-soft);color:var(--accent)}
@@ -133,9 +139,9 @@ main{max-width:1080px;margin:0 auto;padding:clamp(24px,5vw,52px) clamp(16px,4vw,
 .head{margin-bottom:30px}
 .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
   color:var(--accent);margin:0 0 10px}
-h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,5vw,46px);
-  line-height:1.06;margin:0 0 10px;letter-spacing:-.01em}
-h2{font-family:var(--display);font-weight:400;font-size:26px;margin:0 0 14px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,4.5vw,42px);
+  line-height:1.06;margin:0 0 10px;letter-spacing:-.025em}
+h2{font-family:var(--display);font-weight:600;font-size:21px;margin:0 0 14px;letter-spacing:-.015em}
 h3{font-size:15px;font-weight:600;margin:0 0 6px}
 .sub{color:var(--muted);margin:0;max-width:60ch}
 
@@ -152,7 +158,7 @@ h3{font-size:15px;font-weight:600;margin:0 0 6px}
   transition:transform .28s cubic-bezier(.2,.8,.3,1),border-color .28s,box-shadow .28s}
 .proj:hover{transform:translateY(-3px);border-color:var(--accent);
   box-shadow:0 4px 8px rgba(28,25,22,.06),0 16px 40px rgba(28,25,22,.10)}
-.proj .title{font-family:var(--display);font-size:25px;margin:6px 0 2px}
+.proj .title{font-family:var(--display);font-size:22px;font-weight:600;letter-spacing:-.02em;margin:6px 0 2px}
 .proj .artist{color:var(--muted);font-size:14px;margin:0 0 16px}
 
 /* ---------- pills ---------- */
@@ -211,17 +217,16 @@ form{display:flex;flex-direction:column;gap:15px}
 .field.half{flex:1;min-width:150px}
 .fieldrow{display:flex;gap:12px;flex-wrap:wrap}
 label{font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
-input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:8px;
+input,select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;
   color:var(--ink);font-family:var(--body);font-size:15px;padding:11px 13px;width:100%;
   transition:border-color .2s,box-shadow .2s,background .35s}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);
   box-shadow:0 0 0 3px var(--accent-soft)}
 textarea{resize:vertical;min-height:88px}
 .hint{font-size:12.5px;color:var(--muted);margin:0}
-.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;padding:13px 22px;cursor:pointer;
+.btn{background:var(--accent);color:#fff;border:0;border-radius:999px;font-family:var(--body);
+  font-size:14px;font-weight:600;letter-spacing:-.005em;padding:11px 20px;cursor:pointer;
   transition:filter .2s,transform .08s;align-self:flex-start}
-[data-theme="dark"] .btn{color:#16110D}
 .btn:hover{filter:brightness(1.08)}
 .btn:active{transform:translateY(1px)}
 .btn[disabled]{opacity:.5;cursor:default}
@@ -248,7 +253,7 @@ textarea{resize:vertical;min-height:88px}
 .auth{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);
   border-radius:14px;padding:38px 34px;box-shadow:var(--shadow);
   animation:lift .6s cubic-bezier(.2,.8,.3,1)}
-.auth h1{font-size:34px;margin-bottom:6px}
+.auth h1{font-size:30px;margin-bottom:6px}
 .auth .sub{font-size:14px;margin-bottom:26px}
 .auth .foot{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);
   font-size:12.5px;color:var(--muted)}
@@ -336,7 +341,7 @@ textarea{resize:vertical;min-height:88px}
   padding:18px 20px;text-decoration:none;color:inherit;display:block;
   transition:transform .22s cubic-bezier(.2,.8,.3,1),border-color .22s}
 a.stat:hover{transform:translateY(-2px);border-color:var(--accent)}
-.stat b{display:block;font-family:var(--display,inherit);font-size:30px;line-height:1.1;font-weight:400}
+.stat b{display:block;font-family:var(--display,inherit);font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.03em}
 .stat span{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 
 /* ---------- notification bell ---------- */
@@ -428,3 +433,6 @@ a.stat:hover{transform:translateY(-2px);border-color:var(--accent)}
 .brand img.logo-d{display:none}
 [data-theme="dark"] .brand img.logo-l{display:none}
 [data-theme="dark"] .brand img.logo-d{display:block}
+
+/* an empty status line draws nothing; the message bubble style above must not give it a border */
+p.msg:empty{display:none}

@@ -18,14 +18,17 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AMANORSAC">
 <link rel="stylesheet" href="../assets/portal.css">
+<style>
+  .pw{font-family:var(--mono);font-size:13px;background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;word-break:break-all}
+</style>
 </head>
 <body>
 <header class="top" id="topbar"></header>
 <main>
   <div class="head">
     <p class="eyebrow">Studio admin</p>
-    <h1>Projects</h1>
-    <p class="sub">Every song on the desk. Open one to move stages, send files, read reviews, and bill.</p>
+    <h1>Clients &amp; projects</h1>
+    <p class="sub">Every song on the desk, who it is for, and the logins behind them.</p>
   </div>
   <div class="card">
     <div class="card-head">
@@ -39,6 +42,74 @@
       <input id="q" type="search" placeholder="Filter by song, artist or client…" autocomplete="off">
     </div>
     <div id="projects"><div class="skeleton" style="width:55%"></div></div>
+  </div>
+
+  <div class="grid2" style="margin-top:14px">
+    <!-- ---------------- new client ---------------- -->
+    <div class="card">
+      <div class="card-head"><h2>Add a client</h2></div>
+      <p class="hint">Creates their login. They are forced to set their own password the first time they sign in.</p>
+      <form id="clientform">
+        <div class="field"><label for="c-name">Full name</label>
+          <input id="c-name" type="text" autocomplete="off" required></div>
+        <div class="field"><label for="c-email">Email</label>
+          <input id="c-email" type="email" autocomplete="off" required></div>
+        <div class="field"><label for="c-company">Company <span class="hint">optional</span></label>
+          <input id="c-company" type="text" autocomplete="off"></div>
+        <div class="field"><label for="c-phone">Phone <span class="hint">optional — for WhatsApp/SMS updates, e.g. +233…</span></label>
+          <input id="c-phone" type="tel" autocomplete="off" placeholder="+1 415 555 2671"></div>
+        <button class="btn" id="c-go" type="submit">Create login</button>
+        <p class="msg" id="c-msg" role="status" aria-live="polite"></p>
+        <div id="c-pw"></div>
+      </form>
+    </div>
+
+    <!-- ---------------- new project ---------------- -->
+    <div class="card">
+      <div class="card-head"><h2>Start a project</h2></div>
+      <p class="hint">The seven stages are created automatically.</p>
+      <form id="projform">
+        <div class="field"><label for="p-client">Client</label>
+          <select id="p-client" required></select></div>
+        <div class="field"><label for="p-title">Song / project title</label>
+          <input id="p-title" type="text" required></div>
+        <div class="fieldrow">
+          <div class="field half"><label for="p-artist">Artist</label>
+            <input id="p-artist" type="text"></div>
+          <div class="field half"><label for="p-due">Due date</label>
+            <input id="p-due" type="date"></div>
+        </div>
+        <div class="fieldrow">
+          <div class="field half"><label for="p-service">Service</label>
+            <select id="p-service">
+              <option>Mixing &amp; Mastering</option><option>Mixing</option><option>Mastering</option>
+              <option>Production</option><option>Session piano</option><option>Music direction</option>
+              <option>Live or broadcast audio</option>
+            </select></div>
+          <div class="field half"><label for="p-revs">Revisions allowed</label>
+            <input id="p-revs" type="number" min="0" max="10" value="3"></div>
+        </div>
+        <button class="btn" id="p-go" type="submit">Create project</button>
+        <p class="msg" id="p-msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ---------------- clients ---------------- -->
+  <div class="card" id="clients-card" style="margin-top:14px">
+    <div class="card-head"><h2>Clients</h2><span class="hint" id="clientcount"></span></div>
+    <p class="hint">People the studio is working for. They see their projects, billing and mix reviews — and My Apps, like everyone.</p>
+    <div id="clients"><div class="skeleton" style="width:40%"></div></div>
+  </div>
+
+  <!-- ---------------- app accounts ----------------
+       Signed up on the site to download or buy an app. Same login as a
+       client, but they only ever see My Apps and their account, until
+       one of them is made a client here. -->
+  <div class="card" id="appusers-card" style="margin-top:14px">
+    <div class="card-head"><h2>App accounts</h2><span class="hint" id="appusercount"></span></div>
+    <p class="hint">Signed up to download or buy an app. They see My Apps and their account, nothing else — until you make one a client.</p>
+    <div id="appusers"><div class="skeleton" style="width:40%"></div></div>
   </div>
 </main>
 <script src="../assets/vendor/supabase-2.116.0.js"></script>
@@ -104,6 +175,230 @@
   $('#q').addEventListener('input', paint);
   $('#arch-toggle').addEventListener('click', () => { showArchived = !showArchived; paint(); });
   paint();
+})();
+</script>
+<script>
+/* clients and app accounts; the login and project forms */
+(async () => {
+  const me = await requireAdmin(); if(!me) return;
+
+  const clientSel = $('#p-client');
+
+  async function load(){
+    // ---- clients
+    const { data: people } = await sb.from('profiles')
+      .select('*').order('created_at',{ascending:false});
+    // One login for everyone; is_client is what separates a client of
+    // the studio from someone who signed up for an app.
+    const clients  = (people||[]).filter(p => !p.is_admin && p.is_client);
+    const appUsers = (people||[]).filter(p => !p.is_admin && !p.is_client);
+
+    $('#clientcount').textContent = clients.length + (clients.length===1?' client':' clients');
+    $('#appusercount').textContent = appUsers.length + (appUsers.length===1?' account':' accounts');
+    // Signed avatar links are fetched up front, so the map below can stay
+    // synchronous and the list paints in one go rather than popping in.
+    const faces = await Promise.all(clients.map(c => avatarUrl(c.avatar_path)));
+    $('#clients').innerHTML = clients.length ? clients.map((c, i) =>
+      '<div class="client" data-id="'+esc(c.id)+'">'+
+        '<div class="row">'+
+          '<div class="avatar">'+(faces[i]
+            ? '<img src="'+esc(faces[i])+'" alt="">'
+            : initialsOf(c.full_name || c.email))+'</div>'+
+          '<div><h3>'+esc(c.full_name || c.email)+'</h3>'+
+          '<p class="meta">'+esc(c.email||'')+(c.company?' · '+esc(c.company):'')+
+            (c.phone?' · '+esc(c.phone):'')+'</p></div>'+
+          '<span class="meta">'+
+            (c.notify_email===false?'':'✉ ')+(c.notify_whatsapp?'✆ ':'')+
+            'joined '+when(c.created_at)+
+            ' <button class="linkbtn cl-edit" type="button">Edit</button></span>'+
+        '</div>'+
+        // Hidden until asked for. A list of clients should read as a list,
+        // not as a wall of form fields.
+        '<div class="cl-form" hidden>'+
+          '<div class="fieldrow">'+
+            '<div class="field half"><label>Name</label>'+
+              '<input class="cl-name" type="text" value="'+esc(c.full_name||'')+'"></div>'+
+            '<div class="field half"><label>Company</label>'+
+              '<input class="cl-company" type="text" value="'+esc(c.company||'')+'"></div>'+
+          '</div>'+
+          '<div class="fieldrow">'+
+            '<div class="field half"><label>Email</label>'+
+              '<input class="cl-email" type="email" value="'+esc(c.email||'')+'"></div>'+
+            '<div class="field half"><label>Phone</label>'+
+              '<input class="cl-phone" type="tel" placeholder="+1 415 555 2671" '+
+                'value="'+esc(c.phone||'')+'"></div>'+
+          '</div>'+
+          '<label class="check"><input class="cl-nemail" type="checkbox"'+
+            (c.notify_email===false?'':' checked')+'> Email them about updates</label>'+
+          '<label class="check"><input class="cl-nwa" type="checkbox"'+
+            (c.notify_whatsapp?' checked':'')+'> WhatsApp / SMS them too</label>'+
+          '<label class="check"><input class="cl-client" type="checkbox" checked> '+
+            'Client access — projects, billing and mix reviews. Untick to make this an app-only account.</label>'+
+          '<button class="btn cl-save" type="button">Save changes</button>'+
+          '<button class="linkbtn cl-del" type="button" style="color:var(--warn);margin-left:12px">'+
+            'Delete this client…</button>'+
+          '<p class="msg cl-msg" role="status" aria-live="polite"></p>'+
+        '</div>'+
+      '</div>').join('')
+      : '<p class="empty">No clients yet. Add one above.</p>';
+
+    // Editing the profile row changes their contact details and who gets
+    // notified. It does NOT change their login — that lives in auth, and
+    // changing the email here only changes where notifications go.
+    $$('.client').forEach(box => {
+      const id  = box.getAttribute('data-id');
+      const frm = $('.cl-form', box);
+      $('.cl-edit', box).addEventListener('click', () => {
+        frm.hidden = !frm.hidden;
+        $('.cl-edit', box).textContent = frm.hidden ? 'Edit' : 'Close';
+      });
+      $('.cl-save', box).addEventListener('click', async () => {
+        const btn = $('.cl-save', box), m = $('.cl-msg', box);
+        btn.disabled = true;
+        const { error } = await sb.from('profiles').update({
+          full_name:       $('.cl-name', box).value.trim() || null,
+          company:         $('.cl-company', box).value.trim() || null,
+          email:           $('.cl-email', box).value.trim() || null,
+          phone:           $('.cl-phone', box).value.replace(/[^\d+]/g,'') || null,
+          notify_email:    $('.cl-nemail', box).checked,
+          notify_whatsapp: $('.cl-nwa', box).checked,
+          is_client:       $('.cl-client', box).checked,
+        }).eq('id', id);
+        btn.disabled = false;
+        if(error) return say(m, error.message, 'err');
+        say(m, 'Saved.', 'ok');
+        load();
+      });
+
+      // Full removal: login, projects, files, invoices, AND anything
+      // they bought — one account now covers a mixing client and an
+      // app buyer, so deleting it deletes both sides. Untick "Client
+      // access" instead if the goal is only to end their client
+      // relationship while leaving a purchased app alone.
+      // Typing the email back is the safety catch; a confirm() box gets
+      // clicked through on reflex.
+      $('.cl-del', box).addEventListener('click', async () => {
+        const m = $('.cl-msg', box);
+        const email = $('.cl-email', box).value.trim();
+        const typed = prompt('This deletes the client, their login, EVERY project, file, '+
+          'message and invoice they have, AND any app they bought — the license key, '+
+          'devices, everything. There is no undo.\n\n'+
+          'If you only want to end their client relationship and keep their purchases, '+
+          'cancel this and untick "Client access" instead.\n\n'+
+          'Type their email to confirm deletion:');
+        if(typed === null) return;
+        if(typed.trim().toLowerCase() !== email.toLowerCase()){
+          return say(m, 'That did not match — nothing was deleted.', 'err');
+        }
+        say(m, 'Deleting…');
+        const { data:{ session } } = await sb.auth.getSession();
+        try {
+          const res = await fetch(SUPABASE_URL + '/functions/v1/delete-client', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + (session ? session.access_token : ''),
+              'apikey': SUPABASE_KEY,
+            },
+            body: JSON.stringify({ client_id: id }),
+          });
+          const out = await res.json();
+          if(!res.ok) throw new Error(out.error || 'The delete-client function refused.');
+          load();
+        } catch(err){
+          say(m, err.message + ' — is delete-client deployed?', 'err');
+        }
+      });
+    });
+
+    clientSel.innerHTML = clients.length
+      ? clients.map(c => '<option value="'+esc(c.id)+'">'+esc(c.full_name || c.email)+'</option>').join('')
+      : '<option value="">— add a client first —</option>';
+
+    // ---- app accounts: one button each, to make them a client
+    const appFaces = await Promise.all(appUsers.map(c => avatarUrl(c.avatar_path)));
+    $('#appusers').innerHTML = appUsers.length ? appUsers.map((c, i) =>
+      '<div class="row" data-id="'+esc(c.id)+'">'+
+        '<div class="avatar">'+(appFaces[i]
+          ? '<img src="'+esc(appFaces[i])+'" alt="">'
+          : initialsOf(c.full_name || c.email))+'</div>'+
+        '<div><h3>'+esc(c.full_name || c.email)+'</h3>'+
+        '<p class="meta">'+esc(c.email||'')+' · joined '+when(c.created_at)+'</p></div>'+
+        '<span class="meta"><button class="btn ghost mk-client" type="button" data-id="'+esc(c.id)+'">Make a client</button></span>'+
+      '</div>').join('')
+      : '<p class="empty">Nobody has signed up for an app yet.</p>';
+    $$('.mk-client').forEach(btn => btn.addEventListener('click', async () => {
+      btn.disabled = true; btn.textContent = 'Making…';
+      const { error } = await sb.from('profiles').update({ is_client: true }).eq('id', btn.dataset.id);
+      if(error){ btn.disabled = false; btn.textContent = 'Make a client'; alert(error.message); return; }
+      load();
+    }));
+
+  }
+
+  await load();
+
+  /* ---------- create a client login (via the Edge Function) ---------- */
+  $('#clientform').addEventListener('submit', async e => {
+    e.preventDefault();
+    const m = $('#c-msg'), go = $('#c-go'), out = $('#c-pw');
+    out.innerHTML = ''; say(m, 'Creating…');
+    go.disabled = true;
+
+    const { data:{ session } } = await sb.auth.getSession();
+    try {
+      const res = await fetch(SUPABASE_URL + '/functions/v1/create-client', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + (session ? session.access_token : ''),
+          'apikey': SUPABASE_KEY
+        },
+        body: JSON.stringify({
+          full_name: $('#c-name').value.trim(),
+          email:     $('#c-email').value.trim(),
+          company:   $('#c-company').value.trim(),
+          phone:     $('#c-phone').value.trim()
+        })
+      });
+      const body = await res.json();
+      if(!res.ok) throw new Error(body.error || 'That did not work.');
+
+      say(m, 'Login created.', 'ok');
+      out.innerHTML = '<div class="pw"><b>Send them these once:</b><br>'+
+        esc(body.email)+'<br>temporary password: <b>'+esc(body.password)+'</b><br>'+
+        '<span class="hint">Shown only now. They must change it on first sign in.</span></div>';
+      e.target.reset();
+      await load();
+    } catch(err){
+      say(m, err.message === 'Failed to fetch'
+        ? 'Could not reach the create-client function. Is it deployed?'
+        : err.message, 'err');
+    } finally { go.disabled = false; }
+  });
+
+  /* ---------- create a project ---------- */
+  $('#projform').addEventListener('submit', async e => {
+    e.preventDefault();
+    const m = $('#p-msg'), go = $('#p-go');
+    const client_id = clientSel.value;
+    if(!client_id) return say(m, 'Add a client first.', 'err');
+
+    go.disabled = true; say(m, 'Creating…');
+    const { error } = await sb.from('projects').insert({
+      client_id,
+      title:  $('#p-title').value.trim(),
+      artist: $('#p-artist').value.trim() || null,
+      service: $('#p-service').value,
+      due_date: $('#p-due').value || null,
+      revisions_allowed: parseInt($('#p-revs').value, 10) || 3
+    });
+    go.disabled = false;
+    if(error) return say(m, error.message, 'err');
+    say(m, 'Project created with its seven stages.', 'ok');
+    e.target.reset(); $('#p-revs').value = 3;
+    await load();
+  });
 })();
 </script>
 </body>

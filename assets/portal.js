@@ -102,11 +102,9 @@ async function mountChrome(active){
       '<a href="admin-projects.html" class="'+(active==='admin-projects' ?'on':'')+'">Projects</a>'+
       '<a href="admin-reviews.html"  class="'+(active==='admin-reviews'  ?'on':'')+'">Reviews</a>'+
       '<a href="admin-billing.html"  class="'+(active==='admin-billing'  ?'on':'')+'">Billing</a>'+
-      '<a href="admin-analytics.html" class="'+(active==='admin-analytics'?'on':'')+'">Business</a>'+
-      '<a href="admin-codes.html"    class="'+(active==='admin-codes'    ?'on':'')+'">Codes</a>'+
+      '<a href="admin-analytics.html" class="'+(active==='admin-analytics'?'on':'')+'">Analytics</a>'+
       '<a href="admin-store.html"    class="'+(active==='admin-store'    ?'on':'')+'">Store</a>'+
-      '<a href="admin-traffic.html"  class="'+(active==='admin-traffic'  ?'on':'')+'">Traffic</a>'+
-      '<a href="admin-downloads.html" class="'+(active==='admin-downloads'?'on':'')+'">Downloads</a>'+
+      '<a href="admin-codes.html"    class="'+(active==='admin-codes'    ?'on':'')+'">Codes</a>'+
       '<a href="admin-blog.html"     class="'+(active==='admin-blog'     ?'on':'')+'">Writing</a>'+
       '<a href="account.html"        class="'+(active==='account'        ?'on':'')+'">Account</a>'+
       '<a href="../index.html">Studio site</a>'
@@ -159,7 +157,7 @@ async function mountChrome(active){
        ['admin-projects.html','admin-projects','disc','Projects'],
        ['admin-reviews.html','admin-reviews','talk','Reviews'],
        ['admin-billing.html','admin-billing','money','Billing'],
-       ['admin-traffic.html','admin-traffic','graph','Traffic'],
+       ['admin-analytics.html','admin-analytics','graph','Analytics'],
        // six is the most this pill will hold before the labels collide,
        // which is why this one is a verb rather than "Writing"
        ['admin-blog.html','admin-blog','pen','Write']]

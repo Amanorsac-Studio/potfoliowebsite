@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Studio admin · Stephen Amanor Sackey</title>
+<title>Dashboard · Studio admin</title>
 <script>
 /* set the theme BEFORE first paint so there is no flash of the wrong colours */
 (function(){ var t='light'; try{ t=localStorage.getItem('portal-theme')||'light'; }catch(e){}
@@ -12,342 +12,281 @@
 </script>
 <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#F7F5F1">
+<meta name="theme-color" content="#F5F5F7">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AMANORSAC">
 <link rel="stylesheet" href="../assets/portal.css">
+<link rel="stylesheet" href="../assets/admin-charts.css">
 <style>
-  /* .stats/.stat live in portal.css now — the other admin pages use them too */
-  .pw{font-family:var(--mono);font-size:13px;background:var(--surface-2);border:1px dashed var(--line);
-      border-radius:8px;padding:12px 14px;margin-top:12px;word-break:break-all}
+  main{max-width:1180px}
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .headrow .sub{font-size:15px}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:14px}
+  @media (max-width:900px){ .kpis{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @media (max-width:480px){ .kpis{grid-template-columns:1fr} }
+  .kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px 14px;
+    box-shadow:var(--shadow);display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:end;
+    text-decoration:none;color:inherit;transition:transform .25s var(--ease-out),border-color .25s}
+  .kpi:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .kpi .k{grid-column:1/-1;font-size:13px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .kpi .k i{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:var(--tint,var(--accent-soft));color:var(--tone,var(--accent))}
+  .kpi .k i svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .kpi .v{font-size:32px;font-weight:700;letter-spacing:-.03em;line-height:1.05}
+  .kpi .spark{width:110px;height:34px}
+  .kpi .d{grid-column:1/-1;font-size:12.5px;color:var(--muted);margin-top:2px}
+  .kpi .d.up{color:var(--ok)} .kpi .d.down{color:var(--warn)}
+
+  .grid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:14px;align-items:start}
+  @media (max-width:900px){ .grid{grid-template-columns:1fr} }
+  .col{display:grid;gap:14px}
+  .card{margin:0}
+  .card-head{margin-bottom:12px}
+  .card-head h2{font-size:17px}
+  .card-head .hint{font-size:12.5px}
+  .chart{position:relative;height:260px}
+  .toggles{display:flex;gap:6px;flex-wrap:wrap}
+  .toggles button{font:inherit;font-size:12.5px;font-weight:500;color:var(--muted);background:transparent;border:1px solid var(--line);
+    border-radius:999px;padding:5px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .toggles button i{width:8px;height:8px;border-radius:50%;background:var(--c);opacity:.35}
+  .toggles button.on{color:var(--ink);border-color:transparent;background:var(--surface-2)}
+  .toggles button.on i{opacity:1}
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl td{padding:9px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-left:12px}
+  .tbl .who{font-weight:500}
+  .tbl .sub{display:block;color:var(--muted);font-size:12px}
+  .todo{list-style:none;margin:0;padding:0}
+  .todo li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .todo li:last-child{border-bottom:0}
+  .todo b{font-size:20px;font-weight:700;letter-spacing:-.02em;min-width:36px;font-variant-numeric:tabular-nums}
+  .todo a{margin-left:auto;font-size:13px;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .todo .zero{color:var(--muted)}
+  .msg:empty{display:none}
+  .setup{background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
 <header class="top" id="topbar"></header>
 <main>
-  <div class="head">
-    <p class="eyebrow">Studio admin</p>
-    <h1>Clients &amp; projects</h1>
-    <p class="sub">Everything you would otherwise do by hand in the Supabase table editor.</p>
-  </div>
-
-  <div class="stats" id="stats"></div>
-
-  <div class="grid2">
-    <!-- ---------------- new client ---------------- -->
-    <div class="card">
-      <div class="card-head"><h2>Add a client</h2></div>
-      <p class="hint">Creates their login. They are forced to set their own password the first time they sign in.</p>
-      <form id="clientform">
-        <div class="field"><label for="c-name">Full name</label>
-          <input id="c-name" type="text" autocomplete="off" required></div>
-        <div class="field"><label for="c-email">Email</label>
-          <input id="c-email" type="email" autocomplete="off" required></div>
-        <div class="field"><label for="c-company">Company <span class="hint">optional</span></label>
-          <input id="c-company" type="text" autocomplete="off"></div>
-        <div class="field"><label for="c-phone">Phone <span class="hint">optional — for WhatsApp/SMS updates, e.g. +233…</span></label>
-          <input id="c-phone" type="tel" autocomplete="off" placeholder="+1 415 555 2671"></div>
-        <button class="btn" id="c-go" type="submit">Create login</button>
-        <p class="msg" id="c-msg" role="status" aria-live="polite"></p>
-        <div id="c-pw"></div>
-      </form>
+  <div class="headrow">
+    <div>
+      <p class="eyebrow">Studio admin</p>
+      <h1>Dashboard</h1>
+      <p class="sub" id="asof">The business, this period.</p>
     </div>
-
-    <!-- ---------------- new project ---------------- -->
-    <div class="card">
-      <div class="card-head"><h2>Start a project</h2></div>
-      <p class="hint">The seven stages are created automatically.</p>
-      <form id="projform">
-        <div class="field"><label for="p-client">Client</label>
-          <select id="p-client" required></select></div>
-        <div class="field"><label for="p-title">Song / project title</label>
-          <input id="p-title" type="text" required></div>
-        <div class="fieldrow">
-          <div class="field half"><label for="p-artist">Artist</label>
-            <input id="p-artist" type="text"></div>
-          <div class="field half"><label for="p-due">Due date</label>
-            <input id="p-due" type="date"></div>
-        </div>
-        <div class="fieldrow">
-          <div class="field half"><label for="p-service">Service</label>
-            <select id="p-service">
-              <option>Mixing &amp; Mastering</option><option>Mixing</option><option>Mastering</option>
-              <option>Production</option><option>Session piano</option><option>Music direction</option>
-              <option>Live or broadcast audio</option>
-            </select></div>
-          <div class="field half"><label for="p-revs">Revisions allowed</label>
-            <input id="p-revs" type="number" min="0" max="10" value="3"></div>
-        </div>
-        <button class="btn" id="p-go" type="submit">Create project</button>
-        <p class="msg" id="p-msg" role="status" aria-live="polite"></p>
-      </form>
+    <div class="range" id="range">
+      <button type="button" data-d="7">7 days</button>
+      <button type="button" data-d="30" class="on">30 days</button>
+      <button type="button" data-d="90">90 days</button>
     </div>
   </div>
 
-  <!-- ---------------- clients ---------------- -->
-  <div class="card" id="clients-card" style="margin-top:16px">
-    <div class="card-head"><h2>Clients</h2><span class="hint" id="clientcount"></span></div>
-    <p class="hint">People the studio is working for. They see their projects, billing and mix reviews — and My Apps, like everyone.</p>
-    <div id="clients"><div class="skeleton" style="width:40%"></div></div>
-  </div>
+  <p class="msg" id="m" role="status" aria-live="polite"></p>
 
-  <!-- ---------------- app accounts ----------------
-       Signed up on the site to download or buy an app. Same login as a
-       client, but they only ever see My Apps and their account, until
-       one of them is made a client here. -->
-  <div class="card" id="appusers-card" style="margin-top:16px">
-    <div class="card-head"><h2>App accounts</h2><span class="hint" id="appusercount"></span></div>
-    <p class="hint">Signed up to download or buy an app. They see My Apps and their account, nothing else — until you make one a client.</p>
-    <div id="appusers"><div class="skeleton" style="width:40%"></div></div>
+  <div class="kpis" id="kpis"></div>
+
+  <div class="grid">
+    <div class="col">
+      <div class="card">
+        <div class="card-head"><h2>Over time</h2><div class="toggles" id="toggles"></div></div>
+        <div class="chart" id="bigchart"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Latest sales</h2><a class="hint" href="admin-analytics.html#money">All sales →</a></div>
+        <table class="tbl"><tbody id="sales"></tbody></table>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Top apps</h2><span class="hint">by revenue in the period</span></div>
+        <ul class="bars" id="apps"></ul>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card">
+        <div class="card-head"><h2>Needs you</h2></div>
+        <ul class="todo" id="todo"></ul>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Where visitors come from</h2><a class="hint" href="admin-analytics.html#traffic">Traffic →</a></div>
+        <div id="channels"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Store</h2><a class="hint" href="admin-store.html">Review queue →</a></div>
+        <ul class="bars" id="store"></ul>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Hub</h2><a class="hint" href="admin-analytics.html#money">Installed base →</a></div>
+        <div id="hub"></div>
+      </div>
+    </div>
   </div>
 </main>
 
 <script src="../assets/vendor/supabase-2.116.0.js"></script>
 <script src="../assets/supabase-client.js"></script>
 <script src="../assets/portal.js"></script>
+<script src="../assets/charts.js"></script>
 <script>
 (async () => {
   const me = await requireAdmin(); if(!me) return;
   await mountChrome('admin');
+  const sb = window.amanorsacClient();
+  const m = $('#m');
+  const esc = t => { const d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; };
+  const num = Charts.num, usd = Charts.usd;
+  const when = t => new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+  let days = 30;
+  let NAMES = {};
+  const appName = id => NAMES[id] || id;
+  fetch('/catalog.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(c=>{ if(c&&c.apps) Object.keys(c.apps).forEach(k=>NAMES[k]=c.apps[k].name||k); }).catch(()=>{});
 
-  const clientSel = $('#p-client');
+  const SERIES = [
+    { key:'revenue_cents', label:'Revenue',   color:'#0071E3', money:true },
+    { key:'sales',         label:'Sales',     color:'#30D158' },
+    { key:'downloads',     label:'Downloads', color:'#FF9F0A' },
+    { key:'visits',        label:'Visits',    color:'#BF5AF2' }
+  ];
+  let active = ['revenue_cents','visits'], daily = [];
 
-  async function load(){
-    // ---- clients
-    const { data: people } = await sb.from('profiles')
-      .select('*').order('created_at',{ascending:false});
-    // One login for everyone; is_client is what separates a client of
-    // the studio from someone who signed up for an app.
-    const clients  = (people||[]).filter(p => !p.is_admin && p.is_client);
-    const appUsers = (people||[]).filter(p => !p.is_admin && !p.is_client);
-
-    $('#clientcount').textContent = clients.length + (clients.length===1?' client':' clients');
-    $('#appusercount').textContent = appUsers.length + (appUsers.length===1?' account':' accounts');
-    // Signed avatar links are fetched up front, so the map below can stay
-    // synchronous and the list paints in one go rather than popping in.
-    const faces = await Promise.all(clients.map(c => avatarUrl(c.avatar_path)));
-    $('#clients').innerHTML = clients.length ? clients.map((c, i) =>
-      '<div class="client" data-id="'+esc(c.id)+'">'+
-        '<div class="row">'+
-          '<div class="avatar">'+(faces[i]
-            ? '<img src="'+esc(faces[i])+'" alt="">'
-            : initialsOf(c.full_name || c.email))+'</div>'+
-          '<div><h3>'+esc(c.full_name || c.email)+'</h3>'+
-          '<p class="meta">'+esc(c.email||'')+(c.company?' · '+esc(c.company):'')+
-            (c.phone?' · '+esc(c.phone):'')+'</p></div>'+
-          '<span class="meta">'+
-            (c.notify_email===false?'':'✉ ')+(c.notify_whatsapp?'✆ ':'')+
-            'joined '+when(c.created_at)+
-            ' <button class="linkbtn cl-edit" type="button">Edit</button></span>'+
-        '</div>'+
-        // Hidden until asked for. A list of clients should read as a list,
-        // not as a wall of form fields.
-        '<div class="cl-form" hidden>'+
-          '<div class="fieldrow">'+
-            '<div class="field half"><label>Name</label>'+
-              '<input class="cl-name" type="text" value="'+esc(c.full_name||'')+'"></div>'+
-            '<div class="field half"><label>Company</label>'+
-              '<input class="cl-company" type="text" value="'+esc(c.company||'')+'"></div>'+
-          '</div>'+
-          '<div class="fieldrow">'+
-            '<div class="field half"><label>Email</label>'+
-              '<input class="cl-email" type="email" value="'+esc(c.email||'')+'"></div>'+
-            '<div class="field half"><label>Phone</label>'+
-              '<input class="cl-phone" type="tel" placeholder="+1 415 555 2671" '+
-                'value="'+esc(c.phone||'')+'"></div>'+
-          '</div>'+
-          '<label class="check"><input class="cl-nemail" type="checkbox"'+
-            (c.notify_email===false?'':' checked')+'> Email them about updates</label>'+
-          '<label class="check"><input class="cl-nwa" type="checkbox"'+
-            (c.notify_whatsapp?' checked':'')+'> WhatsApp / SMS them too</label>'+
-          '<label class="check"><input class="cl-client" type="checkbox" checked> '+
-            'Client access — projects, billing and mix reviews. Untick to make this an app-only account.</label>'+
-          '<button class="btn cl-save" type="button">Save changes</button>'+
-          '<button class="linkbtn cl-del" type="button" style="color:var(--warn);margin-left:12px">'+
-            'Delete this client…</button>'+
-          '<p class="msg cl-msg" role="status" aria-live="polite"></p>'+
-        '</div>'+
-      '</div>').join('')
-      : '<p class="empty">No clients yet. Add one above.</p>';
-
-    // Editing the profile row changes their contact details and who gets
-    // notified. It does NOT change their login — that lives in auth, and
-    // changing the email here only changes where notifications go.
-    $$('.client').forEach(box => {
-      const id  = box.getAttribute('data-id');
-      const frm = $('.cl-form', box);
-      $('.cl-edit', box).addEventListener('click', () => {
-        frm.hidden = !frm.hidden;
-        $('.cl-edit', box).textContent = frm.hidden ? 'Edit' : 'Close';
-      });
-      $('.cl-save', box).addEventListener('click', async () => {
-        const btn = $('.cl-save', box), m = $('.cl-msg', box);
-        btn.disabled = true;
-        const { error } = await sb.from('profiles').update({
-          full_name:       $('.cl-name', box).value.trim() || null,
-          company:         $('.cl-company', box).value.trim() || null,
-          email:           $('.cl-email', box).value.trim() || null,
-          phone:           $('.cl-phone', box).value.replace(/[^\d+]/g,'') || null,
-          notify_email:    $('.cl-nemail', box).checked,
-          notify_whatsapp: $('.cl-nwa', box).checked,
-          is_client:       $('.cl-client', box).checked,
-        }).eq('id', id);
-        btn.disabled = false;
-        if(error) return say(m, error.message, 'err');
-        say(m, 'Saved.', 'ok');
-        load();
-      });
-
-      // Full removal: login, projects, files, invoices, AND anything
-      // they bought — one account now covers a mixing client and an
-      // app buyer, so deleting it deletes both sides. Untick "Client
-      // access" instead if the goal is only to end their client
-      // relationship while leaving a purchased app alone.
-      // Typing the email back is the safety catch; a confirm() box gets
-      // clicked through on reflex.
-      $('.cl-del', box).addEventListener('click', async () => {
-        const m = $('.cl-msg', box);
-        const email = $('.cl-email', box).value.trim();
-        const typed = prompt('This deletes the client, their login, EVERY project, file, '+
-          'message and invoice they have, AND any app they bought — the license key, '+
-          'devices, everything. There is no undo.\n\n'+
-          'If you only want to end their client relationship and keep their purchases, '+
-          'cancel this and untick "Client access" instead.\n\n'+
-          'Type their email to confirm deletion:');
-        if(typed === null) return;
-        if(typed.trim().toLowerCase() !== email.toLowerCase()){
-          return say(m, 'That did not match — nothing was deleted.', 'err');
-        }
-        say(m, 'Deleting…');
-        const { data:{ session } } = await sb.auth.getSession();
-        try {
-          const res = await fetch(SUPABASE_URL + '/functions/v1/delete-client', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + (session ? session.access_token : ''),
-              'apikey': SUPABASE_KEY,
-            },
-            body: JSON.stringify({ client_id: id }),
-          });
-          const out = await res.json();
-          if(!res.ok) throw new Error(out.error || 'The delete-client function refused.');
-          load();
-        } catch(err){
-          say(m, err.message + ' — is delete-client deployed?', 'err');
-        }
-      });
-    });
-
-    clientSel.innerHTML = clients.length
-      ? clients.map(c => '<option value="'+esc(c.id)+'">'+esc(c.full_name || c.email)+'</option>').join('')
-      : '<option value="">— add a client first —</option>';
-
-    // ---- app accounts: one button each, to make them a client
-    const appFaces = await Promise.all(appUsers.map(c => avatarUrl(c.avatar_path)));
-    $('#appusers').innerHTML = appUsers.length ? appUsers.map((c, i) =>
-      '<div class="row" data-id="'+esc(c.id)+'">'+
-        '<div class="avatar">'+(appFaces[i]
-          ? '<img src="'+esc(appFaces[i])+'" alt="">'
-          : initialsOf(c.full_name || c.email))+'</div>'+
-        '<div><h3>'+esc(c.full_name || c.email)+'</h3>'+
-        '<p class="meta">'+esc(c.email||'')+' · joined '+when(c.created_at)+'</p></div>'+
-        '<span class="meta"><button class="btn ghost mk-client" type="button" data-id="'+esc(c.id)+'">Make a client</button></span>'+
-      '</div>').join('')
-      : '<p class="empty">Nobody has signed up for an app yet.</p>';
-    $$('.mk-client').forEach(btn => btn.addEventListener('click', async () => {
-      btn.disabled = true; btn.textContent = 'Making…';
-      const { error } = await sb.from('profiles').update({ is_client: true }).eq('id', btn.dataset.id);
-      if(error){ btn.disabled = false; btn.textContent = 'Make a client'; alert(error.message); return; }
-      load();
+  function delta(now, before, lowerIsBetter){
+    now = Number(now)||0; before = Number(before)||0;
+    if(!before) return now ? '<span class="d">new this period</span>' : '<span class="d">—</span>';
+    const ch = Math.round((now-before)/before*100);
+    if(!isFinite(ch)||ch===0) return '<span class="d">level with the period before</span>';
+    const good = lowerIsBetter ? ch<0 : ch>0;
+    return '<span class="d '+(good?'up':'down')+'">'+(ch>0?'▲':'▼')+' '+Math.abs(ch)+'% vs the period before</span>';
+  }
+  const ICON = {
+    money:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.5 2.5-1.5s2.5.5 2.5 1.5-1 1.5-2.5 1.5-2.5.5-2.5 1.5 1 1.5 2.5 1.5 2.5-.5 2.5-1.5"/></svg>',
+    tag:'<svg viewBox="0 0 24 24"><path d="M20 13L13 20 4 11V4h7z"/><circle cx="8" cy="8" r="1.5"/></svg>',
+    down:'<svg viewBox="0 0 24 24"><path d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>',
+    eye:'<svg viewBox="0 0 24 24"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>'
+  };
+  function kpi(k, v, d, sparkKey, color, tint, icon, href){
+    return '<a class="kpi" href="'+href+'" style="--tone:'+color+';--tint:'+tint+'"><span class="k"><i>'+ICON[icon]+'</i>'+k+'</span>' +
+      '<span class="v">'+v+'</span><span class="spark" data-spark="'+sparkKey+'" data-c="'+color+'"></span>'+d+'</a>';
+  }
+  function drawToggles(){
+    $('#toggles').innerHTML = SERIES.map(s => '<button type="button" data-k="'+s.key+'" class="'+(active.indexOf(s.key)>=0?'on':'')+'" style="--c:'+s.color+'"><i></i>'+s.label+'</button>').join('');
+    $$('#toggles button').forEach(b => b.addEventListener('click', () => {
+      const k = b.dataset.k;
+      if(active.indexOf(k)>=0){ if(active.length>1) active = active.filter(x=>x!==k); } else active.push(k);
+      active = SERIES.map(s=>s.key).filter(k=>active.indexOf(k)>=0);
+      drawToggles(); chart();
     }));
+  }
+  function chart(){ Charts.line($('#bigchart'), { days: daily, series: SERIES, active }); }
+  addEventListener('resize', chart);
 
-    // ---- headline numbers, each one a door to its page
-    const { count: open } = await sb.from('projects')
-      .select('id',{count:'exact',head:true}).eq('status','active');
-    const { count: reviews } = await sb.from('revision_requests')
-      .select('id',{count:'exact',head:true}).neq('status','done');
-    const { data: allInv } = await sb.from('invoices').select('amount_cents,status');
-    /* tolerate the downloads schema not being installed yet */
-    let dls = 0;
-    try { const r = await sb.rpc('subscriber_stats').single();
-          if(!r.error && r.data) dls = r.data.downloads || 0; } catch(e){}
-    const owed = (allInv||[]).filter(i => i.status !== 'paid' && i.status !== 'void')
-                             .reduce((t,i) => t + i.amount_cents, 0);
-    $('#stats').innerHTML =
-      '<a class="stat" href="#clients-card"><b>'+clients.length+'</b><span>Clients</span></a>'+
-      '<a class="stat" href="#appusers-card"><b>'+appUsers.length+'</b><span>App accounts</span></a>'+
-      '<a class="stat" href="admin-projects.html"><b>'+(open||0)+'</b><span>Active projects</span></a>'+
-      '<a class="stat" href="admin-reviews.html"><b>'+(reviews||0)+'</b><span>Open mix reviews</span></a>'+
-      '<a class="stat" href="admin-billing.html"><b>'+money(owed)+'</b><span>Awaiting payment</span></a>'+
-      '<a class="stat" href="admin-downloads.html"><b>'+dls+'</b><span>App downloads</span></a>';
+  async function draw(){
+    m.textContent = 'Reading…'; m.className = 'msg';
+    const since = new Date(Date.now() - days*864e5).toISOString();
+    const [ps, pd, as, ad, apps, acq, rec, hub, sp, apps_pending, songs_pending, reviews, inv, revs] = await Promise.all([
+      sb.rpc('product_summary',    { p_days: days }),
+      sb.rpc('product_daily',      { p_days: days }),
+      sb.rpc('analytics_summary',  { p_days: days }),
+      sb.rpc('analytics_daily',    { p_days: days }),
+      sb.rpc('product_by_app',     { p_days: days }),
+      sb.rpc('analytics_acquisition', { p_days: days }),
+      sb.rpc('product_recent',     { p_limit: 8 }),
+      sb.rpc('product_hub'),
+      sb.from('store_purchases').select('amount_cents,currency,kind,purchased_at,version_id,store_versions(store_songs(title),store_creators(name))').gte('purchased_at', since).order('purchased_at',{ascending:false}).limit(200),
+      sb.from('creator_applications').select('id',{count:'exact',head:true}).eq('status','pending'),
+      sb.from('store_versions').select('id',{count:'exact',head:true}).eq('status','submitted'),
+      sb.rpc('app_reviews_pending'),
+      sb.from('invoices').select('amount_cents,status'),
+      sb.from('revision_requests').select('id',{count:'exact',head:true}).neq('status','done')
+    ]);
+    const missing = [ps,pd,as,ad,apps,acq,rec].find(r => r && r.error);
+    if(missing){
+      m.textContent = /does not exist|schema cache/i.test(missing.error.message)
+        ? 'A report is not installed: run supabase-product-analytics.sql and supabase-analytics.sql in the SQL editor.'
+        : missing.error.message;
+      m.className = 'msg err';
+    } else { m.textContent = ''; }
+
+    const P = (ps.data && ps.data[0]) || {}, A = (as.data && as.data[0]) || {};
+    /* one daily table: product numbers plus visits, store sales folded into revenue */
+    const byDay = {};
+    (pd.data||[]).forEach(r => { byDay[r.day] = { day:r.day, revenue_cents:Number(r.revenue_cents)||0, sales:Number(r.sales)||0, downloads:Number(r.downloads)||0, visits:0 }; });
+    (ad.data||[]).forEach(r => { (byDay[r.day] = byDay[r.day] || { day:r.day, revenue_cents:0, sales:0, downloads:0, visits:0 }).visits = Number(r.visits)||0; });
+    let storeRev = 0, storeN = 0;
+    (sp.data||[]).forEach(p => {
+      const d = String(p.purchased_at).slice(0,10);
+      const row = byDay[d] = byDay[d] || { day:d, revenue_cents:0, sales:0, downloads:0, visits:0 };
+      if(String(p.currency||'usd')==='usd') { row.revenue_cents += Number(p.amount_cents)||0; storeRev += Number(p.amount_cents)||0; }
+      row.sales += 1; storeN += 1;
+    });
+    daily = Object.values(byDay).sort((a,b)=>a.day<b.day?-1:1);
+    const sum = k => daily.reduce((n,r)=>n+(Number(r[k])||0),0);
+    const revenue = (Number(P.revenue_cents)||0) + storeRev, sales = (Number(P.sales)||0) + storeN;
+
+    $('#asof').textContent = 'The last '+days+' days, against the '+days+' before.';
+    $('#kpis').innerHTML =
+      kpi('Revenue',   usd(revenue),          delta(revenue, P.prev_revenue_cents), 'revenue_cents', '#0071E3', 'var(--accent-soft)', 'money', 'admin-analytics.html#money') +
+      kpi('Sales',     num(sales),            delta(sales, P.prev_sales),          'sales',         '#30D158', 'var(--ok-soft)',     'tag',   'admin-analytics.html#money') +
+      kpi('Downloads', num(P.downloads),      delta(P.downloads, P.prev_downloads), 'downloads',    '#FF9F0A', '#FFF3E0',            'down',  'admin-analytics.html#downloads') +
+      kpi('Visitors',  num(A.visitors),       delta(A.visits, A.prev_visits),       'visits',       '#BF5AF2', '#F3E8FF',            'eye',   'admin-analytics.html#traffic');
+    $$('[data-spark]').forEach(el => Charts.spark(el, daily.map(r => Number(r[el.dataset.spark])||0), el.dataset.c));
+    drawToggles(); chart();
+
+    /* latest sales: apps and songs, one list, newest first */
+    const list = [];
+    (rec.data||[]).forEach(r => list.push({ at:r.at, who:r.email, what:appName(r.app), amount:r.amount_cents, cur:r.currency, kind:r.kind }));
+    (sp.data||[]).slice(0,8).forEach(p => list.push({ at:p.purchased_at, who:(p.store_versions&&p.store_versions.store_creators&&p.store_versions.store_creators.name)||'store',
+      what:(p.store_versions&&p.store_versions.store_songs&&p.store_versions.store_songs.title)||'song', amount:p.amount_cents, cur:p.currency, kind:p.kind==='rent'?'14-day rental':'song' }));
+    list.sort((a,b)=>a.at<b.at?1:-1);
+    $('#sales').innerHTML = list.length ? list.slice(0,8).map(r =>
+      '<tr><td><span class="who">'+esc(r.what)+'</span><span class="sub">'+esc(r.who)+' · '+esc(r.kind)+'</span></td>' +
+      '<td class="n">'+(Number(r.amount) ? (String(r.cur||'usd').toLowerCase()==='usd' ? usd(r.amount) : (Number(r.amount)/100).toLocaleString()+' '+String(r.cur).toUpperCase()) : 'free')+'</td>' +
+      '<td class="n" style="color:var(--muted)">'+esc(when(r.at))+'</td></tr>').join('')
+      : '<tr><td class="empty">No sales in this period.</td></tr>';
+
+    /* top apps */
+    Charts.bars($('#apps'), (apps.data||[]).filter(r=>Number(r.revenue_cents)||Number(r.downloads)).sort((a,b)=>b.revenue_cents-a.revenue_cents).slice(0,7),
+      { label:r=>appName(r.app), value:r=>r.revenue_cents, note:r=>usd(r.revenue_cents)+' <span style="opacity:.6">· '+num(r.downloads)+' downloads</span>' });
+
+    /* needs you */
+    const owed = (inv.data||[]).filter(i=>i.status!=='paid'&&i.status!=='void').reduce((t,i)=>t+i.amount_cents,0);
+    const todo = [
+      [apps_pending.count||0, 'creator application'+(apps_pending.count===1?'':'s')+' waiting', 'admin-store.html'],
+      [songs_pending.count||0, 'song'+(songs_pending.count===1?'':'s')+' in review', 'admin-store.html'],
+      [(reviews.data||[]).length, 'app review'+((reviews.data||[]).length===1?'':'s')+' to approve', 'admin-analytics.html#downloads'],
+      [revs.count||0, 'open mix review'+(revs.count===1?'':'s'), 'admin-reviews.html'],
+      [owed ? usd(owed) : 0, 'awaiting payment', 'admin-billing.html']
+    ];
+    $('#todo').innerHTML = todo.map(([n,l,h]) => '<li><b class="'+(n?'':'zero')+'">'+n+'</b><span>'+l+'</span><a href="'+h+'">Open</a></li>').join('');
+
+    /* channels as a ring */
+    const ch = (acq.data||[]).filter(r=>r.kind==='channel').sort((a,b)=>b.visits-a.visits);
+    const palette = ['#0071E3','#30D158','#FF9F0A','#BF5AF2','#FF375F','#64D2FF','#8E8E93'];
+    Charts.ring($('#channels'), ch.slice(0,6).map((r,i)=>({ label:r.label, value:r.visits, color:palette[i%palette.length] })), { centre: Charts.short(A.visits||0) });
+
+    /* store */
+    const rentals = (sp.data||[]).filter(p=>p.kind==='rent').length;
+    Charts.bars($('#store'), [
+      { label:'Song sales', value: storeN },
+      { label:'of which rentals', value: rentals },
+      { label:'Applications waiting', value: apps_pending.count||0 },
+      { label:'Songs in review', value: songs_pending.count||0 }
+    ], { color:'#BF5AF2' });
+
+    /* hub */
+    const H = (hub.data && hub.data[0]) || null;
+    $('#hub').innerHTML = H && Number(H.installs)
+      ? '<ul class="bars"><li><span class="lab">Installations</span><span class="num">'+num(H.installs)+'</span><span class="track"><i style="width:100%"></i></span></li>' +
+        '<li><span class="lab">Seen in the last 30 days</span><span class="num">'+num(H.active_30d)+'</span><span class="track"><i style="width:'+Math.round(100*H.active_30d/H.installs)+'%"></i></span></li>' +
+        '<li><span class="lab">On '+esc(H.current_version||'the latest')+'</span><span class="num">'+num(H.on_current)+'</span><span class="track"><i style="width:'+Math.round(100*H.on_current/H.installs)+'%"></i></span></li></ul>'
+      : '<p class="setup">No Hub has reported in yet.</p>';
   }
 
-  await load();
-
-  /* ---------- create a client login (via the Edge Function) ---------- */
-  $('#clientform').addEventListener('submit', async e => {
-    e.preventDefault();
-    const m = $('#c-msg'), go = $('#c-go'), out = $('#c-pw');
-    out.innerHTML = ''; say(m, 'Creating…');
-    go.disabled = true;
-
-    const { data:{ session } } = await sb.auth.getSession();
-    try {
-      const res = await fetch(SUPABASE_URL + '/functions/v1/create-client', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + (session ? session.access_token : ''),
-          'apikey': SUPABASE_KEY
-        },
-        body: JSON.stringify({
-          full_name: $('#c-name').value.trim(),
-          email:     $('#c-email').value.trim(),
-          company:   $('#c-company').value.trim(),
-          phone:     $('#c-phone').value.trim()
-        })
-      });
-      const body = await res.json();
-      if(!res.ok) throw new Error(body.error || 'That did not work.');
-
-      say(m, 'Login created.', 'ok');
-      out.innerHTML = '<div class="pw"><b>Send them these once:</b><br>'+
-        esc(body.email)+'<br>temporary password: <b>'+esc(body.password)+'</b><br>'+
-        '<span class="hint">Shown only now. They must change it on first sign in.</span></div>';
-      e.target.reset();
-      await load();
-    } catch(err){
-      say(m, err.message === 'Failed to fetch'
-        ? 'Could not reach the create-client function. Is it deployed?'
-        : err.message, 'err');
-    } finally { go.disabled = false; }
-  });
-
-  /* ---------- create a project ---------- */
-  $('#projform').addEventListener('submit', async e => {
-    e.preventDefault();
-    const m = $('#p-msg'), go = $('#p-go');
-    const client_id = clientSel.value;
-    if(!client_id) return say(m, 'Add a client first.', 'err');
-
-    go.disabled = true; say(m, 'Creating…');
-    const { error } = await sb.from('projects').insert({
-      client_id,
-      title:  $('#p-title').value.trim(),
-      artist: $('#p-artist').value.trim() || null,
-      service: $('#p-service').value,
-      due_date: $('#p-due').value || null,
-      revisions_allowed: parseInt($('#p-revs').value, 10) || 3
-    });
-    go.disabled = false;
-    if(error) return say(m, error.message, 'err');
-    say(m, 'Project created with its seven stages.', 'ok');
-    e.target.reset(); $('#p-revs').value = 3;
-    await load();
-  });
+  $$('#range button').forEach(b => b.addEventListener('click', () => {
+    $$('#range button').forEach(x => x.classList.remove('on')); b.classList.add('on');
+    days = Number(b.dataset.d); draw();
+  }));
+  draw();
 })();
 </script>
 </body>
