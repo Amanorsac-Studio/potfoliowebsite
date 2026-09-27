@@ -364,3 +364,41 @@ span.msg{display:inline-block;padding:6px 10px;font-size:13px;margin-left:8px}
 .lanes.countries{margin:0 0 14px}
 .item .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
 .card .cover img{width:100%;height:100%;object-fit:cover}
+
+/* ---- the front, laid out like the PerformLive store ---- */
+.storehead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:12px 0 14px;flex-wrap:wrap}
+.storehead h1{font-size:32px;line-height:1.1}
+.storehead p{color:var(--dim);margin-top:6px;font-size:14px}
+.songlist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 32px}
+@media (max-width:900px){.songlist{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.songlist{grid-template-columns:1fr}}
+.songrow{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border);color:inherit;border-radius:8px}
+.songrow:hover{text-decoration:none;background:var(--card)}
+.songrow .thumb{width:48px;height:48px;border-radius:8px;overflow:hidden;flex:none;background:var(--sunken);display:block}
+.songrow .thumb img,.songrow .thumb svg{width:100%;height:100%;object-fit:cover;display:block}
+.songrow .t{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px}
+.songrow .t b{display:block;font-family:var(--head);font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.songrow .t span{color:var(--dim);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.songrow .plus{color:var(--faint);font-size:20px;flex:none;width:24px;text-align:center}
+.circles{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(124px,1fr);gap:16px;overflow-x:auto;padding:4px 0 10px;scroll-snap-type:x proximity}
+.circle{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;color:inherit;scroll-snap-align:start}
+.circle:hover{text-decoration:none}
+.circle .disc{width:120px;height:120px;border-radius:50%;overflow:hidden;border:3px solid var(--border);display:grid;place-items:center;font:600 34px var(--head);color:#fff;transition:transform .25s,border-color .25s}
+.circle:hover .disc{transform:translateY(-2px);border-color:var(--indigo)}
+.circle .disc img{width:100%;height:100%;object-fit:cover;display:block}
+.circle b{font-family:var(--head);font-weight:600;font-size:14px}
+.circle span{color:var(--dim);font-size:12.5px}
+.makers{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+.maker{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 14px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);text-align:center;color:inherit}
+.maker:hover{text-decoration:none;background:var(--card-hover);border-color:#3a3a66}
+.maker b{font-family:var(--head);font-weight:600;font-size:15px}
+.maker .badge{font:600 10px var(--mono);letter-spacing:.08em;background:color-mix(in srgb,var(--indigo) 35%,transparent);color:#d5cbff;border-radius:999px;padding:4px 10px}
+.maker .what{color:var(--dim);font-size:13px}
+.maker .n{color:var(--faint);font-size:12px}
+.maker .btn{margin-top:6px;width:100%}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.tiles{grid-template-columns:1fr 1fr}}
+.tile{--a:#6b5a1f;--b:#2a2410;display:flex;align-items:center;min-height:88px;padding:18px 20px;border-radius:var(--r-lg);
+  background:linear-gradient(135deg,var(--a),var(--b));color:#fff;font-family:var(--head);font-weight:600;font-size:16px;transition:filter .2s,transform .2s}
+.tile:hover{text-decoration:none;filter:brightness(1.15);transform:translateY(-2px)}
+.preview-note{color:var(--faint);font-size:12.5px;text-align:center;margin:44px auto 20px;max-width:80ch}

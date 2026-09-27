@@ -214,61 +214,154 @@
   /* ---------------- pages ---------------- */
   var pages = {};
 
+  /* Themes are found in the titles; genres are where the artist is
+     from. Both are honest about it in the section they open. */
+  var THEMES = [
+    { id: 'praise',    name: 'Praise',    a: '#7a5a1e', b: '#2b230f', re: /praise|hallelujah|alleluia|glory|worthy|magnif|exalt|celebrat|thank|ayeyi/i },
+    { id: 'worship',   name: 'Worship',   a: '#22336d', b: '#0f1530', re: /worship|holy|adore|bow|presence|majesty|reign|throne|altar/i },
+    { id: 'communion', name: 'Communion', a: '#1f5d64', b: '#0e2a2e', re: /communion|table|bread|blood|cross|calvary|lamb|remember|sacrifice/i },
+    { id: 'healing',   name: 'Healing',   a: '#2a4370', b: '#121d33', re: /heal|restor|miracle|deliver|whole|balm|breakthrough|peace/i },
+    { id: 'afro-gospel',      name: 'Afro Gospel',      a: '#1f5a3a', b: '#0f2a1c', countries: ['Nigeria', 'Ghana'] },
+    { id: 'highlife-praise',  name: 'Highlife Praise',  a: '#55621f', b: '#262d0f', countries: ['Ghana'] },
+    { id: 'amapiano-worship', name: 'Amapiano Worship', a: '#6b5a1e', b: '#2b240e', countries: ['South Africa'] },
+    { id: 'christmas',        name: 'Christmas',        a: '#7a2a4a', b: '#2f1020', re: /christmas|noel|emmanuel|immanuel|bethlehem|born|silent night|joy to the world|manger/i }
+  ];
+  var AFRICA = ['Ghana', 'Nigeria', 'Kenya', 'Rwanda', 'South Africa', 'Tanzania', 'Uganda', 'Zambia', 'Zimbabwe', 'Malawi', 'Ethiopia',
+    'Cameroon', 'Togo', 'Benin', 'Senegal', 'Mozambique', 'Botswana', 'Namibia', 'Congo', 'DR Congo', 'Angola', 'Sierra Leone', 'Liberia',
+    'Gambia', 'Burundi', 'Sudan', 'Egypt', 'Morocco', 'Eritrea', 'Somalia', 'Madagascar', 'Lesotho', 'Eswatini', 'Mali', 'Burkina Faso', 'Gabon', 'Côte d’Ivoire', 'Ivory Coast'];
+  function isAlbum(it) { return it.label === 'Album' || it.label === 'EP'; }
+  function byNewest(a, b) { return (b.released || '') < (a.released || '') ? -1 : 1; }
+  function bySales(a, b) { return (b.sales - a.sales) || byNewest(a, b); }
+  function thumb(it) { return '<span class="thumb">' + cover(it) + '</span>'; }
+  function songRow(it, owned) {
+    var mine = owned && owned[it.id];
+    return '<a class="songrow" href="' + itemHref(it) + '">' + thumb(it) +
+      '<span class="t"><b>' + esc(it.title) + '</b><span>' + esc(it.creatorName + (it.feat ? ' ft. ' + it.feat : '')) + '</span></span>' +
+      '<span class="plus" aria-hidden="true">' + (mine ? '✓' : it.status === 'coming_soon' ? '·' : '+') + '</span></a>';
+  }
+  function songList(items, owned) { return '<div class="songlist">' + items.map(function (it) { return songRow(it, owned); }).join('') + '</div>'; }
+  function circleHTML(c, items) {
+    var latest = (items || []).filter(function (it) { return it.art; }).sort(byNewest)[0];
+    return '<a class="circle" href="/store/creator?c=' + esc(c.slug) + '">' +
+      '<span class="disc" style="background:' + personColour(c.slug) + '">' + (latest ? '<img src="' + esc(latest.art) + '" alt="" loading="lazy">' : esc(initials(c.name))) + '</span>' +
+      '<b>' + esc(c.name) + '</b><span>' + esc(c.country || '') + '</span></a>';
+  }
+  function makerHTML(c, items) {
+    var n = (items || []).length;
+    return '<a class="maker" href="/store/creator?c=' + esc(c.slug) + '">' + avatar(c, 'lg') +
+      '<b>' + esc(c.name) + '</b><span class="badge">✓ CREATOR</span>' +
+      (c.bio ? '<span class="what">' + esc(c.bio.split(/[.\n]/)[0].slice(0, 40)) + '</span>' : '') +
+      '<span class="n">' + n + (n === 1 ? ' product' : ' products') + (c.country ? ' · ' + esc(c.country) : '') + '</span>' +
+      '<span class="btn ghost sm">See their shelf</span></a>';
+  }
+  function tilesHTML(list) {
+    return '<div class="tiles">' + list.map(function (t) {
+      return '<a class="tile" href="/store/?theme=' + t.id + '" style="--a:' + t.a + ';--b:' + t.b + '">' + esc(t.name) + '</a>';
+    }).join('') + '</div>';
+  }
+  function countryOf(d, it) { var c = d.creators[it.creator]; return c && c.country || ''; }
+  function themeMatch(d, t, it) {
+    if (t.countries) return t.countries.indexOf(countryOf(d, it)) >= 0;
+    return t.re.test([it.title, it.album].join(' '));
+  }
+
   pages.index = function (main) {
-    var q = param('q').trim().toLowerCase(), lane = param('lane');
+    var q = param('q').trim().toLowerCase(), lane = param('lane'), type = param('type'), theme = param('theme');
     Promise.all([shelf(), ownedMap()]).then(function (r) {
       var d = r[0], owned = r[1];
+      var filtered = !!(q || lane || type || theme);
+      var chip = function (href, name, on, colour) {
+        return '<a class="lane"' + (colour ? ' style="--c:' + colour + '"' : '') + ' href="' + href + '" aria-pressed="' + !!on + '">' + (colour ? '<i></i>' : '') + esc(name) + '</a>';
+      };
       var chips = '<div class="lanes">' +
-        '<a class="lane" href="/store/" aria-pressed="' + (!lane && !q) + '">All</a>' +
-        LANES.map(function (l) {
-          return '<a class="lane" style="--c:' + l.colour + '" href="/store/?lane=' + l.id + '" aria-pressed="' + (lane === l.id) + '"><i></i>' + esc(l.name) + '</a>';
-        }).join('') + '</div>';
+        chip('/store/', 'All', !filtered) +
+        chip('/store/?type=songs', 'Songs', type === 'songs') +
+        chip('/store/?type=albums', 'Albums', type === 'albums') +
+        chip('/store/#artists', 'Artists') +
+        chip('/store/creators', 'Creators') +
+        chip('/store/#themes', 'Themes', !!theme) +
+        chip('/store/#themes', 'Genres') +
+        chip('/store/#sync', 'Sync licence') +
+        LANES.filter(function (l) { return l.id !== 'songs'; }).map(function (l) { return chip('/store/?lane=' + l.id, l.name, lane === l.id, l.colour); }).join('') + '</div>';
+      var head = '<div class="storehead"><div><h1>Store</h1><p>Multitracks, loops and sounds for worship teams — African gospel and the world’s worship.</p></div></div>';
 
-      if (q || lane) {
+      if (filtered) {
+        var t = THEMES.filter(function (x) { return x.id === theme; })[0];
         var list = d.items.filter(function (it) {
           if (lane && it.lane !== lane) return false;
+          if (type === 'songs' && (it.kind !== 'song' || isAlbum(it))) return false;
+          if (type === 'albums' && !isAlbum(it)) return false;
+          if (t && !themeMatch(d, t, it)) return false;
           if (!q) return true;
           return [it.title, it.album, it.feat, it.creatorName, it.label, it.writers].join(' ').toLowerCase().indexOf(q) >= 0;
-        }).sort(function (a, b) { return b.sales - a.sales; });
+        }).sort(bySales);
         var l = LANES.filter(function (x) { return x.id === lane; })[0];
-        main.innerHTML = '<div class="wrap">' + chips +
-          section(q ? '“' + q + '”' : (l ? l.name : 'Everything'), list.length + (list.length === 1 ? ' result' : ' results'),
-            list.length ? grid(list, owned) : '<div class="empty">Nothing matched.</div>') + '</div>';
+        var title = q ? '“' + q + '”' : t ? t.name : type === 'songs' ? 'Songs' : type === 'albums' ? 'Albums' : l ? l.name : 'Everything';
+        var blurb = list.length + (list.length === 1 ? ' result' : ' results') + (t ? (t.countries ? ' · by where the artist is from' : ' · by what the title says') : '');
+        main.innerHTML = '<div class="wrap">' + head + chips +
+          section(title, blurb, list.length ? grid(list, owned) : '<div class="empty">Nothing matched.</div>') + '</div>';
         return;
       }
 
-      var songs = d.items.filter(function (it) { return it.kind === 'song'; });
-      var html = '<div class="wrap">' + chips;
+      var html = '<div class="wrap">' + head + chips;
       if (!d.items.length) { main.innerHTML = html + '<div class="empty">Nothing on the shelf yet.</div></div>'; return; }
-      var newest = songs.slice().sort(function (a, b) { return (b.released || '') < (a.released || '') ? -1 : 1; });
-      html += section('New releases', '', row(newest.slice(0, 14), owned));
-      var onSale = songs.filter(function (it) { return it.status === 'approved'; });
-      if (onSale.length) {
-        var top = onSale.slice().sort(function (a, b) { return b.sales - a.sales; }).slice(0, 12);
-        html += section('On sale now', '', row(top, owned));
-      }
-      /* the artists, grouped by country, each with a mosaic of their covers */
+      var songs = d.items.filter(function (it) { return it.kind === 'song' && !isAlbum(it); });
+      var albums = d.items.filter(function (it) { return it.kind === 'song' && isAlbum(it); });
       var byCreator = {};
       d.items.forEach(function (it) { (byCreator[it.creator] = byCreator[it.creator] || []).push(it); });
+      var african = function (it) { return AFRICA.indexOf(countryOf(d, it)) >= 0; };
+
+      /* top songs: what sells first, then the newest */
+      html += section('Top songs', '', songList(songs.slice().sort(bySales).slice(0, 15), owned), { href: '/store/?type=songs', text: 'View all' });
+
+      /* albums from home */
+      var afAlbums = albums.filter(african).sort(byNewest);
+      if (afAlbums.length) html += section('Top African gospel albums', '', row(afAlbums.slice(0, 12), owned), { href: '/store/?type=albums', text: 'View all' });
+
+      /* the artists with the most on the shelf */
+      var artists = d.list.filter(function (c) { return c.kind !== 'creator'; })
+        .sort(function (a, b) { return (byCreator[b.slug] || []).length - (byCreator[a.slug] || []).length; });
+      if (artists.length) html += section('Top artists', '', '<div class="circles">' + artists.slice(0, 10).map(function (c) { return circleHTML(c, byCreator[c.slug]); }).join('') + '</div>', { href: '/store/#artists', text: 'View all' });
+
+      /* creators: the people selling pads, loops and sets */
+      var makers = d.list.filter(function (c) { return c.kind === 'creator'; });
+      html += '<section class="sec"><div class="sec-head"><div><h2>Featured creators <span class="lane-pill" style="--c:var(--indigo)"><i></i>Sell on PerformLive</span></h2></div><a href="/store/creators">' + (makers.length ? 'View all' : 'Apply') + ' →</a></div>' +
+        (makers.length ? '<div class="makers">' + makers.slice(0, 6).map(function (c) { return makerHTML(c, byCreator[c.slug]); }).join('') + '</div>'
+          : '<div class="makers"><a class="maker" href="/store/creators#apply"><span class="av lg" style="background:var(--indigo)">+</span><b>Your name here</b><span class="badge">CREATOR</span><span class="what">Pads, loops, click packs, templates</span><span class="n">Keep most of every sale</span><span class="btn sm">Apply to sell</span></a></div>') + '</section>';
+
+      /* on sale now, when anything is */
+      var onSale = d.items.filter(function (it) { return it.status === 'approved'; });
+      if (onSale.length) html += section('On sale now', '', row(onSale.slice().sort(bySales).slice(0, 12), owned));
+
+      /* the world's worship */
+      var world = d.items.filter(function (it) { return it.kind === 'song' && !african(it); }).sort(byNewest);
+      if (world.length) html += section('From around the world', '', row(world.slice(0, 12), owned), { href: '/store/?theme=worship', text: 'View all' });
+
+      /* themes and genres */
+      html += '<section class="sec" id="themes"><div class="sec-head"><div><h2>Browse by theme</h2><p>Themes come from the titles; the genres from where the artist is from.</p></div></div>' + tilesHTML(THEMES) + '</section>';
+
+      /* the artists, grouped by country, each with a mosaic of their covers */
       var countries = [];
       d.list.forEach(function (c) { if (c.country && countries.indexOf(c.country) < 0) countries.push(c.country); });
       countries.sort();
       var country = param('country');
-      var cchips = '<div class="lanes countries"><a class="lane" href="/store/" aria-pressed="' + !country + '">Everywhere</a>' +
+      var cchips = '<div class="lanes countries"><a class="lane" href="/store/#artists" aria-pressed="' + !country + '">Everywhere</a>' +
         countries.map(function (k) {
           var flag = (d.list.filter(function (c) { return c.country === k; })[0] || {}).flag || '';
           return '<a class="lane" href="/store/?country=' + encodeURIComponent(k) + '#artists" aria-pressed="' + (country === k) + '">' + esc(flag + ' ' + k) + '</a>';
         }).join('') + '</div>';
       var people = d.list.filter(function (c) { return !country || c.country === country; });
-      html += '<section class="sec" id="artists"><div class="sec-head"><div><h2>Artists</h2><p>' + people.length + (people.length === 1 ? ' artist' : ' artists') + (country ? ' from ' + esc(country) : ', seven countries') + '</p></div></div>' +
+      html += '<section class="sec" id="artists"><div class="sec-head"><div><h2>Artists</h2><p>' + people.length + (people.length === 1 ? ' artist' : ' artists') + (country ? ' from ' + esc(country) : ', ' + countries.length + ' countries') + '</p></div></div>' +
         cchips + '<div class="grid wide">' + people.map(function (c) { return personHTML(c, (byCreator[c.slug] || []).length, byCreator[c.slug]); }).join('') + '</div></section>';
-      d.list.forEach(function (c) {
-        var mine = (byCreator[c.slug] || []).filter(function (it) { return it.status === 'approved'; });
-        if (mine.length) html += section(c.name, '', row(mine.slice(0, 12), owned), { href: '/store/creator?c=' + c.slug, text: 'See all' });
-      });
+
       var packs = d.items.filter(function (it) { return it.kind === 'pack'; });
       if (packs.length) html += section('Pads, loops & templates', '', row(packs.slice(0, 12), owned), { href: '/store/?lane=pads', text: 'See all' });
+
+      html += '<section class="sec" id="sync"><div class="sec-head"><div><h2>Sync licence</h2><p>A recording in a video, a broadcast or a stream.</p></div></div>' +
+        '<div class="empty" style="text-align:left">Not on the shelf yet. Write to <a href="mailto:hello@amanorsac.studio?subject=Sync%20licence">hello@amanorsac.studio</a> with the song and where it will play, and the studio will clear it with the artist.</div></section>';
+      html += '<p class="preview-note">Every title marked coming soon is on the shelf as a preview. Nothing is for sale or licensed until the artist is in and the stems are up.</p>';
       main.innerHTML = html + '</div>';
+      if (location.hash) { var el = $(location.hash); if (el) el.scrollIntoView(); }
     }).catch(fail(main));
   };
 
