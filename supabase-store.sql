@@ -218,6 +218,7 @@ create table if not exists public.store_versions (
                  check (status in ('draft','submitted','approved','rejected','coming_soon','hidden')),
   review_note    text,
   consent        text,                                     -- how the rights are cleared, in the creator's words
+  link           text,                                     -- the release elsewhere (Apple Music), for coming-soon catalogue rows
   sales          int not null default 0,
   submitted_at   timestamptz,
   approved_at    timestamptz,
@@ -350,7 +351,8 @@ create or replace view public.store_shelf as
          v.creator_slug, c.name as creator_name, c.kind as creator_kind, c.flag, c.country, c.youtube as creator_youtube,
          v.kind, v.label, v.is_original, v.lane, v.key, v.bpm, v.time_sig, v.length_seconds,
          v.year, v.album, v.feat, v.youtube, v.art_key,
-         v.rent_cents, v.buy_cents, v.currency, v.status, v.sales, v.approved_at, v.created_at
+         v.rent_cents, v.buy_cents, v.currency, v.status, v.sales, v.approved_at, v.created_at,
+         v.link
   from public.store_versions v
   join public.store_songs s on s.id = v.song_id
   join public.store_creators c on c.slug = v.creator_slug

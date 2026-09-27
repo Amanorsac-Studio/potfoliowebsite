@@ -354,3 +354,13 @@ main{padding-top:24px}
 span.msg{display:inline-block;padding:6px 10px;font-size:13px;margin-left:8px}
 .ok{color:var(--green)} .bad{color:var(--danger)}
 @media (max-width:640px){ .coverpick{grid-template-columns:1fr} .slotrow{grid-template-columns:1fr 1fr} .slotrow .bar{grid-column:1/-1} }
+
+/* an artist's card: four of their covers in a square */
+.mosaic{width:64px;height:64px;flex:none;border-radius:12px;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;background:var(--sunken)}
+.mosaic img{width:100%;height:100%;object-fit:cover}
+.mosaic.n1{grid-template-columns:1fr;grid-template-rows:1fr}
+.mosaic.n2{grid-template-rows:1fr} .mosaic.n2 img{height:64px}
+.mosaic.n3 img:first-child{grid-row:span 2}
+.lanes.countries{margin:0 0 14px}
+.item .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.card .cover img{width:100%;height:100%;object-fit:cover}

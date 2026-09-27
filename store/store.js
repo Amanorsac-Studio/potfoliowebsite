@@ -109,7 +109,8 @@
       creator: r.creator_slug, creatorName: r.creator_name, creatorKind: r.creator_kind, flag: r.flag,
       kind: r.kind, label: r.label, original: !!r.is_original, lane: r.lane,
       key: r.key, bpm: r.bpm, timeSig: r.time_sig, length: r.length_seconds, year: r.year, album: r.album, feat: r.feat,
-      youtube: r.youtube, art: r.art_key ? '/store-art/' + r.id : null,
+      youtube: r.youtube, art: r.art_key ? (/^https?:\/\//.test(r.art_key) ? r.art_key : '/store-art/' + r.id) : null,
+      link: r.link || null, creatorYoutube: r.creator_youtube || null,
       rent: r.rent_cents, buy: r.buy_cents, currency: r.currency, status: r.status, sales: r.sales || 0,
       released: r.approved_at || r.created_at
     };
@@ -119,8 +120,8 @@
   function shelf() {
     if (!shelfPending) {
       shelfPending = Promise.all([
-        sb().from('store_shelf').select('*').order('approved_at', { ascending: false }).limit(600).then(need),
-        sb().from('store_creators').select('slug,name,kind,country,flag,youtube,bio').not('approved_at', 'is', null).then(need)
+        sb().from('store_shelf').select('*').order('approved_at', { ascending: false }).limit(1000).then(need),
+        sb().from('store_creators').select('slug,name,kind,country,flag,youtube,apple,bio').not('approved_at', 'is', null).order('name').then(need)
       ]).then(function (r) {
         var items = (r[0] || []).map(shape);
         var creators = {};
@@ -180,8 +181,13 @@
         : '<span class="price">' + money(it.rent, it.currency) + ' · ' + money(it.buy, it.currency) + '</span>') +
       '</div></a>';
   }
-  function personHTML(c, count) {
-    return '<a class="person" href="/store/creator?c=' + esc(c.slug) + '">' + avatar(c, 'lg') +
+  function mosaic(c, items) {
+    var art = (items || []).filter(function (it) { return it.art; }).slice(0, 4);
+    if (!art.length) return avatar(c, 'lg');
+    return '<span class="mosaic n' + art.length + '">' + art.map(function (it) { return '<img src="' + esc(it.art) + '" alt="" loading="lazy">'; }).join('') + '</span>';
+  }
+  function personHTML(c, count, items) {
+    return '<a class="person" href="/store/creator?c=' + esc(c.slug) + '">' + mosaic(c, items) +
       '<div class="who"><b>' + esc(c.name) + '</b><span>' + esc(c.flag || '') + ' ' + esc(c.country || '') + '</span></div>' +
       (count != null ? '<span class="n">' + count + (count === 1 ? ' title' : ' titles') + '</span>' : '') + '</a>';
   }
@@ -234,11 +240,30 @@
       var songs = d.items.filter(function (it) { return it.kind === 'song'; });
       var html = '<div class="wrap">' + chips;
       if (!d.items.length) { main.innerHTML = html + '<div class="empty">Nothing on the shelf yet.</div></div>'; return; }
-      html += section('New releases', '', row(songs.slice(0, 12), owned));
-      var top = songs.slice().sort(function (a, b) { return b.sales - a.sales; }).slice(0, 12);
-      if (top.some(function (it) { return it.sales > 0; })) html += section('Top songs', '', row(top, owned));
+      var newest = songs.slice().sort(function (a, b) { return (b.released || '') < (a.released || '') ? -1 : 1; });
+      html += section('New releases', '', row(newest.slice(0, 14), owned));
+      var onSale = songs.filter(function (it) { return it.status === 'approved'; });
+      if (onSale.length) {
+        var top = onSale.slice().sort(function (a, b) { return b.sales - a.sales; }).slice(0, 12);
+        html += section('On sale now', '', row(top, owned));
+      }
+      /* the artists, grouped by country, each with a mosaic of their covers */
+      var byCreator = {};
+      d.items.forEach(function (it) { (byCreator[it.creator] = byCreator[it.creator] || []).push(it); });
+      var countries = [];
+      d.list.forEach(function (c) { if (c.country && countries.indexOf(c.country) < 0) countries.push(c.country); });
+      countries.sort();
+      var country = param('country');
+      var cchips = '<div class="lanes countries"><a class="lane" href="/store/" aria-pressed="' + !country + '">Everywhere</a>' +
+        countries.map(function (k) {
+          var flag = (d.list.filter(function (c) { return c.country === k; })[0] || {}).flag || '';
+          return '<a class="lane" href="/store/?country=' + encodeURIComponent(k) + '#artists" aria-pressed="' + (country === k) + '">' + esc(flag + ' ' + k) + '</a>';
+        }).join('') + '</div>';
+      var people = d.list.filter(function (c) { return !country || c.country === country; });
+      html += '<section class="sec" id="artists"><div class="sec-head"><div><h2>Artists</h2><p>' + people.length + (people.length === 1 ? ' artist' : ' artists') + (country ? ' from ' + esc(country) : ', seven countries') + '</p></div></div>' +
+        cchips + '<div class="grid wide">' + people.map(function (c) { return personHTML(c, (byCreator[c.slug] || []).length, byCreator[c.slug]); }).join('') + '</div></section>';
       d.list.forEach(function (c) {
-        var mine = d.items.filter(function (it) { return it.creator === c.slug; });
+        var mine = (byCreator[c.slug] || []).filter(function (it) { return it.status === 'approved'; });
         if (mine.length) html += section(c.name, '', row(mine.slice(0, 12), owned), { href: '/store/creator?c=' + c.slug, text: 'See all' });
       });
       var packs = d.items.filter(function (it) { return it.kind === 'pack'; });
@@ -287,7 +312,10 @@
       main.innerHTML = '<div class="wrap"><div class="item">' +
         '<div><div class="cover">' + cover(it) + '</div>' +
         (it.youtube ? '<div class="video"><iframe src="https://www.youtube-nocookie.com/embed/' + esc(it.youtube) + '" title="' + esc(it.title) + ' on YouTube" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>'
-                    : (it.kind === 'song' ? '<div class="video none">Video coming</div>' : '')) +
+                    : (it.kind === 'song' ? '<div class="links">' +
+                        '<a class="btn ghost sm" href="https://www.youtube.com/results?search_query=' + encodeURIComponent(c.name + ' ' + it.title) + '" rel="noopener" target="_blank">▶ Watch on YouTube</a>' +
+                        (c.youtube ? '<a class="btn ghost sm" href="' + esc(c.youtube) + '" rel="noopener" target="_blank">' + esc(c.name.split(' ')[0]) + '\u2019s channel</a>' : '') +
+                        (it.link ? '<a class="btn ghost sm" href="' + esc(it.link) + '" rel="noopener" target="_blank">Apple Music</a>' : '') + '</div>' : '')) +
         (it.kind === 'song' ? '<p class="tracks"><b>Tracks</b> ' + SLOTS.map(function (s) { return SLOT_NAMES[s]; }).join(' · ') + '</p>' : '') + '</div>' +
         '<div><h1>' + esc(it.title) + '</h1>' +
         '<p class="artist"><a href="/store/creator?c=' + esc(c.slug) + '">' + esc(c.name) + '</a>' + (it.feat ? ' <span class="dim">feat. ' + esc(it.feat) + '</span>' : '') + '</p>' +
@@ -318,9 +346,10 @@
         '<div class="profile">' + avatar(c, 'xl') + '<div class="who"><h1>' + esc(c.name) + '</h1>' +
         '<div class="line">' + esc(c.flag || '') + ' ' + esc(c.country || '') + ' · ' + items.length + (items.length === 1 ? ' title' : ' titles') + '</div>' +
         (c.bio ? '<p class="bio">' + esc(c.bio) + '</p>' : '') +
-        (c.youtube ? '<div class="links"><a class="btn ghost sm" href="' + esc(c.youtube) + '" rel="noopener" target="_blank">YouTube</a></div>' : '') +
+        ((c.youtube || c.apple) ? '<div class="links">' + (c.youtube ? '<a class="btn ghost sm" href="' + esc(c.youtube) + '" rel="noopener" target="_blank">▶ YouTube</a>' : '') +
+          (c.apple ? '<a class="btn ghost sm" href="' + esc(c.apple) + '" rel="noopener" target="_blank">Apple Music</a>' : '') + '</div>' : '') +
         '</div></div>' +
-        (items.length ? grid(items, owned) : '<div class="empty">Nothing on the shelf yet.</div>') +
+        (items.length ? grid(items.slice().sort(function (a, b) { return (b.released || '') < (a.released || '') ? -1 : 1; }), owned) : '<div class="empty">Nothing on the shelf yet.</div>') +
         '</div>';
     }).catch(fail(main));
   };
@@ -330,7 +359,8 @@
       var list = $('#creator-list');
       var count = {};
       d.items.forEach(function (it) { count[it.creator] = (count[it.creator] || 0) + 1; });
-      if (list) list.innerHTML = d.list.map(function (c) { return personHTML(c, count[c.slug] || 0); }).join('');
+      var byC = {}; d.items.forEach(function (it) { (byC[it.creator] = byC[it.creator] || []).push(it); });
+      if (list) list.innerHTML = d.list.map(function (c) { return personHTML(c, count[c.slug] || 0, byC[c.slug]); }).join('');
     }).catch(function () {});
 
     var form = $('#apply-form'), out = $('#apply-out');
