@@ -76,7 +76,7 @@ alongside the files; it is the record of what was fetched.
   "licence": { "kind": "rent", "purchased_at": "2026-09-27T10:00:00Z", "expires_at": "2026-10-11T10:00:00Z" },
   "slots":   ["click","guide","drums","bass","keys","guitars","piano","aux_keys","horns","bgv"],
   "tracks": [
-    { "slot": "click",  "order": 0, "url": "https://amanorsac.studio/download/store/0d6b…/click?e=…&s=…",
+    { "slot": "click",  "order": 0, "format": "wav", "url": "https://amanorsac.studio/download/store/0d6b…/click?e=…&s=…",
       "bytes": 72643244, "etag": "\"…\"", "sample_rate": 48000, "channels": 2, "duration_seconds": 412.4 },
     { "slot": "guide",  "order": 1, "url": "…" },
     …
@@ -102,7 +102,9 @@ Notes:
   no lead vocal lane: the guide is the voice in the ear. Lay out the lanes from
   `slots`, fill the ones present in `tracks`, and leave the others
   empty rather than shifting everything up.
-- **Tracks** are PCM WAV, all the same length, all starting at the
+- **Tracks** carry `format`, today always `wav` (PCM). If a lossless
+  `flac` ever appears it will say so here and in that field. All the
+  same length, all starting at the
   same sample, 44.1 or 48 kHz (88.2 and 96 are allowed but rare).
   `duration_seconds` and `sample_rate` are what the creator's browser
   read from the file header; trust the file over the number.

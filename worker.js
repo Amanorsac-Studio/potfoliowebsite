@@ -2174,7 +2174,7 @@ async function storeManifest(user, versionId, env, request) {
   for (const row of (tr.ok && Array.isArray(tr.body) ? tr.body : [])) {
     const p = '/download/store/' + versionId + '/' + row.slot;
     tracks.push({
-      slot: row.slot, order: STORE_SLOTS.indexOf(row.slot),
+      slot: row.slot, order: STORE_SLOTS.indexOf(row.slot), format: 'wav',
       url: SITE + p + '?e=' + t + '&s=' + (await sign(env.DOWNLOAD_SECRET, p + ':' + t)),
       bytes: row.bytes, etag: row.etag, sample_rate: row.sample_rate, channels: row.channels,
       duration_seconds: row.duration_seconds == null ? null : Number(row.duration_seconds)
