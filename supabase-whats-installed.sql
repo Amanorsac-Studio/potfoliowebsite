@@ -35,7 +35,13 @@ with want(file, thing, kind, name) as (values
   ('supabase-hub-usage.sql',        'revoke_hub_usage()',     'func',  'revoke_hub_usage'),
   ('supabase-hub-usage.sql',        'hub_usage_summary()',    'func',  'hub_usage_summary'),
   ('supabase-hub-usage.sql',        'hub_usage_by_app()',     'func',  'hub_usage_by_app'),
-  ('supabase-beta-licenses.sql',    'claim_beta_license()',   'func',  'claim_beta_license')
+  ('supabase-beta-licenses.sql',    'claim_beta_license()',   'func',  'claim_beta_license'),
+  ('supabase-admin-audit.sql',      'downloads_all view',     'view',  'downloads_all'),
+  ('supabase-admin-audit.sql',      'purchases.kind',         'col',   'purchases.kind'),
+  ('supabase-admin-audit.sql',      'product_money()',        'func',  'product_money'),
+  ('supabase-admin-audit.sql',      'hub_usage_actives()',    'func',  'hub_usage_actives'),
+  ('supabase-admin-audit.sql',      'admin_mailing_list()',   'func',  'admin_mailing_list'),
+  ('supabase-admin-audit.sql',      'hub_usage.seconds',      'col',   'hub_usage.seconds')
 )
 select w.file, w.thing,
        case when found then 'yes' else 'NO - run this file' end as installed
@@ -44,6 +50,8 @@ from (
     case w.kind
       when 'table' then exists (select 1 from pg_tables t
                                  where t.schemaname='public' and t.tablename=w.name)
+      when 'view'  then exists (select 1 from pg_views v
+                                 where v.schemaname='public' and v.viewname=w.name)
       when 'func'  then exists (select 1 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
                                  where n.nspname='public' and p.proname=w.name)
       when 'col'   then exists (select 1 from information_schema.columns c

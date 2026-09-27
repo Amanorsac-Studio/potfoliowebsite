@@ -90,7 +90,7 @@ export default {
         // and the account is made behind it.
         const h = path.match(/^\/download\/hub\/([a-z0-9-]+)$/);
         if (h) {
-          const file = await serveHub(h[1], env, request);
+          const file = await serveHub(h[1], env, request, ctx);
           if (file) return file;
         }
 
@@ -824,7 +824,7 @@ function waitOn(ctx, promise) {
 /* The Hub's own installer: public, no ticket, no account - it is the
    front door, and the account is created behind it. Served from R2 under
    stable names so the link on every page survives a release. */
-async function serveHub(platform, env, request) {
+async function serveHub(platform, env, request, ctx) {
   const catalog = await getCatalog(env);
   const item = hubInstallerFor(catalog, platform);
   if (!item || !env.DOWNLOADS) return null;
@@ -849,6 +849,22 @@ async function serveHub(platform, env, request) {
   headers.set('cache-control', 'public, max-age=300');
   headers.set('accept-ranges', 'bytes');
   const partial = object.range && ('body' in object);
+
+  /* Count it, as app 'hub' with source 'site': the one download that
+     never passes through a ticket, so it was the one nobody counted.
+     Whole transfers only - a range request is a resume of one already
+     counted. Never awaited into the answer. */
+  if (!request.headers.has('range') && env.SUPABASE_SERVICE_KEY) {
+    const count = fetch(SUPABASE_URL + '/rest/v1/rpc/record_app_download', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json',
+                 apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+      body: JSON.stringify({ p_app: 'hub', p_platform: platform, p_version: item.version || null,
+                             p_source: 'site', p_country: request.headers.get('cf-ipcountry') || null })
+    }).then(r => { if (!r.ok) return r.text().then(t => console.error('record_app_download (hub) refused:', r.status, t)); })
+      .catch(e => console.error('record_app_download (hub) failed:', e && e.message));
+    if (ctx) waitOn(ctx, count); else count.catch(() => {});
+  }
   return new Response(object.body, { status: partial && request.headers.has('range') ? 206 : 200, headers });
 }
 

@@ -93,11 +93,18 @@
 
     /* How long the page took to become usable. Slow pages lose people
        and rank worse, so it is worth knowing. */
-    var loadMs = null;
-    try {
-      var nav = performance.getEntriesByType('navigation')[0];
-      if (nav && nav.duration) loadMs = Math.round(nav.duration);
-    } catch (e) {}
+    /* This script runs before the page has finished loading, so
+       nav.duration is usually still zero here. The view goes out with
+       whatever is known; the real figure travels with the goodbye. */
+    function loadTime() {
+      try {
+        var nav = performance.getEntriesByType('navigation')[0];
+        if (!nav) return null;
+        var ms = nav.duration || nav.loadEventEnd || nav.domContentLoadedEventEnd || nav.domInteractive || 0;
+        return ms > 0 ? Math.round(ms) : null;
+      } catch (e) { return null; }
+    }
+    var loadMs = loadTime();
 
     // ---------- one page, one clean name ------------------------------
     var path = location.pathname.replace(/index\.html$/, '').replace(/\.html$/, '');
@@ -175,7 +182,8 @@
       call('track_engagement', {
         p_id: viewId,
         p_duration_ms: Math.min(3600000, Date.now() - started),
-        p_max_scroll: maxScroll
+        p_max_scroll: maxScroll,
+        p_load_ms: loadTime()
       });
     }
 

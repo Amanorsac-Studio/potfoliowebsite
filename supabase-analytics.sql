@@ -173,9 +173,12 @@ end;
 $$;
 
 -- Sent when the visitor leaves the page, so we learn how long they
--- stayed and how far down they got.
+-- stayed, how far down they got, and - now that the page has finished
+-- loading - how long that took. The view is recorded before the load
+-- is complete, which is why the timing could only ever arrive here.
 create or replace function public.track_engagement(
-  p_id bigint, p_duration_ms integer default null, p_max_scroll integer default null
+  p_id bigint, p_duration_ms integer default null, p_max_scroll integer default null,
+  p_load_ms integer default null
 ) returns void
 language plpgsql security definer set search_path = ''
 as $$
@@ -184,7 +187,9 @@ begin
      set duration_ms = case when p_duration_ms between 0 and 3600000
                             then p_duration_ms else duration_ms end,
          max_scroll  = case when p_max_scroll between 0 and 100
-                            then p_max_scroll else max_scroll end
+                            then p_max_scroll else max_scroll end,
+         load_ms     = case when p_load_ms between 1 and 120000
+                            then p_load_ms else load_ms end
    -- only ever the row just written, and only within the hour, so an
    -- old id cannot be replayed to rewrite history
    where id = p_id and at > now() - interval '1 hour';
@@ -210,7 +215,7 @@ $$;
 
 revoke all on function public.track_view(text,text,text,text,text,boolean,text,boolean,boolean,text,text,text,text,text,integer) from public;
 grant execute on function public.track_view(text,text,text,text,text,boolean,text,boolean,boolean,text,text,text,text,text,integer) to anon, authenticated;
-grant execute on function public.track_engagement(bigint,integer,integer) to anon, authenticated;
+grant execute on function public.track_engagement(bigint,integer,integer,integer) to anon, authenticated;
 grant execute on function public.track_event(text,text,text,text,text)     to anon, authenticated;
 
 

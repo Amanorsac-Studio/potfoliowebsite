@@ -20,18 +20,19 @@
 <style>
   main{max-width:1180px}
   .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
-  /* the three tabs: one segmented control, like the period switch */
+  /* three tabs, named by the question each answers */
   .seg{display:inline-flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:22px}
   .seg a{font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;border-radius:999px;padding:8px 18px;transition:background .2s,color .2s}
   .seg a.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
   section[data-tab]{display:none} section[data-tab].on{display:block}
 
   .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:12px;margin:0 0 14px}
-  .fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);min-width:0}
   .fig.lead{grid-column:span 2}
   @media (max-width:560px){ .fig.lead{grid-column:span 1} }
-  .fig .k{font-size:12.5px;font-weight:500;color:var(--muted);margin:0 0 6px}
-  .fig .v{font-size:28px;font-weight:700;line-height:1.05;margin:0;letter-spacing:-.03em}
+  .fig .k{font-size:12.5px;font-weight:500;color:var(--muted);margin:0 0 6px;display:flex;align-items:center;gap:6px}
+  .fig .k .q{margin-left:auto;width:15px;height:15px;border-radius:50%;border:1px solid var(--line);font-size:9.5px;display:grid;place-items:center;color:var(--muted);cursor:help;flex:none}
+  .fig .v{font-size:28px;font-weight:700;line-height:1.05;margin:0;letter-spacing:-.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .fig.lead .v{font-size:36px}
   .fig .d{display:block;font-size:12.5px;margin:6px 0 0;color:var(--muted)}
   .fig .d + .d{margin-top:2px}
@@ -39,13 +40,15 @@
   .tab{cursor:pointer;text-align:left;font:inherit;color:inherit;border-bottom:3px solid var(--line)}
   .tab.on{border-bottom-color:var(--accent)}
 
-  .chart{height:270px}
+  .chart{height:270px} .chart.short{height:200px}
   .toggles{display:flex;gap:6px;flex-wrap:wrap}
   .toggles button{font:inherit;font-size:12.5px;font-weight:500;color:var(--muted);background:transparent;border:1px solid var(--line);
     border-radius:999px;padding:5px 11px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
   .toggles button i{width:8px;height:8px;border-radius:50%;background:var(--c);opacity:.35}
   .toggles button.on{color:var(--ink);border-color:transparent;background:var(--surface-2)}
   .toggles button.on i{opacity:1}
+  .legend{display:flex;gap:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 
   .card{margin-bottom:14px}
   .card-head{margin-bottom:12px} .card-head h2{font-size:17px}
@@ -76,18 +79,23 @@
   .funnel .track{display:block;height:7px;border-radius:4px;background:var(--surface-2);margin-top:8px;overflow:hidden}
   .funnel .track i{display:block;height:100%;width:0;border-radius:4px;background:var(--accent);transition:width .8s cubic-bezier(.2,.7,.3,1)}
   .funnel li.sep{opacity:.72}
+  .aside{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--surface-2);font-size:13.5px}
+  .aside b{font-size:20px;letter-spacing:-.02em}
   .pill{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:3px 9px}
   .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.wait{background:var(--surface-2);color:var(--muted)} .pill.gone{background:var(--warn-soft);color:var(--warn)}
-  .rv-mod{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:0 0 10px}
-  .rv-mod-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 6px}
-  .rv-mod-app{font-size:11px;font-weight:600;color:var(--muted);background:var(--surface-2);border-radius:999px;padding:3px 9px}
-  .rv-mod-stars{color:#FF9F0A;letter-spacing:1px;font-size:13px}
-  .rv-mod-who{font-size:12.5px;color:var(--muted)}
-  .rv-mod-body{margin:0 0 10px;font-size:14px;line-height:1.6;white-space:pre-wrap}
-  .rv-mod-btns{display:flex;gap:8px}
-  .rv-mod-btns button{font:inherit;font-size:13px;font-weight:500;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid var(--line);background:none;color:var(--ink)}
-  .rv-mod-btns button.ok{border-color:var(--ok);color:var(--ok)} .rv-mod-btns button.no{border-color:var(--warn);color:var(--warn)}
-  .rv-mod-btns button[disabled]{opacity:.5;cursor:default}
+  select.form,input.form{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 11px}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .toolbar label{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px;font-size:13px;color:var(--muted)}
+  .pager button{font:inherit;font-size:13px;background:none;border:1px solid var(--line);border-radius:999px;padding:5px 12px;cursor:pointer;color:var(--ink)}
+  .pager button[disabled]{opacity:.4;cursor:default}
+  .btn.ghost{padding:7px 14px;font-size:13px}
+  details.gloss{margin:30px 0 40px;border:1px solid var(--line);border-radius:var(--r);padding:0 18px;background:var(--surface)}
+  details.gloss summary{cursor:pointer;padding:14px 0;font-weight:600;font-size:14px;list-style:none}
+  details.gloss summary::-webkit-details-marker{display:none}
+  details.gloss dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 18px;margin:0 0 18px;font-size:13.5px}
+  details.gloss dt{font-weight:600} details.gloss dd{margin:0;color:var(--muted)}
+  @media (max-width:560px){ details.gloss dl{grid-template-columns:1fr} details.gloss dd{margin-bottom:6px} }
 </style>
 </head>
 <body>
@@ -97,7 +105,7 @@
     <div>
       <p class="eyebrow">Studio admin</p>
       <h1>Analytics</h1>
-      <p class="sub" id="lead">Money, downloads and traffic, one period switch.</p>
+      <p class="sub" id="lead">Site, apps and money, one period switch.</p>
     </div>
     <div class="range" id="range">
       <button type="button" data-d="7">7 days</button>
@@ -107,66 +115,12 @@
     </div>
   </div>
   <nav class="seg" id="seg" aria-label="Sections">
-    <a href="#money" class="on">Money</a><a href="#downloads">Downloads</a><a href="#traffic">Traffic</a>
+    <a href="#site">Site</a><a href="#apps">Apps</a><a href="#money">Money</a>
   </nav>
   <p class="msg" id="m" role="status" aria-live="polite"></p>
 
-  <!-- ================= MONEY ================= -->
-  <section data-tab="money" class="on">
-    <div class="figs" id="b-figs"></div>
-    <div class="card">
-      <div class="card-head"><h2>Over time</h2><div class="toggles" id="b-toggles"></div></div>
-      <div class="chart" id="b-chart"></div>
-    </div>
-    <p class="sec">Every app, side by side</p>
-    <p class="why">Sorted by what each one earned. Read downloads and installs together: an app people download and never run has an installer problem, not a marketing one.</p>
-    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
-    <div class="two">
-      <div><p class="sec">From arriving to running it</p>
-        <div class="card"><ul class="funnel" id="funnel"></ul></div></div>
-      <div><p class="sec">Where they are</p>
-        <div class="card"><ul class="bars" id="geo"></ul></div></div>
-    </div>
-    <p class="sec">The installed base</p>
-    <div id="hubwrap"></div>
-    <p class="sec">What people actually open</p>
-    <p class="why">From the Hub's usage notes, only from the people who switched them on. Shape, not size.</p>
-    <div id="usewrap"></div>
-    <p class="sec">Codes</p>
-    <div id="codeswrap"></div>
-    <div class="two">
-      <div><p class="sec">Licences and seats</p><div class="card"><ul class="bars" id="lic"></ul></div></div>
-      <div><p class="sec">The latest sales</p><div class="card"><div class="tblwrap"><table class="tbl"><tbody id="recent"></tbody></table></div></div></div>
-    </div>
-  </section>
-
-  <!-- ================= DOWNLOADS ================= -->
-  <section data-tab="downloads">
-    <div class="figs" id="d-figs"></div>
-    <div class="card">
-      <div class="card-head"><h2>What, and how many times</h2></div>
-      <p class="why">One row per app and platform. A download counts when the link is used, not when it is asked for.</p>
-      <div class="tblwrap"><table class="tbl" id="what"></table></div>
-    </div>
-    <div class="two">
-      <div class="card">
-        <div class="card-head"><h2>The last twenty-five</h2></div>
-        <div class="tblwrap"><table class="tbl" id="d-recent"></table></div>
-      </div>
-      <div class="card" id="rvcard">
-        <div class="card-head"><h2>Reviews awaiting approval</h2><span class="pill wait" id="rvcount"></span></div>
-        <div id="rvlist"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-head"><h2>The list</h2><button class="btn ghost" id="csv" style="padding:7px 14px;font-size:13px">Download CSV</button></div>
-      <p class="why">Everyone who put an address in. Confirmed means the link in their inbox was clicked. The CSV holds only consented, confirmed, not-unsubscribed addresses.</p>
-      <div class="tblwrap"><table class="tbl" id="subs"></table></div>
-    </div>
-  </section>
-
-  <!-- ================= TRAFFIC ================= -->
-  <section data-tab="traffic">
+  <!-- ================= SITE ================= -->
+  <section data-tab="site">
     <div class="figs" id="t-tabs"></div>
     <div class="card"><div class="chart" id="t-chart"></div></div>
     <div class="figs" id="t-figs"></div>
@@ -182,7 +136,8 @@
       <div class="card"><div class="card-head"><h2>Referrers</h2></div><div class="tblwrap"><table class="tbl" id="referrers"></table></div></div>
     </div>
     <p class="sec">What they did</p>
-    <div class="card"><div class="card-head"><h2>Conversions</h2></div><div class="tblwrap"><table class="tbl" id="events"></table></div></div>
+    <p class="why">Named events on the site. A conversion is one of the ones that matter: an enquiry, early access asked for, a download taken or asked for. A click on the email address is an event, not a conversion.</p>
+    <div class="card"><div class="card-head"><h2>Events</h2></div><div class="tblwrap"><table class="tbl" id="events"></table></div></div>
     <p class="sec">On what</p>
     <div class="cols">
       <div class="card"><div class="card-head"><h2>Device</h2></div><ul class="bars" id="devices"></ul></div>
@@ -191,8 +146,81 @@
       <div class="card"><div class="card-head"><h2>Country</h2></div><ul class="bars" id="countries"></ul></div>
     </div>
     <div class="card"><div class="card-head"><h2>Speed</h2></div><p id="speed" class="empty"></p></div>
-    <p class="why" style="margin:20px 0 40px">No cookies, no third-party analytics, no IP addresses kept. Country is the two-letter code Cloudflare works out from the connection.</p>
+    <p class="sec">Mailing list</p>
+    <p class="why">The old email gate. It stopped taking addresses when the Hub took over, but the list is still the list. Confirmed means the link in their inbox was clicked. The CSV holds only consented, confirmed, not-unsubscribed addresses.</p>
+    <div class="card">
+      <div class="card-head">
+        <div class="toolbar">
+          <input class="form" id="ml-q" type="search" placeholder="Search addresses" style="min-width:220px">
+          <label><input type="checkbox" id="ml-conf"> confirmed only</label>
+          <span class="hint" id="ml-count"></span>
+        </div>
+        <button class="btn ghost" id="csv">Download CSV</button>
+      </div>
+      <div class="tblwrap"><table class="tbl" id="subs"></table></div>
+      <div class="pager"><span id="ml-page"></span><button type="button" id="ml-prev">‹ Newer</button><button type="button" id="ml-next">Older ›</button></div>
+    </div>
+    <p class="why" style="margin:20px 0 10px">No cookies, no third-party analytics, no IP addresses kept. Country is the two-letter code Cloudflare works out from the connection.</p>
   </section>
+
+  <!-- ================= APPS ================= -->
+  <section data-tab="apps">
+    <div class="figs" id="a-figs"></div>
+    <div class="card">
+      <div class="card-head"><h2>Downloads by source</h2><span class="legend"><span><i style="background:#FF9F0A"></i>Site</span><span><i style="background:#0071E3"></i>Hub</span></span></div>
+      <div class="chart" id="a-chart"></div>
+    </div>
+    <p class="sec">Every app, side by side</p>
+    <p class="why">Downloads and people are from every source. Activations are licence check-ins, so an app that never activates a machine shows a dash. Machines, opens, minutes and version come from usage notes, which only reporting machines send.</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
+    <div class="two">
+      <div>
+        <p class="sec">From arriving to running it</p>
+        <div class="card">
+          <div class="card-head"><h2 style="font-size:15px">Accounts made in the period</h2><select class="form" id="f-app"><option value="">Every app</option></select></div>
+          <ul class="funnel" id="funnel"></ul>
+          <div class="aside" id="f-paid"></div>
+        </div>
+      </div>
+      <div>
+        <p class="sec">Where they are</p>
+        <div class="card"><div class="tblwrap"><table class="tbl" id="geo"></table></div></div>
+      </div>
+    </div>
+    <p class="sec">What people actually open</p>
+    <p class="why">From the Hub's usage notes, only from the machines that switched them on. Reporting share is those machines against every Hub that has ever checked in, so the shape is read against the right size.</p>
+    <div id="usewrap"></div>
+    <div class="card"><div class="card-head"><h2>Opens per week, per app</h2><span class="legend" id="wk-legend"></span></div><div class="chart short" id="wk-chart"></div></div>
+    <p class="sec">The installed base</p>
+    <div id="hubwrap"></div>
+  </section>
+
+  <!-- ================= MONEY ================= -->
+  <section data-tab="money">
+    <div class="figs" id="b-figs"></div>
+    <div class="card">
+      <div class="card-head"><h2>Over time</h2><div class="toggles" id="b-toggles"></div></div>
+      <div class="chart" id="b-chart"></div>
+    </div>
+    <p class="sec">Every app, by money</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="b-apps"></tbody></table></div></div>
+    <div class="two">
+      <div><p class="sec">Entitlements</p><p class="why">Sales are the paid ones. Test rows are shown here so you know they exist, and nowhere else.</p><div class="card"><ul class="bars" id="lic"></ul></div></div>
+      <div><p class="sec">Client work</p><p class="why">Invoices from the projects, beside the app money for once. The full list is on Billing.</p><div class="card"><ul class="bars" id="inv"></ul></div></div>
+    </div>
+    <p class="sec">Codes</p>
+    <div id="codeswrap"></div>
+    <p class="sec">The latest</p>
+    <div class="card">
+      <div class="card-head"><h2>Sales</h2><label class="hint" style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="rec-all"> show free claims and comps too</label></div>
+      <div class="tblwrap"><table class="tbl"><tbody id="recent"></tbody></table></div>
+    </div>
+  </section>
+
+  <details class="gloss" id="gloss">
+    <summary>What every number means</summary>
+    <dl id="glossary"></dl>
+  </details>
 </main>
 
 <script src="../assets/vendor/supabase-2.116.0.js"></script>
@@ -207,26 +235,55 @@
   const m = $('#m');
   let days = 30;
   const esc = t => { const d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; };
-  const num = Charts.num, usd = Charts.usd;
+  const num = Charts.num, usd = Charts.usd, delta = Charts.delta;
   const pct = n => (n==null ? '—' : Number(n).toFixed(1).replace(/\.0$/,'') + '%');
   const secs = n => { if(n==null) return '—'; n = Math.round(Number(n)); return n < 60 ? n+'s' : Math.floor(n/60)+'m '+String(n%60).padStart(2,'0')+'s'; };
-  const when = t => new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'});
-  const whenT = iso => { if(!iso) return '—'; const d = new Date(iso); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+', '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); };
+  const mins = n => { n = Number(n)||0; return n < 60 ? n+' min' : (n/60).toFixed(1)+' h'; };
+  /* a null date is "never" - never the epoch */
+  const when = t => t ? new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : 'never';
+  const whenT = iso => { if(!iso) return 'never'; const d = new Date(iso); return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+', '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'}); };
+  const dash = v => (v==null ? '<span class="dim">—</span>' : num(v));
   let NAMES = {};
   const appName = id => NAMES[id] || (id ? id[0].toUpperCase()+id.slice(1) : '—');
   const namesReady = fetch('/catalog.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null)
     .then(c=>{ if(c&&c.apps) Object.keys(c.apps).forEach(k=>{ NAMES[k]=c.apps[k].name||k; }); }).catch(()=>{});
-  function delta(now, before, lowerIsBetter){
-    if(before == null || !Number(before)) return '';
-    const ch = Math.round(((Number(now)-Number(before))/Number(before))*100);
-    if(!isFinite(ch)) return '';
-    if(ch===0) return '<span class="d">level with the period before</span>';
-    const good = lowerIsBetter ? ch<0 : ch>0;
-    return '<span class="d '+(good?'up':'down')+'">'+(ch>0?'▲':'▼')+' '+Math.abs(ch)+'% on the period before</span>';
-  }
+
+  /* ---------- the glossary: one definition per word, used by the
+     tooltips and printed at the foot of the page ---------- */
+  const DEF = {
+    'Visitors':        'Distinct visitors on the public site in the period.',
+    'Visits':          'Sessions on the public site. One person coming back tomorrow is two visits, one visitor.',
+    'Page views':      'Pages seen. A visit of three pages is three views.',
+    'Bounce rate':     'Visits that never got engaged: under ten seconds, one page, no conversion.',
+    'Conversions':     'Visits with an enquiry sent, early access asked for, or a download taken or asked for. Other events do not count.',
+    'Downloads':       'Every completed app download, from the site and through the Hub, as one number. The Hub installer itself is counted apart.',
+    'People':          'Distinct accounts or addresses behind the downloads. A download with neither counts as a download and never as a person.',
+    'Via Hub':         'Downloads made through the Hub ÷ downloads.',
+    'Hub installers':  'Downloads of the Hub installer itself from the site.',
+    'Hubs active':     'Installations of the Hub that sent a heartbeat in the last 30 days, of every Hub that ever has.',
+    'Active machines': 'Machines that activated a licence and checked in within the last 30 days.',
+    'Activations':     'Licence activations in the period. Only apps that phone home with a key have any; the rest show a dash.',
+    'Reporting share': 'Machines sending usage notes ÷ Hubs known from heartbeats. Same unit on both sides.',
+    'Opens':           'Times an app was opened, from usage notes.',
+    'Minutes in app':  'Time between an app opening and closing, from usage notes. Older notes carry no length.',
+    'DAU / WAU / MAU': 'Machines that opened the app in the last day, week and month.',
+    'Revenue':         'Gross paid amount in dollars. Other currencies are listed beside it, never converted.',
+    'Sales':           'Paid entitlements only.',
+    'Free claims':     'Free entitlements for the free apps.',
+    'Comps':           'Entitlements given: testers, codes, an address the studio granted.',
+    'Betas':           'Free entitlements with an end date.',
+    'Test':            'Stripe test-mode sessions and rows marked test. Out of every other count.',
+    'Discounts':       'What codes took off paid sales, in dollars.',
+    'Collected':       'Client invoices marked paid in the period.',
+    'Owed':            'Client invoices not yet paid, whenever sent.'
+  };
+  $('#glossary').innerHTML = Object.entries(DEF).map(([k,v])=>'<dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd>').join('');
+  const q = k => DEF[k] ? '<span class="q" title="'+esc(DEF[k])+'">?</span>' : '';
+  const fig = (k,v,d,lead,tipKey) => '<div class="fig'+(lead?' lead':'')+'"><p class="k">'+esc(k)+q(tipKey||k)+'</p><p class="v">'+v+'</p>'+(d||'')+'</div>';
+
   function grow(el){ requestAnimationFrame(()=>requestAnimationFrame(()=>$$('[data-w]', el).forEach(i=>i.style.width=i.getAttribute('data-w')+'%'))); }
-  function table(el, head, rows, cells){
-    if(!rows.length){ el.innerHTML = '<tr><td class="empty">Nothing yet.</td></tr>'; return; }
+  function table(el, head, rows, cells, empty){
+    if(!rows.length){ el.innerHTML = '<tr><td class="empty">'+esc(empty||'Nothing yet.')+'</td></tr>'; return; }
     el.innerHTML = '<tr>'+head.map((h,i)=>'<th'+(i?' class="n"':'')+'>'+esc(h)+'</th>').join('')+'</tr>' +
       rows.map(r=>'<tr>'+cells(r).map((c,i)=>'<td'+(i?' class="n"':'')+'>'+c+'</td>').join('')+'</tr>').join('');
   }
@@ -239,22 +296,164 @@
       onChange(series.map(s=>s.key).filter(k=>next.indexOf(k)>=0));
     }));
   }
+  const CUR = { ghs:'₵', ngn:'₦', zar:'R', kes:'KSh', usd:'$' };
+  function others(obj){
+    const e = Object.entries(obj||{}); if(!e.length) return '';
+    return '<span class="d">+ '+e.map(([c,n])=>(CUR[c]||(c.toUpperCase()+' '))+(Number(n)/100).toLocaleString()).join(' · ')+'</span>';
+  }
+  const fmtMoney = (cents, cur) => String(cur||'usd').toLowerCase()==='usd' ? usd(cents) : (Number(cents)/100).toLocaleString()+' '+String(cur).toUpperCase();
+  const outOfDate = msg => /does not exist|schema cache|column|argument/i.test(msg) ? 'The reports are out of date — run supabase-admin-audit.sql in the SQL editor.' : 'Could not read the reports: '+msg;
 
   /* ---------- tabs: the hash is the state, so a link can land on one ---------- */
   const loaded = {};
+  const ALIAS = { traffic:'site', downloads:'apps', hub:'apps', business:'money' };
   function showTab(){
-    const t = (location.hash||'#money').slice(1);
-    const name = ['money','downloads','traffic'].indexOf(t)>=0 ? t : 'money';
+    let t = (location.hash||'#site').slice(1);
+    t = ALIAS[t] || t;
+    const name = ['site','apps','money'].indexOf(t)>=0 ? t : 'site';
     $$('section[data-tab]').forEach(s => s.classList.toggle('on', s.dataset.tab===name));
     $$('#seg a').forEach(a => a.classList.toggle('on', a.getAttribute('href')==='#'+name));
-    $('#lead').textContent = { money:'What sold, what was downloaded, what is running on machines.',
-      downloads:'What was taken, how many times, and the addresses that asked.',
-      traffic:'Who is on the site, what they read, where they came from. No cookies.' }[name];
-    if(!loaded[name]){ loaded[name] = true; ({money, downloads, traffic})[name](); }
-    else if(name==='money') bChart(); else if(name==='traffic') tChart();
+    $('#lead').textContent = { site:'Who is on the site, what they read, where they came from. No cookies.',
+      apps:'What was downloaded, by whom, from where, and what is actually being run.',
+      money:'What sold, what was given, what the client work brought in.' }[name];
+    if(!loaded[name]){ loaded[name] = true; ({site, apps, money})[name](); }
+    else redraw(name);
   }
+  function redraw(name){ if(name==='money') bChart(); else if(name==='site') tChart(); else if(name==='apps') aChart(); }
   addEventListener('hashchange', showTab);
-  addEventListener('resize', () => { bChart(); tChart(); });
+  addEventListener('resize', () => { bChart(); tChart(); aChart(); });
+
+  /* =================================================================
+     APPS
+     ================================================================= */
+  const SRC = [ { key:'downloads_site', label:'Site', color:'#FF9F0A' }, { key:'downloads_hub', label:'Hub', color:'#0071E3' } ];
+  let aDaily = [], wkRows = [], wkSeries = [], funnelRows = [], appRows = [];
+  function aChart(){
+    if(!$('section[data-tab=apps]').classList.contains('on')) return;
+    Charts.area($('#a-chart'), { days:aDaily, series:SRC });
+    Charts.lines($('#wk-chart'), { rows:wkRows, series:wkSeries, empty:'No app has been opened yet by a machine that sends notes.' });
+  }
+  function aHeadline(s, h, u){
+    const hubs = h && Number(h.installs) || 0;
+    $('#a-figs').innerHTML =
+      fig('Downloads', num(s.downloads), delta(s.downloads, s.prev_downloads), true) +
+      fig('People', num(s.people), delta(s.people, s.prev_people)) +
+      fig('Via Hub', s.hub_share_pct==null?'—':Math.round(Number(s.hub_share_pct))+'%', '<span class="d">'+num(s.hub_downloads)+' through the Hub · '+num(s.site_downloads)+' from the site</span>') +
+      fig('Hub installers', num(s.hub_installers), '<span class="d">'+num(s.hubs_new)+' new Hub'+(Number(s.hubs_new)===1?'':'s')+' heard from</span>') +
+      fig('Hubs active', num(s.hubs_active), '<span class="d">of '+num(hubs)+' ever · '+num(s.hubs_signed_in)+' signed in</span>') +
+      fig('Active machines', num(s.machines_active), '<span class="d">'+num(s.machines_new)+' activated in the period</span>') +
+      fig('Reporting share', u && u.reporting_pct!=null ? Math.round(Number(u.reporting_pct))+'%' : '—', '<span class="d">'+num(u&&u.machines_reporting)+' of '+num(u&&u.machines_known)+' Hubs send notes</span>');
+  }
+  function appTable(rows){
+    const el = $('#apps');
+    appRows = rows;
+    if(!rows.length){ el.innerHTML = '<tr><td class="empty">Nothing downloaded or opened in this window.</td></tr>'; return; }
+    const peak = Math.max(1, ...rows.map(r=>Number(r.downloads)||0));
+    el.innerHTML = '<tr><th>App</th><th class="n">Downloads</th><th class="n">People</th><th class="n">Via Hub</th><th class="n">Activations</th><th class="n">Machines*</th><th class="n">Opens*</th><th class="n">Minutes*</th><th class="n">Version*</th><th class="n">Rating</th></tr>' +
+      rows.slice().sort((a,b)=>(b.downloads-a.downloads)||(b.opens-a.opens)).map(r=>'<tr><td><span class="app">'+esc(appName(r.app))+'</span><i class="inline-bar" data-w="'+Math.round((Number(r.downloads)||0)/peak*100)+'"></i></td>' +
+        '<td class="n">'+num(r.downloads)+'</td><td class="n">'+num(r.people)+'</td>' +
+        '<td class="n dim">'+(r.hub_share_pct==null?'—':Math.round(Number(r.hub_share_pct))+'%')+'</td>' +
+        '<td class="n">'+dash(r.activations)+'</td>' +
+        '<td class="n">'+num(r.machines)+'</td><td class="n">'+num(r.opens)+'</td><td class="n dim">'+(Number(r.minutes)?mins(r.minutes):'—')+'</td>' +
+        '<td class="n dim">'+(r.version?esc(r.version)+' <span style="opacity:.6">×'+num(r.on_version)+'</span>':'—')+'</td>' +
+        '<td class="n dim">'+(r.rating==null?'—':Number(r.rating).toFixed(1)+' ('+num(r.reviews)+')')+'</td></tr>').join('') +
+      '<tr><td colspan="10" class="dim" style="font-size:12px;white-space:normal">* from usage notes, reporting machines only.</td></tr>';
+    grow(el);
+    const sel = $('#f-app'); const cur = sel.value;
+    sel.innerHTML = '<option value="">Every app</option>' + rows.map(r=>r.app).sort().map(a=>'<option value="'+esc(a)+'"'+(a===cur?' selected':'')+'>'+esc(appName(a))+'</option>').join('');
+  }
+  function funnel(rows){
+    const el = $('#funnel');
+    funnelRows = rows;
+    if(!rows.length){ el.innerHTML = '<li class="empty">Nothing yet.</li>'; $('#f-paid').innerHTML=''; return; }
+    const stages = rows.filter(r=>r.unit!=='aside'), paid = rows.find(r=>r.unit==='aside');
+    const cohort = stages.filter(r=>r.unit!=='visits');
+    const top = Math.max(1, ...cohort.map(r=>Number(r.n)||0));
+    el.innerHTML = stages.map((r,i)=>{
+      const visits = r.unit==='visits', n = Number(r.n)||0, prev = i>1 ? Number(stages[i-1].n)||0 : null;
+      const drop = (prev && prev>n) ? '<span class="drop">'+Math.round(100*(prev-n)/prev)+'% fell away</span>' : '';
+      return '<li'+(visits?' class="sep"':'')+'><div class="row"><span class="lab">'+esc(r.stage)+(visits?' <span class="drop">sessions, not people</span>':'')+drop+'</span><span class="num">'+num(n)+'</span></div>' +
+        (visits ? '' : '<span class="track"><i data-w="'+Math.round(n/top*100)+'"></i></span>')+'</li>';
+    }).join('');
+    const acc = Number((cohort[0]||{}).n)||0;
+    $('#f-paid').innerHTML = paid ? '<span>Paid <span class="dim" style="color:var(--muted)">· beside the funnel, not a stage: a free app never passes it</span></span><b>'+num(paid.n)+(acc?' <span style="font-size:13px;font-weight:500;color:var(--muted)">'+Math.round(100*Number(paid.n)/acc)+'% of accounts</span>':'')+'</b>' : '';
+    grow(el);
+  }
+  async function loadFunnel(){
+    const app = $('#f-app').value || null;
+    const f = await sb.rpc('product_funnel', { p_days:days, p_app:app });
+    if(f.error){ $('#funnel').innerHTML = '<li class="empty">'+esc(f.error.message)+'</li>'; return; }
+    funnel(f.data||[]);
+  }
+  $('#f-app').addEventListener('change', loadFunnel);
+  function hub(h){
+    const wrap = $('#hubwrap');
+    if(!h || !Number(h.installs)){ wrap.innerHTML = '<div class="pending">No Hub has reported in yet. The endpoint is live; it fills in by itself once a Hub that calls it ships.</div>'; return; }
+    const vers = Object.entries(h.versions||{}).sort((a,b)=>b[1]-a[1]), plat = Object.entries(h.platforms||{}).sort((a,b)=>b[1]-a[1]);
+    const stale = Number(h.installs)-Number(h.on_current||0);
+    wrap.innerHTML = '<div class="figs">' +
+      fig('Hubs ever', num(h.installs), '<span class="d">'+num(h.active_30d)+' heard from in the last 30 days</span>', false, 'Hubs active') +
+      fig('Signed in', num(h.signed_in), '<span class="d">'+num(h.accounts)+' account'+(Number(h.accounts)===1?'':'s')+' · the rest never have</span>') +
+      fig('On '+(h.current_version||'—'), num(h.on_current), '<span class="d'+(stale?' down':'')+'">'+num(stale)+' on an older build</span>') + '</div>' +
+      '<div class="two"><div class="card"><div class="card-head"><h2>Hub versions</h2></div><ul class="bars" id="vers"></ul></div>' +
+      '<div class="card"><div class="card-head"><h2>Platform</h2></div><ul class="bars" id="plats"></ul></div></div>';
+    Charts.bars($('#vers'), vers.map(v=>({label:v[0],value:v[1]})));
+    Charts.bars($('#plats'), plat.map(v=>({label:v[0]==='windows'?'Windows':v[0]==='mac'?'macOS':v[0],value:v[1]})));
+  }
+  function usage(u, byApp, act){
+    const wrap = $('#usewrap');
+    if(!u){ wrap.innerHTML = '<div class="pending">The usage tables are not installed yet — run supabase-hub-usage.sql, then supabase-admin-audit.sql.</div>'; return; }
+    if(!Number(u.machines_reporting)){ wrap.innerHTML = '<div class="pending">No machine has sent usage notes in this window. Notes are opt-in: nothing arrives until someone switches them on in the Hub.</div>'; return; }
+    const perMachine = Number(u.machines_reporting) ? (Number(u.app_opens)/Number(u.machines_reporting)).toFixed(1) : '0';
+    wrap.innerHTML = '<div class="figs">' +
+      fig('Machines reporting', num(u.machines_reporting), '<span class="d">'+num(u.accounts)+' account'+(Number(u.accounts)===1?'':'s')+' · '+(u.reporting_pct==null?'—':Math.round(Number(u.reporting_pct))+'% of Hubs')+'</span>', false, 'Reporting share') +
+      fig('Opens', num(u.app_opens), '<span class="d">'+perMachine+' per reporting machine</span>') +
+      fig('Minutes in app', mins(u.minutes), '<span class="d">'+num(u.hub_opens)+' Hub open'+(Number(u.hub_opens)===1?'':'s')+'</span>') +
+      fig('Installed from the Hub', num(u.installs_done), '<span class="d">'+num(u.updates_done)+' update'+(Number(u.updates_done)===1?'':'s')+'</span>') + '</div>' +
+      '<div class="two"><div class="card"><div class="card-head"><h2>Which app, and how deeply</h2></div><div class="tblwrap"><table class="tbl"><tbody id="useapps"></tbody></table></div></div>' +
+      '<div class="card"><div class="card-head"><h2>Actives</h2><span class="hint">'+q('DAU / WAU / MAU')+' machines, last day · week · month</span></div><div class="tblwrap"><table class="tbl"><tbody id="actives"></tbody></table></div></div></div>';
+    const rows = byApp||[];
+    $('#useapps').innerHTML = rows.length
+      ? '<tr><th>App</th><th class="n">Machines</th><th class="n">Opens</th><th class="n">Each</th><th class="n">Minutes</th><th class="n">Last opened</th></tr>' +
+        rows.map(r=>'<tr><td>'+esc(appName(r.app))+'</td><td class="n">'+num(r.machines)+'</td><td class="n">'+num(r.opens)+'</td><td class="n dim">'+(r.opens_per_machine==null?'—':Number(r.opens_per_machine).toFixed(1))+'</td><td class="n dim">'+(Number(r.minutes)?mins(r.minutes):'—')+'</td><td class="n dim">'+esc(when(r.last_opened))+'</td></tr>').join('')
+      : '<tr><td class="empty">No app has been opened in this window.</td></tr>';
+    const ac = act||[];
+    $('#actives').innerHTML = ac.length
+      ? '<tr><th>App</th><th class="n">Day</th><th class="n">Week</th><th class="n">Month</th></tr>' + ac.map(r=>'<tr><td>'+esc(appName(r.app))+'</td><td class="n">'+num(r.dau)+'</td><td class="n">'+num(r.wau)+'</td><td class="n">'+num(r.mau)+'</td></tr>').join('')
+      : '<tr><td class="empty">Nothing opened in the last month.</td></tr>';
+  }
+  function weekly(rows){
+    const palette = ['#0071E3','#30D158','#FF9F0A','#BF5AF2','#FF375F','#64D2FF','#8E8E93','#AC8E68'];
+    const weeks = [...new Set(rows.map(r=>r.week))].sort();
+    const apps = [...new Set(rows.map(r=>r.app))];
+    const totals = {}; rows.forEach(r=>{ totals[r.app]=(totals[r.app]||0)+Number(r.opens); });
+    apps.sort((a,b)=>totals[b]-totals[a]);
+    wkSeries = apps.slice(0,6).map((a,i)=>({ key:a, label:appName(a), color:palette[i%palette.length] }));
+    wkRows = weeks.map(w => { const o = { label:new Date(w+'T12:00:00Z').toLocaleDateString(undefined,{month:'short',day:'numeric'}) }; apps.forEach(a=>o[a]=0); rows.filter(r=>r.week===w).forEach(r=>{ o[r.app]=Number(r.opens)||0; }); return o; });
+    $('#wk-legend').innerHTML = wkSeries.map(s=>'<span><i style="background:'+s.color+'"></i>'+esc(s.label)+'</span>').join('');
+  }
+  async function apps(){
+    m.textContent = 'Reading…'; m.className = 'msg';
+    await namesReady;
+    const [s,a,d,f,g,h,us,ua,ac,wk] = await Promise.all([
+      sb.rpc('product_summary',{p_days:days}), sb.rpc('product_by_app',{p_days:days}), sb.rpc('product_daily',{p_days:days}),
+      sb.rpc('product_funnel',{p_days:days,p_app:$('#f-app').value||null}), sb.rpc('product_geography',{p_days:days}), sb.rpc('product_hub'),
+      sb.rpc('hub_usage_summary',{p_days:days}), sb.rpc('hub_usage_by_app',{p_days:days}), sb.rpc('hub_usage_actives'), sb.rpc('hub_usage_weekly',{p_days:Math.max(days,56)})
+    ]);
+    const bad = [s,a,d,f,g,h].find(r=>r&&r.error);
+    if(bad){ m.textContent = outOfDate(bad.error.message); m.className='msg err'; return; }
+    m.textContent = '';
+    const S = (s.data&&s.data[0])||{}, H = (h.data&&h.data[0])||null, U = (us&&!us.error&&us.data&&us.data[0])||null;
+    aHeadline(S, H, U);
+    appTable(a.data||[]);
+    aDaily = d.data||[];
+    funnel(f.data||[]);
+    table($('#geo'), ['Country','Visits','Downloads','People'], g.data||[], r=>[esc(r.country), num(r.visits), num(r.downloads), num(r.people)]);
+    usage(U, (ua&&!ua.error&&ua.data)||[], (ac&&!ac.error&&ac.data)||[]);
+    weekly((wk&&!wk.error&&wk.data)||[]);
+    hub(H);
+    aChart();
+  }
 
   /* =================================================================
      MONEY
@@ -262,83 +461,30 @@
   const B_SERIES = [
     { key:'revenue_cents', label:'Revenue',   color:'#0071E3', money:true },
     { key:'sales',         label:'Sales',     color:'#30D158' },
-    { key:'downloads',     label:'Downloads', color:'#FF9F0A' },
-    { key:'installs',      label:'Installs',  color:'#BF5AF2' }
+    { key:'downloads',     label:'Downloads', color:'#FF9F0A' }
   ];
-  let bActive = ['revenue_cents','sales'], bDaily = [];
+  let bActive = ['revenue_cents','sales'], bDaily = [], recentAll = null;
   function bChart(){ if($('section[data-tab=money]').classList.contains('on')) Charts.line($('#b-chart'), { days:bDaily, series:B_SERIES, active:bActive }); }
-  const CUR = { ghs:'₵', ngn:'₦', zar:'R', kes:'KSh', usd:'$' };
-  function others(obj){
-    const e = Object.entries(obj||{}); if(!e.length) return '';
-    return '<span class="d">+ '+e.map(([c,n])=>(CUR[c]||(c.toUpperCase()+' '))+(Number(n)/100).toLocaleString()).join(' · ')+'</span>';
+  function bHeadline(s, mo){
+    const rail = Object.entries((mo&&mo.by_rail)||{});
+    $('#b-figs').innerHTML =
+      fig('Revenue', usd(s.revenue_cents), delta(s.revenue_cents, s.prev_revenue_cents, {floor:2000})+others(s.revenue_other)+(rail.length?'<span class="d">'+rail.map(([k,v])=>k+' '+usd(v)).join(' · ')+'</span>':''), true) +
+      fig('Sales', num(s.sales), delta(s.sales, s.prev_sales)) +
+      fig('Free claims', num(s.free_claims), '<span class="d">'+num(s.comps)+' comp'+(Number(s.comps)===1?'':'s')+' given</span>') +
+      fig('Discounts', usd(s.discount_given_cents), '<span class="d">taken off paid sales</span>') +
+      fig('Store', usd(mo?mo.store_revenue_cents:0), '<span class="d">songs sold and rented</span>', false, 'Revenue') +
+      fig('Collected', usd(mo?mo.invoices_paid_cents:0), '<span class="d">'+num(mo&&mo.invoices_paid)+' client invoice'+(Number(mo&&mo.invoices_paid)===1?'':'s')+' paid</span>') +
+      fig('Owed', usd(mo?mo.invoices_owed_cents:0), '<span class="d">'+num(mo&&mo.invoices_owed)+' invoice'+(Number(mo&&mo.invoices_owed)===1?'':'s')+' open · <a href="admin-billing.html">Billing</a></span>');
   }
-  function headline(s){
-    const rows = [
-      ['Revenue', usd(s.revenue_cents), delta(s.revenue_cents, s.prev_revenue_cents)+others(s.revenue_other), true],
-      ['Sales', num(s.sales), delta(s.sales, s.prev_sales)],
-      ['Downloads', num(s.downloads), delta(s.downloads, s.prev_downloads)],
-      ['Through the Hub', s.downloads ? Math.round(100*s.hub_downloads/s.downloads)+'%' : '—', '<span class="d">'+num(s.hub_downloads)+' of '+num(s.downloads)+'</span>'],
-      ['New machines', num(s.installs), '<span class="d">first activations</span>'],
-      ['Live seats', num(s.active_devices), '<span class="d">active in the last 30 days</span>'],
-      ['New accounts', num(s.new_accounts), delta(s.new_accounts, s.prev_new_accounts)],
-    ];
-    $('#b-figs').innerHTML = rows.map(([k,v,d,lead])=>'<div class="fig'+(lead?' lead':'')+'"><p class="k">'+esc(k)+'</p><p class="v">'+v+'</p>'+(d||'')+'</div>').join('');
-  }
-  function appTable(rows){
-    const el = $('#apps');
-    if(!rows.length){ el.innerHTML = '<tr><td class="empty">Nothing sold or downloaded in this window.</td></tr>'; return; }
-    const peak = Math.max(1, ...rows.map(r=>Number(r.revenue_cents)||0));
-    el.innerHTML = '<tr><th>App</th><th class="n">Revenue</th><th class="n">Sales</th><th class="n">Downloads</th><th class="n">Via Hub</th><th class="n">Installs</th><th class="n">Seats</th><th class="n">Rating</th></tr>' +
-      rows.map(r=>'<tr><td><span class="app">'+esc(appName(r.app))+'</span><i class="inline-bar" data-w="'+Math.round((Number(r.revenue_cents)||0)/peak*100)+'"></i></td>' +
-        '<td class="n">'+usd(r.revenue_cents)+'</td><td class="n">'+num(r.sales)+'</td><td class="n">'+num(r.downloads)+'</td>' +
-        '<td class="n dim">'+(r.hub_share_pct==null?'—':Number(r.hub_share_pct)+'%')+'</td><td class="n">'+num(r.installs)+'</td>' +
-        '<td class="n dim">'+num(r.devices)+'</td><td class="n dim">'+(r.rating==null?'—':Number(r.rating).toFixed(1)+' ('+num(r.reviews)+')')+'</td></tr>').join('');
+  function bApps(rows){
+    const el = $('#b-apps');
+    const sold = rows.filter(r=>Number(r.revenue_cents)||Number(r.sales)||Number(r.free_claims)||Number(r.licences));
+    if(!sold.length){ el.innerHTML = '<tr><td class="empty">Nothing sold or claimed in this window.</td></tr>'; return; }
+    const peak = Math.max(1, ...sold.map(r=>Number(r.revenue_cents)||0));
+    el.innerHTML = '<tr><th>App</th><th class="n">Revenue</th><th class="n">Sales</th><th class="n">Free claims</th><th class="n">Licences ever</th><th class="n">Seats</th></tr>' +
+      sold.map(r=>'<tr><td><span class="app">'+esc(appName(r.app))+'</span><i class="inline-bar" data-w="'+Math.round((Number(r.revenue_cents)||0)/peak*100)+'"></i></td>' +
+        '<td class="n">'+usd(r.revenue_cents)+'</td><td class="n">'+num(r.sales)+'</td><td class="n dim">'+num(r.free_claims)+'</td><td class="n dim">'+num(r.licences)+'</td><td class="n dim">'+dash(r.seats)+'</td></tr>').join('');
     grow(el);
-  }
-  function funnel(rows){
-    const el = $('#funnel');
-    if(!rows.length){ el.innerHTML = '<li class="empty">Nothing yet.</li>'; return; }
-    const cohort = rows.filter(r=>r.unit!=='visits');
-    const top = Math.max(1, ...cohort.map(r=>Number(r.n)||0));
-    el.innerHTML = rows.map((r,i)=>{
-      const visits = r.unit==='visits', n = Number(r.n)||0, prev = i>1 ? Number(rows[i-1].n)||0 : null;
-      const drop = (prev && prev>n) ? '<span class="drop">'+Math.round(100*(prev-n)/prev)+'% fell away</span>' : '';
-      return '<li'+(visits?' class="sep"':'')+'><div class="row"><span class="lab">'+esc(r.stage)+drop+'</span><span class="num">'+num(n)+'</span></div>' +
-        (visits ? '' : '<span class="track"><i data-w="'+Math.round(n/top*100)+'"></i></span>')+'</li>';
-    }).join('');
-    grow(el);
-  }
-  function hub(h){
-    const wrap = $('#hubwrap');
-    if(!h || !Number(h.installs)){ wrap.innerHTML = '<div class="pending">No Hub has reported in yet. The endpoint is live; it fills in by itself once a Hub that calls it ships.</div>'; return; }
-    const vers = Object.entries(h.versions||{}).sort((a,b)=>b[1]-a[1]), plat = Object.entries(h.platforms||{}).sort((a,b)=>b[1]-a[1]);
-    const stale = Number(h.installs)-Number(h.on_current||0);
-    wrap.innerHTML = '<div class="figs">' +
-      '<div class="fig"><p class="k">Installations</p><p class="v">'+num(h.installs)+'</p><span class="d">'+num(h.active_30d)+' seen in the last 30 days</span></div>' +
-      '<div class="fig"><p class="k">Signed in</p><p class="v">'+num(h.signed_in)+'</p><span class="d">the rest never have</span></div>' +
-      '<div class="fig"><p class="k">On '+esc(h.current_version||'—')+'</p><p class="v">'+num(h.on_current)+'</p><span class="d'+(stale?' down':'')+'">'+num(stale)+' on an older build</span></div></div>' +
-      '<div class="two"><div class="card"><div class="card-head"><h2>Versions</h2></div><ul class="bars" id="vers"></ul></div>' +
-      '<div class="card"><div class="card-head"><h2>Platform</h2></div><ul class="bars" id="plats"></ul></div></div>';
-    Charts.bars($('#vers'), vers.map(v=>({label:v[0],value:v[1]})));
-    Charts.bars($('#plats'), plat.map(v=>({label:v[0]==='windows'?'Windows':v[0]==='mac'?'macOS':v[0],value:v[1]})));
-  }
-  function usage(u, byApp, base){
-    const wrap = $('#usewrap');
-    if(!u){ wrap.innerHTML = '<div class="pending">The usage tables are not installed yet — run supabase-hub-usage.sql.</div>'; return; }
-    if(!Number(u.installs)){ wrap.innerHTML = '<div class="pending">Nobody has turned usage notes on yet, or nobody has opened an app since.</div>'; return; }
-    const total = base && Number(base.installs) || 0, share = total ? Math.round(Number(u.installs)/total*100) : null;
-    const perMachine = Number(u.installs) ? (Number(u.app_opens)/Number(u.installs)).toFixed(1) : '0';
-    wrap.innerHTML = '<div class="figs">' +
-      '<div class="fig"><p class="k">Opted in</p><p class="v">'+num(u.installs)+'</p><span class="d">'+(share===null?'machines sending notes':share+'% of '+num(total)+' installations')+'</span></div>' +
-      '<div class="fig"><p class="k">App opens</p><p class="v">'+num(u.app_opens)+'</p><span class="d">'+perMachine+' per machine</span></div>' +
-      '<div class="fig"><p class="k">Hub opens</p><p class="v">'+num(u.hub_opens)+'</p><span class="d">'+num(u.accounts)+' account'+(Number(u.accounts)===1?'':'s')+'</span></div>' +
-      '<div class="fig"><p class="k">Installed from the Hub</p><p class="v">'+num(u.installs_done)+'</p><span class="d">'+num(u.updates_done)+' update'+(Number(u.updates_done)===1?'':'s')+'</span></div></div>' +
-      '<div class="card"><div class="card-head"><h2>Which app, and how deeply</h2></div><div class="tblwrap"><table class="tbl"><tbody id="useapps"></tbody></table></div></div>';
-    const rows = byApp||[];
-    $('#useapps').innerHTML = rows.length
-      ? '<tr><th>App</th><th class="n">Machines</th><th class="n">Opens</th><th class="n">Opens each</th><th class="n">Last opened</th></tr>' +
-        rows.map(r=>'<tr><td>'+esc(appName(r.app))+'</td><td class="n">'+num(r.machines)+'</td><td class="n">'+num(r.opens)+'</td><td class="n">'+(r.opens_per_machine==null?'—':Number(r.opens_per_machine).toFixed(1))+'</td><td class="n dim">'+esc(when(r.last_opened))+'</td></tr>').join('')
-      : '<tr><td class="empty">No app has been opened in this window.</td></tr>';
   }
   function codes(c){
     const wrap = $('#codeswrap');
@@ -346,10 +492,10 @@
     if(!Number(c.redemptions)&&!Number(c.codes_made)&&!Number(c.live_grants)){ wrap.innerHTML = '<div class="pending">No codes made or used in this window.</div>'; return; }
     const soon = Number(c.grants_ending_7d);
     wrap.innerHTML = '<div class="figs">' +
-      '<div class="fig"><p class="k">Redeemed</p><p class="v">'+num(c.redemptions)+'</p><span class="d">'+num(c.codes_made)+' made in this window</span></div>' +
-      '<div class="fig"><p class="k">Given away</p><p class="v">'+usd(c.given_cents)+'</p><span class="d">'+num(c.access_granted)+' licence'+(Number(c.access_granted)===1?'':'s')+', priced from past sales</span></div>' +
-      '<div class="fig"><p class="k">Discounted sales</p><p class="v">'+num(c.discounted_sales)+'</p><span class="d">'+usd(c.discount_given_cents)+' off</span></div>' +
-      '<div class="fig"><p class="k">Grants running</p><p class="v">'+num(c.live_grants)+'</p><span class="d'+(soon?' down':'')+'">'+(soon?num(soon)+' end within a week':'none ending soon')+'</span></div></div>' +
+      fig('Redeemed', num(c.redemptions), '<span class="d">'+num(c.codes_made)+' made in this window</span>') +
+      fig('Given away', usd(c.given_cents), '<span class="d">'+num(c.access_granted)+' licence'+(Number(c.access_granted)===1?'':'s')+', priced from past sales</span>', false, 'Comps') +
+      fig('Discounted sales', num(c.discounted_sales), '<span class="d">'+usd(c.discount_given_cents)+' off</span>', false, 'Discounts') +
+      fig('Grants running', num(c.live_grants), '<span class="d'+(soon?' down':'')+'">'+(soon?num(soon)+' end within a week':'none ending soon')+'</span>', false, 'Comps') + '</div>' +
       '<div class="card"><div class="card-head"><h2>Most used</h2></div><div class="tblwrap"><table class="tbl"><tbody id="topcodes"></tbody></table></div></div>';
     const top = c.top_codes||[];
     $('#topcodes').innerHTML = top.length
@@ -359,149 +505,117 @@
   function recent(rows){
     const el = $('#recent');
     if(!rows.length){ el.innerHTML = '<tr><td class="empty">No sales yet.</td></tr>'; return; }
-    el.innerHTML = '<tr><th>Who</th><th class="n">App</th><th class="n">Paid</th><th class="n">When</th></tr>' +
-      rows.map(r=>'<tr><td>'+esc(r.email)+'<br><span class="dim" style="font-size:11.5px">'+esc(r.kind)+'</span></td><td class="n">'+esc(appName(r.app))+'</td>' +
-        '<td class="n">'+(Number(r.amount_cents)?(String(r.currency||'usd').toUpperCase()==='USD'?usd(r.amount_cents):(Number(r.amount_cents)/100).toLocaleString()+' '+String(r.currency).toUpperCase()):'—')+'</td>' +
+    el.innerHTML = '<tr><th>Who</th><th class="n">App</th><th class="n">Kind</th><th class="n">Paid</th><th class="n">When</th></tr>' +
+      rows.map(r=>'<tr><td>'+esc(r.email)+'</td><td class="n">'+esc(appName(r.app))+'</td><td class="n dim">'+esc(r.kind)+(r.rail&&r.rail!==r.kind?' · '+esc(r.rail):'')+'</td>' +
+        '<td class="n">'+(Number(r.amount_cents)?fmtMoney(r.amount_cents, r.currency):'—')+'</td>' +
         '<td class="n dim">'+esc(when(r.at))+'</td></tr>').join('');
   }
+  async function loadRecent(){
+    const all = $('#rec-all').checked;
+    const r = await sb.rpc('product_recent',{p_limit:15,p_paid_only:!all});
+    if(r.error){ $('#recent').innerHTML = '<tr><td class="empty">'+esc(r.error.message)+'</td></tr>'; return; }
+    recent(r.data||[]);
+  }
+  $('#rec-all').addEventListener('change', loadRecent);
   async function money(){
     m.textContent = 'Reading…'; m.className = 'msg';
     await namesReady;
-    const [s,a,d,f,g,h,l,cd,rec,us,ua] = await Promise.all([
-      sb.rpc('product_summary',{p_days:days}), sb.rpc('product_by_app',{p_days:days}), sb.rpc('product_daily',{p_days:days}),
-      sb.rpc('product_funnel',{p_days:days}), sb.rpc('product_geography',{p_days:days}), sb.rpc('product_hub'), sb.rpc('product_licences'),
-      sb.rpc('product_codes',{p_days:days}), sb.rpc('product_recent',{p_limit:12}), sb.rpc('hub_usage_summary',{p_days:days}), sb.rpc('hub_usage_by_app',{p_days:days})
+    const [s,mo,a,d,l,cd,rec] = await Promise.all([
+      sb.rpc('product_summary',{p_days:days}), sb.rpc('product_money',{p_days:days}), sb.rpc('product_by_app',{p_days:days}), sb.rpc('product_daily',{p_days:days}),
+      sb.rpc('product_licences'), sb.rpc('product_codes',{p_days:days}), sb.rpc('product_recent',{p_limit:15,p_paid_only:!$('#rec-all').checked})
     ]);
-    const bad = [s,a,d,f,g,h,l,rec].find(r=>r&&r.error);
-    if(bad){ m.textContent = bad.error.message.includes('does not exist') ? 'The reports are not installed yet — run supabase-product-analytics.sql.' : 'Could not read the reports: '+bad.error.message; m.className='msg err'; return; }
+    const bad = [s,a,d,l,rec].find(r=>r&&r.error);
+    if(bad){ m.textContent = outOfDate(bad.error.message); m.className='msg err'; return; }
     m.textContent = '';
-    headline((s.data&&s.data[0])||{});
-    appTable(a.data||[]);
+    const S = (s.data&&s.data[0])||{}, MO = (mo&&!mo.error&&mo.data&&mo.data[0])||null;
+    bHeadline(S, MO);
+    bApps(a.data||[]);
     bDaily = d.data||[];
     const onB = next => { bActive = next; toggles($('#b-toggles'), B_SERIES, bActive, onB); bChart(); };
     toggles($('#b-toggles'), B_SERIES, bActive, onB);
     bChart();
-    funnel(f.data||[]);
-    Charts.bars($('#geo'), g.data||[], { label:r=>r.country, value:r=>r.downloads, note:r=>num(r.downloads)+' <span style="opacity:.55">of '+num(r.visits)+' visits</span>' });
-    hub((h.data&&h.data[0])||null);
     const L = (l.data&&l.data[0])||null;
-    Charts.bars($('#lic'), L ? [['Licences in total',L.licences],['Paid for',L.paid],['Given (testers, comps)',L.comped],['Seats in use',L.seats_used],['Betas running',L.betas_live],['Betas ending within a week',L.betas_ending_7d],['Betas that have ended',L.betas_expired]].map(r=>({label:r[0],value:r[1]})) : []);
-    usage((us&&!us.error&&us.data&&us.data[0])||null, (ua&&!ua.error&&ua.data)||[], (h.data&&h.data[0])||null);
+    Charts.bars($('#lic'), L ? [['Paid',L.paid],['Free',L.free],['Comps',L.comp],['Betas',L.beta],['Seats in use',L.seats_used],['Betas running',L.betas_live],['Betas ending within a week',L.betas_ending_7d],['Betas that have ended',L.betas_expired],['Test rows (excluded)',L.test]].map(r=>({label:r[0],value:r[1]})) : []);
+    Charts.bars($('#inv'), MO ? [['Collected in the period',MO.invoices_paid_cents],['Still owed',MO.invoices_owed_cents],['App sales in the period',MO.app_revenue_cents],['Store in the period',MO.store_revenue_cents]].map(r=>({label:r[0],value:r[1]})) : [], { money:true, color:'#30D158' });
     codes((cd&&!cd.error&&cd.data&&cd.data[0])||null);
     recent(rec.data||[]);
   }
 
   /* =================================================================
-     DOWNLOADS
-     ================================================================= */
-  async function downloads(){
-    m.textContent = 'Reading…'; m.className = 'msg';
-    await namesReady;
-    const [stats, events, subs] = await Promise.all([
-      sb.rpc('subscriber_stats').single(),
-      sb.from('download_events').select('*').order('at',{ascending:false}).limit(1000),
-      sb.from('subscribers').select('*').order('created_at',{ascending:false}).limit(500)
-    ]);
-    if(stats.error||events.error||subs.error){ m.textContent = 'Could not load: '+(stats.error||events.error||subs.error).message; m.className='msg err'; return; }
-    m.textContent = '';
-    const S = stats.data||{}, ev = events.data||[], people = subs.data||[];
-    const fig = (k,v,d) => '<div class="fig"><p class="k">'+k+'</p><p class="v">'+(v||0)+'</p>'+(d?'<span class="d">'+d+'</span>':'')+'</div>';
-    $('#d-figs').innerHTML = fig('Downloads', S.downloads, S.downloads_week?'+'+S.downloads_week+' this week':'') +
-      fig('People on the list', S.total, S.this_week?'+'+S.this_week+' this week':'') +
-      fig('Confirmed', S.confirmed, S.total?Math.round(100*(S.confirmed||0)/S.total)+'% of the list':'');
-    const per = {};
-    ev.forEach(e=>{ const k=(e.app||'?')+':'+(e.platform||'?'); (per[k]=per[k]||{app:e.app,platform:e.platform,n:0,last:e.at}).n++; });
-    const rows = Object.values(per).sort((a,b)=>b.n-a.n);
-    $('#what').innerHTML = rows.length
-      ? '<tr><th>App</th><th>Platform</th><th class="n">Times</th><th class="n">Most recent</th></tr>' + rows.map(r=>'<tr><td>'+esc(appName(r.app))+'</td><td>'+esc(r.platform||'—')+'</td><td class="n">'+r.n+'</td><td class="n">'+whenT(r.last)+'</td></tr>').join('')
-      : '<tr><td class="empty">Nothing yet.</td></tr>';
-    $('#d-recent').innerHTML = ev.length
-      ? '<tr><th>Who</th><th>Took</th><th class="n">When</th></tr>' + ev.slice(0,25).map(e=>'<tr><td>'+esc(e.email||'—')+'</td><td>'+esc(appName(e.app))+' · '+esc(e.platform||'')+'</td><td class="n">'+whenT(e.at)+'</td></tr>').join('')
-      : '<tr><td class="empty">Nothing yet.</td></tr>';
-    $('#subs').innerHTML = people.length
-      ? '<tr><th>Address</th><th>Came for</th><th>Standing</th><th class="n">Joined</th></tr>' + people.map(p=>{
-          const st = p.unsubscribed_at?'<span class="pill gone">Unsubscribed</span>':p.confirmed_at?'<span class="pill ok">Confirmed</span>':'<span class="pill wait">Never clicked</span>';
-          return '<tr><td>'+esc(p.email)+'</td><td>'+esc(appName(p.app))+'</td><td>'+st+'</td><td class="n">'+whenT(p.created_at)+'</td></tr>'; }).join('')
-      : '<tr><td class="empty">Nobody yet.</td></tr>';
-    $('#csv').onclick = () => {
-      const keep = people.filter(p=>p.consented&&p.confirmed_at&&!p.unsubscribed_at);
-      if(!keep.length){ m.textContent='No confirmed, consenting addresses yet.'; m.className='msg err'; return; }
-      const q = v => '"'+String(v==null?'':v).replace(/"/g,'""')+'"';
-      const csv = ['email,app,source,consented_at,confirmed_at,joined'].concat(keep.map(p=>[p.email,p.app,p.source,p.consented_at,p.confirmed_at,p.created_at].map(q).join(','))).join('\r\n');
-      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='amanorsac-subscribers.csv'; a.click(); URL.revokeObjectURL(a.href);
-      m.textContent = keep.length+' address'+(keep.length===1?'':'es')+' exported.'; m.className='msg ok';
-    };
-    const { data, error } = await sb.rpc('app_reviews_pending');
-    const list = $('#rvlist'), count = $('#rvcount');
-    if(error){ list.innerHTML = '<p class="empty">'+esc(error.message)+'</p>'; count.textContent=''; return; }
-    const rv = data||[];
-    count.textContent = rv.length || 'none waiting'; count.className = 'pill '+(rv.length?'wait':'ok');
-    list.innerHTML = rv.length ? '' : '<p class="empty">Nothing waiting.</p>';
-    rv.forEach(r => {
-      const div = document.createElement('div'); div.className = 'rv-mod';
-      div.innerHTML = '<div class="rv-mod-head"><span class="rv-mod-app">'+esc(appName(r.app))+'</span><span class="rv-mod-stars">'+'★'.repeat(r.rating)+'☆'.repeat(5-r.rating)+'</span><span class="rv-mod-who">'+esc(r.name||'No name given')+' · '+whenT(r.created_at)+'</span></div>' +
-        '<p class="rv-mod-body"></p><div class="rv-mod-btns"><button class="ok" data-act="approve">Approve</button><button class="no" data-act="reject">Reject</button></div>';
-      div.querySelector('.rv-mod-body').textContent = r.body;
-      div.querySelectorAll('button').forEach(btn => btn.addEventListener('click', async () => {
-        div.querySelectorAll('button').forEach(b=>b.disabled=true);
-        const { error } = await sb.rpc('moderate_app_review',{p_id:r.id,p_approve:btn.dataset.act==='approve'});
-        if(error){ m.textContent=error.message; m.className='msg err'; div.querySelectorAll('button').forEach(b=>b.disabled=false); return; }
-        div.remove(); const left = $$('.rv-mod').length; count.textContent = left||'none waiting'; count.className='pill '+(left?'wait':'ok');
-      }));
-      list.appendChild(div);
-    });
-  }
-
-  /* =================================================================
-     TRAFFIC
+     SITE
      ================================================================= */
   const T_SERIES = [
-    { key:'views',     label:'Page views', color:'#0071E3' },
-    { key:'visits',    label:'Visits',     color:'#BF5AF2' },
-    { key:'downloads', label:'Downloads',  color:'#FF9F0A' }
+    { key:'views',  label:'Page views', color:'#0071E3' },
+    { key:'visits', label:'Visits',     color:'#BF5AF2' }
   ];
   let tActive = ['views','visits'], tDaily = [];
-  function tChart(){ if($('section[data-tab=traffic]').classList.contains('on')) Charts.line($('#t-chart'), { days:tDaily, series:T_SERIES, active:tActive }); }
+  function tChart(){ if($('section[data-tab=site]').classList.contains('on')) Charts.line($('#t-chart'), { days:tDaily, series:T_SERIES, active:tActive }); }
   function simpleList(el, rows){ Charts.bars(el, rows, { label:r=>r.label, value:r=>r.visits }); }
-  async function traffic(){
+
+  /* the mailing list: paged, searched, one row per address */
+  const ml = { q:'', conf:false, page:0, size:50 };
+  async function mailing(){
+    const r = await sb.rpc('admin_mailing_list', { p_q: ml.q||null, p_limit: ml.size, p_offset: ml.page*ml.size, p_confirmed_only: ml.conf });
+    const el = $('#subs');
+    if(r.error){ el.innerHTML = '<tr><td class="empty">'+esc(/does not exist|schema cache/i.test(r.error.message)?'Run supabase-admin-audit.sql to page the list.':r.error.message)+'</td></tr>'; return; }
+    const people = r.data||[], total = people.length ? Number(people[0].total) : 0;
+    $('#ml-count').textContent = total ? num(total)+' address'+(total===1?'':'es') : '';
+    el.innerHTML = people.length
+      ? '<tr><th>Address</th><th>Came for</th><th>Standing</th><th class="n">Joined</th></tr>' + people.map(p=>{
+          const st = p.unsubscribed_at?'<span class="pill gone">Unsubscribed</span>':p.confirmed_at?'<span class="pill ok">Confirmed</span>':'<span class="pill wait">Never clicked</span>';
+          return '<tr><td>'+esc(p.email)+(p.looks_wrong?' <span class="pill gone" title="This address cannot be delivered to">typo?</span>':'')+'</td><td>'+esc(appName(p.app))+'</td><td>'+st+'</td><td class="n">'+whenT(p.created_at)+'</td></tr>'; }).join('')
+      : '<tr><td class="empty">'+(ml.q||ml.conf?'Nobody matches.':'Nobody yet.')+'</td></tr>';
+    const pages = Math.max(1, Math.ceil(total/ml.size));
+    $('#ml-page').textContent = total ? 'Page '+(ml.page+1)+' of '+pages : '';
+    $('#ml-prev').disabled = ml.page<=0; $('#ml-next').disabled = ml.page>=pages-1;
+  }
+  let mlTimer;
+  $('#ml-q').addEventListener('input', () => { clearTimeout(mlTimer); mlTimer = setTimeout(()=>{ ml.q=$('#ml-q').value.trim(); ml.page=0; mailing(); }, 250); });
+  $('#ml-conf').addEventListener('change', () => { ml.conf=$('#ml-conf').checked; ml.page=0; mailing(); });
+  $('#ml-prev').addEventListener('click', () => { if(ml.page>0){ ml.page--; mailing(); } });
+  $('#ml-next').addEventListener('click', () => { ml.page++; mailing(); });
+  $('#csv').onclick = async () => {
+    const r = await sb.rpc('admin_mailing_list', { p_q:null, p_limit:5000, p_offset:0, p_confirmed_only:true });
+    const keep = (r.data||[]).filter(p=>!p.looks_wrong);
+    if(r.error||!keep.length){ m.textContent = r.error ? r.error.message : 'No confirmed, consenting addresses yet.'; m.className='msg err'; return; }
+    const qq = v => '"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+    const csv = ['email,app,source,consented_at,confirmed_at,joined'].concat(keep.map(p=>[p.email,p.app,p.source,p.consented_at,p.confirmed_at,p.created_at].map(qq).join(','))).join('\r\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='amanorsac-subscribers.csv'; a.click(); URL.revokeObjectURL(a.href);
+    m.textContent = keep.length+' address'+(keep.length===1?'':'es')+' exported.'; m.className='msg ok';
+  };
+
+  async function site(){
     m.textContent = 'Reading…'; m.className = 'msg';
-    const since = d => new Date(Date.now()-d*86400e3).toISOString();
-    const [sum, daily, top, jour, acq, tech, evs, spd, dls] = await Promise.all([
+    await namesReady;
+    const [sum, daily, top, jour, acq, tech, evs, spd] = await Promise.all([
       sb.rpc('analytics_summary',{p_days:days}), sb.rpc('analytics_daily',{p_days:days}), sb.rpc('analytics_top_pages',{p_days:days,p_limit:12}),
       sb.rpc('analytics_journey',{p_days:days,p_limit:8}), sb.rpc('analytics_acquisition',{p_days:days}), sb.rpc('analytics_tech',{p_days:days}),
-      sb.rpc('analytics_events',{p_days:days}), sb.rpc('analytics_speed',{p_days:days}),
-      sb.from('download_events').select('at').gte('at', since(days*2)).limit(10000)
+      sb.rpc('analytics_events',{p_days:days}), sb.rpc('analytics_speed',{p_days:days})
     ]);
     const bad = [sum,daily,top,jour,acq,tech,evs,spd].find(r=>r.error);
     if(bad){ m.textContent = /function|does not exist|schema cache/i.test(bad.error.message) ? 'Analytics is not set up in the database yet — run supabase-analytics.sql.' : bad.error.message; m.className='msg err'; return; }
     m.textContent = '';
     const s = (sum.data&&sum.data[0])||{};
     tDaily = daily.data||[];
-    const cut = since(days), byDay = {};
-    (dls.data||[]).forEach(e=>{ if(e.at<cut) return; const k=String(e.at).slice(0,10); byDay[k]=(byDay[k]||0)+1; });
-    const have = {};
-    tDaily.forEach(r=>{ r.downloads = byDay[r.day]||0; have[r.day]=1; });
-    Object.keys(byDay).filter(k=>!have[k]).forEach(k=>tDaily.push({day:k,views:0,visits:0,downloads:byDay[k]}));
-    tDaily.sort((a,b)=>a.day<b.day?-1:1);
-    const dlNow = (dls.data||[]).filter(e=>e.at>=cut).length, dlPrev = (dls.data||[]).length-dlNow;
+    const ev = evs.data||[];
+    const clicks = ev.filter(r=>/^(download|download_requested|hub_download)$/.test(r.name)).reduce((n,r)=>n+Number(r.count||0),0);
     $('#t-tabs').innerHTML = [
       ['views','Page views',num(s.views),delta(s.views,s.prev_views)],
-      ['visits','Visits',num(s.visits),delta(s.visits,s.prev_visits)],
-      ['downloads','Downloads',num(dlNow),delta(dlNow,dlPrev)]
-    ].map(([key,k,v,d])=>'<button type="button" class="fig tab'+(tActive.indexOf(key)>=0?' on':'')+'" data-metric="'+key+'"><p class="k">'+k+'</p><p class="v">'+v+'</p>'+d+'</button>').join('');
+      ['visits','Visits',num(s.visits),delta(s.visits,s.prev_visits)]
+    ].map(([key,k,v,d])=>'<button type="button" class="fig tab'+(tActive.indexOf(key)>=0?' on':'')+'" data-metric="'+key+'"><p class="k">'+k+q(k)+'</p><p class="v">'+v+'</p>'+d+'</button>').join('') +
+      fig('Visitors', num(s.visitors), delta(s.visitors, s.prev_visitors)+'<span class="d">'+num(s.new_visitors)+' of them new</span>');
     $$('#t-tabs .tab').forEach(b=>b.addEventListener('click',()=>{
       const k=b.dataset.metric;
       if(tActive.indexOf(k)>=0){ if(tActive.length>1) tActive=tActive.filter(x=>x!==k); } else tActive.push(k);
       $$('#t-tabs .tab').forEach(x=>x.classList.toggle('on', tActive.indexOf(x.dataset.metric)>=0));
       tChart();
     }));
-    $('#t-figs').innerHTML = [
-      ['Visitors',num(s.visitors),'<span class="d">'+num(s.new_visitors)+' of them new</span>'],
-      ['Bounce rate',pct(s.bounce_pct),delta(s.bounce_pct,s.prev_bounce_pct,true)],
-      ['Avg visit',secs(s.avg_session_s),delta(s.avg_session_s,s.prev_avg_session_s)],
-      ['Pages / visit',(s.pages_per_visit??0),''],
-      ['Conversions',num(s.conversions),'<span class="d">'+pct(s.conversion_pct)+' of visits</span>']
-    ].map(([k,v,d])=>'<div class="fig"><p class="k">'+k+'</p><p class="v">'+v+'</p>'+d+'</div>').join('');
+    $('#t-figs').innerHTML =
+      fig('Bounce rate', pct(s.bounce_pct), delta(s.bounce_pct, s.prev_bounce_pct, {lowerIsBetter:true, floor:1})) +
+      fig('Avg visit', secs(s.avg_session_s), delta(s.avg_session_s, s.prev_avg_session_s, {floor:1})) +
+      fig('Pages / visit', (s.pages_per_visit??0), '') +
+      fig('Conversions', num(s.conversions), '<span class="d">'+pct(s.conversion_pct)+' of visits</span>') +
+      fig('Site download clicks', num(clicks), '<span class="d">clicks, not downloads · those are on Apps</span>', false, 'Downloads');
     tChart();
     const tp = top.data||[];
     Charts.bars($('#pages'), tp, { label:r=>r.path, sub:r=>r.title||'', value:r=>r.views, note:r=>num(r.views)+' views · '+secs(r.avg_s)+(r.scroll_pct==null?'':' · '+r.scroll_pct+'% scrolled') });
@@ -511,12 +625,14 @@
     const aq = kind => (acq.data||[]).filter(r=>r.kind===kind).slice(0,12);
     table($('#channels'), ['Channel','Visits','Bounce','Avg','Conv'], aq('channel'), r=>[esc(r.label),num(r.visits),pct(r.bounce_pct),secs(r.avg_session_s),pct(r.conversion_pct)]);
     table($('#referrers'), ['Referrer','Visits','Conv'], aq('referrer'), r=>[esc(r.label),num(r.visits),pct(r.conversion_pct)]);
-    const names = { enquiry:'Enquiry sent', early_access:'Early access asked for', client_login:'Client login opened', email_click:'Email address clicked', outbound:'Left for another site', download:'Download started' };
-    table($('#events'), ['What','Where','Times','Visits'], evs.data||[], r=>[esc(names[r.name]||r.name),esc(r.label||'—'),num(r.count),num(r.visits)]);
+    const names = { enquiry:'Enquiry sent', early_access:'Early access asked for', client_login:'Client login opened', email_click:'Email address clicked', outbound:'Left for another site', download:'Download started', download_requested:'Download asked for', hub_download:'Hub installer taken' };
+    const CONV = /^(enquiry|early_access|download|download_requested|hub_download|signup|account|purchase|checkout)$/;
+    table($('#events'), ['What','Where','Times','Visits'], ev, r=>[esc(names[r.name]||r.name)+(CONV.test(r.name)?' <span class="pill ok">conversion</span>':''),esc(r.label||'—'),num(r.count),num(r.visits)]);
     const tk = kind => (tech.data||[]).filter(r=>r.kind===kind).slice(0,8);
     simpleList($('#devices'),tk('device')); simpleList($('#browsers'),tk('browser')); simpleList($('#oses'),tk('os')); simpleList($('#countries'),tk('country'));
     const sp = (spd.data&&spd.data[0])||{};
     $('#speed').innerHTML = sp.samples ? 'Half of page loads finish in <b>'+(sp.median_ms/1000).toFixed(1)+'s</b>, three quarters within <b>'+(sp.p75_ms/1000).toFixed(1)+'s</b>. <span style="color:var(--muted)">('+num(sp.samples)+' measured)</span>' : 'Nothing measured yet.';
+    ml.page = 0; mailing();
   }
 
   $$('#range button').forEach(b=>b.addEventListener('click',()=>{

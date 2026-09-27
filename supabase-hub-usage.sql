@@ -11,7 +11,9 @@
 --    the next build should go. Nothing here is about a person.
 --
 --  WHAT IS STORED
---    event        hub_open | app_open | app_install | app_update
+--    event        hub_open | app_open | app_install | app_update |
+--                 session_start | session_end (with seconds) |
+--                 hub_install | first_run
 --    app          which app, when the event is about one
 --    versions     the app's version and the Hub's
 --    platform     windows | mac, plus arch and the OS release string
@@ -60,8 +62,7 @@ begin
     join pg_namespace n on n.oid = p.pronamespace
     where n.nspname = 'public'
       and p.proname in (
-        'record_hub_usage', 'revoke_hub_usage',
-        'hub_usage_summary', 'hub_usage_by_app', 'hub_usage_daily')
+        'record_hub_usage', 'revoke_hub_usage')
   loop
     execute 'drop function if exists ' || f.sig;
   end loop;
@@ -88,6 +89,8 @@ create table if not exists public.hub_usage (
   occurred_at  timestamptz not null,
   received_at  timestamptz not null default now()
 );
+-- How long a session lasted, on session_end. Null on every other note.
+alter table public.hub_usage add column if not exists seconds integer;
 
 -- The same note sent twice - a flush that succeeded but whose
 -- acknowledgement never arrived - is one note, not two.
@@ -130,7 +133,7 @@ begin
 
   insert into public.hub_usage
     (account_id, install_id, event, app, app_version, hub_version,
-     platform, arch, os_release, occurred_at)
+     platform, arch, os_release, occurred_at, seconds)
   select
     v_uid,
     p_install_id,
@@ -141,9 +144,11 @@ begin
     nullif(left(e ->> 'platform', 20), ''),
     nullif(left(e ->> 'arch', 20), ''),
     nullif(left(e ->> 'os_release', 40), ''),
-    coalesce((e ->> 'at')::timestamptz, now())
+    coalesce((e ->> 'at')::timestamptz, now()),
+    case when (e ->> 'seconds') ~ '^[0-9]{1,6}$' then least((e ->> 'seconds')::int, 86400) end
   from jsonb_array_elements(p_events) as e
-  where e ->> 'event' in ('hub_open', 'app_open', 'app_install', 'app_update')
+  where e ->> 'event' in ('hub_open', 'app_open', 'app_install', 'app_update',
+                          'session_start', 'session_end', 'hub_install', 'first_run')
     -- A clock that is wrong by years should not become a data point.
     and coalesce((e ->> 'at')::timestamptz, now())
         between now() - interval '400 days' and now() + interval '2 days'
@@ -187,100 +192,8 @@ grant execute on function public.revoke_hub_usage() to authenticated;
 -- =====================================================================
 --  4 · READING - ADMIN ONLY
 --
---  Counts, never rows. Each of these refuses anyone who is not an
---  admin, using the same is_admin() the rest of the site uses.
+--  Moved to supabase-admin-audit.sql: hub_usage_summary, hub_usage_by_app,
+--  hub_usage_daily, hub_usage_weekly and hub_usage_actives, so that the
+--  reporting share is machines ÷ machines and "last opened" is null
+--  when never. Run that file after this one.
 -- =====================================================================
-
--- The shape of things over the last N days.
-create or replace function public.hub_usage_summary(p_days integer default 30)
-returns table (
-  installs       bigint,   -- distinct machines running the Hub
-  accounts       bigint,   -- distinct accounts behind them
-  hub_opens      bigint,
-  app_opens      bigint,
-  installs_done  bigint,
-  updates_done   bigint,
-  windows_share  numeric,  -- 0-1, by machine
-  mac_share      numeric
-)
-language plpgsql security definer set search_path = ''
-as $$
-declare v_since timestamptz := now() - (greatest(coalesce(p_days, 30), 1) || ' days')::interval;
-begin
-  if not public.is_admin() then raise exception 'not permitted'; end if;
-  return query
-  with rows as (select * from public.hub_usage where occurred_at >= v_since),
-       machines as (select distinct install_id, platform from rows)
-  select
-    (select count(distinct install_id) from rows),
-    (select count(distinct account_id) from rows where account_id is not null),
-    (select count(*) from rows where event = 'hub_open'),
-    (select count(*) from rows where event = 'app_open'),
-    (select count(*) from rows where event = 'app_install'),
-    (select count(*) from rows where event = 'app_update'),
-    (select round(count(*) filter (where platform = 'windows')::numeric
-                  / nullif(count(*), 0), 3) from machines),
-    (select round(count(*) filter (where platform = 'mac')::numeric
-                  / nullif(count(*), 0), 3) from machines);
-end $$;
-
-revoke all on function public.hub_usage_summary(integer) from public;
-grant execute on function public.hub_usage_summary(integer) to authenticated;
-
-
--- Which apps are actually used, and how deeply. opens_per_machine is
--- the number that answers "is this a tool or a curiosity".
-create or replace function public.hub_usage_by_app(p_days integer default 30)
-returns table (
-  app               text,
-  machines          bigint,
-  opens             bigint,
-  opens_per_machine numeric,
-  installs          bigint,
-  updates           bigint,
-  last_opened       timestamptz
-)
-language plpgsql security definer set search_path = ''
-as $$
-declare v_since timestamptz := now() - (greatest(coalesce(p_days, 30), 1) || ' days')::interval;
-begin
-  if not public.is_admin() then raise exception 'not permitted'; end if;
-  return query
-  select
-    u.app,
-    count(distinct u.install_id),
-    count(*) filter (where u.event = 'app_open'),
-    round(count(*) filter (where u.event = 'app_open')::numeric
-          / nullif(count(distinct u.install_id), 0), 2),
-    count(*) filter (where u.event = 'app_install'),
-    count(*) filter (where u.event = 'app_update'),
-    max(u.occurred_at) filter (where u.event = 'app_open')
-  from public.hub_usage u
-  where u.occurred_at >= v_since and u.app is not null
-  group by u.app
-  order by count(*) filter (where u.event = 'app_open') desc;
-end $$;
-
-revoke all on function public.hub_usage_by_app(integer) from public;
-grant execute on function public.hub_usage_by_app(integer) to authenticated;
-
-
--- Day by day, for a chart.
-create or replace function public.hub_usage_daily(p_days integer default 30)
-returns table (day date, machines bigint, app_opens bigint)
-language plpgsql security definer set search_path = ''
-as $$
-declare v_since timestamptz := now() - (greatest(coalesce(p_days, 30), 1) || ' days')::interval;
-begin
-  if not public.is_admin() then raise exception 'not permitted'; end if;
-  return query
-  select u.occurred_at::date,
-         count(distinct u.install_id),
-         count(*) filter (where u.event = 'app_open')
-  from public.hub_usage u
-  where u.occurred_at >= v_since
-  group by 1 order by 1;
-end $$;
-
-revoke all on function public.hub_usage_daily(integer) from public;
-grant execute on function public.hub_usage_daily(integer) to authenticated;
