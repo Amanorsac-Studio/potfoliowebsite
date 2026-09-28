@@ -11,48 +11,174 @@
 </script>
 <link rel="icon" href="../images/logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F5F5F7">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AMANORSAC">
 <link rel="stylesheet" href="../assets/portal.css">
+<link rel="stylesheet" href="../assets/admin-charts.css">
 <style>
-  .why{font-size:13px;color:var(--muted);margin:-4px 0 16px;max-width:72ch;line-height:1.7}
-  .sec{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:30px 0 10px}
+  main{max-width:1180px}
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .seg{display:inline-flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:22px;max-width:100%;overflow-x:auto}
+  .seg a{font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;border-radius:999px;padding:8px 16px;white-space:nowrap;transition:background .2s,color .2s;display:inline-flex;gap:6px;align-items:center}
+  .seg a.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .seg a b{font-size:11px;font-weight:600;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:1px 7px}
+  .seg a b:empty{display:none}
+  section[data-tab]{display:none} section[data-tab].on{display:block}
+
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 14px}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);text-decoration:none;color:inherit;min-width:0}
+  a.fig:hover{border-color:var(--accent)}
+  .fig .k{font-size:12.5px;font-weight:500;color:var(--muted);margin:0 0 6px}
+  .fig .v{font-size:28px;font-weight:700;line-height:1.05;margin:0;letter-spacing:-.03em}
+  .fig .d{display:block;font-size:12.5px;margin:6px 0 0;color:var(--muted)}
+  .card{margin-bottom:14px}
+  .card-head{margin-bottom:12px;flex-wrap:wrap} .card-head h2{font-size:17px}
+  .why{font-size:12.5px;color:var(--muted);margin:-2px 0 12px;max-width:72ch;line-height:1.6}
+  .sec{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px}
   .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
-  .tbl th,.tbl td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
-  .tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:400;white-space:nowrap}
+  .tbl th,.tbl td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+  .tbl th{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
   .tbl tr:last-child td{border-bottom:0}
+  .tbl td.n,.tbl th.n{text-align:right;padding-right:0;padding-left:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
   .tbl td small{display:block;color:var(--muted);font-size:12px;line-height:1.5;white-space:pre-line}
+  .tbl .dim{color:var(--muted)}
   .tblwrap{overflow-x:auto}
+  .thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--surface-2);display:block;flex:none}
+  .song{display:flex;align-items:center;gap:12px;min-width:0}
+  .song .t{min-width:0} .song .t b{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:32ch}
+  .song .t span{color:var(--muted);font-size:12.5px}
+  .pill{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.wait{background:var(--surface-2);color:var(--muted)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.soon{background:var(--accent-soft);color:var(--accent)}
   .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
-  .acts input{font:inherit;font-size:13px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px;width:150px}
-  .acts select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 9px}
-  .b{font-size:12.5px;font-weight:500;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px}
+  .form input,.form select,.form textarea,.acts input,.acts select,.toolbar input,.toolbar select{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:7px 11px}
+  .acts input{width:150px}
+  .b{font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
   .b.go{background:var(--accent);color:#fff;border-color:transparent}
+  .b.bad{color:var(--warn);border-color:var(--warn)}
   .b:disabled{opacity:.5;cursor:default}
+  .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .toolbar label{font-size:13px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+  .pager{display:flex;gap:8px;align-items:center;justify-content:flex-end;margin-top:10px;font-size:13px;color:var(--muted)}
+  .editor{background:var(--surface-2);border-radius:12px;padding:14px 16px;margin:4px 0 8px}
+  .editor .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .editor .form label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+  .editor .form label.wide{grid-column:1/-1}
+  .editor .form textarea{min-height:64px;resize:vertical}
+  .editor .foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .editor .out{font-size:13px;color:var(--muted);margin-left:auto}
+  .empty{color:var(--muted);font-size:13px;padding:10px 0}
+  .msg:empty{display:none}
+  .todo{list-style:none;margin:0;padding:0}
+  .todo li{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .todo li:last-child{border-bottom:0}
+  .todo b{font-size:20px;font-weight:700;min-width:36px;font-variant-numeric:tabular-nums}
+  .todo a{margin-left:auto;font-size:13px;color:var(--accent);text-decoration:none;white-space:nowrap}
+  .av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;color:#fff;flex:none}
   audio{width:100%;max-width:360px;height:32px;margin-top:6px}
-  .empty{color:var(--muted);font-size:13.5px;padding:8px 0}
-  .out{font-size:13px;color:var(--muted);margin:8px 0 0;min-height:1.4em}
-  .secs input{font:inherit;font-size:12.5px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
+  .secs input{font:inherit;font-size:12.5px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px}
   .secs .tbl td{padding:4px 8px 4px 0;border:0;white-space:nowrap}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){ .two{grid-template-columns:1fr} }
+  input[type=checkbox]{width:16px;height:16px}
 </style>
 </head>
 <body>
-<header id="topbar" class="topbar"></header>
-<main class="wrap">
-  <h1 class="h1">Store</h1>
-  <p class="why">Who wants to sell, what they have sent in, and what is on the shelf. Nothing here goes public until you say so.</p>
-  <p class="out" id="m"></p>
+<header class="top" id="topbar"></header>
+<main>
+  <div class="headrow">
+    <div>
+      <p class="eyebrow">Studio admin</p>
+      <h1>Store</h1>
+      <p class="sub" id="lead">Who wants to sell, what they sent in, what is on the shelf, and what sold.</p>
+    </div>
+    <div class="acts"><a class="b" href="/store/" target="_blank">Open the store ↗</a><a class="b" href="/store/new" target="_blank">Upload as a creator ↗</a></div>
+  </div>
+  <nav class="seg" id="seg" aria-label="Sections">
+    <a href="#overview">Overview</a><a href="#applications">Applications <b id="n-apps"></b></a><a href="#review">Review <b id="n-review"></b></a><a href="#catalogue">Catalogue</a><a href="#creators">Creators</a><a href="#sales">Sales</a>
+  </nav>
+  <p class="msg" id="m" role="status" aria-live="polite"></p>
 
-  <p class="sec">Applications</p>
-  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
+  <!-- ================= OVERVIEW ================= -->
+  <section data-tab="overview">
+    <div class="figs" id="o-figs"></div>
+    <div class="two">
+      <div class="card"><div class="card-head"><h2>Needs you</h2></div><ul class="todo" id="o-todo"></ul></div>
+      <div class="card"><div class="card-head"><h2>How the store works</h2></div>
+        <p class="why" style="margin:0">A creator applies on <a href="/store/creators" target="_blank">/store/creators</a>. You approve them here and they get a dashboard at <a href="/store/dashboard" target="_blank">/store/dashboard</a>, where <b>New song</b> opens the five-step upload: the song, the cover, the ten tracks as WAV, the sections, the price. Submit lands it in <a href="#review">Review</a>. You listen, finish the sections, and approve; it goes on the shelf and PerformLive can install it. The catalogue rows marked coming soon are the seventy artists' releases, waiting for their stems.</p>
+      </div>
+    </div>
+  </section>
 
-  <p class="sec">Songs in review</p>
-  <p class="why">Load the guide and a couple of stems and listen. The sections are yours to finish: tap a name while the track plays, or type the seconds, then save. Approve puts it on the shelf; send back returns it with your note.</p>
-  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="queue"></tbody></table></div></div>
+  <!-- ================= APPLICATIONS ================= -->
+  <section data-tab="applications">
+    <p class="why">Approving makes their creator page at the address you give and opens their dashboard. Declining sends your line back to them.</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
+  </section>
 
-  <p class="sec">On the shelf</p>
-  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="shelf"></tbody></table></div></div>
+  <!-- ================= REVIEW ================= -->
+  <section data-tab="review">
+    <p class="why">Load the guide and a couple of stems and listen. The sections are yours to finish: tap a name while the track plays, or type the seconds, then save. Approve puts it on the shelf; send back returns it with your note.</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="queue"></tbody></table></div></div>
+  </section>
 
-  <p class="sec">Creators</p>
-  <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="people"></tbody></table></div></div>
+  <!-- ================= CATALOGUE ================= -->
+  <section data-tab="catalogue">
+    <div class="card">
+      <div class="card-head">
+        <div class="toolbar">
+          <input type="search" id="c-q" placeholder="Search titles" style="min-width:200px">
+          <select id="c-status"><option value="">Every state</option><option value="approved">On sale</option><option value="coming_soon">Coming soon</option><option value="submitted">In review</option><option value="draft">Drafts</option><option value="rejected">Sent back</option><option value="hidden">Hidden</option></select>
+          <select id="c-creator"><option value="">Everyone</option></select>
+          <select id="c-kind"><option value="">Songs and packs</option><option value="song">Songs</option><option value="pack">Packs</option></select>
+          <span class="hint" id="c-count"></span>
+        </div>
+        <div class="toolbar" id="c-bulk" hidden>
+          <span class="hint"><b id="c-selected">0</b> selected:</span>
+          <button class="b go" data-bulk="approved">Put on sale</button><button class="b" data-bulk="coming_soon">Coming soon</button><button class="b" data-bulk="hidden">Hide</button>
+        </div>
+      </div>
+      <div class="tblwrap"><table class="tbl"><tbody id="cat"></tbody></table></div>
+      <div class="pager"><span id="c-page"></span><button class="b" id="c-prev">‹ Newer</button><button class="b" id="c-next">Older ›</button></div>
+    </div>
+  </section>
+
+  <!-- ================= CREATORS ================= -->
+  <section data-tab="creators">
+    <div class="card">
+      <div class="card-head"><h2>Add someone</h2><span class="hint">An artist whose catalogue you are listing, or a creator you are onboarding by hand.</span></div>
+      <div class="editor" style="margin:0"><div class="form" id="p-new">
+        <label>Name<input name="name" required></label>
+        <label>Address (slug)<input name="slug" placeholder="e.g. joe-mettle"></label>
+        <label>Kind<select name="kind"><option value="artist">Artist</option><option value="creator">Creator</option></select></label>
+        <label>Country<input name="country"></label>
+        <label>Flag<input name="flag" placeholder="🇬🇭" style="width:70px"></label>
+        <label>YouTube channel<input name="youtube" placeholder="https://youtube.com/@…"></label>
+        <label>Apple Music<input name="apple" placeholder="https://music.apple.com/…"></label>
+        <label>Account email<input name="email" placeholder="attach an existing account"></label>
+        <label class="wide">Bio<textarea name="bio"></textarea></label>
+      </div><div class="foot"><button class="b go" id="p-add">Add to the store</button><span class="out" id="p-new-out"></span></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="toolbar"><input type="search" id="p-q" placeholder="Search names" style="min-width:200px"><select id="p-kind"><option value="">Artists and creators</option><option value="artist">Artists</option><option value="creator">Creators</option></select><span class="hint" id="p-count"></span></div></div>
+      <div class="tblwrap"><table class="tbl"><tbody id="people"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- ================= SALES ================= -->
+  <section data-tab="sales">
+    <div class="figs" id="s-figs"></div>
+    <div class="card">
+      <div class="card-head"><h2>Give a song to an account</h2><span class="hint">A comp: the account gets it as if bought, at no charge.</span></div>
+      <div class="acts"><input id="g-email" placeholder="account email" style="width:220px"><input id="g-version" placeholder="version id (from Catalogue → Copy id)" style="width:300px"><input id="g-note" placeholder="why (optional)" style="width:180px"><button class="b go" id="g-go">Give</button><span class="hint" id="g-out"></span></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h2>Every sale</h2><span class="hint" id="s-count"></span></div>
+      <div class="tblwrap"><table class="tbl"><tbody id="sales"></tbody></table></div>
+      <div class="pager"><span id="s-page"></span><button class="b" id="s-prev">‹ Newer</button><button class="b" id="s-next">Older ›</button></div>
+    </div>
+  </section>
 </main>
 
 <script src="../assets/vendor/supabase-2.116.0.js"></script>
@@ -66,13 +192,78 @@
   const m = $('#m');
   const esc = t => { const d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; };
   const when = t => t ? new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) : '—';
-  const money = c => '$' + ((c||0)/100).toFixed(2).replace(/\.00$/,'');
+  const money = (c, cur) => (cur && cur !== 'usd' ? String(cur).toUpperCase()+' ' : '$') + ((c||0)/100).toFixed(2).replace(/\.00$/,'');
+  const num = n => Number(n||0).toLocaleString();
   const slugify = s => String(s||'').toLowerCase().replace(/['’]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40);
-  const tell = (t, bad) => { m.textContent = t; m.style.color = bad ? 'var(--danger, #c0392b)' : ''; };
+  const tell = (t, bad) => { m.textContent = t; m.className = 'msg' + (bad ? ' err' : t ? ' ok' : ''); };
+  const grantMsg = e => /permission denied|42501/i.test(e.message) ? e.message + ' — run supabase-store-admin.sql in the SQL editor.' : e.message;
   async function token(){ const r = await sb.auth.getSession(); return r.data.session && r.data.session.access_token; }
+  const STATE = { approved:['On sale','ok'], coming_soon:['Coming soon','soon'], submitted:['In review','warn'], draft:['Draft','wait'], rejected:['Sent back','warn'], hidden:['Hidden','wait'] };
+  const pill = s => { const x = STATE[s] || [s,'wait']; return '<span class="pill '+x[1]+'">'+esc(x[0])+'</span>'; };
+  const art = v => v.art_key ? (/^https?:\/\//.test(v.art_key) ? v.art_key : '/store-art/'+v.id) : null;
+  const thumb = v => art(v) ? '<img class="thumb" src="'+esc(art(v))+'" alt="" loading="lazy">' : '<span class="thumb"></span>';
+  const COL = ['#0071E3','#30D158','#FF9F0A','#BF5AF2','#FF375F','#64D2FF','#8E8E93','#AC8E68'];
+  const av = c => { let h = 0; for (const ch of (c.slug||'')) h = (h*31 + ch.charCodeAt(0)) >>> 0; const p = (c.name||'?').trim().split(/\s+/); return '<span class="av" style="background:'+COL[h%COL.length]+'">'+esc((p[0][0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase())+'</span>'; };
+  const itemUrl = v => '/store/item?p='+encodeURIComponent((v.store_songs||{}).slug||'')+'&v='+v.id;
 
-  // ---- applications ----
-  async function apps(){
+  /* ---------- tabs ---------- */
+  const loaded = {};
+  function showTab(){
+    const t = (location.hash||'#overview').slice(1);
+    const name = ['overview','applications','review','catalogue','creators','sales'].indexOf(t)>=0 ? t : 'overview';
+    $$('section[data-tab]').forEach(s => s.classList.toggle('on', s.dataset.tab===name));
+    $$('#seg a').forEach(a => a.classList.toggle('on', a.getAttribute('href')==='#'+name));
+    if(!loaded[name]){ loaded[name] = true; ({overview, applications, review, catalogue, creators, sales})[name](); }
+  }
+  addEventListener('hashchange', showTab);
+  const reload = name => { loaded[name] = false; if((location.hash||'#overview').slice(1)===name) showTab(); };
+
+  /* ---------- counts for the tab badges and the overview ---------- */
+  async function counts(){
+    const c = async (table, f) => { let q = sb.from(table).select('id',{count:'exact',head:true}); q = f(q); const r = await q; return r.count||0; };
+    const since = new Date(Date.now()-30*864e5).toISOString();
+    const [apps, review, onSale, soon, drafts, hidden, people, sales30] = await Promise.all([
+      c('creator_applications', q=>q.eq('status','pending')),
+      c('store_versions', q=>q.eq('status','submitted')),
+      c('store_versions', q=>q.eq('status','approved')),
+      c('store_versions', q=>q.eq('status','coming_soon')),
+      c('store_versions', q=>q.in('status',['draft','rejected'])),
+      c('store_versions', q=>q.eq('status','hidden')),
+      c('store_creators', q=>q.not('approved_at','is',null)),
+      c('store_purchases', q=>q.gte('purchased_at', since).gt('amount_cents',0))
+    ]);
+    $('#n-apps').textContent = apps || ''; $('#n-review').textContent = review || '';
+    return { apps, review, onSale, soon, drafts, hidden, people, sales30 };
+  }
+
+  /* ================= OVERVIEW ================= */
+  async function overview(){
+    tell('Reading…');
+    const k = await counts();
+    const since = new Date(Date.now()-30*864e5).toISOString();
+    const g = await sb.from('store_purchases').select('amount_cents,currency,kind').gte('purchased_at', since);
+    const rows = g.data||[];
+    const gross = rows.filter(p=>String(p.currency||'usd')==='usd').reduce((n,p)=>n+Number(p.amount_cents||0),0);
+    const rentals = rows.filter(p=>p.kind==='rent').length;
+    tell('');
+    const fig = (k,v,d,href) => '<a class="fig" href="'+href+'"><p class="k">'+esc(k)+'</p><p class="v">'+v+'</p><span class="d">'+d+'</span></a>';
+    $('#o-figs').innerHTML =
+      fig('On sale', num(k.onSale), 'songs and packs with stems', '#catalogue') +
+      fig('Coming soon', num(k.soon), 'catalogue rows waiting for stems', '#catalogue') +
+      fig('In review', num(k.review), 'sent in by creators', '#review') +
+      fig('Drafts', num(k.drafts), 'started or sent back', '#catalogue') +
+      fig('People', num(k.people), 'artists and creators on the store', '#creators') +
+      fig('Sales, 30 days', num(k.sales30), money(gross)+' gross · '+num(rentals)+' rental'+(rentals===1?'':'s'), '#sales');
+    const todo = [
+      [k.apps, 'creator application'+(k.apps===1?'':'s')+' waiting', '#applications'],
+      [k.review, 'song'+(k.review===1?'':'s')+' to review', '#review'],
+      [k.hidden, 'hidden title'+(k.hidden===1?'':'s'), '#catalogue']
+    ].filter(t=>t[0]>0);
+    $('#o-todo').innerHTML = todo.length ? todo.map(([n,l,h])=>'<li><b>'+num(n)+'</b><span>'+l+'</span><a href="'+h+'">Open</a></li>').join('') : '<li class="empty">Nothing waiting.</li>';
+  }
+
+  /* ================= APPLICATIONS ================= */
+  async function applications(){
     const { data, error } = await sb.from('creator_applications').select('*').eq('status','pending').order('created_at');
     const el = $('#apps');
     if(error){ el.innerHTML = '<tr><td class="empty">'+esc(error.message)+'</td></tr>'; return; }
@@ -92,29 +283,28 @@
       b.disabled = true;
       const r = await sb.rpc('approve_creator', { p_application: Number(id), p_slug: slug, p_kind: kind });
       if(r.error){ tell(r.error.message, true); b.disabled = false; return; }
-      tell('Approved. Their dashboard is open at /store/dashboard.'); apps(); people();
+      tell('Approved. Their dashboard is open at /store/dashboard.'); applications(); reload('creators'); counts();
     });
     el.querySelectorAll('[data-decline]').forEach(b => b.onclick = async () => {
-      const note = prompt('A line for them (optional):') ;
+      const note = prompt('A line for them (optional):');
       if(note === null) return;
       const r = await sb.rpc('decline_application', { p_application: Number(b.dataset.decline), p_note: note || null });
       if(r.error) return tell(r.error.message, true);
-      tell('Declined.'); apps();
+      tell('Declined.'); applications(); counts();
     });
   }
 
-  // ---- the queue ----
-  const SEL = 'id,label,status,key,bpm,time_sig,length_seconds,rent_cents,buy_cents,consent,review_note,submitted_at,approved_at,sales,creator_slug,store_songs(title,slug,writers),store_creators(name),store_tracks(slot),store_sections(name,seconds,bar)';
-  async function queue(){
+  /* ================= REVIEW ================= */
+  const SEL = 'id,label,status,key,bpm,time_sig,length_seconds,rent_cents,buy_cents,consent,review_note,submitted_at,approved_at,sales,creator_slug,art_key,store_songs(title,slug,writers),store_creators(name),store_tracks(slot),store_sections(name,seconds,bar)';
+  async function review(){
     const { data, error } = await sb.from('store_versions').select(SEL).eq('status','submitted').order('submitted_at');
     const el = $('#queue');
     if(error){ el.innerHTML = '<tr><td class="empty">'+esc(error.message)+'</td></tr>'; return; }
     if(!data.length){ el.innerHTML = '<tr><td class="empty">Nothing waiting.</td></tr>'; return; }
-    el.innerHTML = '<tr><th>Song</th><th>Details</th><th>Listen</th><th></th></tr>' + data.map(v => {
+    el.innerHTML = '<tr><th>Song</th><th>Details</th><th>Listen and mark the sections</th><th></th></tr>' + data.map(v => {
       const s = v.store_songs||{}, secs = (v.store_sections||[]).slice().sort((a,b)=>a.seconds-b.seconds);
-      return '<tr><td><b>'+esc(s.title)+'</b> · '+esc(v.label)+'<small>'+esc((v.store_creators||{}).name)+' · sent '+when(v.submitted_at)+(s.writers?'\nwritten by '+esc(s.writers):'')+(v.consent?'\nrights: '+esc(v.consent):'')+'</small></td>'+
-        '<td>'+esc(v.key||'?')+' · '+(v.bpm?Number(v.bpm)+' BPM':'?')+' · '+esc(v.time_sig||'')+'<small>'+(v.store_tracks||[]).length+' of 10 tracks · '+secs.length+' sections\n'+
-        secs.map(x=>esc(x.name)+' @ '+Number(x.seconds).toFixed(1)+'s'+(x.bar?' (bar '+x.bar+')':'')).join(' · ')+'\nrent '+money(v.rent_cents)+' · buy '+money(v.buy_cents)+'</small></td>'+
+      return '<tr><td><div class="song">'+thumb(v)+'<div class="t"><b>'+esc(s.title)+'</b><span>'+esc(v.label)+' · '+esc((v.store_creators||{}).name)+'</span></div></div><small>sent '+when(v.submitted_at)+(s.writers?'\nwritten by '+esc(s.writers):'')+(v.consent?'\nrights: '+esc(v.consent):'')+'</small></td>'+
+        '<td>'+esc(v.key||'?')+' · '+(v.bpm?Number(v.bpm)+' BPM':'?')+' · '+esc(v.time_sig||'')+'<small>'+(v.store_tracks||[]).length+' of 10 tracks · '+secs.length+' sections\nrent '+money(v.rent_cents)+' · buy '+money(v.buy_cents)+'</small></td>'+
         '<td><div class="acts"><select data-slot="'+v.id+'">'+['guide','click','drums','bass','keys','guitars','piano','aux_keys','horns','bgv'].map(x=>'<option>'+x+'</option>').join('')+'</select><button class="b" data-listen="'+v.id+'">Load</button></div><div data-audio="'+v.id+'"></div>'+
         '<div class="secs" data-secs="'+v.id+'" data-bpm="'+(v.bpm||'')+'" data-sig="'+esc(v.time_sig||'4/4')+'">'+sectionsHtml(v.id, secs)+'</div></td>'+
         '<td><div class="acts"><button class="b go" data-ok="'+v.id+'">Approve</button><button class="b" data-back="'+v.id+'">Send back</button></div></td></tr>';
@@ -134,25 +324,20 @@
       b.disabled = true;
       const r = await sb.rpc('review_version', { p_version: b.dataset.ok, p_decision: 'approved' });
       if(r.error){ tell(r.error.message, true); b.disabled = false; return; }
-      tell('On the shelf.'); queue(); shelf();
+      tell('On the shelf.'); review(); reload('catalogue'); counts();
     });
     el.querySelectorAll('[data-back]').forEach(b => b.onclick = async () => {
       const note = prompt('What needs fixing:'); if(!note) return;
       const r = await sb.rpc('review_version', { p_version: b.dataset.back, p_decision: 'rejected', p_note: note });
       if(r.error) return tell(r.error.message, true);
-      tell('Sent back.'); queue();
+      tell('Sent back.'); review(); counts();
     });
   }
-
-  // ---- sections, marked or fixed here ----
-  // The creator's sections are a first pass; this is where they are
-  // made right against the audio before anyone buys the song. Tap a
-  // name while the loaded track plays, or type the seconds.
   const NAMES = ['Intro','Verse','Pre-chorus','Chorus','Bridge','Interlude','Tag','Vamp','Out'];
   function sectionsHtml(id, secs){
     return '<div class="acts" style="margin-top:8px">'+NAMES.map(n=>'<button class="b" data-tap="'+esc(n)+'">'+esc(n)+'</button>').join('')+'</div>'+
       '<table class="tbl secs-tbl" style="margin-top:6px"><tbody>'+(secs.length?secs.map(x=>secRow(x)).join(''):'<tr><td class="empty">No sections yet.</td></tr>')+'</tbody></table>'+
-      '<div class="acts" style="margin-top:6px"><button class="b go" data-save-secs="'+id+'">Save sections</button><span class="out" data-secs-out="'+id+'"></span></div>';
+      '<div class="acts" style="margin-top:6px"><button class="b go" data-save-secs="'+id+'">Save sections</button><span class="hint" data-secs-out="'+id+'"></span></div>';
   }
   function secRow(x){
     return '<tr><td><input value="'+esc(x.name)+'" data-f="name" style="width:110px"></td>'+
@@ -182,43 +367,237 @@
       const list = read();
       let r = await sb.from('store_sections').delete().eq('version_id', id);
       if(!r.error && list.length) r = await sb.from('store_sections').insert(list.map((x,i)=>({ version_id:id, position:i+1, name:x.name, seconds:x.seconds, bar:x.bar })));
-      out.textContent = r.error ? r.error.message : 'Saved.';
+      out.textContent = r.error ? grantMsg(r.error) : 'Saved.';
     };
   }
 
-  // ---- the shelf ----
-  async function shelf(){
-    const { data, error } = await sb.from('store_versions').select('id,label,status,sales,approved_at,creator_slug,store_songs(title,slug),store_creators(name)')
-      .in('status',['approved','coming_soon','hidden']).order('approved_at',{ascending:false}).limit(300);
-    const el = $('#shelf');
-    if(error){ el.innerHTML = '<tr><td class="empty">'+esc(error.message)+'</td></tr>'; return; }
-    if(!data.length){ el.innerHTML = '<tr><td class="empty">Empty.</td></tr>'; return; }
-    el.innerHTML = '<tr><th>Song</th><th>By</th><th>State</th><th>Sold</th><th></th></tr>' + data.map(v =>
-      '<tr><td><a href="/store/item?p='+esc((v.store_songs||{}).slug)+'&v='+v.id+'" target="_blank">'+esc((v.store_songs||{}).title)+'</a>'+(v.label!=='Original'?' · '+esc(v.label):'')+'</td>'+
-      '<td>'+esc((v.store_creators||{}).name)+'</td><td>'+esc(v.status.replace('_',' '))+'</td><td>'+(v.sales||0)+'</td>'+
-      '<td><div class="acts">'+(v.status!=='approved'?'<button class="b go" data-set="approved" data-id="'+v.id+'">Put on sale</button>':'')+
-      (v.status!=='coming_soon'?'<button class="b" data-set="coming_soon" data-id="'+v.id+'">Coming soon</button>':'')+
-      (v.status!=='hidden'?'<button class="b" data-set="hidden" data-id="'+v.id+'">Hide</button>':'')+'</div></td></tr>'
-    ).join('');
-    el.querySelectorAll('[data-set]').forEach(b => b.onclick = async () => {
-      const r = await sb.rpc('review_version', { p_version: b.dataset.id, p_decision: b.dataset.set });
-      if(r.error) return tell(r.error.message, true);
-      shelf();
-    });
+  /* ================= CATALOGUE ================= */
+  const cat = { q:'', status:'', creator:'', kind:'', page:0, size:50, selected:new Set(), rows:[] };
+  const CSEL = 'id,label,status,kind,lane,key,bpm,time_sig,year,album,feat,youtube,art_key,link,rent_cents,buy_cents,currency,sales,approved_at,created_at,creator_slug,store_songs!inner(id,title,slug,writers),store_creators(name,country,flag)';
+  let creatorOptions = null;
+  async function creatorList(){
+    if(creatorOptions) return creatorOptions;
+    const r = await sb.from('store_creators').select('slug,name,kind,country').order('name').limit(1000);
+    creatorOptions = r.data||[]; return creatorOptions;
   }
+  async function catalogue(){
+    tell('Reading…');
+    const opts = await creatorList();
+    const sel = $('#c-creator');
+    if(sel.options.length <= 1) sel.innerHTML = '<option value="">Everyone</option>' + opts.map(c=>'<option value="'+esc(c.slug)+'">'+esc(c.name)+'</option>').join('');
+    let q = sb.from('store_versions').select(CSEL, { count:'exact' });
+    if(cat.q) q = q.ilike('store_songs.title', '%'+cat.q.replace(/[%_]/g,'')+'%');
+    if(cat.status) q = q.eq('status', cat.status);
+    if(cat.creator) q = q.eq('creator_slug', cat.creator);
+    if(cat.kind) q = q.eq('kind', cat.kind);
+    q = q.order('created_at', { ascending:false }).range(cat.page*cat.size, cat.page*cat.size+cat.size-1);
+    const r = await q;
+    const el = $('#cat');
+    if(r.error){ tell(r.error.message, true); el.innerHTML = '<tr><td class="empty">'+esc(r.error.message)+'</td></tr>'; return; }
+    tell('');
+    cat.rows = r.data||[]; const total = r.count||cat.rows.length;
+    $('#c-count').textContent = num(total)+' title'+(total===1?'':'s');
+    const pages = Math.max(1, Math.ceil(total/cat.size));
+    $('#c-page').textContent = 'Page '+(cat.page+1)+' of '+pages; $('#c-prev').disabled = cat.page<=0; $('#c-next').disabled = cat.page>=pages-1;
+    if(!cat.rows.length){ el.innerHTML = '<tr><td class="empty">Nothing matches.</td></tr>'; return; }
+    el.innerHTML = '<tr><th><input type="checkbox" id="c-all" title="select this page"></th><th>Title</th><th>State</th><th class="n">Rent · buy</th><th class="n">Sold</th><th class="n">Released</th><th></th></tr>' +
+      cat.rows.map(v => {
+        const s = v.store_songs||{}, c = v.store_creators||{};
+        return '<tr data-row="'+v.id+'"><td><input type="checkbox" data-sel="'+v.id+'"'+(cat.selected.has(v.id)?' checked':'')+'></td>' +
+          '<td><div class="song">'+thumb(v)+'<div class="t"><b>'+esc(s.title)+'</b><span>'+esc(c.name||v.creator_slug)+(v.label&&v.label!=='Original'?' · '+esc(v.label):'')+(v.album&&v.album!==s.title?' · '+esc(v.album):'')+(v.year?' · '+v.year:'')+'</span></div></div></td>' +
+          '<td>'+pill(v.status)+'</td><td class="n">'+money(v.rent_cents,v.currency)+' · '+money(v.buy_cents,v.currency)+'</td><td class="n">'+num(v.sales)+'</td><td class="n dim">'+when(v.approved_at||v.created_at)+'</td>' +
+          '<td><div class="acts"><button class="b" data-edit="'+v.id+'">Edit</button><a class="b" href="'+itemUrl(v)+'" target="_blank">View ↗</a></div></td></tr>' +
+          '<tr data-editor="'+v.id+'" hidden><td colspan="7"></td></tr>';
+      }).join('');
+    el.querySelectorAll('[data-sel]').forEach(cb => cb.onchange = () => { cb.checked ? cat.selected.add(cb.dataset.sel) : cat.selected.delete(cb.dataset.sel); bulkBar(); });
+    $('#c-all').onchange = e => { el.querySelectorAll('[data-sel]').forEach(cb => { cb.checked = e.target.checked; cb.checked ? cat.selected.add(cb.dataset.sel) : cat.selected.delete(cb.dataset.sel); }); bulkBar(); };
+    el.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openEditor(b.dataset.edit));
+    bulkBar();
+  }
+  function bulkBar(){ const n = cat.selected.size; $('#c-bulk').hidden = !n; $('#c-selected').textContent = n; }
+  $$('#c-bulk [data-bulk]').forEach(b => b.onclick = async () => {
+    const ids = Array.from(cat.selected); if(!ids.length) return;
+    const patch = { status: b.dataset.bulk }; if(b.dataset.bulk==='approved') patch.approved_at = new Date().toISOString();
+    const r = await sb.from('store_versions').update(patch).in('id', ids);
+    if(r.error) return tell(grantMsg(r.error), true);
+    tell(ids.length+' title'+(ids.length===1?'':'s')+' → '+STATE[b.dataset.bulk][0]+'.'); cat.selected.clear(); catalogue(); counts();
+  });
+  function openEditor(id){
+    const v = cat.rows.find(x=>x.id===id); if(!v) return;
+    const tr = $('[data-editor="'+id+'"]'), td = tr.querySelector('td');
+    if(!tr.hidden){ tr.hidden = true; return; }
+    const s = v.store_songs||{};
+    const f = (label, name, value, type, extra) => '<label>'+esc(label)+'<input name="'+name+'" type="'+(type||'text')+'" value="'+esc(value==null?'':value)+'"'+(extra||'')+'></label>';
+    td.innerHTML = '<div class="editor"><div class="form">' +
+      f('Title','title',s.title) + f('Writers','writers',s.writers) +
+      '<label>Label<select name="label">'+['Original','Live','Arrangement','Medley','Cover','Album','Single','EP'].map(l=>'<option'+(l===v.label?' selected':'')+'>'+l+'</option>').join('')+'</select></label>' +
+      f('Album','album',v.album) + f('Year','year',v.year,'number') + f('Featuring','feat',v.feat) +
+      f('Key','key',v.key) + f('BPM','bpm',v.bpm,'number',' step="0.01"') + f('Time signature','time_sig',v.time_sig) +
+      f('YouTube video id','youtube',v.youtube) + f('Cover (R2 key or https URL)','art_key',v.art_key) + f('Link (Apple Music etc.)','link',v.link) +
+      f('Rent, cents','rent_cents',v.rent_cents,'number') + f('Buy, cents','buy_cents',v.buy_cents,'number') +
+      '<label>Currency<select name="currency">'+['usd','ghs','ngn','zar','kes'].map(c=>'<option'+(c===(v.currency||'usd')?' selected':'')+'>'+c+'</option>').join('')+'</select></label>' +
+      '<label>State<select name="status">'+Object.keys(STATE).map(k=>'<option value="'+k+'"'+(k===v.status?' selected':'')+'>'+STATE[k][0]+'</option>').join('')+'</select></label>' +
+      '</div><div class="foot"><button class="b go" data-save>Save</button><button class="b" data-copy>Copy id</button><button class="b bad" data-del>Delete this version</button><span class="out" data-out></span></div></div>';
+    tr.hidden = false;
+    const val = n => td.querySelector('[name="'+n+'"]').value;
+    const numOr = n => { const x = val(n).trim(); return x === '' ? null : Number(x); };
+    td.querySelector('[data-copy]').onclick = () => { navigator.clipboard && navigator.clipboard.writeText(v.id); td.querySelector('[data-out]').textContent = v.id; };
+    td.querySelector('[data-save]').onclick = async () => {
+      const out = td.querySelector('[data-out]'); out.textContent = 'Saving…';
+      const patch = { label: val('label'), album: val('album').trim()||null, year: numOr('year'), feat: val('feat').trim()||null, key: val('key').trim()||null, bpm: numOr('bpm'), time_sig: val('time_sig').trim()||null,
+        youtube: val('youtube').trim()||null, art_key: val('art_key').trim()||null, link: val('link').trim()||null, rent_cents: numOr('rent_cents')||0, buy_cents: numOr('buy_cents')||0, currency: val('currency'), status: val('status'), updated_at: new Date().toISOString() };
+      if(patch.status==='approved' && !v.approved_at) patch.approved_at = new Date().toISOString();
+      let r = await sb.from('store_versions').update(patch).eq('id', v.id);
+      if(!r.error && (val('title').trim()!==s.title || (val('writers').trim()||null)!==(s.writers||null))) r = await sb.from('store_songs').update({ title: val('title').trim(), writers: val('writers').trim()||null }).eq('id', s.id);
+      if(r.error){ out.textContent = grantMsg(r.error); return; }
+      out.textContent = 'Saved.'; catalogue(); counts();
+    };
+    td.querySelector('[data-del]').onclick = async () => {
+      if(!confirm('Delete “'+s.title+'” ('+v.label+')? Its tracks, sections and any purchases of it go with it. This cannot be undone.')) return;
+      const r = await sb.from('store_versions').delete().eq('id', v.id);
+      if(r.error) return tell(grantMsg(r.error), true);
+      tell('Deleted.'); catalogue(); counts();
+    };
+  }
+  let cTimer;
+  $('#c-q').oninput = () => { clearTimeout(cTimer); cTimer = setTimeout(()=>{ cat.q = $('#c-q').value.trim(); cat.page = 0; catalogue(); }, 250); };
+  ['status','creator','kind'].forEach(k => $('#c-'+k).onchange = () => { cat[k] = $('#c-'+k).value; cat.page = 0; catalogue(); });
+  $('#c-prev').onclick = () => { if(cat.page>0){ cat.page--; catalogue(); } };
+  $('#c-next').onclick = () => { cat.page++; catalogue(); };
 
-  // ---- creators ----
-  async function people(){
-    const { data, error } = await sb.from('store_creators').select('slug,name,kind,country,user_id,approved_at').order('name');
+  /* ================= CREATORS ================= */
+  const ppl = { q:'', kind:'' };
+  async function creators(){
+    tell('Reading…');
+    let q = sb.from('store_creators').select('slug,name,kind,country,flag,youtube,apple,bio,user_id,approved_at,created_at', { count:'exact' }).order('name').limit(500);
+    if(ppl.q) q = q.ilike('name', '%'+ppl.q.replace(/[%_]/g,'')+'%');
+    if(ppl.kind) q = q.eq('kind', ppl.kind);
+    const [r, v, pr] = await Promise.all([q, sb.from('store_versions').select('creator_slug,status').limit(5000), sb.from('profiles').select('id,email').limit(2000)]);
     const el = $('#people');
-    if(error){ el.innerHTML = '<tr><td class="empty">'+esc(error.message)+'</td></tr>'; return; }
-    el.innerHTML = '<tr><th>Name</th><th>Kind</th><th>Country</th><th>Account</th><th>Since</th></tr>' + data.map(c =>
-      '<tr><td><a href="/store/creator?c='+esc(c.slug)+'" target="_blank">'+esc(c.name)+'</a></td><td>'+esc(c.kind)+'</td><td>'+esc(c.country||'')+'</td>'+
-      '<td>'+(c.user_id?'linked':'<span style="color:var(--muted)">none yet</span>')+'</td><td>'+when(c.approved_at)+'</td></tr>'
-    ).join('');
+    if(r.error){ tell(r.error.message, true); el.innerHTML = '<tr><td class="empty">'+esc(r.error.message)+'</td></tr>'; return; }
+    tell('');
+    const n = {}, live = {}; (v.data||[]).forEach(x => { n[x.creator_slug] = (n[x.creator_slug]||0)+1; if(x.status==='approved') live[x.creator_slug] = (live[x.creator_slug]||0)+1; });
+    const email = {}; (pr.data||[]).forEach(p => { email[p.id] = p.email; });
+    const rows = r.data||[];
+    $('#p-count').textContent = num(r.count||rows.length)+' people';
+    el.innerHTML = rows.length ? '<tr><th></th><th>Name</th><th>Kind</th><th>Country</th><th>Account</th><th class="n">Titles</th><th>On the store</th><th></th></tr>' + rows.map(c =>
+      '<tr data-row="'+esc(c.slug)+'"><td>'+av(c)+'</td><td><b>'+esc(c.name)+'</b><small>/store/creator?c='+esc(c.slug)+'</small></td><td class="dim">'+esc(c.kind)+'</td><td>'+esc((c.flag||'')+' '+(c.country||''))+'</td>' +
+      '<td>'+(c.user_id ? esc(email[c.user_id]||'linked') : '<span class="dim">none</span>')+'</td><td class="n">'+num(n[c.slug]||0)+(live[c.slug]?' <span class="dim">· '+live[c.slug]+' on sale</span>':'')+'</td>' +
+      '<td>'+(c.approved_at?'<span class="pill ok">Listed</span>':'<span class="pill wait">Not listed</span>')+'</td>' +
+      '<td><div class="acts"><button class="b" data-pedit="'+esc(c.slug)+'">Edit</button><a class="b" href="/store/creator?c='+esc(c.slug)+'" target="_blank">View ↗</a></div></td></tr>' +
+      '<tr data-peditor="'+esc(c.slug)+'" hidden><td colspan="8"></td></tr>').join('')
+      : '<tr><td class="empty">Nobody matches.</td></tr>';
+    el.querySelectorAll('[data-pedit]').forEach(b => b.onclick = () => openPerson(rows.find(c=>c.slug===b.dataset.pedit), email));
   }
+  async function findAccount(em){
+    if(!em) return { id:null };
+    const r = await sb.from('profiles').select('id').ilike('email', em.trim()).limit(1);
+    if(r.error) throw r.error;
+    if(!r.data.length) throw new Error('No account with that email. They need to sign up on the site first.');
+    return { id: r.data[0].id };
+  }
+  function openPerson(c, email){
+    const tr = $('[data-peditor="'+c.slug+'"]'), td = tr.querySelector('td');
+    if(!tr.hidden){ tr.hidden = true; return; }
+    const f = (label, name, value, extra) => '<label>'+esc(label)+'<input name="'+name+'" value="'+esc(value==null?'':value)+'"'+(extra||'')+'></label>';
+    td.innerHTML = '<div class="editor"><div class="form">' + f('Name','name',c.name) +
+      '<label>Kind<select name="kind"><option value="artist"'+(c.kind==='artist'?' selected':'')+'>Artist</option><option value="creator"'+(c.kind==='creator'?' selected':'')+'>Creator</option></select></label>' +
+      f('Country','country',c.country) + f('Flag','flag',c.flag) + f('YouTube channel','youtube',c.youtube) + f('Apple Music','apple',c.apple) +
+      f('Account email','email',c.user_id ? (email[c.user_id]||'') : '', ' placeholder="attach an existing account"') +
+      '<label class="wide">Bio<textarea name="bio">'+esc(c.bio||'')+'</textarea></label>' +
+      '</div><div class="foot"><button class="b go" data-save>Save</button>' +
+      (c.approved_at ? '<button class="b" data-list="off">Take off the store</button>' : '<button class="b" data-list="on">List on the store</button>') +
+      '<span class="out" data-out></span></div></div>';
+    tr.hidden = false;
+    const val = n => td.querySelector('[name="'+n+'"]').value.trim();
+    td.querySelector('[data-save]').onclick = async () => {
+      const out = td.querySelector('[data-out]'); out.textContent = 'Saving…';
+      try{
+        const patch = { name: val('name'), kind: val('kind'), country: val('country')||null, flag: val('flag')||null, youtube: val('youtube')||null, apple: val('apple')||null, bio: val('bio')||null };
+        const em = val('email');
+        if(em && em !== (email[c.user_id]||'')) patch.user_id = (await findAccount(em)).id;
+        if(!em && c.user_id) patch.user_id = null;
+        const r = await sb.from('store_creators').update(patch).eq('slug', c.slug);
+        if(r.error) throw r.error;
+        out.textContent = 'Saved.'; creatorOptions = null; creators();
+      }catch(e){ out.textContent = grantMsg(e); }
+    };
+    td.querySelector('[data-list]').onclick = async () => {
+      const on = td.querySelector('[data-list]').dataset.list === 'on';
+      const r = await sb.from('store_creators').update({ approved_at: on ? new Date().toISOString() : null }).eq('slug', c.slug);
+      if(r.error) return tell(grantMsg(r.error), true);
+      tell(on ? c.name+' is listed.' : c.name+' is off the store; their titles stay but the page is hidden.'); creators(); counts();
+    };
+  }
+  $('#p-add').onclick = async () => {
+    const box = $('#p-new'), out = $('#p-new-out');
+    const val = n => box.querySelector('[name="'+n+'"]').value.trim();
+    const slug = val('slug') || slugify(val('name'));
+    if(!val('name')) return out.textContent = 'A name, at least.';
+    if(!/^[a-z0-9-]{2,60}$/.test(slug)) return out.textContent = 'The address needs letters, numbers and hyphens only.';
+    out.textContent = 'Adding…';
+    try{
+      const row = { slug, name: val('name'), kind: val('kind'), country: val('country')||null, flag: val('flag')||null, youtube: val('youtube')||null, apple: val('apple')||null, bio: val('bio')||null, approved_at: new Date().toISOString() };
+      if(val('email')) row.user_id = (await findAccount(val('email'))).id;
+      const r = await sb.from('store_creators').insert(row);
+      if(r.error) throw r.error;
+      out.textContent = 'Added. Their page is /store/creator?c='+slug;
+      box.querySelectorAll('input,textarea').forEach(i => i.value = '');
+      creatorOptions = null; creators(); counts();
+    }catch(e){ out.textContent = grantMsg(e); }
+  };
+  let pTimer;
+  $('#p-q').oninput = () => { clearTimeout(pTimer); pTimer = setTimeout(()=>{ ppl.q = $('#p-q').value.trim(); creators(); }, 250); };
+  $('#p-kind').onchange = () => { ppl.kind = $('#p-kind').value; creators(); };
 
-  apps(); queue(); shelf(); people();
+  /* ================= SALES ================= */
+  const sl = { page:0, size:50 };
+  async function sales(){
+    tell('Reading…');
+    const since = new Date(Date.now()-30*864e5).toISOString();
+    const [r, g] = await Promise.all([
+      sb.from('store_purchases').select('id,kind,amount_cents,currency,granted_reason,purchased_at,expires_at,version_id,profiles(email),store_versions(label,store_songs(title,slug),store_creators(name))', { count:'exact' })
+        .order('purchased_at',{ascending:false}).range(sl.page*sl.size, sl.page*sl.size+sl.size-1),
+      sb.from('store_purchases').select('amount_cents,currency,kind').gte('purchased_at', since)
+    ]);
+    const el = $('#sales');
+    if(r.error){ tell(r.error.message, true); el.innerHTML = '<tr><td class="empty">'+esc(r.error.message)+'</td></tr>'; return; }
+    tell('');
+    const rows30 = g.data||[];
+    const fig = (k,v,d) => '<div class="fig"><p class="k">'+esc(k)+'</p><p class="v">'+v+'</p><span class="d">'+d+'</span></div>';
+    const paid = rows30.filter(p=>Number(p.amount_cents)>0);
+    $('#s-figs').innerHTML =
+      fig('Sales, 30 days', num(paid.length), num(rows30.length-paid.length)+' given away') +
+      fig('Gross, 30 days', money(paid.filter(p=>String(p.currency||'usd')==='usd').reduce((n,p)=>n+Number(p.amount_cents),0)), 'dollars only') +
+      fig('Rentals', num(paid.filter(p=>p.kind==='rent').length), 'of the paid sales') +
+      fig('Bought outright', num(paid.filter(p=>p.kind==='buy').length), 'of the paid sales');
+    const rows = r.data||[], total = r.count||rows.length;
+    $('#s-count').textContent = num(total)+' in all';
+    const pages = Math.max(1, Math.ceil(total/sl.size));
+    $('#s-page').textContent = 'Page '+(sl.page+1)+' of '+pages; $('#s-prev').disabled = sl.page<=0; $('#s-next').disabled = sl.page>=pages-1;
+    el.innerHTML = rows.length ? '<tr><th>Song</th><th>Who</th><th>Kind</th><th class="n">Paid</th><th class="n">When</th></tr>' + rows.map(p => {
+      const v = p.store_versions||{}, s = v.store_songs||{}, c = v.store_creators||{};
+      return '<tr><td><b>'+esc(s.title||'—')+'</b><small>'+esc(c.name||'')+(v.label&&v.label!=='Original'?' · '+esc(v.label):'')+'</small></td><td>'+esc((p.profiles||{}).email||'—')+'</td>' +
+        '<td class="dim">'+(p.kind==='rent'?'rental'+(p.expires_at?' to '+when(p.expires_at):''):'bought')+(p.granted_reason?' · given: '+esc(p.granted_reason):'')+'</td>' +
+        '<td class="n">'+(Number(p.amount_cents)?money(p.amount_cents,p.currency):'—')+'</td><td class="n dim">'+when(p.purchased_at)+'</td></tr>';
+    }).join('') : '<tr><td class="empty">No sales yet.</td></tr>';
+  }
+  $('#s-prev').onclick = () => { if(sl.page>0){ sl.page--; sales(); } };
+  $('#s-next').onclick = () => { sl.page++; sales(); };
+  $('#g-go').onclick = async () => {
+    const out = $('#g-out'); out.textContent = 'Giving…';
+    try{
+      const em = $('#g-email').value.trim(), vid = $('#g-version').value.trim();
+      if(!/^[0-9a-f-]{36}$/i.test(vid)) throw new Error('That is not a version id. Open Catalogue → Edit → Copy id.');
+      const who = await findAccount(em);
+      const r = await sb.from('store_purchases').insert({ user_id: who.id, version_id: vid, kind: 'buy', amount_cents: 0, currency: 'usd', granted_reason: $('#g-note').value.trim() || 'given by the studio' });
+      if(r.error) throw r.error;
+      out.textContent = 'Given. It is in their library.'; $('#g-version').value = ''; sales();
+    }catch(e){ out.textContent = grantMsg(e); }
+  };
+
+  counts();
+  showTab();
 })();
 </script>
 </body>
