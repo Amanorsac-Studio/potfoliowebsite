@@ -835,10 +835,15 @@ async function serveHub(platform, env, request, ctx) {
     if (object) break;
   }
   if (!object) {
+    /* Said as a page, not as an error: a link that starts a download
+       and then answers 5xx is shown by the browser as "file wasn't
+       available on site", and the explanation underneath is never
+       read. As a 200 the person sees it, and the fix is on it. */
+    console.error('hub installer missing in R2 for', platform, '- looked for', item.keys.join(', '));
     return confirmPage('Amanorsac Hub isn’t here yet.',
       'The installer for ' + (PLATFORM_LABEL[platform === 'mac' ? 'mac-arm64' : platform] || platform) +
       ' has not been uploaded. It should be at ' + item.keys[0] + ' in the amanorsac-downloads bucket. Try again shortly.',
-      null, 503);
+      null, 200);
   }
 
   const headers = new Headers();
