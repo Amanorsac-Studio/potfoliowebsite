@@ -115,6 +115,9 @@
   <section data-tab="applications">
     <p class="why">Approving makes their creator page at the address you give and opens their dashboard. Declining sends your line back to them.</p>
     <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
+    <p class="sec">Studio Bundle · people who said they are interested</p>
+    <p class="why">From the form on <a href="/store/package" target="_blank">/store/package</a>. The sale happens on a call; mark each one as you go so the count on the dashboard stays honest.</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="pkg"></tbody></table></div></div>
   </section>
 
   <!-- ================= REVIEW ================= -->
@@ -213,7 +216,7 @@
     const name = ['overview','applications','review','catalogue','creators','sales'].indexOf(t)>=0 ? t : 'overview';
     $$('section[data-tab]').forEach(s => s.classList.toggle('on', s.dataset.tab===name));
     $$('#seg a').forEach(a => a.classList.toggle('on', a.getAttribute('href')==='#'+name));
-    if(!loaded[name]){ loaded[name] = true; ({overview, applications, review, catalogue, creators, sales})[name](); }
+    if(!loaded[name]){ loaded[name] = true; ({overview, applications, review, catalogue, creators, sales})[name](); if(name==='applications') packages(); }
   }
   addEventListener('hashchange', showTab);
   const reload = name => { loaded[name] = false; if((location.hash||'#overview').slice(1)===name) showTab(); };
@@ -232,8 +235,9 @@
       c('store_creators', q=>q.not('approved_at','is',null)),
       c('store_purchases', q=>q.gte('purchased_at', since).gt('amount_cents',0))
     ]);
-    $('#n-apps').textContent = apps || ''; $('#n-review').textContent = review || '';
-    return { apps, review, onSale, soon, drafts, hidden, people, sales30 };
+    let pkg = 0; try { pkg = await c('package_requests', q=>q.eq('status','new')); } catch(e){}
+    $('#n-apps').textContent = (apps + pkg) || ''; $('#n-review').textContent = review || '';
+    return { apps, review, onSale, soon, drafts, hidden, people, sales30, pkg };
   }
 
   /* ================= OVERVIEW ================= */
@@ -256,6 +260,7 @@
       fig('Sales, 30 days', num(k.sales30), money(gross)+' gross · '+num(rentals)+' rental'+(rentals===1?'':'s'), '#sales');
     const todo = [
       [k.apps, 'creator application'+(k.apps===1?'':'s')+' waiting', '#applications'],
+      [k.pkg, 'Studio Bundle request'+(k.pkg===1?'':'s')+' to answer', '#applications'],
       [k.review, 'song'+(k.review===1?'':'s')+' to review', '#review'],
       [k.hidden, 'hidden title'+(k.hidden===1?'':'s'), '#catalogue']
     ].filter(t=>t[0]>0);
@@ -291,6 +296,31 @@
       const r = await sb.rpc('decline_application', { p_application: Number(b.dataset.decline), p_note: note || null });
       if(r.error) return tell(r.error.message, true);
       tell('Declined.'); applications(); counts();
+    });
+  }
+
+  async function packages(){
+    const el = $('#pkg');
+    const { data, error } = await sb.from('package_requests').select('*').order('created_at',{ascending:false}).limit(200);
+    if(error){ el.innerHTML = '<tr><td class="empty">'+esc(/does not exist|schema cache/i.test(error.message)?'Run supabase-package.sql to collect these.':error.message)+'</td></tr>'; return; }
+    if(!data.length){ el.innerHTML = '<tr><td class="empty">Nobody yet.</td></tr>'; return; }
+    const WANT = { mixing:'Mixing template', stream:'Live stream template', both:'Both templates' };
+    el.innerHTML = '<tr><th>Who</th><th>Wants</th><th>Runs</th><th>Setup</th><th>State</th></tr>' + data.map(r =>
+      '<tr><td><b>'+esc(r.name)+'</b><small>'+esc(r.email)+(r.phone?' · '+esc(r.phone):'')+(r.church?'\n'+esc(r.church):'')+(r.role?' · '+esc(r.role):'')+'\n'+when(r.created_at)+'</small></td>' +
+      '<td>'+esc(WANT[r.want]||r.want||'—')+(r.message?'<small>'+esc(r.message)+'</small>':'')+'</td>' +
+      '<td>'+esc([r.daw, r.computer].filter(Boolean).join(' · ')||'—')+'</td>' +
+      '<td><small>'+esc(r.setup||'')+'</small></td>' +
+      '<td><div class="acts"><select data-pkg="'+r.id+'">'+['new','contacted','sold','closed'].map(x=>'<option value="'+x+'"'+(x===r.status?' selected':'')+'>'+x+'</option>').join('')+'</select>' +
+      '<input data-pkgnote="'+r.id+'" value="'+esc(r.note||'')+'" placeholder="note" style="width:140px"></div></td></tr>').join('');
+    el.querySelectorAll('[data-pkg]').forEach(sel => sel.onchange = async () => {
+      const id = Number(sel.dataset.pkg), note = el.querySelector('[data-pkgnote="'+id+'"]').value.trim() || null;
+      const r = await sb.from('package_requests').update({ status: sel.value, note }).eq('id', id);
+      if(r.error) return tell(r.error.message, true);
+      tell('Marked '+sel.value+'.'); counts();
+    });
+    el.querySelectorAll('[data-pkgnote]').forEach(inp => inp.onchange = async () => {
+      const r = await sb.from('package_requests').update({ note: inp.value.trim() || null }).eq('id', Number(inp.dataset.pkgnote));
+      if(r.error) tell(r.error.message, true);
     });
   }
 

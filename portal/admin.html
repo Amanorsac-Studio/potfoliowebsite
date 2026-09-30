@@ -205,7 +205,7 @@
   async function draw(){
     m.textContent = 'Reading…'; m.className = 'msg';
     const since = new Date(Date.now() - days*864e5).toISOString();
-    const [ps, pd, as, ad, apps, acq, rec, sp, apps_pending, songs_pending, reviews, inv, revs, rcpt] = await Promise.all([
+    const [ps, pd, as, ad, apps, acq, rec, sp, apps_pending, songs_pending, reviews, inv, revs, rcpt, pkg] = await Promise.all([
       sb.rpc('product_summary',    { p_days: days }),
       sb.rpc('product_daily',      { p_days: days }),
       sb.rpc('analytics_summary',  { p_days: days }),
@@ -219,7 +219,8 @@
       sb.rpc('app_reviews_pending'),
       sb.from('invoices').select('amount_cents,status'),
       sb.from('revision_requests').select('id',{count:'exact',head:true}).neq('status','done'),
-      sb.from('invoices').select('id',{count:'exact',head:true}).eq('status','review')
+      sb.from('invoices').select('id',{count:'exact',head:true}).eq('status','review'),
+      sb.from('package_requests').select('id',{count:'exact',head:true}).eq('status','new')
     ]);
     const missing = [ps,pd,as,ad,apps,acq,rec].find(r => r && r.error);
     if(missing){
@@ -251,6 +252,7 @@
     const todo = [
       [apps_pending.count||0, 'creator application'+(apps_pending.count===1?'':'s')+' waiting', 'admin-store.html'],
       [songs_pending.count||0, 'song'+(songs_pending.count===1?'':'s')+' in review', 'admin-store.html'],
+      [(pkg&&!pkg.error&&pkg.count)||0, 'Studio Bundle request'+(pkg&&pkg.count===1?'':'s')+' to answer', 'admin-store.html#applications'],
       [(reviews.data||[]).length, 'app review'+((reviews.data||[]).length===1?'':'s')+' to approve', 'admin-reviews.html#app-reviews'],
       [revs.count||0, 'open mix review'+(revs.count===1?'':'s'), 'admin-reviews.html'],
       [rcpt.count||0, 'receipt'+(rcpt.count===1?'':'s')+' to confirm', 'admin-billing.html'],

@@ -265,6 +265,14 @@
     return t.re.test([it.title, it.album].join(' '));
   }
 
+  /* the one thing on the store that is sold by hand, not by checkout */
+  function bundleBanner() {
+    return '<a class="bundle" href="/store/package"><div><p class="eyebrow">The Studio Bundle · for church musicians and singers</p>' +
+      '<h2>Mix your own stream. Mix your own songs.</h2>' +
+      '<p>A Fender Studio Pro mixing or live-stream template built for your church, AMB Analog, AMB Digital, SecondOut, AFD Gate, and a session to set it all up.</p></div>' +
+      '<div class="price"><b>$250</b><span>tell us you are interested →</span></div></a>';
+  }
+
   pages.index = function (main) {
     var q = param('q').trim().toLowerCase(), lane = param('lane'), type = param('type'), theme = param('theme');
     Promise.all([shelf(), ownedMap()]).then(function (r) {
@@ -303,7 +311,7 @@
         return;
       }
 
-      var html = '<div class="wrap">' + head + chips;
+      var html = '<div class="wrap">' + head + chips + bundleBanner();
       if (!d.items.length) { main.innerHTML = html + '<div class="empty">Nothing on the shelf yet.</div></div>'; return; }
       var songs = d.items.filter(function (it) { return it.kind === 'song' && !isAlbum(it); });
       var albums = d.items.filter(function (it) { return it.kind === 'song' && isAlbum(it); });
@@ -546,6 +554,33 @@
   };
 
   pages.cancelled = function () {};
+
+  /* the bundle: a form, not a checkout. Lands in package_requests;
+     the studio replies and the sale happens on a call. */
+  pages.package = function () {
+    var form = $('#pkg-form'), out = $('#pkg-out');
+    if (!form) return;
+    whoAmI().then(function (u) { var em = form.querySelector('input[name=email]'); if (u && em && !em.value) em.value = u.email || ''; });
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var fd = new FormData(form), data = { package: 'studio-bundle' };
+      ['name', 'email', 'phone', 'church', 'role', 'want', 'daw', 'computer', 'setup', 'message'].forEach(function (k) { data[k] = fd.get(k) || null; });
+      var btn = form.querySelector('button[type=submit]'); btn.disabled = true;
+      out.hidden = false; out.className = 'msg'; out.textContent = 'Sending…';
+      var client = sb();
+      var mail = 'mailto:hello@amanorsac.studio?subject=' + encodeURIComponent('Studio Bundle - ' + (data.name || '')) +
+        '&body=' + encodeURIComponent(Object.keys(data).map(function (k) { return k + ': ' + (data[k] || ''); }).join('\n'));
+      (client ? client.rpc('request_package', { p: data }) : Promise.resolve({ error: new Error('offline') })).then(function (r) {
+        if (r.error) throw r.error;
+        form.reset(); out.className = 'msg ok';
+        out.textContent = 'Got it. We reply by email or WhatsApp within two days.';
+        if (window.track) window.track('enquiry', 'studio bundle');
+      }).catch(function (err) {
+        btn.disabled = false; out.className = 'msg bad';
+        out.innerHTML = esc(err.message || 'That did not go through.') + ' You can also <a href="' + esc(mail) + '">send it by email</a>.';
+      });
+    });
+  };
 
   pages.dashboard = function (main) {
     whoAmI().then(function (u) {
