@@ -120,6 +120,20 @@
     "wallet_note": "Mobile money, bank transfer or a local card."
   },
 
+  "momo": {
+    "_": "MTN MoMo by hand, Ghana only. The buyer pays at the studio's own",
+    "_2": "request link (or scans the code), then sends the screenshot to the",
+    "_3": "WhatsApp number with the app name and their account email. You make",
+    "_4": "them a code at /portal/admin-codes or grant the app by email, and it",
+    "_5": "lands in My Apps. The page says all of this, so it is one message.",
+    "live": true,
+    "url": "https://appbiz.momo.africa/momo/request-momo/233246858947",
+    "number": "024 685 8947",
+    "name": "Stephen Amanor Sackey",
+    "qr": "/images/momo-qr.jpg",
+    "whatsapp": "https://wa.me/233246858947",
+    "countries": ["GH"]
+  },
   "whatsapp": {
     "_": "Mobile money, by hand, over WhatsApp. This is the stand-in for",
     "_2": "Paystack while Paystack is switched off - and it is worth keeping",

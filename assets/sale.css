@@ -143,7 +143,25 @@
 .pwyw-in input:focus{outline:none}
 .pwyw-in:focus-within{opacity:1}
 .pwyw small{flex-basis:100%;font-size:12.5px;opacity:.7}
+
 .pay-alt-fx{flex-basis:100%;font-size:13px;color:var(--muted,#A9A2C8)}
+
+/* MTN MoMo, folded closed: the code to scan and the three steps. */
+.pay-momo{flex-basis:100%;margin-top:6px;border:1px solid color-mix(in srgb,#FFCC00 40%,currentColor 0%);border-radius:14px;
+  background:color-mix(in srgb,#FFCC00 7%,transparent);font-size:14px}
+.pay-momo summary{cursor:pointer;list-style:none;padding:11px 16px;font-weight:600;display:flex;align-items:center;gap:10px}
+.pay-momo summary::-webkit-details-marker{display:none}
+.pay-momo summary::before{content:"";width:9px;height:9px;border-radius:50%;background:#FFCC00;flex:none}
+.pay-momo summary::after{content:"+";margin-left:auto;opacity:.6;font-weight:400}
+.pay-momo[open] summary::after{content:"\2013"}
+.pay-momo-body{display:grid;grid-template-columns:160px 1fr;gap:16px;align-items:start;padding:4px 16px 16px}
+.pay-momo-body img{width:160px;height:160px;border-radius:10px;background:#fff;padding:5px;display:block}
+.pay-momo-body ol{margin:0;padding-left:18px;line-height:1.6;color:var(--muted,#A9A2C8)}
+.pay-momo-body ol b,.pay-momo-body ol a{color:var(--ink,#EDEAF6)}
+.pay-momo-go{grid-column:2;justify-self:start;display:inline-block;margin-top:2px;padding:9px 18px;border-radius:999px;
+  background:#FFCC00;color:#1a1400;font-weight:700;text-decoration:none}
+.pay-momo-go:hover{filter:brightness(1.08)}
+@media (max-width:520px){.pay-momo-body{grid-template-columns:1fr}.pay-momo-body img{justify-self:center}.pay-momo-go{grid-column:1}}
 
 /* ---------------------------------------------------------------------
    What it runs on, next to the price.

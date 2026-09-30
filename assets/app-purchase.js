@@ -214,11 +214,33 @@
         'and a code comes back that unlocks it in My&nbsp;Apps.</span>';
     }
 
+    /* MTN MoMo at the studio's own link, with the code to scan. Ghana
+       only, by the endpoint. It is a manual road and says so: pay, send
+       the screenshot with the app's name and the account's email, and
+       the code comes back. Folded closed so the row stays quiet. */
+    var momoHtml = '';
+    if (pay && pay.momo && pay.momo.url) {
+      var mo = pay.momo;
+      var amount = (pay.paystack && pay.paystack.display) ? pay.paystack.display + ' (' + pay.paystack.usd_display + ')' : null;
+      momoHtml =
+        '<details class="pay-momo"><summary>Pay with MTN MoMo' + (mo.number ? ' \u00b7 ' + esc(mo.number) : '') + '</summary>' +
+        '<div class="pay-momo-body">' +
+          (mo.qr ? '<img src="' + esc(mo.qr) + '" alt="MoMo QR code' + (mo.name ? ' for ' + esc(mo.name) : '') + '" width="160" height="160" loading="lazy">' : '') +
+          '<ol>' +
+            '<li>Open the link or scan the code' + (mo.name ? ': the request is to <b>' + esc(mo.name) + '</b>' : '') + (mo.number ? ', ' + esc(mo.number) : '') + '.</li>' +
+            '<li>Send ' + (amount ? '<b>' + esc(amount) + '</b>' : 'the price above') + ' for ' + esc(labelFor(app)) + '.</li>' +
+            '<li>Send the screenshot' + (mo.whatsapp ? ' to <a href="' + esc(mo.whatsapp) + '" target="_blank" rel="noopener noreferrer">' + esc(mo.number || 'the studio') + ' on WhatsApp</a>' : '') +
+              ' with the app\u2019s name and the email of your account here. Your code comes back the same day and unlocks it in My&nbsp;Apps.</li>' +
+          '</ol>' +
+          '<a class="pay-momo-go" href="' + esc(mo.url) + '" target="_blank" rel="noopener noreferrer">Open the MoMo link</a>' +
+        '</div></details>';
+    }
+
     if (!pay || !pay.paystack || (pay.offer || []).indexOf('paystack') < 0) {
-      /* No Paystack here, but WhatsApp may still be on - which is the
-         whole situation while Paystack is switched off. */
-      slot.innerHTML = waHtml;
-      slot.hidden = !waHtml;
+      /* No Paystack here, but MoMo or WhatsApp may still be on - which
+         is the whole situation while Paystack is switched off. */
+      slot.innerHTML = momoHtml + waHtml;
+      slot.hidden = !(momoHtml || waHtml);
       return;
     }
     var ps = pay.paystack;
@@ -234,7 +256,7 @@
       : '<button type="button" class="pay-alt" data-pay="paystack">Pay with mobile money \u2014 ' +
         esc(ps.display) + '</button>' +
         '<span class="pay-alt-note">' + esc(ps.note) + '</span>';
-    slot.innerHTML += waHtml;
+    slot.innerHTML += momoHtml + waHtml;
     slot.hidden = false;
   }
 

@@ -995,12 +995,24 @@ async function payOptions(request, env) {
   const waHere = !!(wa && wa.live && wa.url && app && !app.free &&
                     (!waCountries.length || (known && waCountries.includes(country))));
 
+  /* MTN MoMo at the studio's own request link, Ghana only: the buyer
+     pays, sends the screenshot, and a code comes back. Same manual
+     road as WhatsApp, with the wallet in front of the conversation. */
+  const mm = c.momo || null;
+  const mmCountries = (mm && mm.countries) || [];
+  const mmHere = !!(mm && mm.live && mm.url && app && !app.free &&
+                    (!mmCountries.length || (known && mmCountries.includes(country))));
+
   return new Response(JSON.stringify({
     country: known ? country : null,
     /* Which one leads. Where Paystack works it leads and the card is
        the quiet second door; everywhere else there is only the card. */
     first: (here && local) ? 'paystack' : 'stripe',
     offer,
+    momo: mmHere ? {
+      url: mm.url, number: mm.number || '', name: mm.name || '', qr: mm.qr || null,
+      whatsapp: mm.whatsapp || (wa && wa.url) || null
+    } : null,
     /* Null unless it is on offer here, so the page has nothing to
        decide - the same shape as everything else this endpoint hands
        back. The URL is the studio's own, from the catalog, and never
