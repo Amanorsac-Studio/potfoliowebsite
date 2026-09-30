@@ -25,7 +25,7 @@
   <div class="head">
     <p class="eyebrow">Billing</p>
     <h1>Invoices</h1>
-    <p class="sub">Deposits and balances. Payments are handled by Stripe — the studio never sees your card details.</p>
+    <p class="sub">Deposits and balances. Card payments are handled by Stripe and the studio never sees your card details. In Ghana you can pay by MoMo and attach the screenshot; the invoice flips to paid once the studio confirms it.</p>
   </div>
   <div class="card"><div id="inv"><div class="skeleton" style="width:50%"></div></div></div>
 </main><script src="../assets/vendor/supabase-2.116.0.js"></script>
@@ -63,8 +63,8 @@
         // Paying by card is one road, not the only road. Bank transfer,
         // mobile money, cash \u2014 attach the proof and the studio confirms.
         (!paid && !review
-          ? '<p class="meta" style="margin:-6px 0 10px">Paid by bank transfer or mobile money instead? '+
-            '<button class="linkbtn rc-open" type="button">Attach your receipt</button></p>'+
+          ? '<p class="meta" style="margin:-6px 0 10px">In Ghana? <a href="'''+MOMO+'''" target="_blank" rel="noopener">Pay with MoMo</a> (024 685 8947), then '+
+            '<button class="linkbtn rc-open" type="button">attach your screenshot here</button>. Bank transfer works the same way.</p>'+
             '<div class="rc-form" hidden>'+
               '<div class="field"><label>Receipt \u2014 a photo or PDF</label>'+
                 '<input class="rc-file" type="file" accept="image/*,.pdf"></div>'+
