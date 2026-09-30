@@ -420,7 +420,7 @@ span.msg{display:inline-block;padding:6px 10px;font-size:13px;margin-left:8px}
 .pkg-item.wide h3{flex:0 0 auto} .pkg-item.wide p{flex:1 1 320px}
 .pkg-item h3{font-size:16px} .pkg-item p{color:var(--dim);font-size:14px;line-height:1.6;margin:0}
 .pkg-item a{font-size:13px;margin-top:auto}
-.pkg-item .tag{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.pkg-item .tag{font:500 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);border:0;padding:0;align-self:flex-start;background:none}
 .pkg-item.pick .tag{color:var(--link)}
 /* the banner on the store front */
 .bundle{display:grid;grid-template-columns:1fr auto;gap:16px 28px;align-items:center;margin:4px 0 8px;padding:22px 26px;border-radius:var(--r-lg);color:var(--text);
