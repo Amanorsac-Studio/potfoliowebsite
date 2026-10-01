@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Chordlight 88 — the chord and number display that shares your MIDI port | Amanorsac Studio</title>
-<meta name="description" content="Chordlight 88 shows what your hands just played: 88 keys lit by velocity, the chord named, and the same chord as a Nashville number in your key — or in sol-fa. It never takes your MIDI port, so your DAW and Kontakt keep the same controller. $24 early bird, full price $48. Windows and macOS.">
+<meta name="description" content="Chordlight 88 shows what your hands are playing: the chord name, the Nashville number in your key, sol-fa, and all 88 keys lit as you play. Version 2.0 records MIDI, WAV and shareable takes, and draws its own 1080p lesson clip. $24 early bird, full price $48. Windows and macOS.">
 <link rel="icon" href="images/apps/afdgate/icon.svg" type="image/svg+xml">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
@@ -262,6 +262,7 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   table.spec td{border-top:0;padding-top:0}
 }
 
+  .shot video{width:100%;display:block;aspect-ratio:16/9;background:#000}
 </style>
 <link rel="canonical" href="https://amanorsac.studio/chordlight88">
 <link rel="stylesheet" href="assets/site-auth.css">
@@ -276,7 +277,7 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   "@type": "SoftwareApplication",
   "name": "Chordlight 88",
   "url": "https://amanorsac.studio/chordlight88",
-  "description": "An 88-key MIDI display that lights the notes, names the chord and reads the Nashville number in your key, in note names or in sol-fa. It opens no MIDI port exclusively, so a DAW and a sampler keep the same controller.",
+  "description": "A chord and Nashville-number display for any MIDI keyboard that lights all 88 keys as you play, records MIDI, WAV and shareable takes, and draws its own 1080p lesson clip. It opens no MIDI port exclusively.",
   "operatingSystem": "Windows 10, macOS 11",
   "applicationCategory": "MultimediaApplication",
   "softwareVersion": "2.0.1",
@@ -295,46 +296,128 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
 </div>
 
 <header class="hero wrap">
-  <div class="badges"><span>$24 · early bird</span><span>Standalone</span><span>Windows</span><span>macOS</span><span>Shared MIDI</span></div>
+  <div class="badges"><span>Version 2.0</span><span>$24 · early bird</span><span>Windows</span><span>macOS</span><span>Records</span><span>Draws the video</span></div>
   <h1>What your hands<br><em>just played</em>.</h1>
-  <p class="one">In the language you think in.</p>
-  <p class="sub">Chordlight 88 is an 88-key display for keyboard players. Play, and the keys light — brighter the harder you hit them — the chord is named as you play it, and the same chord is read as a number in whatever key you set. One switch puts all of it into sol-fa. And it never takes your MIDI port, so your DAW and your sampler keep the same controller.</p>
+  <p class="one">See what your hands are playing. Now record it, and let it draw the lesson video.</p>
+  <p class="sub">Chordlight 88 sits beside any MIDI keyboard and shows what your hands are playing, the moment you play it: the chord name, the Nashville number in your key, the sol-fa, and the notes lit on a full 88-key stage. Version 2.0 turns that readout into content. Press Rec and the take is saved as MIDI, as WAV, or as a .chordlight file that reopens with the lights and the audio in sync. Press Video and the app draws its own 1080p clip, ready for YouTube, WhatsApp or a course platform, without a screen recorder. And it still never takes your MIDI port.</p>
   <div class="cta-row">
     <button class="cta" data-buy type="button">Buy — $24</button>
-    <a class="cta ghost" href="#midi">Why it shares the port</a>
+    <a class="cta ghost" href="#new">What is new in 2.0</a>
   </div>
   <p class="plat-row" data-platforms hidden></p>
-  <p class="fine">$24 once, early bird on 2.0 · full price $48 · version 2.0.1 · no account, no activation, no network</p>
+  <p class="fine">$24 once, early bird on 2.0 · full price $48 · version 2.0.1 · one key, two computers · no account in the app, no analytics, no telemetry</p>
   <p class="promo-line" data-promo hidden></p>
   <p class="buy-status" data-buy-status hidden></p>
   <p class="pay-alt-row" data-pay-alt hidden></p>
   <p class="code-row" data-code-box hidden></p>
   <ul class="assure" data-assure hidden></ul>
   <div class="shot rise" id="cl-hero">
-    <img src="images/apps/chordlight88/notes.webp" width="2880" height="1184" fetchpriority="high"
-         alt="Chordlight 88 in notes mode: six notes lit across the 88-key display, named Fmaj9, numbered 4maj9 in the key of C, with IVmaj9 and Fa underneath"
+    <img src="images/apps/chordlight88/notes.webp" width="2400" height="987" fetchpriority="high"
+         alt="Chordlight 88: six notes lit across the 88-key stage, named Fmaj9, numbered 4maj9 in the key of C, with IVmaj9 and Fa underneath"
          onerror="document.getElementById('cl-hero').hidden=true;document.getElementById('cl-hero-cap').hidden=true">
   </div>
   <p class="shot-cap" id="cl-hero-cap">Six notes down &middot; <code>Fmaj9</code> &middot; <code>4maj9</code> in the key of C &middot; lit by velocity</p>
 </header>
 
+<section class="wrap" id="new">
+  <p class="eyebrow">Version 2.0 &middot; a free update for everyone who has it</p>
+  <h2>Now it records, and it makes the video for you.</h2>
+  <div class="shot rise video" id="cl-video">
+    <video controls preload="none" playsinline poster="images/apps/chordlight88/title.webp" aria-label="Chordlight 88 in forty-two seconds">
+      <source src="images/apps/chordlight88/promo.mp4" type="video/mp4">
+    </video>
+  </div>
+  <p class="shot-cap">Forty-two seconds: the live readout, the Advanced panel, and a clip the app drew itself.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Record</h3>
+      <p>Press Rec. The take is saved as MIDI, as 24-bit WAV, or as a .chordlight file that reopens with the lights and the audio together. Keep rescues the last five minutes even when you forgot to press anything.</p>
+    </div>
+    <div class="card">
+      <h3>Video</h3>
+      <p>Press Video. The app draws its own 1080p clip, not a screen capture: your lesson title, a picture or looping video behind it, a readout plate, and the last four chords climbing away from the keys.</p>
+    </div>
+    <div class="card">
+      <h3>Talk over it</h3>
+      <p>A microphone input beside the keyboard, with meters. Speak and the keys duck under your voice by themselves. An audio offset lines up Bluetooth and USB latency.</p>
+    </div>
+  </div>
+  <p class="body"><b>Already have Chordlight 88?</b> 2.0 is yours at no charge. Open <a href="hub.html">Amanorsac Hub</a> and the update is waiting; your key carries over.</p>
+</section>
+
+<section class="wrap" id="video">
+  <p class="eyebrow">The clip</p>
+  <h2>A lesson video, drawn by the app.</h2>
+  <p class="body">Nothing on your screen is recorded. Chordlight renders the frame itself at 1080p, or 4K at Best quality, so it looks the same whatever your windows are doing. System audio and your microphone are mixed in. MP4 where the system supports it; WebM where it does not, and the app says which.</p>
+  <div class="shot rise" id="cl-frame">
+    <img src="images/apps/chordlight88/frame.webp" width="1920" height="1080" loading="lazy"
+         alt="A frame of a recorded Chordlight clip: the chord C and the number 1 on dark readout plates over the lit keys, with the lesson title above"
+         onerror="document.getElementById('cl-frame').hidden=true;document.getElementById('cl-frame-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-frame-cap">An actual frame of a recorded clip: title, readout plates, the chord trail, the keys at the bottom.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>Your title, your backdrop</h3>
+      <p>The lesson title in the font, size and colour you choose. Behind it a picture, a looping video, or a tint. Chroma green or blue when the edit happens somewhere else.</p>
+    </div>
+    <div class="card">
+      <h3>Keys top, middle or bottom</h3>
+      <p>Three layouts, so the keys sit where the frame needs them. The readout plate keeps the chord readable over anything.</p>
+    </div>
+    <div class="card">
+      <h3>Clip preview, live</h3>
+      <p>The Clip Preview panel shows the clip as it will be recorded while you set it up, so the first take is the one you keep.</p>
+    </div>
+  </div>
+  <div class="shot rise" id="cl-preview">
+    <img src="images/apps/chordlight88/preview.webp" width="1320" height="860" loading="lazy"
+         alt="The Clip Preview panel in Chordlight 88 showing the clip as it will be recorded, beside the Advanced settings"
+         onerror="document.getElementById('cl-preview').hidden=true;document.getElementById('cl-preview-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-preview-cap">The Clip Preview panel, live, next to the Advanced settings that shape it.</p>
+</section>
+
+<section class="wrap" id="record">
+  <p class="eyebrow">The take</p>
+  <h2>Press Rec. Keep what you played.</h2>
+  <div class="shot rise" id="cl-record">
+    <img src="images/apps/chordlight88/record.webp" width="2000" height="917" loading="lazy"
+         alt="Chordlight 88 playing a recorded take back, with the transport and timeline along the bottom"
+         onerror="document.getElementById('cl-record').hidden=true;document.getElementById('cl-record-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-record-cap">A take playing back: the lights follow the recording, and the transport sits along the bottom.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>MIDI</h3>
+      <p>A standard .mid file of exactly what you played, for the DAW or the notation program.</p>
+    </div>
+    <div class="card">
+      <h3>WAV</h3>
+      <p>24-bit, 48 kHz audio from the keyboard and the microphone, mixed as you set them.</p>
+    </div>
+    <div class="card">
+      <h3>.chordlight</h3>
+      <p>One shareable take: the MIDI, the audio and the title in a single file. Anyone with Chordlight opens it and sees the lights and hears the audio together.</p>
+    </div>
+  </div>
+</section>
+
 <section class="wrap" id="midi">
-  <p class="eyebrow">The problem</p>
+  <p class="eyebrow">The port</p>
   <h2>Every other chord display takes your keyboard away from you.</h2>
   <div class="figure rise">
     <p class="n"><span class="was">1</span><span class="arrow">→</span><span class="now">3</span><small>apps on one controller at once</small></p>
-    <p>Open a chord tool on Windows and it claims the MIDI port for itself. Kontakt goes quiet, or the DAW stops receiving, or the app reports the device as busy — so the thing that was meant to help you play stops you playing.</p>
+    <p>Open a chord tool on Windows and it claims the MIDI port for itself. Kontakt goes quiet, or the DAW stops receiving, or the app reports the device as busy, so the thing that was meant to help you play stops you playing.</p>
   </div>
-  <p class="body">Chordlight opens no port exclusively. It listens alongside whatever else is holding the controller: your DAW, your sampler and Chordlight all hear the same keyboard at the same time. Virtual cables — loopMIDI, LoopBe, IAC — appear like any hardware port, and a keyboard plugged in mid-session shows up without a restart.</p>
-  <p class="body"><b>That is the whole reason it exists.</b> Everything else on this page is what it does once it is out of your way.</p>
+  <p class="body">Chordlight opens no port exclusively. It listens alongside whatever else is holding the controller: your DAW, your sampler and Chordlight all hear the same keyboard at the same time. All inputs at once if you like. Virtual cables appear like any hardware port, and a keyboard plugged in mid-session shows up without a restart.</p>
 </section>
 
 <section class="wrap" id="solfa">
-  <p class="eyebrow">Numbers and sol-fa</p>
+  <p class="eyebrow">Three readings of every chord</p>
   <h2>Not everyone thinks in letters.</h2>
-  <p class="body">Chord displays name chords in letters. A large part of the keyboard-playing world — worship, gospel, choral, most of the teaching world — works in numbers and in sol-fa. Chordlight reads all three at once, from the same hands.</p>
+  <p class="body">Chord displays name chords in letters. A large part of the keyboard-playing world, worship, gospel, choral and most of the teaching world, works in numbers and in sol-fa. Chordlight reads all three at once, from the same hands. Switch with one click, or show all three in pop-out windows.</p>
   <div class="shot rise" id="cl-solfa">
-    <img src="images/apps/chordlight88/solfa.webp" width="2880" height="1184" loading="lazy"
+    <img src="images/apps/chordlight88/solfa.webp" width="2400" height="987" loading="lazy"
          alt="Chordlight 88 in sol-fa mode: the key labels read Do, Mi, So and Ti, and the big readout reads Do maj7 for a Cmaj7 in the key of C"
          onerror="document.getElementById('cl-solfa').hidden=true;document.getElementById('cl-solfa-cap').hidden=true">
   </div>
@@ -342,7 +425,7 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   <div class="grid">
     <div class="card">
       <h3>Set the key once</h3>
-      <p>Every chord after that reads as a number in that key. <code>Fmaj9</code> in C is <code>4maj9</code>, with the Roman numeral under it.</p>
+      <p>Every chord after that reads as a number in that key. <code>Fmaj9</code> in C is <code>4maj9</code>, with the Roman numeral under it. Spelling follows the key, or force sharps or flats.</p>
     </div>
     <div class="card">
       <h3>The full ladder</h3>
@@ -350,35 +433,51 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
     </div>
     <div class="card">
       <h3>Letters too</h3>
-      <p>Root, quality, slash bass and the notes sounding — with the bass note marked on the keybed.</p>
+      <p>Root, quality, slash bass and the notes sounding, with the bass note marked on the keybed.</p>
     </div>
   </div>
+</section>
+
+<section class="wrap" id="keys">
+  <p class="eyebrow">The stage</p>
+  <h2>All 88 keys, lit as you play.</h2>
+  <p class="body">Velocity-sensitive lighting, so the harder the note, the brighter it reads. Note labels above the keys, sustain shown while the pedal holds it, and a key size and accent colour to taste.</p>
+  <div class="shot rise" id="cl-velocity">
+    <img src="images/apps/chordlight88/velocity.webp" width="2000" height="835" loading="lazy"
+         alt="Two Chordlight keybeds, the same chord played soft and hard: the harder notes glow brighter"
+         onerror="document.getElementById('cl-velocity').hidden=true;document.getElementById('cl-velocity-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-velocity-cap">The same chord played soft, then hard. The light follows the touch.</p>
+  <div class="shot rise" id="cl-sustain">
+    <img src="images/apps/chordlight88/sustain.webp" width="2000" height="833" loading="lazy"
+         alt="Chordlight 88 with the sustain pedal down: the held notes stay lit and the readout notes four ringing"
+         onerror="document.getElementById('cl-sustain').hidden=true;document.getElementById('cl-sustain-cap').hidden=true">
+  </div>
+  <p class="shot-cap" id="cl-sustain-cap">Pedal down. The notes that are still ringing stay lit, and the readout counts them.</p>
 </section>
 
 <section class="wrap" id="camera">
   <p class="eyebrow">Built for a camera</p>
   <h2>Three windows that stay where you put them.</h2>
-  <p class="body">The chord, the number and the keys each detach into their own always-on-top window, and each docks back on its own. On macOS they float over full-screen apps. Nothing is left duplicated in the main window.</p>
-  <div class="figure rise">
-    <p class="n"><span class="now">0</span><small>pixels of movement when the chord changes</small></p>
-    <p>The readout geometry is fixed, so a two-character name and a nine-character name occupy the same space. A recording does not jump when the chord does. That was designed in, not patched on afterwards.</p>
+  <p class="body">The chord, the number and the keys each detach into their own always-on-top window for a second screen or a stream overlay, and each docks back on its own. The readout geometry is fixed, so a two-character name and a nine-character name occupy the same space and a recording never jumps when the chord does.</p>
+  <div class="shot rise" id="cl-max">
+    <img src="images/apps/chordlight88/layoutmax.webp" width="1920" height="1040" loading="lazy"
+         alt="Chordlight 88 with the keys stretched to the full height of the window and the readouts above"
+         onerror="document.getElementById('cl-max').hidden=true;document.getElementById('cl-max-cap').hidden=true">
   </div>
-  <div class="shot rise" id="cl-pop">
-    <img src="images/apps/chordlight88/popouts.png" alt="The chord, number and keys windows detached and floating over another application"
-         onerror="document.getElementById('cl-pop').hidden=true;document.getElementById('cl-pop-cap').hidden=true">
-  </div>
-  <p class="shot-cap" id="cl-pop-cap">Each readout is its own window. Put them where the frame needs them.</p>
+  <p class="shot-cap" id="cl-max-cap">Key height is yours to set, from a strip along the bottom of a stream to a keybed that fills a projector.</p>
 </section>
 
-<section class="wrap">
-  <p class="eyebrow">Appearance</p>
-  <h2>Six accents, light and dark.</h2>
-  <p class="body">The whole interface retints from the accent — panels, borders, text, and the velocity glow on the keys. Key height is yours to set, from a strip along the bottom of a stream to a keybed that fills a projector.</p>
-  <div class="shot rise" id="cl-light">
-    <img src="images/apps/chordlight88/light.png" alt="Chordlight 88 in light mode with an amber accent"
-         onerror="document.getElementById('cl-light').hidden=true;document.getElementById('cl-light-cap').hidden=true">
+<section class="wrap" id="setup">
+  <p class="eyebrow">Setup and Advanced</p>
+  <h2>Hidden until you ask for it.</h2>
+  <p class="body">Setup holds the MIDI input, channel, accent and key size. Advanced opens the rest: the vocal input and ducking, the quality, the clip title and font, the chord trail, what else to save, the backdrop, the plate and the mix strips. Six accents, light and dark, and your own tint over a backdrop.</p>
+  <div class="shot rise" id="cl-drawer">
+    <img src="images/apps/chordlight88/drawer.webp" width="1280" height="760" loading="lazy"
+         alt="The Setup drawer of Chordlight 88 with the Advanced section open: inputs, mix strips, quality, title, backdrop and plate"
+         onerror="document.getElementById('cl-drawer').hidden=true;document.getElementById('cl-drawer-cap').hidden=true">
   </div>
-  <p class="shot-cap" id="cl-light-cap">Light mode, amber accent. The same interface, retinted.</p>
+  <p class="shot-cap" id="cl-drawer-cap">Setup with Advanced open. Everything the clip needs, in one drawer.</p>
 </section>
 
 <section class="wrap">
@@ -386,20 +485,20 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   <h2>Four rooms it was built in.</h2>
   <div class="grid">
     <div class="card">
-      <h3>Worship and gospel keyboardists</h3>
-      <p>The number readout and the sol-fa. You think in 1–4–5 and Do–Re–Mi, and every other chord display speaks only letters.</p>
+      <h3>Piano and keyboard teachers</h3>
+      <p>Students watch the chord and the number appear as you play. The clip is the lesson hand-out.</p>
     </div>
     <div class="card">
-      <h3>Teachers and music directors</h3>
-      <p>A projector-sized readout of what the player at the keyboard is actually doing, in the notation the room uses.</p>
+      <h3>Worship and gigging keys players</h3>
+      <p>Nashville numbers in the key of the song, read off a second screen or a pop-out window.</p>
     </div>
     <div class="card">
-      <h3>Producers and session players</h3>
-      <p>Name a voicing you found by ear, mid-take, without stopping the DAW or reaching for a plug-in.</p>
+      <h3>Content creators</h3>
+      <p>A clean, branded clip of the keys and the chords, drawn by the app, with a picture or video behind it, or chroma green for the edit.</p>
     </div>
     <div class="card">
-      <h3>Streamers and teachers on camera</h3>
-      <p>Three detachable always-on-top windows that sit over a screen recording and do not move when the chord changes.</p>
+      <h3>Self-taught players</h3>
+      <p>Hear a voicing, see what it is called. Sol-fa for those who learned that way.</p>
     </div>
   </div>
 </section>
@@ -408,8 +507,8 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   <div class="buy rise">
     <p class="slot">$24<small>Early bird · full price $48</small></p>
     <div>
-      <h2>No account. No activation. No network.</h2>
-      <p>Twenty-four dollars while the early bird lasts, forty-eight after, and once it is yours it simply runs: offline, with no key to type, no server to reach and nothing phoning home. It reads your MIDI input and nothing else on your machine. You buy it here because that is where the download lives, not because the app will ever ask who you are.</p>
+      <h2>No account in the app. No analytics. No telemetry.</h2>
+      <p>Twenty-four dollars while the early bird lasts, forty-eight after. One key covers two computers, and you move it yourself with <i>Deactivate this device</i>. The only network traffic is the two licence calls, activation and an occasional check-in, and it keeps working offline for thirty days between them. It reads your MIDI input and your microphone, and nothing else on your machine.</p>
       <button class="cta" data-buy type="button">Buy — $24</button>
       <a class="cta ghost" href="#specs">See the specification</a>
       <p class="promo-line" data-promo hidden></p>
@@ -420,34 +519,44 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
 <section class="wrap" id="specs">
   <h2>Specification.</h2>
   <table class="spec">
-    <tr><th>Platforms</th><td>Windows 10 and later (x64) · macOS 11 and later (Apple silicon and Intel, universal)</td></tr>
-    <tr><th>Format</th><td>Standalone application. Windows: installer and portable build. macOS: disk image.</td></tr>
-    <tr><th>Range</th><td>88 keys, A0 – C8</td></tr>
-    <tr><th>MIDI</th><td>Non-exclusive input, every port including virtual cables, per-channel or omni, hot-plug, sustain-aware</td></tr>
-    <tr><th>Readouts</th><td>Chord name · Nashville number · Roman numeral · sol-fa</td></tr>
+    <tr><th>Platforms</th><td>Windows 10 and 11 (x64) · macOS 12 and later (Apple silicon and Intel)</td></tr>
+    <tr><th>Format</th><td>Standalone application. Windows: a zip, unzip and run. macOS: disk image.</td></tr>
+    <tr><th>Range</th><td>88 keys, A0 – C8, velocity-sensitive lighting, sustain shown</td></tr>
+    <tr><th>MIDI</th><td>Non-exclusive input, every port including virtual cables, one input or all at once, per-channel or omni, hot-plug</td></tr>
+    <tr><th>Readouts</th><td>Chord name · Nashville number · Roman numeral · sol-fa · note list and chord quality</td></tr>
+    <tr><th>Key centre</th><td>Set once; numbers and spelling follow. Auto spelling from the key, or force sharps or flats.</td></tr>
+    <tr><th>Record</th><td>MIDI (.mid) · 24-bit 48 kHz WAV · .chordlight take. Keep rescues the last five minutes.</td></tr>
+    <tr><th>Video</th><td>1080p drawn by the app, 4K at Best. Title, font, size and colour; keys top, middle or bottom; readout plate; chord trail; backdrop picture or looping video; chroma green or blue. MP4 where available, WebM otherwise.</td></tr>
+    <tr><th>Mix</th><td>Keyboard and vocal inputs with meters, ducking, and an audio offset for Bluetooth or USB latency</td></tr>
     <tr><th>Windows</th><td>Main window plus three detachable always-on-top pop-outs</td></tr>
-    <tr><th>Appearance</th><td>Six accents, light and dark, adjustable key height</td></tr>
-    <tr><th>Network</th><td>None. No account, no activation, no telemetry.</td></tr>
-    <tr><th>Preferences</th><td><code>Documents\Amanorsac Studio\Chordlight 88\preferences.json</code></td></tr>
-    <tr><th>Updates</th><td>Amanorsac Hub</td></tr>
+    <tr><th>Appearance</th><td>Light and dark, six accents, your own tint over a backdrop, adjustable key height</td></tr>
+    <tr><th>Licence</th><td>One key, two computers, moved yourself with Deactivate this device. Works offline for 30 days between check-ins.</td></tr>
+    <tr><th>Network</th><td>Two licence calls to amanorsac.studio. No account in the app, no analytics, no telemetry.</td></tr>
+    <tr><th>Updates</th><td>Amanorsac Hub. 2.0 is free for everyone who has 1.x.</td></tr>
   </table>
 </section>
 
 <section class="wrap">
   <h2>What it is not.</h2>
   <p class="body">Being straight about this is what keeps the reviews honest.</p>
-  <details><summary>Is it a transcription or notation tool?</summary>
-    <div>No. It names what is sounding now. It writes nothing down and exports nothing.</div></details>
-  <details><summary>Does it listen to audio?</summary>
-    <div>No. MIDI in, and nothing else. It cannot hear a recording, a microphone or a track.</div></details>
-  <details><summary>Is there a plug-in version?</summary>
-    <div>No. It is a standalone window, not a VST3 or an AU. A plug-in would be a different product, and this page is not promising one.</div></details>
+  <details><summary>Does it work with my keyboard?</summary>
+    <div>Any keyboard or controller that sends MIDI over USB or Bluetooth, including digital pianos. Chordlight listens to all inputs by default.</div></details>
+  <details><summary>Does it make sound?</summary>
+    <div>No. Your keyboard or your DAW does. Chordlight shows and records; it does not synthesise, and it does not include a piano.</div></details>
+  <details><summary>Does it listen to audio to find the chords?</summary>
+    <div>No. It reads MIDI. The microphone is for your voice-over, not for chord detection.</div></details>
+  <details><summary>What is a .chordlight file?</summary>
+    <div>A single shareable take: the MIDI, the audio and the lesson title in one file. Anyone with Chordlight opens it and sees the lights and hears the audio together.</div></details>
+  <details><summary>Does it record my screen?</summary>
+    <div>No. The video is drawn by the app at 1080p, or 4K at Best, so it looks the same whatever your windows are doing. System audio and your microphone are mixed in.</div></details>
+  <details><summary>Can I use it on two computers?</summary>
+    <div>Yes. One licence key covers two. <i>Deactivate this device</i> in About frees a seat so you can move it yourself.</div></details>
+  <details><summary>Does it need the internet?</summary>
+    <div>Only to activate and for an occasional check-in. It keeps working offline for thirty days between check-ins. There is no account inside the app, no analytics and no telemetry.</div></details>
+  <details><summary>Is there a plug-in version, or a phone version?</summary>
+    <div>No. It is a standalone desktop app for Windows and macOS, not a VST3 or an AU, and not on iOS or Android.</div></details>
   <details><summary>Will it really share any keyboard?</summary>
-    <div>Almost any. There is one exception: a controller whose manufacturer ships an exclusive-access driver cannot be shared by anything at all. Route it through loopMIDI in that case and everything downstream works normally.</div></details>
-  <details><summary>Do my settings sync between machines?</summary>
-    <div>No, because there is no cloud to sync them through. Preferences live in a file on the machine, at the path in the specification above.</div></details>
-  <details><summary>What does activation involve?</summary>
-    <div>Nothing. Buying puts the download in your <a href="/my-apps.html">My Apps</a>, and after that the app has nothing to check and no way to check it. Install it on every machine you own.</div></details>
+    <div>Almost any. The one exception is a controller whose manufacturer ships an exclusive-access driver, which nothing can share. Route it through loopMIDI in that case and everything downstream works normally.</div></details>
 </section>
 
 <footer>
