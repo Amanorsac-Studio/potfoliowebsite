@@ -41,11 +41,12 @@
        reads like one. It says what the button says instead. */
     var pwyw = !!a.pay_what_you_want;
     var now = a.free ? 'Free' : pwyw ? 'Name your price' : money(a.price_cents);
-    var sale = c.promo && !a.free && !pwyw &&
+    var promo = a.promo || c.promo;
+    var sale = promo && !a.free && !pwyw &&
                a.list_price_cents > a.price_cents &&
                window.StoreState.stateOf(a) === 'available';
-    if (sale && c.promo.ends) {
-      var t = Date.parse(c.promo.ends);
+    if (sale && promo.ends) {
+      var t = Date.parse(promo.ends);
       if (isFinite(t) && t <= Date.now()) sale = false;
     }
     var pct = sale ? Math.round((1 - a.price_cents / a.list_price_cents) * 100) : 0;

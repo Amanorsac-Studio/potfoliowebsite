@@ -77,7 +77,11 @@
   }
 
   window.StoreState.catalog().then(function (c) {
-    var promo = c && c.promo;
+    /* An app can carry its own promo block - an early bird on a new
+       release, say - which stands in for the site-wide one on that
+       app's page. Same shape, same rules about the deadline. */
+    var own = app && c && c.apps && c.apps[app] && c.apps[app].promo;
+    var promo = own || (c && c.promo);
     if (!promo) return;                        // no sale on: nothing is drawn
 
     var ends = promo.ends ? Date.parse(promo.ends) : NaN;
@@ -177,6 +181,8 @@
       if (which === app && !onSaleHere) return;
       var d = deal(apps[which]);
       if (!d) return;
+      /* a line for another app reads that app's own note, if it has one */
+      if (which !== app && apps[which] && apps[which].promo && apps[which].promo.note) note = esc(apps[which].promo.note);
       slot.innerHTML = '<span class="promo-tag">' + d.pct + '% off</span>' +
         '<b>' + note + '</b> — normally <s>' + d.was + '</s>, yours for <b>' + d.now + '</b> today. ';
       if (ends) slot.appendChild(clock());

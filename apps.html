@@ -1616,7 +1616,7 @@ var CONFIG = {
           if(soon) soon.remove();
           tile.classList.remove('nolink');
           if(tile.dataset.href){ tile.setAttribute('href', tile.dataset.href); delete tile.dataset.href; }
-          price(tile, shot, app, c.promo);
+          price(tile, shot, app, app.promo || c.promo);
           platforms(tile, app);
           return;
         }

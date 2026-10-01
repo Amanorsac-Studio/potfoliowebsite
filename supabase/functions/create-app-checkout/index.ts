@@ -95,7 +95,8 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     label: "Align Pro — lifetime licence for two computers, one year of updates included",
   },
   chordlight88: {
-    amount_cents: 1400,
+    // 2.0 early bird. The full price is 4800; put it back when the bird flies.
+    amount_cents: 2400,
     label: "Chordlight 88 — lifetime licence, no activation",
   },
   nebulatide2: {

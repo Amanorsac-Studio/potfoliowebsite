@@ -1048,12 +1048,15 @@ async function catalogApi(env) {
   const apps = {};
   for (const id of Object.keys(c.apps || {})) {
     const a = c.apps[id];
+    /* an app's own sale (an early bird on a release) counts the same
+       as the site-wide one, deadline and all */
+    const own = a.promo ? !!salePromo({ promo: a.promo }) : false;
     apps[id] = {
       name: a.name, vendor: a.vendor || 'Amanorsac Studio', kind: a.kind || 'app', status: a.status || 'available',
       tagline: a.tagline || '', icon: abs(a.icon), art: abs(a.art), page: abs(a.page), color: a.color || null,
       soon_note: a.soon_note || null,
       free: !!a.free, price_cents: a.free ? 0 : (a.price_cents || null),
-      list_price_cents: (sale && !a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
+      list_price_cents: ((sale || own) && !a.free && a.list_price_cents > (a.price_cents || 0)) ? a.list_price_cents : null,
       licensed: !!a.licensed,
       version: a.version || null, platforms: Object.keys(a.installers || {})
     };
