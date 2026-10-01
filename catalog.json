@@ -743,7 +743,7 @@
       "price_min_cents": 500,
       "pay_what_you_want": true,
       "licensed": true,
-      "version": "2.1",
+      "version": "2.0.1",
       "notice": {
         "_": "Emailed once to everyone who owns this app, by the daily job.",
         "_2": "Delete this block and nothing more goes out. Change the wording",
@@ -764,8 +764,9 @@
       },
       "installers": {
         "windows": {
-          "key": "nebulatide2/NebulaTide-Windows.zip",
+          "key": "nebulatide2/NebulaTide-Windows-2.0.1.zip",
           "alt_keys": [
+            "nebulatide2/NebulaTide-Windows.zip",
             "Nebula Tide V2/NebulaTide-Windows.zip",
             "nebulatide2/NebulaTide-Windows_2.zip"
           ],
@@ -774,8 +775,9 @@
           "size": "278 MB"
         },
         "mac": {
-          "key": "nebulatide2/NebulaTide-macOS.zip",
+          "key": "nebulatide2/NebulaTide-macOS-2.0.1.zip",
           "alt_keys": [
+            "nebulatide2/NebulaTide-macOS.zip",
             "Nebula Tide V2/NebulaTide-macOS.zip",
             "nebulatide2/NebulaTide-macOS_2.zip"
           ],
