@@ -263,6 +263,10 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
 }
 
   .shot video{width:100%;display:block;aspect-ratio:16/9;background:#000}
+  .listen{margin-top:clamp(26px,5vh,44px);padding:16px 20px;border:1px solid var(--line);border-radius:var(--r-lg);background:color-mix(in srgb,var(--accent,#9A7CFF) 6%,transparent);display:grid;gap:6px}
+  .listen .eyebrow{margin:0}
+  .listen-t{margin:0;font-size:15px;line-height:1.5}
+  .listen audio{width:100%;height:40px;margin-top:4px}
 </style>
 <link rel="canonical" href="https://amanorsac.studio/chordlight88">
 <link rel="stylesheet" href="assets/site-auth.css">
@@ -311,6 +315,11 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   <p class="pay-alt-row" data-pay-alt hidden></p>
   <p class="code-row" data-code-box hidden></p>
   <ul class="assure" data-assure hidden></ul>
+  <div class="listen" id="cl-listen">
+    <p class="eyebrow">Listen &middot; 1 min 20 s</p>
+    <p class="listen-t">Stephen on what Chordlight 88 does, and what is new in 2.0.</p>
+    <audio controls preload="none" src="images/apps/chordlight88/voiceover.mp3" aria-label="A voice-over about Chordlight 88, one minute twenty seconds"></audio>
+  </div>
   <div class="shot rise" id="cl-hero">
     <img src="images/apps/chordlight88/notes.webp" width="2400" height="987" fetchpriority="high"
          alt="Chordlight 88: six notes lit across the 88-key stage, named Fmaj9, numbered 4maj9 in the key of C, with IVmaj9 and Fa underneath"
@@ -581,6 +590,36 @@ table.spec code{font-family:var(--mono);font-size:.9em;color:var(--text);word-br
   } else {
     document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
   }
+})();
+</script>
+<script>
+/* The welcome starts by itself. Browsers refuse sound on load until the
+   visitor has clicked, tapped or pressed a key, so it tries at once and,
+   if that is refused, starts on the first of those. Once per visit: a
+   reload, or a visitor who paused it, is not played at again. Pressing
+   Buy stops it, so it never talks over a checkout. */
+(function(){
+  var a = document.querySelector('#cl-listen audio'); if(!a) return;
+  var sent = false, KEY = 'cl-voiceover-heard', stopped = false;
+  function heard(){ try { return sessionStorage.getItem(KEY) === '1'; } catch(e){ return false; } }
+  function mark(){ try { sessionStorage.setItem(KEY, '1'); } catch(e){} }
+  a.addEventListener('play', function(){
+    mark();
+    if(!sent && window.track){ sent = true; window.track('voiceover_played', 'chordlight88'); }
+  });
+  a.addEventListener('pause', function(){ if(!a.ended) stopped = true; });
+  document.addEventListener('click', function(e){
+    if(e.target.closest && e.target.closest('[data-buy]')){ stopped = true; a.pause(); }
+  });
+  if(heard()) return;
+  function start(){ if(stopped || !a.paused) return Promise.resolve(); return a.play(); }
+  var EV = ['pointerdown','keydown','touchend'];
+  function armed(){
+    function go(){ EV.forEach(function(n){ document.removeEventListener(n, go, true); }); start().catch(function(){}); }
+    EV.forEach(function(n){ document.addEventListener(n, go, true); });
+  }
+  var tried = start();
+  if(tried && tried.catch) tried.catch(armed);
 })();
 </script>
 <script src="assets/track.js" defer></script>
