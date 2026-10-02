@@ -323,6 +323,124 @@
     "ends": "2026-09-30T23:59:59Z"
   },
   "apps": {
+    "chordlight88": {
+      "_cl": "2.0.1 is up: a zip for Windows and a dmg for the Mac, uploaded 1 Oct 2026.",
+      "_cl7": "These keys live on the APP, not inside installers: this file reads",
+      "_cl8": "Object.keys(installers) as the platform list, so a comment in",
+      "_cl9": "there becomes an app that runs on \"_2\". I did it again writing",
+      "_cl10": "this entry, which is why the warning is repeated here.",
+      "name": "Chordlight 88",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
+      "tagline": "See what your hands are playing. Now it records, and draws the video.",
+      "icon": "images/apps/chordlight88/icon.svg",
+      "art": "images/apps/chordlight88/notes.webp",
+      "page": "chordlight88.html",
+      "color": "#9A7CFF",
+      "free": false,
+      "price_cents": 2400,
+      "list_price_cents": 4800,
+      "licensed": true,
+      "version": "2.0.1",
+      "installers": {
+        "windows": {
+          "key": "chordlight88/chordlight-Windows2.0.1.zip",
+          "alt_keys": [
+            "ChordLight/chordlight-Windows2.0.1.zip",
+            "chordlight-Windows2.0.1.zip"
+          ],
+          "as": "Chordlight-88-2.0.1-Windows.zip",
+          "type": "application/zip",
+          "label": "Windows 10/11 · zip, unzip and run",
+          "size": "82 MB"
+        },
+        "mac": {
+          "key": "chordlight88/Chordlight88-2.0.1-macOS.dmg",
+          "alt_keys": [
+            "ChordLight/Chordlight88-2.0.1-macOS.dmg",
+            "Chordlight88-2.0.1-macOS.dmg"
+          ],
+          "as": "Chordlight-88-2.0.1.dmg",
+          "type": "application/x-apple-diskimage",
+          "label": "macOS 11+",
+          "size": "181 MB"
+        }
+      },
+      "promo": {
+        "_": "This app's own sale, read instead of the site-wide promo block. Same shape: percent, note, and an optional ends that is a real deadline. Remove it when the early bird is over, and put price_cents up to list_price_cents.",
+        "percent": 50,
+        "note": "Early bird on 2.0"
+      }
+    },
+    "nebulatide2": {
+      "name": "Nebula Tide 2",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
+      "tagline": "The pad rises as it fades. Shimmer, your own presets, and a drag to the timeline.",
+      "icon": "images/apps/nt-logo.webp",
+      "art": "images/apps/nt2/stage.webp",
+      "page": "nebulatide2.html",
+      "color": "#4FE3FF",
+      "free": false,
+      "price_cents": 2900,
+      "price_min_cents": 500,
+      "pay_what_you_want": true,
+      "licensed": true,
+      "version": "2.0.1",
+      "notice": {
+        "_": "Emailed once to everyone who owns this app, by the daily job.",
+        "_2": "Delete this block and nothing more goes out. Change the wording",
+        "_3": "without changing id and nothing happens - id is what a send is",
+        "_4": "remembered by. Change id and EVERY owner gets a second letter,",
+        "_5": "which is the behaviour you want from something that must not",
+        "_6": "surprise anyone. Nobody is emailed twice for the same id, ever.",
+        "_7": "",
+        "_8": "The iPhone build is not mentioned. It goes through the App",
+        "_9": "Store, and nothing should be promised in writing to a paying",
+        "_10": "customer before Apple has actually approved it. When it is",
+        "_11": "live, that is a new notice with a new id.",
+        "id": "2026-09-android",
+        "subject": "Nebula Tide 2 is on Android, and the desktop build is new",
+        "line": "Nebula Tide 2 now runs on Android — and there is a new build for Windows and Mac.",
+        "body": "The same twelve keys and the same pads, on your phone. Your licence already covers it: sign in with the account you bought it with and it is there. On the desktop, Amanorsac Hub will offer you version 2.1 next time you open it.",
+        "cta": "Get the Android build"
+      },
+      "installers": {
+        "windows": {
+          "key": "nebulatide2/NebulaTide-Windows-2.0.1.zip",
+          "alt_keys": [
+            "nebulatide2/NebulaTide-Windows.zip",
+            "Nebula Tide V2/NebulaTide-Windows.zip",
+            "nebulatide2/NebulaTide-Windows_2.zip"
+          ],
+          "as": "NebulaTide2-Windows.zip",
+          "type": "application/zip",
+          "size": "278 MB"
+        },
+        "mac": {
+          "key": "nebulatide2/NebulaTide-macOS-2.0.1.zip",
+          "alt_keys": [
+            "nebulatide2/NebulaTide-macOS.zip",
+            "Nebula Tide V2/NebulaTide-macOS.zip",
+            "nebulatide2/NebulaTide-macOS_2.zip"
+          ],
+          "as": "NebulaTide2-macOS.zip",
+          "type": "application/zip",
+          "size": "312 MB"
+        },
+        "android": {
+          "key": "nebulatide2/NebulaTide-Android.zip",
+          "alt_keys": [
+            "Nebula Tide V2/NebulaTide-Android.zip"
+          ],
+          "as": "NebulaTide2-Android.zip",
+          "type": "application/zip",
+          "size": "263 MB"
+        }
+      }
+    },
     "performlive": {
       "name": "PerformLive",
       "vendor": "Amanorsac Studio",
@@ -396,56 +514,6 @@
           "label": "macOS · Apple silicon and Intel",
           "size": "9.52 MB"
         }
-      }
-    },
-    "chordlight88": {
-      "_cl": "2.0.1 is up: a zip for Windows and a dmg for the Mac, uploaded 1 Oct 2026.",
-      "_cl7": "These keys live on the APP, not inside installers: this file reads",
-      "_cl8": "Object.keys(installers) as the platform list, so a comment in",
-      "_cl9": "there becomes an app that runs on \"_2\". I did it again writing",
-      "_cl10": "this entry, which is why the warning is repeated here.",
-      "name": "Chordlight 88",
-      "vendor": "Amanorsac Studio",
-      "kind": "app",
-      "status": "available",
-      "tagline": "See what your hands are playing. Now it records, and draws the video.",
-      "icon": "images/apps/chordlight88/icon.svg",
-      "art": "images/apps/chordlight88/notes.webp",
-      "page": "chordlight88.html",
-      "color": "#9A7CFF",
-      "free": false,
-      "price_cents": 2400,
-      "list_price_cents": 4800,
-      "licensed": true,
-      "version": "2.0.1",
-      "installers": {
-        "windows": {
-          "key": "chordlight88/chordlight-Windows2.0.1.zip",
-          "alt_keys": [
-            "ChordLight/chordlight-Windows2.0.1.zip",
-            "chordlight-Windows2.0.1.zip"
-          ],
-          "as": "Chordlight-88-2.0.1-Windows.zip",
-          "type": "application/zip",
-          "label": "Windows 10/11 · zip, unzip and run",
-          "size": "82 MB"
-        },
-        "mac": {
-          "key": "chordlight88/Chordlight88-2.0.1-macOS.dmg",
-          "alt_keys": [
-            "ChordLight/Chordlight88-2.0.1-macOS.dmg",
-            "Chordlight88-2.0.1-macOS.dmg"
-          ],
-          "as": "Chordlight-88-2.0.1.dmg",
-          "type": "application/x-apple-diskimage",
-          "label": "macOS 11+",
-          "size": "181 MB"
-        }
-      },
-      "promo": {
-        "_": "This app's own sale, read instead of the site-wide promo block. Same shape: percent, note, and an optional ends that is a real deadline. Remove it when the early bird is over, and put price_cents up to list_price_cents.",
-        "percent": 50,
-        "note": "Early bird on 2.0"
       }
     },
     "secondout": {
@@ -725,74 +793,6 @@
           "as": "PulseRoom-macOS.zip",
           "type": "application/zip",
           "size": "171 MB"
-        }
-      }
-    },
-    "nebulatide2": {
-      "name": "Nebula Tide 2",
-      "vendor": "Amanorsac Studio",
-      "kind": "app",
-      "status": "available",
-      "tagline": "The pad rises as it fades. Shimmer, your own presets, and a drag to the timeline.",
-      "icon": "images/apps/nt-logo.webp",
-      "art": "images/apps/nt2/stage.webp",
-      "page": "nebulatide2.html",
-      "color": "#4FE3FF",
-      "free": false,
-      "price_cents": 2900,
-      "price_min_cents": 500,
-      "pay_what_you_want": true,
-      "licensed": true,
-      "version": "2.0.1",
-      "notice": {
-        "_": "Emailed once to everyone who owns this app, by the daily job.",
-        "_2": "Delete this block and nothing more goes out. Change the wording",
-        "_3": "without changing id and nothing happens - id is what a send is",
-        "_4": "remembered by. Change id and EVERY owner gets a second letter,",
-        "_5": "which is the behaviour you want from something that must not",
-        "_6": "surprise anyone. Nobody is emailed twice for the same id, ever.",
-        "_7": "",
-        "_8": "The iPhone build is not mentioned. It goes through the App",
-        "_9": "Store, and nothing should be promised in writing to a paying",
-        "_10": "customer before Apple has actually approved it. When it is",
-        "_11": "live, that is a new notice with a new id.",
-        "id": "2026-09-android",
-        "subject": "Nebula Tide 2 is on Android, and the desktop build is new",
-        "line": "Nebula Tide 2 now runs on Android — and there is a new build for Windows and Mac.",
-        "body": "The same twelve keys and the same pads, on your phone. Your licence already covers it: sign in with the account you bought it with and it is there. On the desktop, Amanorsac Hub will offer you version 2.1 next time you open it.",
-        "cta": "Get the Android build"
-      },
-      "installers": {
-        "windows": {
-          "key": "nebulatide2/NebulaTide-Windows-2.0.1.zip",
-          "alt_keys": [
-            "nebulatide2/NebulaTide-Windows.zip",
-            "Nebula Tide V2/NebulaTide-Windows.zip",
-            "nebulatide2/NebulaTide-Windows_2.zip"
-          ],
-          "as": "NebulaTide2-Windows.zip",
-          "type": "application/zip",
-          "size": "278 MB"
-        },
-        "mac": {
-          "key": "nebulatide2/NebulaTide-macOS-2.0.1.zip",
-          "alt_keys": [
-            "nebulatide2/NebulaTide-macOS.zip",
-            "Nebula Tide V2/NebulaTide-macOS.zip",
-            "nebulatide2/NebulaTide-macOS_2.zip"
-          ],
-          "as": "NebulaTide2-macOS.zip",
-          "type": "application/zip",
-          "size": "312 MB"
-        },
-        "android": {
-          "key": "nebulatide2/NebulaTide-Android.zip",
-          "alt_keys": [
-            "Nebula Tide V2/NebulaTide-Android.zip"
-          ],
-          "as": "NebulaTide2-Android.zip",
-          "type": "application/zip",
-          "size": "263 MB"
         }
       }
     },
