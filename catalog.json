@@ -387,7 +387,7 @@
       "vendor": "Amanorsac Studio",
       "kind": "app",
       "status": "available",
-      "tagline": "Your files. Your template. Your DAW.",
+      "tagline": "Quickly import session files into your mix template.",
       "icon": "images/apps/stemsorter-logo.svg",
       "art": "images/apps/stemsorter/17-light.webp",
       "page": "stemsorter.html",
