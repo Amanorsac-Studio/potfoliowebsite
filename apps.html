@@ -1659,5 +1659,56 @@ var CONFIG = {
   else apply();
 })();
 </script>
+<style>
+  /* The welcome has no player bar. One small speaker button is all that
+     is left of it, so a visitor can always silence it. */
+  .welcome-mute{position:fixed;right:16px;bottom:16px;z-index:70;width:40px;height:40px;border-radius:50%;
+    border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 90%,transparent);color:var(--paper);
+    display:grid;place-items:center;cursor:pointer;padding:0;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 6px 18px rgba(0,0,0,.35);
+    transition:opacity .25s,transform .2s}
+  .welcome-mute:hover{transform:scale(1.06)}
+  .welcome-mute svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .welcome-mute[hidden]{display:none}
+  @media (max-width:860px){ .welcome-mute{bottom:calc(86px + env(safe-area-inset-bottom,0px))} }
+</style>
+<button type="button" class="welcome-mute" id="welcome-mute" aria-label="Mute the welcome" hidden>
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path class="on" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path class="off" d="M16 9l5 6M21 9l-5 6" style="display:none"/></svg>
+</button>
+<script>
+/* A spoken welcome that starts by itself, with nothing to see. Browsers
+   refuse sound on load until the visitor has clicked, tapped or pressed
+   a key, so it tries at once and, if refused, starts on the first of
+   those. Once per visit, and it stops if the tab is put away. The only
+   control is the speaker button, which mutes it. */
+(function(){
+  var KEY = 'apps-welcome-heard';
+  try { if (sessionStorage.getItem(KEY) === '1') return; } catch(e){}
+  var a = new Audio(); a.preload = 'auto'; a.src = 'images/apps/welcome.mp3';
+  var btn = document.getElementById('welcome-mute'), sent = false, done = false;
+  function icon(){
+    var off = a.muted;
+    btn.querySelector('.on').style.display = off ? 'none' : '';
+    btn.querySelector('.off').style.display = off ? '' : 'none';
+    btn.setAttribute('aria-label', off ? 'Unmute the welcome' : 'Mute the welcome');
+  }
+  a.addEventListener('play', function(){
+    try { sessionStorage.setItem(KEY, '1'); } catch(e){}
+    btn.hidden = false; icon();
+    if(!sent && window.track){ sent = true; window.track('voiceover_played', 'apps welcome'); }
+  });
+  a.addEventListener('ended', function(){ done = true; btn.hidden = true; });
+  btn.addEventListener('click', function(){ a.muted = !a.muted; icon(); });
+  document.addEventListener('visibilitychange', function(){ if(document.hidden && !a.paused) a.pause(); });
+  function start(){ if(done || !a.paused) return Promise.resolve(); return a.play(); }
+  var EV = ['pointerdown','keydown','touchend'];
+  function armed(){
+    function go(){ EV.forEach(function(n){ document.removeEventListener(n, go, true); }); start().catch(function(){}); }
+    EV.forEach(function(n){ document.addEventListener(n, go, true); });
+  }
+  var tried = start();
+  if(tried && tried.catch) tried.catch(armed);
+})();
+</script>
 </body>
 </html>
