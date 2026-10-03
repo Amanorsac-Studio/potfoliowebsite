@@ -370,3 +370,20 @@ code{font-family:var(--mono);font-size:.86em;background:rgba(255,255,255,.08);bo
 .grid .item .ph{aspect-ratio:16/10;border-radius:10px;margin:0 0 18px;display:grid;place-items:center;
   background:radial-gradient(120% 120% at 50% 0%,#14233a,#070b12);outline:1px solid rgba(255,255,255,.08);outline-offset:-1px;
   font-weight:200;font-size:clamp(26px,3vw,40px);letter-spacing:-.02em;color:#cfe3ff}
+
+/* ---------- a hero that is the product itself, not a photograph ---------- */
+.hero-img.ui{max-width:1280px;margin-left:auto;margin-right:auto;padding:0 var(--gut)}
+.hero-img.ui::before,.hero-img.ui::after{display:none}
+.hero-img.ui img{height:auto;object-fit:contain;border-radius:12px;box-shadow:0 40px 120px rgba(0,0,0,.7);
+  outline:1px solid rgba(255,255,255,.08);outline-offset:-1px}
+.hero-img.ui figcaption{font-size:14px;color:var(--dim);text-align:center;margin:16px auto 0;max-width:70ch}
+
+/* ---------- plans ---------- */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1080px;margin:0 auto;padding:0 var(--gut) clamp(32px,5vh,56px)}
+.plans > div{border:1px solid var(--paper-line);border-radius:16px;padding:28px 26px;background:#fff}
+.plans h3{font-weight:500;font-size:20px;margin:0 0 6px}
+.plans .amt{font-weight:300;font-size:44px;letter-spacing:-.03em;margin:0}
+.plans .amt small{font-size:15px;color:var(--ink-2);letter-spacing:0}
+.plans .who{color:var(--ink-2);font-size:15px;margin:0 0 14px}
+.plans ul{margin:0 0 20px;padding:0 0 0 18px;color:var(--ink-2);font-size:15px}
+@media (max-width:860px){ .plans{grid-template-columns:1fr} }

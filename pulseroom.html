@@ -4,318 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-adsense-account" content="ca-pub-6190327414594776">
-<title>PulseRoom: delay, reverb, EQ and compression at your tempo | Amanorsac App Store</title>
-<meta name="description" content="Drop a song in and PulseRoom finds the BPM offline, then turns it into delay times, reverb tails, EQ moves and compression settings — visual, offline, and free. A desktop reference desk for producers on Windows and macOS.">
-<meta property="og:title" content="Every mixing answer. One tempo.">
-<meta property="og:description" content="The free desktop toolkit that syncs delay, reverb, EQ and compression guidance to your song's BPM. Windows and macOS.">
-<meta property="og:image" content="https://amanorsac.studio/images/apps/S1-hero-delay-essentials.png">
-<meta property="og:url" content="https://amanorsac.studio/pulseroom.html">
+<title>PulseRoom | Delay, reverb, EQ and compression at your tempo, free | Amanorsac Studio</title>
+<meta name="description" content="PulseRoom is a free desktop toolkit for producers. Drop a song in and it finds the tempo, then gives you delay times, reverb tails, EQ zones, compression envelopes and mix chains to match. Windows and macOS, offline.">
 <link rel="icon" href="images/apps/pulseroom-logo.svg" type="image/svg+xml">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="preload" as="image" href="images/photos/pulseroom-studio-1200.webp" imagesrcset="images/photos/pulseroom-studio-1200.webp 1200w, images/photos/pulseroom-studio.webp 2400w" imagesizes="100vw">
+<link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+<link rel="stylesheet" href="/assets/hub-download.css">
 <style>
-/* ---------- fonts ----------
-   Served from this site rather than fonts.googleapis.com. That stylesheet
-   blocked the first paint on every visit while the browser opened a
-   connection to a third party and waited for an answer. These are the
-   same typefaces, variable-weight, latin only, and they come down the
-   connection the page is already using. Nothing about visitors is shared
-   with Google to render text any more. */
-/* latin-ext */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* =====================================================================
-   PulseRoom product page. Same skeleton as the other product pages,
-   wearing the app's own colour system: near-black panels, cyan as the
-   brand accent, and the five module accents used exactly the way the
-   app uses them - one per section, never mixed.
-   ===================================================================== */
-:root{
-  --bg:#0c0e12; --panel:#12151c; --panel-2:#171b24; --line:rgba(255,255,255,.08);
-  --text:#e9ebf1; --muted:#a2a9b8; --dim:#7f8596;   /* lifted: the old grey sat under 4.5:1 on this near-black */
-  --accent:#3fd3e4; --accent-soft:#0e2229;
-  --rv:#a48bfa; --eq:#f2b13c; --cp:#f25c7f; --ch:#4fd58f; --gd:#5f9dff; --rf:#d8a05f;
-  --go:#4fd58f;
-  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
-  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --r:14px; --r-lg:22px;
-  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-html,body{overflow-x:clip}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
-  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block}
-a{color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-
-.wrap{max-width:1120px;margin:0 auto;
-  padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
-section{padding:clamp(64px,10vh,120px) 0}
-
-/* ---------- top bar ---------- */
-.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
-  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 86%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
-.top .back:hover{color:var(--text)}
-.top .name{margin-left:auto;display:flex;align-items:center;gap:9px;
-  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
-.top .name img{width:18px;height:18px}
-.top .name b{color:var(--accent);font-weight:700}
-/* the account chip (site-auth.js) wears this page's own palette */
-.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
-.top .sa-av{color:#04161a}
-
-/* ---------- hero ---------- */
-.hero{padding-top:clamp(56px,9vh,100px)}
-.hero .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
-  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
-  border-radius:999px;padding:6px 14px;margin:0 0 26px}
-h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;
-  font-size:clamp(34px,5.6vw,64px);margin:0 0 22px;max-width:16ch}
-.hero .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:54ch;margin:0 0 30px}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
-.cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
-  text-decoration:none;border-radius:999px;padding:14px 28px;
-  background:var(--accent);color:#06171b;transition:transform var(--dur) var(--ease)}
-.cta:hover{transform:translateY(-2px)}
-.cta:active{transform:translateY(0) scale(.98)}
-.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-.hero .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);margin:0}
-.hero-shot{margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
-  border-radius:var(--r-lg);overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,.55)}
-.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--accent);margin:14px 0 0}
-
-/* ---------- reviews ----------
-   Two states throughout: a real number once app-reviews.js has one, and
-   nothing at all until then. A visible zero under a fresh install is a
-   worse first impression than a section that simply waits. */
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
-.stars{display:inline-flex;gap:2px;vertical-align:middle}
-.star{font-size:16px;line-height:1;color:var(--line)}
-.star.on{color:var(--accent)}
-.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
-.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
-.rv-list{list-style:none;margin:0 0 40px;padding:0;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:20px 22px}
-.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
-.rv-head .star{font-size:13px}
-.rv-who{font-size:12.5px;color:var(--dim)}
-.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
-.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
-.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
-  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px)}
-.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px}
-.rv-pick{display:flex;gap:6px;margin:0 0 20px}
-.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
-.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
-.rv-pick .star.on{color:var(--accent)}
-.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
-.rv-lbl span{text-transform:none;letter-spacing:0}
-.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
-  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
-  font-size:14.5px;resize:vertical;margin:0 0 16px}
-.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent)}
-.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
-.rv-go[disabled]{opacity:.6;cursor:default}
-.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
-.rv-msg.bad{color:#f25c7f}
-.rv-done{text-align:center;padding:6px 0 4px}
-.rv-done[hidden]{display:none}
-.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
-  display:grid;place-items:center;font-size:20px;color:var(--accent);
-  background:var(--accent-soft)}
-.rv-done h3{font-size:19px;margin:0 0 8px}
-.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
-
-/* ---------- the walkthrough ----------
-   Screen recordings, no sound. They start when they come into view and
-   stop when they leave, so nothing plays to an empty room, and they do
-   not start at all for anyone who has asked for less motion. Controls
-   are there either way. */
-.vid{margin:0;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,.55);background:#000}
-.vid video{display:block;width:100%;height:auto;aspect-ratio:1280/840}
-.vidcap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dim);margin:14px 0 0}
-
-/* the Hub button's styles live in assets/hub-download.css, shared with every page that offers an app */
-
-/* ---------- section headings ---------- */
-h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
-  font-size:clamp(25px,3.2vw,38px);margin:0 0 14px}
-.lede{color:var(--muted);max-width:60ch;margin:0 0 40px;font-size:17px}
-
-/* ---------- feature rows ---------- */
-.feat{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,4vw,56px);
-  align-items:center;margin-bottom:clamp(48px,8vh,84px)}
-.feat.flip{grid-template-columns:1.15fr 1fr}
-.feat.flip .feat-copy{order:2}
-.feat .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--k,var(--accent));margin:0 0 10px}
-.feat h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);
-  letter-spacing:-.015em;margin:0 0 12px}
-.feat p{color:var(--muted);margin:0;max-width:46ch}
-.feat .shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
-  box-shadow:0 14px 48px rgba(0,0,0,.45)}
-.feat-wide{margin-bottom:clamp(48px,8vh,84px)}
-.feat-wide .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--k,var(--accent));margin:0 0 10px}
-.feat-wide h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);margin:0 0 12px}
-.feat-wide p{color:var(--muted);max-width:58ch;margin:0 0 26px}
-.feat-wide .shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-
-/* the quiet ones */
-.trio{border-top:1px solid var(--line)}
-.trio > div{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:18px;
-  padding:26px 0;border-bottom:1px solid var(--line)}
-.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
-.trio p{margin:0;color:var(--muted);max-width:60ch}
-@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
-
-/* ---------- workflow ---------- */
-.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:step}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:22px 20px;counter-increment:step}
-.step::before{content:counter(step,decimal-leading-zero);display:block;
-  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px}
-.step b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:6px}
-.step p{margin:0;font-size:14px;color:var(--muted)}
-@media (max-width:980px){ .steps{grid-template-columns:1fr 1fr 1fr} }
-@media (max-width:640px){ .steps{grid-template-columns:1fr 1fr} }
-@media (max-width:420px){ .steps{grid-template-columns:1fr} }
-
-/* ---------- gallery ---------- */
-.shotrow{display:grid;grid-auto-flow:column;grid-auto-columns:min(560px,86vw);gap:16px;
-  overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  padding-bottom:14px}
-.shotrow figure{margin:0;scroll-snap-align:start}
-.shotrow .shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.shotrow figcaption{font-size:13.5px;color:var(--muted);padding:10px 4px 0}
-
-/* ---------- comparison ---------- */
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
-table{width:100%;border-collapse:collapse;min-width:640px;background:var(--panel)}
-th,td{text-align:left;padding:14px 18px;font-size:14.5px;border-bottom:1px solid var(--line)}
-th{font-family:var(--display);font-weight:600;font-size:14px}
-thead th{background:var(--panel-2)}
-tbody th{font-weight:500;color:var(--muted)}
-td b{color:var(--go);font-weight:600}
-td i{color:var(--dim);font-style:normal}
-tr:last-child th,tr:last-child td{border-bottom:0}
-
-/* ---------- the price ---------- */
-.price{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
-  gap:clamp(20px,4vw,48px);align-items:center}
-.price .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,7vw,84px);
-  letter-spacing:-.04em;line-height:1;color:var(--accent);margin:0}
-.price h2{margin:0 0 8px}
-.price p{margin:0;color:var(--muted);max-width:52ch}
-@media (max-width:700px){ .price{grid-template-columns:1fr;gap:14px} }
-
-/* ---------- faq ---------- */
-details{border-bottom:1px solid var(--line)}
-details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
-  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
-details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-family:var(--mono);color:var(--muted);
-  font-size:18px;transition:transform var(--dur) var(--ease)}
-details[open] summary::after{transform:rotate(45deg)}
-details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
-
-.finale{border-top:1px solid var(--line)}
-.finale h2{max-width:22ch}
-
-footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
-  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);text-decoration:none;
-  /* 18px tall was under the 24px minimum for a touch target */
-  display:inline-flex;align-items:center;min-height:24px}
-footer a:hover{color:var(--text)}
-footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-
-/* ---------- motion ---------- */
-.rise{opacity:0;transform:translateY(18px);
-  transition:opacity 640ms var(--ease),transform 640ms var(--ease)}
-.rise.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{transition:none!important;animation:none!important}
-  .rise{opacity:1;transform:none}
-}
-@media (max-width:820px){
-  .feat,.feat.flip{grid-template-columns:1fr}
-  .feat.flip .feat-copy{order:0}
-}
+:root{--accent:#2fd3e6;--accent-ink:#00191c}
+.shot video{aspect-ratio:1280/840;background:#000}
 </style>
 <link rel="canonical" href="https://amanorsac.studio/pulseroom">
+<meta property="og:title" content="PulseRoom">
+<meta property="og:description" content="Every mixing answer at one tempo: delay times, reverb tails, EQ zones, compression and mix chains. Free for Windows and macOS.">
+<meta property="og:image" content="https://amanorsac.studio/images/photos/pulseroom-studio.webp">
+<meta property="og:url" content="https://amanorsac.studio/pulseroom">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -327,206 +33,237 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   "operatingSystem": "Windows, macOS",
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Audio software",
-  "image": "https://amanorsac.studio/images/apps/S1-hero-delay-essentials.png",
-  "author": {
-    "@id": "https://amanorsac.studio/#studio"
-  },
-  "publisher": {
-    "@id": "https://amanorsac.studio/#studio"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
+  "image": "https://amanorsac.studio/images/photos/pulseroom-studio.webp",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" }
 }
 </script>
-<link rel="stylesheet" href="assets/site-auth.css">
-<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-app="pulseroom">
+<a class="skip" href="#main">Skip to content</a>
 
-<div class="top">
-  <a class="back" href="apps.html">← App Store</a>
-  <span class="name"><img src="images/apps/pulseroom-logo.svg" alt="">Pulse<b>Room</b></span>
-  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
-</div>
-
-<header class="hero wrap">
-  <span class="status">Free · Windows &amp; macOS</span>
-  <h1>Every mixing answer. One tempo.</h1>
-  <p class="sub">Drop the song in and PulseRoom finds the tempo, then turns it into delay times, reverb tails, EQ moves and compression settings — in one desktop app that opens faster than the browser tab it replaces.</p>
-  <div data-hub-get data-app="pulseroom" style="margin:0 0 14px"></div>
-  <p class="plat-row" data-platforms hidden></p>
-  <p class="fine">Free · installs through Amanorsac Hub with a free account · works offline once installed</p>
-  <!-- filled in by app-reviews.js; hidden until there is a real number,
-       because "0 downloads" under a hero is worse than nothing there -->
-  <p class="dl-count" hidden></p>
-  <div class="hero-shot rise">
-    <img src="images/apps/S1-hero-delay-essentials.webp" alt="PulseRoom open on the Delay Calculator at 140 BPM, showing the eight essential note values" fetchpriority="high">
-  </div>
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo.svg" alt="">Amanorsac Studio</a>
+  <nav aria-label="Site">
+    <a href="/apps.html" aria-current="page">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
 </header>
 
-<section id="features" class="wrap">
-  <h2>The mix was flowing. Then you had to Google something.</h2>
-  <p class="lede">What delay time fits 140 BPM. Where the mud lives on a vocal. What attack keeps the kick punchy. The answers exist — spread across ad-choked calculator sites, a cheat-sheet PDF somewhere in Downloads, and a YouTube video you half remember. Each lookup costs five minutes and the thread you were pulling.</p>
+<div class="pbar">
+  <a class="pname" href="#main"><img src="images/apps/pulseroom-logo.svg" alt="">PulseRoom</a>
+  <nav class="tabs" aria-label="On this page">
+    <a href="#overview">Overview</a>
+    <a href="#tempo">Tempo</a>
+    <a href="#modules">Modules</a>
+    <a href="#specs">Tech Specs</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#get">Download</a>
+  </nav>
+  <span class="pprice">Free</span>
+  <a class="btn bbtn" href="#get">Download</a>
+</div>
 
-  <div class="feat-wide rise" style="--k:var(--accent)">
-    <p class="kicker">New &middot; Tempo detection</p>
-    <h3>Drag the song in. It already knows.</h3>
-    <p>Drop a file onto PulseRoom and it works out the BPM in a few seconds. On your machine — nothing is uploaded, nothing is sent anywhere, and it works with the wifi off. That matters when the song is not yours to send. By the time you look up, every delay time and reverb tail on every page is already right for it.</p>
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">Free · Windows and macOS</p>
+    <h1>PulseRoom</h1>
+    <p class="tag">Every mixing answer, at one tempo.</p>
+    <p class="intro">Drop a song into PulseRoom and it finds the tempo, then turns it into delay times, reverb tails, EQ moves and compression settings. It is one desktop app that opens faster than the browser tab it replaces, and it works with the wifi off.</p>
+    <div data-hub-get class="center" data-app="pulseroom"></div>
+    <p class="plat-row" data-platforms hidden></p>
+    <p class="fine">Free · installs through Amanorsac Hub with a free account · works offline once installed</p>
   </div>
-
-  <div class="feat-wide rise" style="--k:var(--accent)">
-    <p class="kicker">Tempo</p>
-    <h3>One number, and the whole app follows.</h3>
-    <p>Type your BPM, nudge it, or tap it in — the bar sits above every page like a DAW transport, with milliseconds per beat and per bar always in view. Delay and reverb recalculate as you go. You never enter the tempo twice. New ½× and 2× buttons drop to half-time or jump to double-time in one click, and every value moves with them — for the section that sits back at half the feel without the song changing tempo.</p>
-    <div class="shot"><img src="images/apps/S2-tempo-bar.webp" alt="The tempo bar: stepper, BPM field, TAP button, and the live readouts for milliseconds per beat, per bar, and hertz per beat" loading="lazy"></div>
-  </div>
-
-  <div class="feat rise" style="--k:var(--accent)">
-    <div class="feat-copy">
-      <p class="kicker">Delay</p>
-      <h3>The eight values you actually use, first.</h3>
-      <p>PulseRoom opens on the ones that matter — 1/4, 1/8 dotted, 1/8 triplet and the rest — each with a note on what it’s for. Click a card and the millisecond value is on your clipboard. The full twenty-one-value grid is one toggle away when you need it.</p>
-    </div>
-    <div class="shot"><img src="images/apps/S3-copy-toast.webp" alt="A delay card hovered, with a toast confirming the copied millisecond value" loading="lazy"></div>
-  </div>
-
-  <div class="feat flip rise" style="--k:var(--rv)">
-    <div class="feat-copy">
-      <p class="kicker">Reverb</p>
-      <h3>A tail that ends on the bar, not whenever.</h3>
-      <p>Pick a space — tight ambience through cathedral — and the pre-delay and decay are sized to the grid, so the tail breathes with the song instead of smearing it. The send-EQ curve is drawn for you: the habit that separates clean mixes from muddy ones.</p>
-    </div>
-    <div class="shot"><img src="images/apps/S4-reverb-designer.webp" alt="The Reverb Designer with Concert Hall selected, showing pre-delay, decay, the decay envelope and the send-EQ curve" loading="lazy"></div>
-  </div>
-
-  <div class="feat rise" style="--k:var(--eq)">
-    <div class="feat-copy">
-      <p class="kicker">EQ</p>
-      <h3>See the spectrum the way engineers hear it.</h3>
-      <p>Thirteen sources, from kick drum to mix bus. Pick one and the boost zones, cut zones and the ones worth listening to first are painted onto a real log-scale spectrum — with the reason underneath each band, in plain language.</p>
-    </div>
-    <div class="shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="The EQ Cheat Sheet with Lead Vocal selected, boost and cut zones painted across the spectrum" loading="lazy"></div>
-  </div>
-
-  <div class="feat flip rise" style="--k:var(--cp)">
-    <div class="feat-copy">
-      <p class="kicker">Compression</p>
-      <h3>Attack and release, finally visible.</h3>
-      <p>Fourteen sources, each with its gain-reduction envelope drawn: the hit lands, the reduction dives through the attack window, holds, then recovers through the release. The most misunderstood pair of knobs in mixing, shown instead of described.</p>
-    </div>
-    <div class="shot"><img src="images/apps/S7-compression-envelope.webp" alt="The Compression page showing a drawn gain-reduction envelope with ratio, attack, release and target reduction" loading="lazy"></div>
-  </div>
-
-  <div class="feat-wide rise" style="--k:var(--ch)">
-    <p class="kicker">Mix chains</p>
-    <h3>The right order, and the reasons for it.</h3>
-    <p>Ten sources, lead vocal through the mastering chain, laid out as numbered steps with the settings for each. A de-esser after the compressor causes problems no EQ will fix — so every chain carries a card explaining why it runs the way it does.</p>
-    <div class="shot"><img src="images/apps/S8-mix-chains.webp" alt="The Mix Chains page: a lead vocal chain from high-pass to sends, with a note explaining the order" loading="lazy"></div>
-  </div>
-
-  <div class="trio">
-    <div><h3>Tap it in, or press T</h3>
-      <p>Tap tempo averages up to eight hits and resets if you pause, so you can find a track’s BPM by ear the way you would on a drum machine. The keyboard shortcut works from any page.</p></div>
-    <div><h3>Every number is one click away</h3>
-      <p>Click any value and it’s copied, with a small confirmation. Straight into the plugin, no retyping, no transcription errors at 2 a.m.</p></div>
-    <div><h3>Offline is the point</h3>
-      <p>No account, no telemetry, no ads, no spinner. It runs entirely on your machine, which is why it opens before a browser tab would have finished loading.</p></div>
+  <div class="hero-img">
+    <img src="images/photos/pulseroom-studio-1200.webp"
+         srcset="images/photos/pulseroom-studio-1200.webp 1200w, images/photos/pulseroom-studio.webp 2400w" sizes="100vw"
+         width="2400" height="1340" fetchpriority="high"
+         alt="A producer at a home studio desk at night, PulseRoom's EQ Cheat Sheet on the monitor under a warm lamp">
   </div>
 </section>
 
-<section class="wrap">
-  <h2>A session with PulseRoom.</h2>
-  <div class="steps">
-    <div class="step rise"><b>Tap your tempo</b><p>Match the session once. Everything else follows.</p></div>
-    <div class="step rise"><b>Copy your delays</b><p>Quarter and eighth-dotted into the send delays.</p></div>
-    <div class="step rise"><b>Size your reverb</b><p>Pick the space, copy pre-delay and decay, mirror the EQ curve.</p></div>
-    <div class="step rise"><b>Carve with confidence</b><p>EQ zones while you cut, envelopes while you compress.</p></div>
-    <div class="step rise"><b>Check your loudness</b><p>Master against the right LUFS target for where it’s going.</p></div>
+<section class="block" id="overview">
+  <div class="wrap">
+    <h2>Stop Googling in the Middle of a Mix</h2>
+    <p>The mix is flowing, and then you need to know what delay time fits 140 BPM, where the mud lives on a vocal, or what attack keeps the kick punchy. The answers exist, but they are spread across calculator sites full of ads, a cheat sheet PDF somewhere in your downloads and a YouTube video you half remember. Every lookup costs five minutes and the thread you were pulling.</p>
+    <p>PulseRoom puts every one of those answers in one place, already set to the tempo of your song. <b>It is the tool the studio uses every session, and it is free.</b></p>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Fifty seconds at the desk.</h2>
-  <p class="lede">The whole thing, start to finish: tap the tempo, copy the delays, size the reverb, check the loudness. No sound &mdash; there is nothing to listen to, only to look at.</p>
-  <figure class="vid rise">
-    <video src="/video/pulseroom-walkthrough.mp4" width="1280" height="840"
-           muted loop playsinline controls preload="metadata" data-inview
-           aria-label="A screen recording of PulseRoom: tapping a tempo, copying delay times, sizing a reverb, and checking a loudness target"></video>
-  </figure>
-  <p class="vidcap">PulseRoom, recorded in one take &middot; 51 seconds &middot; no sound</p>
-</section>
+<figure class="shot rise">
+  <img src="images/apps/S1-hero-delay-essentials.webp" width="1280" height="840" loading="lazy"
+       alt="PulseRoom open on the Delay Calculator at 140 BPM, showing the eight essential note values">
+  <figcaption>The Delay Calculator at 140 BPM, opening on the eight values you actually use.</figcaption>
+</figure>
 
-<section class="wrap">
-  <h2>The rest of the desk.</h2>
-  <div class="shotrow">
-    <figure><div class="shot"><img src="images/apps/S9-mixing-guide.webp" alt="" loading="lazy"></div>
-      <figcaption>The mixing guide: nine sections of habits, from gain staging to the mistakes everyone makes.</figcaption></figure>
-    <figure><div class="shot"><img src="images/apps/S10-reference.webp" alt="" loading="lazy"></div>
-      <figcaption>Reference: LUFS targets per platform, the frequency map, and note-to-hertz for tuning 808s.</figcaption></figure>
+<div class="facts rise" style="margin-top:clamp(64px,10vh,112px)">
+  <div><b>7</b><span>modules, from delay to loudness</span></div>
+  <div><b>13</b><span>sources on the EQ cheat sheet, kick to mix bus</span></div>
+  <div><b>2 MB</b><span>of app, lighter than a single browser tab</span></div>
+  <div><b>$0</b><span>with no account inside, no ads and no telemetry</span></div>
+</div>
+
+<section class="block" id="tempo">
+  <div class="wrap">
+    <p class="kick">Tempo Detection</p>
+    <h2>Drag the Song In and It Already Knows</h2>
+    <p>Drop an audio file onto PulseRoom and it works out the BPM in a few seconds. It does this on your computer, so nothing is uploaded and nothing is sent anywhere, which matters when the song is not yours to send. By the time you look up, every delay time and reverb tail on every page is already right for it.</p>
+    <p>You can also type the BPM, nudge it or tap it in. The tempo bar sits above every page like a DAW transport, with milliseconds per beat and per bar always in view, and the half time and double time buttons move every value with one click.</p>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Why not just Google it.</h2>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th></th><th>Browser calculators</th><th>PDF cheat sheets</th><th>PulseRoom</th></tr></thead>
-      <tbody>
-        <tr><th>Tempo-synced values</th><td><i>Re-entered per site</i></td><td><i>Never</i></td><td><b>Live, app-wide</b></td></tr>
-        <tr><th>Visual EQ and compression</th><td><i>No</i></td><td><i>Static and generic</i></td><td><b>Interactive, per source</b></td></tr>
-        <tr><th>Explains the why</th><td><i>No</i></td><td><i>Rarely</i></td><td><b>Every value</b></td></tr>
-        <tr><th>Works offline</th><td><i>No</i></td><td><i>Yes</i></td><td><b>Yes</b></td></tr>
-        <tr><th>Click to copy</th><td><i>Rare</i></td><td><i>No</i></td><td><b>Everywhere</b></td></tr>
-        <tr><th>Belongs beside a DAW</th><td><i>Ads everywhere</i></td><td><i>Clip art</i></td><td><b>Plugin-grade dark UI</b></td></tr>
-      </tbody>
-    </table>
+<figure class="shot plain rise">
+  <img src="images/apps/S2-tempo-bar.webp" width="1044" height="68" loading="lazy" style="max-width:1044px;margin:0 auto;border-radius:8px"
+       alt="The tempo bar: stepper, BPM field, TAP button, and live readouts for milliseconds per beat, per bar, and hertz per beat">
+</figure>
+
+<section class="band rise">
+  <img src="images/photos/pulseroom-cheatsheet-1200.webp"
+       srcset="images/photos/pulseroom-cheatsheet-1200.webp 1200w, images/photos/pulseroom-cheatsheet.webp 2400w" sizes="100vw"
+       width="2400" height="1340" loading="lazy"
+       alt="PulseRoom's EQ Cheat Sheet on a studio monitor, with Lead Vocal selected and boost and cut zones painted across the spectrum">
+  <div class="in"><div class="copy">
+    <p class="kick">EQ</p>
+    <h2>See the Spectrum the Way Engineers Hear It</h2>
+    <p>Pick one of thirteen sources, from kick drum to the mix bus, and the boost zones, the cut zones and the ones worth listening to first are painted onto a real log scale spectrum. Each band has the reason underneath it, in plain language.</p>
+  </div></div>
+</section>
+
+<section class="block" id="modules">
+  <div class="wrap">
+    <h2>Everything Beside Your DAW</h2>
+    <p>Seven modules, each one a page you would otherwise have open in a browser. Click any value and it is copied, ready to paste straight into the plug-in with no retyping.</p>
   </div>
 </section>
 
-<section class="wrap">
-  <div class="price rise">
-    <p class="big">Free</p>
-    <div>
-      <h2>Forever, for the whole toolkit.</h2>
-      <p>All seven modules, both platforms, no account and no ads. It’s the tool the studio uses every session — there was never a reason to charge for it.</p>
-    </div>
+<div class="split rise" style="padding-top:0">
+  <div class="media"><img src="images/apps/S3-copy-toast.webp" width="1280" height="840" loading="lazy"
+       alt="A delay card hovered, with a toast confirming the copied millisecond value"></div>
+  <div>
+    <p class="kick">Delay</p>
+    <h3>The Eight Values You Actually Use, First</h3>
+    <p>PulseRoom opens on the delay values that matter, such as 1/4, dotted 1/8 and 1/8 triplet, each with a note on what it is for. Click a card and the millisecond value is on your clipboard. The full grid of twenty one values is one switch away when you need it.</p>
+  </div>
+</div>
+
+<div class="split flip rise">
+  <div class="media"><img src="images/apps/S4-reverb-designer.webp" width="1280" height="840" loading="lazy"
+       alt="The Reverb Designer with Concert Hall selected, showing pre-delay, decay, the decay envelope and the send EQ curve"></div>
+  <div>
+    <p class="kick">Reverb</p>
+    <h3>A Tail That Ends on the Bar</h3>
+    <p>Pick a space, from a tight ambience to a cathedral, and the pre-delay and decay are sized to the grid, so the tail breathes with the song instead of smearing it. The send EQ curve is drawn for you too, which is the habit that separates clean mixes from muddy ones.</p>
+  </div>
+</div>
+
+<div class="split rise">
+  <div class="media"><img src="images/apps/S7-compression-envelope.webp" width="1280" height="840" loading="lazy"
+       alt="The Compression page showing a drawn gain reduction envelope with ratio, attack, release and target reduction"></div>
+  <div>
+    <p class="kick">Compression</p>
+    <h3>Attack and Release, Finally Visible</h3>
+    <p>Fourteen sources, each with its gain reduction envelope drawn out. The hit lands, the reduction dives through the attack, holds, then recovers through the release. The most misunderstood pair of knobs in mixing, shown instead of described.</p>
+  </div>
+</div>
+
+<div class="split flip rise">
+  <div class="media"><img src="images/apps/S8-mix-chains.webp" width="1280" height="840" loading="lazy"
+       alt="The Mix Chains page: a lead vocal chain from high pass to sends, with a note explaining the order"></div>
+  <div>
+    <p class="kick">Mix Chains</p>
+    <h3>The Right Order, and Why</h3>
+    <p>Ten sources, from lead vocal to the mastering chain, laid out as numbered steps with the settings for each. A de-esser after the compressor causes problems no EQ will fix, so every chain carries a card that explains why it runs the way it does.</p>
+  </div>
+</div>
+
+<div class="grid two rise">
+  <div class="item">
+    <img src="images/apps/S9-mixing-guide.webp" width="1280" height="840" loading="lazy" alt="The PulseRoom mixing guide">
+    <h3>The Mixing Guide</h3>
+    <p>Nine sections of good habits, from gain staging to the mistakes everyone makes.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/S10-reference.webp" width="1280" height="840" loading="lazy" alt="The PulseRoom reference page">
+    <h3>Reference</h3>
+    <p>LUFS targets for each platform, the frequency map, and note to hertz for tuning 808s.</p>
+  </div>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <h2>Fifty Seconds at the Desk</h2>
+    <p>The whole thing, start to finish: tap the tempo, copy the delays, size the reverb and check the loudness.</p>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Questions, answered.</h2>
+<figure class="shot rise">
+  <video src="/video/pulseroom-walkthrough.mp4" width="1280" height="840"
+         muted loop playsinline controls preload="metadata" data-inview
+         aria-label="A screen recording of PulseRoom: tapping a tempo, copying delay times, sizing a reverb, and checking a loudness target"></video>
+  <figcaption>PulseRoom recorded in one take. 51 seconds, no sound.</figcaption>
+</figure>
+
+<section class="block" id="compare">
+  <div class="wrap">
+    <h2>Why Not Just Google It?</h2>
+  </div>
+</section>
+<div class="compare rise">
+  <table>
+    <thead><tr><th></th><th>Browser calculators</th><th>PDF cheat sheets</th><th class="us">PulseRoom</th></tr></thead>
+    <tbody>
+      <tr><th>Tempo synced values</th><td>Typed again on every site</td><td>Never</td><td class="us">Live, across the app</td></tr>
+      <tr><th>Visual EQ and compression</th><td>No</td><td>Static and generic</td><td class="us">Interactive, per source</td></tr>
+      <tr><th>Explains the why</th><td>No</td><td>Rarely</td><td class="us">Every value</td></tr>
+      <tr><th>Works offline</th><td>No</td><td>Yes</td><td class="us">Yes</td></tr>
+      <tr><th>Click to copy</th><td>Rarely</td><td>No</td><td class="us">Everywhere</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="paper specs" id="specs">
+  <h2 class="sec-h">Tech Specs</h2>
+  <div class="spec">
+    <div><h4>Platforms</h4><p>Windows and macOS, from the same build.</p></div>
+    <div><h4>Format</h4><p>Standalone desktop app that sits beside any DAW. Not a plug-in.</p></div>
+    <div><h4>Size</h4><p>About two megabytes.</p></div>
+    <div><h4>Tempo</h4><p>Detection from a dropped audio file, on your computer. Type, nudge or tap (press T). Half and double time.</p></div>
+    <div><h4>Delay</h4><p>Eight essential values first, 21 values in the full grid. Click to copy.</p></div>
+    <div><h4>Reverb</h4><p>Spaces from tight ambience to cathedral, with pre-delay, decay and send EQ sized to the tempo.</p></div>
+    <div><h4>EQ</h4><p>13 sources on a log scale spectrum with boost, cut and listen zones.</p></div>
+    <div><h4>Compression</h4><p>14 sources with drawn gain reduction envelopes.</p></div>
+    <div><h4>More</h4><p>Mix chains for 10 sources, a mixing guide, LUFS targets, a frequency map and note to hertz.</p></div>
+    <div><h4>Network</h4><p>None. No account inside the app, no telemetry and no ads.</p></div>
+  </div>
+</section>
+
+<section class="faq">
+  <h2 class="sec-h">Questions</h2>
   <details><summary>Is it really free?</summary>
-    <div>Yes. Free download, no account, no ads, nothing to unlock.</div></details>
+    <div>Yes. It is a free download with nothing to unlock and no ads.</div></details>
   <details><summary>Does it work offline?</summary>
-    <div>Completely. Nothing is sent anywhere and nothing is loaded from the internet — which is also why it opens instantly.</div></details>
-  <details><summary>Windows and Mac?</summary>
-    <div>Both, from the same build.</div></details>
-  <details><summary>Is it a plugin or a VST?</summary>
-    <div>Neither. It’s a standalone companion app that lives beside any DAW — second monitor, or a quick alt-tab.</div></details>
+    <div>Completely. Nothing is sent anywhere and nothing is loaded from the internet, which is also why it opens instantly.</div></details>
+  <details><summary>Is it a plug-in?</summary>
+    <div>No. It is a standalone companion app that lives beside any DAW, on a second monitor or a quick alt-tab away.</div></details>
   <details><summary>Are the values correct?</summary>
-    <div>They’re proven starting points with the reasoning attached, not laws. The app’s own sidebar says it best: values are starting points, trust your ears first.</div></details>
-  <details><summary>Will it slow my machine down?</summary>
-    <div>No. It’s about two megabytes of app and lighter than a single browser tab.</div></details>
+    <div>They are proven starting points with the reasoning attached, not laws. As the app's own sidebar says, values are starting points, so trust your ears first.</div></details>
   <details><summary>Which DAWs does it work with?</summary>
-    <div>All of them. It doesn’t touch your session — it hands you numbers you type or paste wherever you like.</div></details>
+    <div>All of them. It never touches your session. It hands you numbers to type or paste wherever you like.</div></details>
 </section>
 
-<!-- =====================================================================
-     Reviews. Nothing here is faked - the count and the list are both
-     empty until app-reviews.js fills them in from what people actually
-     submitted, and nothing anyone submits is public until the studio
-     has read it. See assets/app-reviews.js. ===================================================================== -->
-<section id="reviews" class="wrap">
+<section class="reviews" id="reviews">
   <p class="eyebrow">From people who use it</p>
-  <h2>What producers are saying.</h2>
+  <h2 class="sec-h">What Producers Are Saying</h2>
   <div class="rv-stats" hidden></div>
-
   <ul class="rv-list"></ul>
   <p class="rv-empty" hidden>Be the first to leave one.</p>
-
   <div class="rv-panel">
     <form class="rv-form" novalidate>
       <p class="rv-legend">Used it? Rate it.</p>
@@ -535,81 +272,69 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
         <span class="star">&#9733;</span><span class="star">&#9733;</span>
       </div>
       <label class="rv-lbl" for="rv-body">Your review</label>
-      <textarea class="rv-body-in" id="rv-body" rows="3"
-        placeholder="What changed in your session once you had it?"></textarea>
-      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <textarea class="rv-body-in" id="rv-body" rows="3" placeholder="Which page do you use most?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name (optional)</label>
       <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
-      <button class="cta rv-go" type="submit">Post review</button>
+      <button class="btn rv-go" type="submit">Post review</button>
       <p class="rv-msg" role="status"></p>
     </form>
     <div class="rv-done" hidden>
       <p class="rv-tick" aria-hidden="true">&#10003;</p>
       <h3>Thank you.</h3>
-      <p>It goes up once I've actually read it — usually within a day or two.</p>
+      <p>It goes up once I have read it, usually within a day or two.</p>
     </div>
   </div>
 </section>
 
-<section class="wrap finale">
-  <h2>Your next session starts at your tempo.</h2>
-  <p class="lede">Free, and offline once it's installed. Close six browser tabs on the way in.</p>
-  <div data-hub-get data-app="pulseroom" style="margin:0 0 14px"></div>
-  <p class="fine">Values are starting points — trust your ears first.</p>
+<section class="paper buy" id="get">
+  <div class="card">
+    <img src="images/photos/pulseroom-studio-1200.webp" width="1200" height="670" loading="lazy" alt="PulseRoom in a home studio">
+    <div>
+      <h2>PulseRoom</h2>
+      <p class="price">Free</p>
+      <p class="terms">All seven modules on Windows and macOS, with no ads and nothing to unlock. Installs through Amanorsac Hub with a free account, and works offline once it is installed.</p>
+      <div data-hub-get data-app="pulseroom"></div>
+      <p><a class="more" href="/apps.html">See all apps</a></p>
+    </div>
+  </div>
 </section>
 
-<footer>
-  <a href="apps.html">App Store</a>
-  <a href="apps.html">HarmonieMD</a>
-  <a href="performlive.html">PerformLive</a>
-  <a href="nebulatide.html">Nebula Tide</a>
-  <a href="index.html">Studio</a>
-  <a href="about.html#contact">Contact</a>
-  <span class="who">Amanorsac Studio</span>
+<p class="note" style="padding-top:clamp(32px,5vh,56px)">Values are starting points. Trust your ears first.</p>
+
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <a href="/apps.html">App Store</a>
+    <a href="/stemsorter.html">Stem Sorter</a>
+    <a href="/chordlight88.html">Chordlight 88</a>
+    <a href="/ambdigital.html">AMB Digital</a>
+    <a href="/legal.html">Legal</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/about.html#contact">Contact</a>
+    <span class="who">Amanorsac Studio</span>
+  </div>
 </footer>
 
 <script>
-/* ---------- wiring ----------
-   Downloads go through Amanorsac Hub: assets/hub-download.js fills the
-   data-hub-get slots above from catalog.json. Nothing on this page
-   knows or decides where an installer lives. */
+/* Walkthroughs play while on screen and pause when not. Muted, and
+   skipped for a visitor who asked for reduced motion. Downloads go
+   through Amanorsac Hub: hub-download.js fills the data-hub-get slots
+   from catalog.json. */
 (function(){
-  /* reveal on scroll; falls back to visible when unsupported or reduced */
-  if('IntersectionObserver' in window &&
-     !matchMedia('(prefers-reduced-motion: reduce)').matches){
-    var ro = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
-    }, { threshold:.15 });
-    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
-  }else{
-    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
-  }
+  var vids = document.querySelectorAll('video[data-inview]');
+  if(!vids.length) return;
+  if(!('IntersectionObserver' in window) ||
+     matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var vo = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ var p = e.target.play(); if(p) p.catch(function(){}); }
+      else e.target.pause();
+    });
+  }, { threshold:.35 });
+  vids.forEach(function(v){ vo.observe(v); });
 })();
-
-  /* Play a walkthrough while it is on screen, pause it when it is not.
-     Muted and silent, so this cannot startle anyone; skipped entirely
-     when the visitor has asked for reduced motion, who gets a still
-     first frame and the controls. */
-  (function(){
-    var vids = document.querySelectorAll('video[data-inview]');
-    if(!vids.length) return;
-    if(!('IntersectionObserver' in window) ||
-       matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    var vo = new IntersectionObserver(function(es){
-      es.forEach(function(e){
-        if(e.isIntersecting){ var p = e.target.play(); if(p) p.catch(function(){}); }
-        else e.target.pause();
-      });
-    }, { threshold:.35 });
-    vids.forEach(function(v){ vo.observe(v); });
-  })();
 </script>
-<!-- The ?v is not decoration. /assets/* is cached for an hour and may be
-     served stale for a week after that, so a returning visitor kept the
-     pre-verification copy of this file: it posted to the new endpoint,
-     did not recognise the answer, and said "Something went wrong" while
-     the email was in fact on its way. Bump the number whenever this file
-     changes in a way the server also changed for. -->
-<link rel="stylesheet" href="/assets/hub-download.css">
 <script src="/assets/hub-download.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
 <script src="assets/track.js" defer></script>
@@ -618,5 +343,6 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/store-state.js" defer></script>
 <script src="assets/platforms.js" defer></script>
+<script src="/assets/product.js" defer></script>
 </body>
 </html>

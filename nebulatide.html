@@ -4,365 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-adsense-account" content="ca-pub-6190327414594776">
-<title>Nebula Tide: endless drone pads in all twelve keys | Amanorsac App Store</title>
-<meta name="description" content="Nebula Tide plays endless, seamless drone pads — real recordings in all 12 keys, never pitch-shifted — inside an interface that's alive. Windows standalone and VST3.">
-<meta property="og:title" content="An ocean of sound. In every key.">
-<meta property="og:description" content="Endless drone pads, a living interface, twelve real recordings per preset. Windows standalone and VST3.">
-<meta property="og:image" content="https://amanorsac.studio/images/apps/nt-idle.png">
-<meta property="og:url" content="https://amanorsac.studio/nebulatide.html">
-<link rel="icon" href="images/apps/nt-logo.png" type="image/png">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
+<title>Nebula Tide | Free endless drone pads in all twelve keys | Amanorsac Studio</title>
+<meta name="description" content="Nebula Tide plays endless, seamless drone pads, real recordings in all twelve keys, inside an interface that is alive. Free for Windows and macOS, standalone and VST3.">
+<link rel="icon" href="images/apps/nt-logo.webp" type="image/webp">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="preload" as="image" href="images/photos/nt-sanctuary-1200.webp" imagesrcset="images/photos/nt-sanctuary-1200.webp 1200w, images/photos/nt-sanctuary.webp 2400w" imagesizes="100vw">
+<link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+<link rel="stylesheet" href="/assets/hub-download.css">
 <style>
-/* ---------- fonts ----------
-   Served from this site rather than fonts.googleapis.com. That stylesheet
-   blocked the first paint on every visit while the browser opened a
-   connection to a third party and waited for an answer. These are the
-   same typefaces, variable-weight, latin only, and they come down the
-   connection the page is already using. Nothing about visitors is shared
-   with Google to render text any more. */
-/* latin-ext */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* =====================================================================
-   Nebula Tide product page. Same skeleton as the other product pages,
-   wearing the app's own palette: deep navy sea, cyan accent, foam-white
-   text, with gold and ice reserved for the two stars - exactly the way
-   the instrument uses them.
-   ===================================================================== */
-:root{
-  --bg:#020C16; --bg-mid:#04283F; --panel:#07182640; --panel-2:#0A2233;
-  --line:rgba(79,227,255,.16);
-  --text:#BDF3FF; --muted:#6FA8BD; --dim:#6A9EB4;
-  --accent:#16B8D8; --accent-bright:#4FE3FF; --accent-soft:#062A3A;
-  --gold:#FFC96B; --ice:#BFEAFF; --go:#4FE3FF;
-  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
-  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --r:14px; --r-lg:22px;
-  --ease:cubic-bezier(.22,1,.36,1); --dur:240ms;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-html,body{overflow-x:clip}
-body{margin:0;color:var(--text);font-family:var(--body);
-  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;
-  background:var(--bg)}
-/* the sky: one deep radial, one drifting star layer. Cheap, and it is
-   the app's own background rather than a decoration borrowed from
-   somewhere else. */
-.sky{position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:
-    radial-gradient(120% 80% at 50% -10%, var(--bg-mid) 0%, transparent 62%),
-    radial-gradient(90% 60% at 80% 110%, #04202F 0%, transparent 60%),
-    var(--bg)}
-.stars{position:fixed;inset:-200px;z-index:-1;pointer-events:none;opacity:.5;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23BDF3FF'%3E%3Ccircle cx='23' cy='47' r='.9' opacity='.55'/%3E%3Ccircle cx='112' cy='19' r='.6' opacity='.4'/%3E%3Ccircle cx='198' cy='86' r='1' opacity='.6'/%3E%3Ccircle cx='274' cy='31' r='.6' opacity='.35'/%3E%3Ccircle cx='355' cy='72' r='.8' opacity='.5'/%3E%3Ccircle cx='61' cy='139' r='.7' opacity='.45'/%3E%3Ccircle cx='149' cy='176' r='.5' opacity='.3'/%3E%3Ccircle cx='231' cy='142' r='.9' opacity='.55'/%3E%3Ccircle cx='318' cy='190' r='.6' opacity='.35'/%3E%3Ccircle cx='391' cy='151' r='.7' opacity='.45'/%3E%3Ccircle cx='38' cy='233' r='.8' opacity='.5'/%3E%3Ccircle cx='127' cy='271' r='.5' opacity='.3'/%3E%3Ccircle cx='209' cy='246' r='.9' opacity='.55'/%3E%3Ccircle cx='296' cy='288' r='.6' opacity='.4'/%3E%3Ccircle cx='373' cy='257' r='.8' opacity='.5'/%3E%3Ccircle cx='76' cy='339' r='.7' opacity='.45'/%3E%3Ccircle cx='166' cy='372' r='.6' opacity='.35'/%3E%3Ccircle cx='252' cy='348' r='1' opacity='.6'/%3E%3Ccircle cx='340' cy='395' r='.5' opacity='.3'/%3E%3Ccircle cx='405' cy='330' r='.8' opacity='.5'/%3E%3C/g%3E%3C/svg%3E");
-  animation:drift 140s linear infinite}
-@keyframes drift{ from{transform:translate3d(0,0,0)} to{transform:translate3d(-420px,-420px,0)} }
-
-img{max-width:100%;display:block}
-a{color:inherit}
-:focus-visible{outline:2px solid var(--accent-bright);outline-offset:2px;border-radius:4px}
-
-.wrap{max-width:1120px;margin:0 auto;
-  padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
-section{padding:clamp(64px,10vh,120px) 0}
-
-/* ---------- top bar ---------- */
-.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
-  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 82%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
-.top .back:hover{color:var(--text)}
-.top .name{margin-left:auto;display:flex;align-items:center;gap:10px;
-  font-family:var(--mono);font-size:12px;font-weight:500;
-  letter-spacing:.32em;text-transform:uppercase}
-.top .name img{width:20px;height:20px;border-radius:5px}
-/* the account chip (site-auth.js) wears this page's own palette */
-.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
-
-/* ---------- hero text (now overlaid on the video) ---------- */
-.hero-video .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--accent-bright);background:var(--accent-soft);
-  border:1px solid color-mix(in srgb,var(--accent-bright) 30%,transparent);
-  border-radius:999px;padding:6px 14px;margin:0 0 26px}
-h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;
-  font-size:clamp(34px,5.6vw,64px);margin:0 0 22px;max-width:15ch;
-  color:#EAFBFF;text-shadow:0 0 60px rgba(79,227,255,.18)}
-.hero-video .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:54ch;margin:0 0 30px}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
-.cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
-  text-decoration:none;border-radius:999px;padding:14px 28px;
-  background:linear-gradient(180deg,var(--accent-bright),#0E7EA0);color:#01141C;
-  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease);
-  box-shadow:0 0 0 rgba(79,227,255,0)}
-.cta:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(79,227,255,.22)}
-.cta:active{transform:translateY(0) scale(.98)}
-.cta.ghost{background:transparent;color:var(--text);
-  border:1px solid color-mix(in srgb,var(--accent-bright) 34%,transparent);box-shadow:none}
-.hero-video .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);margin:0}
-/* ---------- the video hero ----------
-   Waves builds a plugin's own page around its video the same way: not a
-   headline with a demo underneath, the demo filling the frame with the
-   headline standing on it. Full-bleed, and the first thing on the page
-   rather than the third.
-
-   Click-to-play still holds - nothing from YouTube loads before the
-   button is pressed. The .top bar keeps its blur, so it stays legible
-   sitting over the video the same as it always sat over the starfield. */
-.hero-video{position:relative;isolation:isolate;overflow:hidden;
-  min-height:min(84vh,760px);display:flex;align-items:flex-end;
-  margin:0 calc(50% - 50vw);width:100vw}
-.promo-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  object-position:center 38%}
-.promo-scrim{position:absolute;inset:0;
-  background:
-    linear-gradient(0deg,var(--bg) 2%,rgba(2,12,22,.72) 34%,rgba(2,12,22,.22) 62%,rgba(2,12,22,.55) 100%),
-    linear-gradient(90deg,rgba(2,12,22,.5) 0%,transparent 46%)}
-/* Centred on the frame would sit on top of the headline, which hugs
-   the bottom edge - so the button lives in the open sky above the
-   text instead, not dead centre of the viewport. */
-.promo-play{position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
-  width:clamp(64px,7vw,88px);height:clamp(64px,7vw,88px);border-radius:50%;z-index:2;
-  background:color-mix(in srgb,var(--accent-bright) 92%,#fff 8%);
-  border:0;display:grid;place-items:center;cursor:pointer;
-  box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,
-             0 20px 50px -10px color-mix(in srgb,var(--accent-bright) 60%,transparent);
-  transition:transform var(--dur) var(--ease)}
-.promo-play svg{width:38%;height:38%;fill:#00171E;margin-left:4%}
-.promo-play:hover,.promo-play:focus-visible{transform:translate(-50%,-50%) scale(1.08)}
-.hero-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1}
-.hero-video-body{position:relative;z-index:1;padding-top:14vh;padding-bottom:clamp(40px,7vh,72px)}
-.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--accent-bright);margin:14px 0 0}
-
-/* ---------- reviews ----------
-   Two states throughout: a real number once app-reviews.js has one, and
-   nothing at all until then. A visible zero is a worse first impression
-   than a section that simply waits. */
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--accent-bright);margin:0 0 12px}
-.stars{display:inline-flex;gap:2px;vertical-align:middle}
-.star{font-size:16px;line-height:1;color:var(--line)}
-.star.on{color:var(--accent-bright)}
-.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
-.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
-.rv-list{list-style:none;margin:0 0 40px;padding:0;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:20px 22px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
-.rv-head .star{font-size:13px}
-.rv-who{font-size:12.5px;color:var(--dim)}
-.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
-.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
-.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
-  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px);
-  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px;color:#EAFBFF}
-.rv-pick{display:flex;gap:6px;margin:0 0 20px}
-.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
-.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
-.rv-pick .star.on{color:var(--accent-bright)}
-.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
-.rv-lbl span{text-transform:none;letter-spacing:0}
-.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
-  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
-  font-size:14.5px;resize:vertical;margin:0 0 16px}
-.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent-bright)}
-.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
-.rv-go[disabled]{opacity:.6;cursor:default}
-.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
-.rv-msg.bad{color:#FF9C8A}
-.rv-done{text-align:center;padding:6px 0 4px}
-.rv-done[hidden]{display:none}
-.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
-  display:grid;place-items:center;font-size:20px;color:var(--accent-bright);
-  background:var(--accent-soft)}
-.rv-done h3{font-size:19px;margin:0 0 8px;color:#EAFBFF}
-.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
-.rv-locked{text-align:center;padding:6px 0 4px}
-.rv-locked[hidden]{display:none}
-.rv-locked h3{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 8px;color:#EAFBFF}
-.rv-locked p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
-@media (max-width:700px){
-  /* Three CTAs stack full-width on a phone and, with the headline and
-     sub-text, run to five hundred-odd pixels on their own - there is no
-     "clear sky" left for a play button inside a cropped 9:13 frame. A
-     full-height hero gives the button real room instead of fighting the
-     text for the same few pixels. */
-  .hero-video{min-height:100dvh;aspect-ratio:auto;align-items:flex-end}
-  .hero-video-body{padding-top:0}
-  .promo-play{top:19%}
-}
-@media (prefers-reduced-motion:reduce){ .promo-play{transition:none} }
-
-/* ---------- section headings ---------- */
-h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
-  font-size:clamp(25px,3.2vw,38px);margin:0 0 14px;color:#EAFBFF}
-.lede{color:var(--muted);max-width:60ch;margin:0 0 40px;font-size:17px}
-
-/* ---------- feature rows ---------- */
-.feat{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,4vw,56px);
-  align-items:center;margin-bottom:clamp(48px,8vh,84px)}
-.feat.flip{grid-template-columns:1.15fr 1fr}
-.feat.flip .feat-copy{order:2}
-.feat .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--k,var(--accent-bright));margin:0 0 10px}
-.feat h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);
-  letter-spacing:-.015em;margin:0 0 12px;color:#EAFBFF}
-.feat p{color:var(--muted);margin:0;max-width:46ch}
-.feat .shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
-  box-shadow:0 14px 48px rgba(0,0,0,.45)}
-.feat-wide{margin-bottom:clamp(48px,8vh,84px)}
-.feat-wide .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--k,var(--accent-bright));margin:0 0 10px}
-.feat-wide h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);
-  margin:0 0 12px;color:#EAFBFF}
-.feat-wide p{color:var(--muted);max-width:58ch;margin:0 0 26px}
-.feat-wide .shot{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-
-/* the quiet ones */
-.trio{border-top:1px solid var(--line)}
-.trio > div{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:18px;
-  padding:26px 0;border-bottom:1px solid var(--line)}
-.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;
-  letter-spacing:-.01em;color:#EAFBFF}
-.trio p{margin:0;color:var(--muted);max-width:60ch}
-@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
-
-/* ---------- workflow ---------- */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:step}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:26px 22px;counter-increment:step;
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.step::before{content:counter(step,decimal-leading-zero);display:block;
-  font-family:var(--mono);font-size:11px;letter-spacing:.14em;
-  color:var(--accent-bright);margin-bottom:12px}
-.step b{display:block;font-family:var(--display);font-weight:600;font-size:17px;
-  margin-bottom:6px;color:#EAFBFF}
-.step p{margin:0;font-size:14px;color:var(--muted)}
-.manual{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--dim);margin:20px 0 0}
-@media (max-width:720px){ .steps{grid-template-columns:1fr} }
-
-/* ---------- comparison ---------- */
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
-table{width:100%;border-collapse:collapse;min-width:660px;background:var(--panel-2)}
-th,td{text-align:left;padding:14px 18px;font-size:14.5px;border-bottom:1px solid var(--line)}
-th{font-family:var(--display);font-weight:600;font-size:14px;color:#EAFBFF}
-thead th{background:#0C2A3C}
-tbody th{font-weight:500;color:var(--muted)}
-td b{color:var(--go);font-weight:600}
-td i{color:var(--dim);font-style:normal}
-tr:last-child th,tr:last-child td{border-bottom:0}
-
-/* ---------- packs ---------- */
-.packs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.pack{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:28px 24px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.pack .tier{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--accent-bright);margin:0 0 12px}
-.pack h3{font-family:var(--display);font-weight:700;font-size:19px;margin:0 0 8px;color:#EAFBFF}
-.pack p{margin:0;color:var(--muted);font-size:14.5px}
-.packnote{font-size:13.5px;color:var(--dim);margin-top:18px;max-width:60ch}
-@media (max-width:820px){ .packs{grid-template-columns:1fr} }
-
-/* ---------- faq ---------- */
-details{border-bottom:1px solid var(--line)}
-details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
-  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);
-  font-weight:600;font-size:16.5px;color:#EAFBFF}
-details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-family:var(--mono);color:var(--muted);
-  font-size:18px;transition:transform var(--dur) var(--ease)}
-details[open] summary::after{transform:rotate(45deg)}
-details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
-
-.finale{border-top:1px solid var(--line)}
-.finale h2{max-width:20ch}
-
-footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
-  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);text-decoration:none;
-  /* 18px tall was under the 24px minimum for a touch target */
-  display:inline-flex;align-items:center;min-height:24px}
-footer a:hover{color:var(--text)}
-footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-
-/* ---------- motion ---------- */
-.rise{opacity:0;transform:translateY(24px);
-  transition:opacity 640ms var(--ease),transform 640ms var(--ease)}
-.rise.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{transition:none!important;animation:none!important}
-  .rise{opacity:1;transform:none}
-}
-@media (max-width:820px){
-  .feat,.feat.flip{grid-template-columns:1fr}
-  .feat.flip .feat-copy{order:0}
-}
+:root{--accent:#4fe3ff;--accent-ink:#001a20}
+.yt{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;
+  box-shadow:0 30px 90px rgba(0,0,0,.6);outline:1px solid rgba(255,255,255,.08);outline-offset:-1px}
+.yt img{width:100%;height:100%;object-fit:cover;opacity:.85}
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt button{position:absolute;inset:0;margin:auto;width:84px;height:84px;border-radius:50%;border:0;cursor:pointer;
+  background:rgba(255,255,255,.92);display:grid;place-items:center;transition:transform .2s}
+.yt button:hover{transform:scale(1.06)}
+.yt button svg{width:30px;height:30px;fill:#000;margin-left:4px}
 </style>
 <link rel="canonical" href="https://amanorsac.studio/nebulatide">
+<meta property="og:title" content="Nebula Tide">
+<meta property="og:description" content="An ocean of sound in every key. Free endless drone pads, really recorded in all twelve keys.">
+<meta property="og:image" content="https://amanorsac.studio/images/photos/nt-sanctuary.webp">
+<meta property="og:url" content="https://amanorsac.studio/nebulatide">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -370,198 +36,227 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   "@type": "SoftwareApplication",
   "name": "Nebula Tide",
   "url": "https://amanorsac.studio/nebulatide",
-  "description": "Endless ambient drone pads in all twelve keys, real recordings rather than pitch-shifted. Windows standalone and VST3.",
-  "operatingSystem": "Windows",
+  "description": "Free endless drone pads, real recordings in all twelve keys, standalone and VST3.",
+  "operatingSystem": "Windows, macOS",
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Audio software",
-  "image": "https://amanorsac.studio/images/apps/nt-idle.png",
-  "author": {
-    "@id": "https://amanorsac.studio/#studio"
-  },
-  "publisher": {
-    "@id": "https://amanorsac.studio/#studio"
-  }
+  "image": "https://amanorsac.studio/images/photos/nt-sanctuary.webp",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" }
 }
 </script>
-<link rel="stylesheet" href="assets/site-auth.css">
-<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-app="nebulatide">
+<a class="skip" href="#main">Skip to content</a>
 
-<div class="sky" aria-hidden="true"></div>
-<div class="stars" aria-hidden="true"></div>
-
-<div class="top">
-  <a class="back" href="apps.html">← App Store</a>
-  <span class="name"><img src="images/apps/nt-logo.webp" alt="">Nebula Tide</span>
-  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
-</div>
-
-<!-- The video is the hero, the way Waves builds a plugin's own page:
-     not a headline with a video underneath, but the video filling the
-     frame with the headline standing on top of it. Click-to-play still
-     holds - nothing from YouTube loads before the button is pressed -
-     it is just the first thing here instead of the third. -->
-<header class="hero-video" id="ntpromo" data-yt="yqWtnDpNC0g">
-  <img class="promo-poster" src="https://img.youtube.com/vi/yqWtnDpNC0g/maxresdefault.jpg"
-       alt="" fetchpriority="high" width="1280" height="720">
-  <div class="promo-scrim" aria-hidden="true"></div>
-  <button class="promo-play" type="button" aria-label="Play the Nebula Tide video">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
-  </button>
-  <div class="hero-video-body wrap">
-    <span class="status">Windows and macOS</span>
-    <h1>An ocean of sound. In every key.</h1>
-    <p class="sub">Nebula Tide plays endless, seamless drone pads — real recordings in all twelve keys — inside an interface that’s alive. One click, infinite atmosphere.</p>
-    <div data-hub-get data-app="nebulatide" style="margin:0 0 14px"></div>
-    <div class="cta-row"><a class="cta ghost" href="#features">See the instrument</a></div>
-    <p class="plat-row" data-platforms hidden></p>
-    <p class="fine">Free · installs through Amanorsac Hub with a free account · standalone and VST3 · iPad planned</p>
-    <!-- filled in by app-reviews.js; hidden until there is a real number -->
-    <p class="dl-count" hidden></p>
-  </div>
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo.svg" alt="">Amanorsac Studio</a>
+  <nav aria-label="Site">
+    <a href="/apps.html" aria-current="page">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
 </header>
 
-<section id="features" class="wrap">
-  <h2>A pad in the right key, right now.</h2>
-  <p class="lede">Synths want programming. Loop packs end and click. A YouTube video is in the wrong key with an ad in the middle of your set. All anyone actually needs is a beautiful bed of sound that starts when you press it and doesn’t stop until you say so.</p>
+<div class="pbar">
+  <a class="pname" href="#main"><img src="images/apps/nt-logo.webp" alt="">Nebula Tide</a>
+  <nav class="tabs" aria-label="On this page">
+    <a href="#overview">Overview</a>
+    <a href="#features">Features</a>
+    <a href="#video">Video</a>
+    <a href="#specs">Tech Specs</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#get">Download</a>
+  </nav>
+  <span class="pprice">Free</span>
+  <a class="btn bbtn" href="#get">Download</a>
+</div>
 
-  <div class="hero-shot rise">
-    <!-- the app at rest, formerly the hero's own screenshot before the
-         video took that spot; kept here rather than dropped -->
-    <img src="images/apps/nt-idle.webp" alt="Nebula Tide at rest: the Deep Current preset on stage, twelve key planets on their orbit, and the volume, reverb and pan controls below" loading="lazy">
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">Free · Windows and macOS · Standalone and VST3</p>
+    <h1>Nebula Tide</h1>
+    <p class="tag">An ocean of sound, in every key.</p>
+    <p class="intro">Nebula Tide plays endless, seamless drone pads inside an interface that is alive. Every pad is a real recording in each of the twelve keys. Pick a preset, tap a key and press the square, and the room fills until you say stop.</p>
+    <div data-hub-get class="center" data-app="nebulatide"></div>
+    <p class="plat-row" data-platforms hidden></p>
+    <p class="fine">Free · installs through Amanorsac Hub with a free account · standalone and VST3</p>
+    <p class="dl-count" hidden></p>
   </div>
-
-  <div class="feat-wide rise" style="--k:var(--accent-bright)">
-    <p class="kicker">Twelve keys</p>
-    <h3>Your E♭ was never a stretched C.</h3>
-    <p>Every preset ships as twelve separate studio recordings, one for each key — nothing is pitch-shifted anywhere in the engine. Tap a planet and the pad crossfades into a recording that was actually performed in that key, formants and character intact.</p>
-    <div class="shot"><img src="images/apps/nt-planets.webp" alt="The twelve key planets on their orbit line, E flat selected and glowing" loading="lazy"></div>
-  </div>
-
-  <div class="feat rise" style="--k:var(--accent)">
-    <div class="feat-copy">
-      <p class="kicker">The living interface</p>
-      <h3>It breathes with the sound.</h3>
-      <p>Press the pad and the whole room answers: the square lights and pulses, the starfield accelerates with the output level, the aurora arcs turn. The status in the corner stops saying <i>drifting</i> and starts saying <i>transmitting</i>. It reads as an instrument, not a panel of controls.</p>
-    </div>
-    <div class="shot"><img src="images/apps/nt-playing.webp" alt="Nebula Tide playing: the pad lit, the starfield streaking, E flat selected on the planet ring" loading="lazy"></div>
-  </div>
-
-  <div class="feat-wide rise" style="--k:var(--gold)">
-    <p class="kicker">Two stars</p>
-    <h3>Weather included.</h3>
-    <p>A gold star on the left for effects — claps, prayers, swells. An ice-blue star on the right for textures — wind, rain, birds, a room full of people. Both loop on their own, both survive a preset change, and both fade out gracefully when the drone stops. Drag a star vertically to set its level.</p>
-    <div class="shot"><img src="images/apps/nt-stars.webp" alt="The FX star in gold on the left and the texture star in ice blue on the right, flanking the stage" loading="lazy"></div>
-  </div>
-
-  <div class="feat flip rise" style="--k:var(--ice)">
-    <div class="feat-copy">
-      <p class="kicker">One stage</p>
-      <h3>One preset. One key. One word telling you what it’s doing.</h3>
-      <p>No browser, no grid, no page of tabs. The stage carries everything you need mid-service: which preset is loaded, which key it’s in, and whether sound is leaving the app. Arrow left or right and the next preset hot-swaps under the crossfade — you never hear the seam.</p>
-    </div>
-    <div class="shot"><img src="images/apps/nt-stage.webp" alt="The centre of the app: one glowing DEEP CURRENT pad square, the orbit arcs around it and the planet ring below" loading="lazy"></div>
-  </div>
-
-  <div class="feat-wide rise" style="--k:var(--accent-bright)">
-    <p class="kicker">Space</p>
-    <h3>Three rooms, three clicks.</h3>
-    <p>Room, Plate and Hall — each tuned to the character of the classics rather than left as a generic algorithm. Mix, Size and Damp are there when you want to go further, and every preset arrives with its own sensible defaults already dialled.</p>
-    <div class="shot"><img src="images/apps/nt-space.webp" alt="The footer controls: volume knob, the Room, Plate and Hall buttons with Mix, Size and Damp sliders, and the crossfade control" loading="lazy"></div>
-  </div>
-
-  <div class="trio">
-    <div><h3>Nothing ever hard-cuts</h3>
-      <p>Pads, keys and whole presets change through an adjustable crossfade, half a second to twelve. Live use demands it: the congregation should never hear the transition, only the new key.</p></div>
-    <div><h3>Loops that hold all night</h3>
-      <p>Looping is sample-accurate rather than approximate, so a pad can run for a whole service or a whole session without a click, a gap, or a fade you didn’t ask for.</p></div>
-    <div><h3>Packs drop in, no reinstall</h3>
-      <p>Presets live in a folder the app reads at launch. A new sound pack is a folder you drop in — no installer, no app update, no waiting for a release.</p></div>
-    <div><h3>Stage app and studio plugin</h3>
-      <p>The same engine runs standalone on Windows or as a VST3 inside your DAW, sharing one preset folder. macOS and iPad are next from the same codebase.</p></div>
+  <div class="hero-img">
+    <img src="images/photos/nt-sanctuary-1200.webp"
+         srcset="images/photos/nt-sanctuary-1200.webp 1200w, images/photos/nt-sanctuary.webp 2400w" sizes="100vw"
+         width="2400" height="1340" fetchpriority="high"
+         alt="A keyboard player in a candlelit sanctuary with Nebula Tide open on a laptop above her keys">
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Three steps.</h2>
-  <div class="steps">
-    <div class="step rise"><b>Pick your preset</b><p>Arrow to the sound you want. One square, centre stage.</p></div>
-    <div class="step rise"><b>Tap your key</b><p>Touch the planet for tonight’s key. The pad crossfades into that recording.</p></div>
-    <div class="step rise"><b>Play forever</b><p>Press the square. It doesn’t end until you end it.</p></div>
-  </div>
-  <p class="manual">That’s the whole manual.</p>
-</section>
-
-<section class="wrap">
-  <h2>The other ways people get a pad.</h2>
-  <div class="tablewrap">
-    <table>
-      <thead><tr><th></th><th>Pad loop packs</th><th>Synth pads</th><th>YouTube pads</th><th>Nebula Tide</th></tr></thead>
-      <tbody>
-        <tr><th>All twelve keys, really recorded</th><td><i>Rarely</i></td><td><i>Synthesised</i></td><td><i>No</i></td><td><b>Yes</b></td></tr>
-        <tr><th>Seamless infinite loop</th><td><i>Often clicks</i></td><td><i>Yes</i></td><td><i>Ends, or an ad does</i></td><td><b>Yes</b></td></tr>
-        <tr><th>One-click FX and textures</th><td><i>No</i></td><td><i>No</i></td><td><i>No</i></td><td><b>Yes</b></td></tr>
-        <tr><th>Ready without programming</th><td><i>Yes</i></td><td><i>No</i></td><td><i>Yes</i></td><td><b>Yes</b></td></tr>
-        <tr><th>VST3 and standalone</th><td><i>Files only</i></td><td><i>Plugin only</i></td><td><i>No</i></td><td><b>Yes</b></td></tr>
-        <tr><th>Safe to put on a stage</th><td><i>Depends</i></td><td><i>Yes</i></td><td><i>No</i></td><td><b>Yes</b></td></tr>
-      </tbody>
-    </table>
+<section class="block" id="overview">
+  <div class="wrap">
+    <h2>A Pad in the Right Key, Right Now</h2>
+    <p>Synths need programming. Loop packs end and click. A YouTube video is in the wrong key, with an ad in the middle of your set. What most players actually need is a beautiful bed of sound that starts when you press it and does not stop until you say so.</p>
+    <p>That is all Nebula Tide does, and it does it properly. <b>Every preset ships as twelve separate studio recordings, one for each key,</b> so nothing is pitch shifted anywhere in the engine. When you tap a key, the pad crossfades into a recording that was actually performed in that key, with its character intact.</p>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>How it will be sold.</h2>
-  <p class="lede">The player is the app; the sounds are the product line. Prices are still being set, so here is the shape of it rather than a number we would have to change later.</p>
-  <div class="packs">
-    <div class="pack rise">
-      <p class="tier">The player</p>
-      <h3>Free, with Deep Current</h3>
-      <p>The instrument itself, standalone and VST3, with the first preset included — twelve keys of it.</p>
-    </div>
-    <div class="pack rise">
-      <p class="tier">Sound packs</p>
-      <h3>One-time, owned forever</h3>
-      <p>Each pack is a set of presets in all twelve keys. Buy it once, drop the folder in, keep it. No subscription.</p>
-    </div>
-    <div class="pack rise">
-      <p class="tier">Bundle</p>
-      <h3>Everything, at launch</h3>
-      <p>Every pack available at release, plus the ones that land during the launch window.</p>
-    </div>
+<figure class="bleed rise">
+  <img src="images/photos/nt-screen-1200.webp"
+       srcset="images/photos/nt-screen-1200.webp 1200w, images/photos/nt-screen.webp 2400w" sizes="100vw"
+       width="2400" height="1340" loading="lazy"
+       alt="Nebula Tide on a laptop screen: the Deep Current preset in the middle, the key planets on their orbit and the space controls below">
+</figure>
+
+<div class="facts rise" style="margin-top:clamp(40px,7vh,80px)">
+  <div><b>12</b><span>real recordings for every preset, one in each key</span></div>
+  <div><b>0</b><span>pitch shifting anywhere in the engine</span></div>
+  <div><b>12s</b><span>longest crossfade, so nothing ever hard cuts</span></div>
+  <div><b>$0</b><span>for the player and the first preset</span></div>
+</div>
+
+<section class="block" id="features">
+  <div class="wrap">
+    <p class="kick">The Living Interface</p>
+    <h2>It Breathes With the Sound</h2>
+    <p>Press the pad and the whole room answers. The square lights and pulses, the starfield speeds up with the output level and the aurora arcs turn. The status in the corner stops saying drifting and starts saying transmitting. It reads as an instrument, not a panel of controls.</p>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Questions, answered.</h2>
-  <details><summary>Are the pads pitch-shifted?</summary>
-    <div>Never. Twelve real recordings per preset, one per key. It’s the whole reason the app exists.</div></details>
+<div class="split rise" style="padding-top:0">
+  <div class="media"><img src="images/apps/nt-playing.webp" width="1102" height="808" loading="lazy"
+       alt="Nebula Tide playing: the pad lit, the starfield streaking, E flat selected on the planet ring"></div>
+  <div>
+    <p class="kick">Twelve Keys</p>
+    <h3>Your E Flat Was Never a Stretched C</h3>
+    <p>Tap a planet and the pad crossfades into the recording made in that key. Because nothing is pitch shifted, the low keys stay warm and the high keys stay clear, instead of everything sounding slightly wrong the further you move from the original.</p>
+  </div>
+</div>
+
+<div class="split flip rise">
+  <div class="media"><img src="images/apps/nt-stars.webp" width="600" height="180" loading="lazy" style="max-width:600px;margin:0 auto"
+       alt="The effects star in gold on the left and the texture star in ice blue on the right"></div>
+  <div>
+    <p class="kick">Two Stars</p>
+    <h3>Weather Included</h3>
+    <p>A gold star on the left plays effects such as claps, prayers and swells. An ice blue star on the right plays textures such as wind, rain, birds and a room full of people. Both loop on their own, both survive a preset change, and both fade out gracefully when the pad stops. Drag a star up or down to set its level.</p>
+  </div>
+</div>
+
+<div class="split rise">
+  <div class="media"><img src="images/apps/nt-space.webp" width="870" height="160" loading="lazy" style="max-width:870px;margin:0 auto"
+       alt="The footer controls: volume, the Room, Plate and Hall buttons with Mix, Size and Damp, and the crossfade control"></div>
+  <div>
+    <p class="kick">Space</p>
+    <h3>Three Rooms, Three Clicks</h3>
+    <p>Room, Plate and Hall are each tuned to the character of the classics rather than left as a generic setting. Mix, Size and Damp are there when you want to go further, and every preset arrives with its own sensible defaults.</p>
+  </div>
+</div>
+
+<div class="grid four rise">
+  <div class="item">
+    <h3>One Preset, One Key</h3>
+    <p>No browser, no grid and no tabs. The stage shows which preset is loaded, which key it is in and whether sound is leaving the app. Arrow left or right and the next preset swaps in under the crossfade.</p>
+  </div>
+  <div class="item">
+    <h3>Nothing Ever Hard Cuts</h3>
+    <p>Pads, keys and whole presets change through a crossfade you set from half a second to twelve. The congregation should never hear the transition, only the new key.</p>
+  </div>
+  <div class="item">
+    <h3>Loops That Hold All Night</h3>
+    <p>Looping is sample accurate, so a pad can run for a whole service without a click, a gap or a fade you did not ask for.</p>
+  </div>
+  <div class="item">
+    <h3>Packs Drop In</h3>
+    <p>Presets live in a folder the app reads when it opens. A new sound pack is a folder you drop in, with no installer and no app update.</p>
+  </div>
+</div>
+
+<section class="block" id="video">
+  <div class="wrap">
+    <h2>Hear It</h2>
+    <p>Pick your preset, tap your key and press the square. It does not end until you end it. That is the whole manual.</p>
+  </div>
+</section>
+
+<div class="shot rise">
+  <div class="yt" id="ntpromo" data-yt="yqWtnDpNC0g">
+    <img src="https://img.youtube.com/vi/yqWtnDpNC0g/maxresdefault.jpg" alt="" loading="lazy" width="1280" height="720">
+    <button type="button" aria-label="Play the Nebula Tide video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+  </div>
+</div>
+
+<section class="block" id="compare">
+  <div class="wrap">
+    <h2>The Other Ways People Get a Pad</h2>
+  </div>
+</section>
+<div class="compare rise">
+  <table>
+    <thead><tr><th></th><th>Pad loop packs</th><th>Synth pads</th><th>YouTube pads</th><th class="us">Nebula Tide</th></tr></thead>
+    <tbody>
+      <tr><th>All twelve keys, really recorded</th><td>Rarely</td><td>Synthesised</td><td>No</td><td class="us">Yes</td></tr>
+      <tr><th>Seamless endless loop</th><td>Often clicks</td><td>Yes</td><td>Ends, or an ad does</td><td class="us">Yes</td></tr>
+      <tr><th>One click effects and textures</th><td>No</td><td>No</td><td>No</td><td class="us">Yes</td></tr>
+      <tr><th>Ready without programming</th><td>Yes</td><td>No</td><td>Yes</td><td class="us">Yes</td></tr>
+      <tr><th>VST3 and standalone</th><td>Files only</td><td>Plug-in only</td><td>No</td><td class="us">Yes</td></tr>
+      <tr><th>Safe to put on a stage</th><td>Depends</td><td>Yes</td><td>No</td><td class="us">Yes</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="band right rise">
+  <img src="images/photos/nt2-screen-1200.webp"
+       srcset="images/photos/nt2-screen-1200.webp 1200w, images/photos/nt2-screen.webp 2400w" sizes="100vw"
+       width="2400" height="1340" loading="lazy"
+       alt="Nebula Tide 2 on a laptop above a keyboard, purple stage lights behind">
+  <div class="in"><div class="copy">
+    <p class="kick">Nebula Tide 2</p>
+    <h2>Want More? Meet Version 2</h2>
+    <p>Version 2 adds a shimmer the pads run through, presets built from your own recordings and a drag that puts a MIDI clip on your timeline. It is pay what you want from $5, and this version stays free either way.</p>
+    <p><a class="more" href="/nebulatide2.html">See Nebula Tide 2</a></p>
+  </div></div>
+</section>
+
+<section class="paper specs" id="specs">
+  <h2 class="sec-h">Tech Specs</h2>
+  <div class="spec">
+    <div><h4>Platforms</h4><p>Windows and macOS.</p></div>
+    <div><h4>Formats</h4><p>Standalone and VST3 on Windows. Standalone on macOS.</p></div>
+    <div><h4>Sounds</h4><p>Deep Current included, as twelve real recordings, one per key. Never pitch shifted.</p></div>
+    <div><h4>Crossfade</h4><p>Adjustable from 0.5 to 12 seconds for pads, keys and presets.</p></div>
+    <div><h4>Looping</h4><p>Sample accurate and seamless.</p></div>
+    <div><h4>Space</h4><p>Room, Plate and Hall, with Mix, Size and Damp.</p></div>
+    <div><h4>Effects and Textures</h4><p>Two independent looping layers with their own levels.</p></div>
+    <div><h4>Size</h4><p>279 MB on Windows, 289 MB on Mac, Deep Current included. Further packs are FLAC.</p></div>
+    <div><h4>Price</h4><p>Free, with a free Amanorsac account.</p></div>
+  </div>
+</section>
+
+<section class="faq">
+  <h2 class="sec-h">Questions</h2>
+  <details><summary>Are the pads pitch shifted?</summary>
+    <div>Never. Every preset has twelve real recordings, one per key. It is the whole reason the app exists.</div></details>
   <details><summary>Will it click when it loops?</summary>
-    <div>No. The loop is sample-accurate, and every transition — pad, key or preset — passes through a crossfade.</div></details>
+    <div>No. The loop is sample accurate, and every change of pad, key or preset goes through a crossfade.</div></details>
   <details><summary>Does it work in my DAW?</summary>
-    <div>VST3 on Windows today. The Mac app is out as well, standalone; plugin support there follows from the same codebase.</div></details>
+    <div>As a VST3 on Windows. On the Mac it runs standalone. Nebula Tide 2 runs as a plug-in on both.</div></details>
   <details><summary>Can I add my own sounds?</summary>
-    <div>Yes. Preset packs install by dropping a folder into the presets directory — no reinstall, no app update.</div></details>
-  <details><summary>Mac or iPad?</summary>
-    <div>Mac is out — the download above covers it. iPad is what is still ahead, from the same codebase.</div></details>
-  <details><summary>How big is it?</summary>
-    <div>279 MB on Windows, 289 MB on Mac, Deep Current included. Further packs are FLAC, roughly half the size of the same material as WAV.</div></details>
+    <div>Preset packs install by dropping a folder into the presets directory, with no reinstall. To build presets from your own recordings inside the app, see Nebula Tide 2.</div></details>
   <details><summary>Do I need to be a musician?</summary>
-    <div>No. Choose a preset, tap a key, press the square. If you can’t read the key off a setlist, C is a safe place to start.</div></details>
+    <div>No. Choose a preset, tap a key and press the square. If you cannot read the key off a setlist, C is a safe place to start.</div></details>
 </section>
 
-<!-- =====================================================================
-     Reviews. Empty until app-reviews.js fills them in from what people
-     actually submitted, and nothing anyone submits is public until the
-     studio has read it. See assets/app-reviews.js. ===================================================================== -->
-<section id="reviews" class="wrap">
+<section class="reviews" id="reviews">
   <p class="eyebrow">From people who use it</p>
-  <h2>What people are hearing.</h2>
+  <h2 class="sec-h">What People Are Hearing</h2>
   <div class="rv-stats" hidden></div>
-
   <ul class="rv-list"></ul>
   <p class="rv-empty" hidden>Be the first to leave one.</p>
-
   <div class="rv-panel">
     <form class="rv-form" novalidate>
       <p class="rv-legend">Used it? Rate it.</p>
@@ -570,94 +265,68 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
         <span class="star">&#9733;</span><span class="star">&#9733;</span>
       </div>
       <label class="rv-lbl" for="rv-body">Your review</label>
-      <textarea class="rv-body-in" id="rv-body" rows="3"
-        placeholder="What did it hold down for you?"></textarea>
-      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <textarea class="rv-body-in" id="rv-body" rows="3" placeholder="Where do you use it?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name (optional)</label>
       <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
-      <button class="cta rv-go" type="submit">Post review</button>
+      <button class="btn rv-go" type="submit">Post review</button>
       <p class="rv-msg" role="status"></p>
     </form>
     <div class="rv-done" hidden>
       <p class="rv-tick" aria-hidden="true">&#10003;</p>
       <h3>Thank you.</h3>
-      <p>It goes up once I've actually read it — usually within a day or two.</p>
-    </div>
-    <!-- Shown instead of the form until a signed link unlocks it - see
-         REVIEW_GATED in assets/app-reviews.js. Reviews here only come
-         from people who actually downloaded it: about a week after a
-         confirmed download, an email goes out with a link that opens
-         this. Nobody types an address to get one - it just arrives. -->
-    <div class="rv-locked" hidden>
-      <h3>Reviews come from people who've used it.</h3>
-      <p>Download Nebula Tide, and about a week in I'll email you asking what you think — that link is what opens this.</p>
+      <p>It goes up once I have read it, usually within a day or two.</p>
     </div>
   </div>
 </section>
 
-<section class="wrap finale">
-  <h2>The tide is waiting.</h2>
-  <p class="lede">Nebula Tide is out for Windows and Mac. Take it for a spin.</p>
-  <div data-hub-get data-app="nebulatide" style="margin:0 0 14px"></div>
-  <div class="cta-row"><a class="cta ghost" href="nebulatide2.html">See version 2</a><a class="cta ghost" href="apps.html">Back to the App Store</a></div>
-  <p class="fine" style="margin-top:14px">Version 2 adds a shimmer the pads run through, your own presets, and a drag to your timeline — this version stays free either way</p>
+<section class="paper buy" id="get">
+  <div class="card">
+    <img src="images/photos/nt-sanctuary-1200.webp" width="1200" height="670" loading="lazy" alt="Nebula Tide in a sanctuary">
+    <div>
+      <h2>Nebula Tide</h2>
+      <p class="price">Free</p>
+      <p class="terms">The player and the Deep Current preset, for Windows and Mac. Installs through Amanorsac Hub with a free account.</p>
+      <div data-hub-get data-app="nebulatide"></div>
+      <p><a class="more" href="/nebulatide2.html">See version 2</a></p>
+    </div>
+  </div>
 </section>
 
-<footer>
-  <a href="apps.html">App Store</a>
-  <a href="apps.html">HarmonieMD</a>
-  <a href="apps.html">PerformLive</a>
-  <a href="nebulatide2.html">Nebula Tide 2</a>
-  <a href="pulseroom.html">PulseRoom</a>
-  <a href="index.html">Studio</a>
-  <a href="about.html#contact">Contact</a>
-  <span class="who">Amanorsac Studio</span>
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <a href="/apps.html">App Store</a>
+    <a href="/nebulatide2.html">Nebula Tide 2</a>
+    <a href="/performlive.html">PerformLive</a>
+    <a href="/pulseroom.html">PulseRoom</a>
+    <a href="/legal.html">Legal</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/about.html#contact">Contact</a>
+    <span class="who">Amanorsac Studio</span>
+  </div>
 </footer>
 
 <script>
-/* reveal on scroll; falls back to visible when unsupported or reduced */
-if('IntersectionObserver' in window &&
-   !matchMedia('(prefers-reduced-motion: reduce)').matches){
-  var ro = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
-  }, { threshold:.15 });
-  document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
-}else{
-  document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
-}
-</script>
-<script>
 /* Click-to-play. Nothing from YouTube - no cookie, no script, no
-   request - happens before somebody actually presses this button. */
+   request beyond the poster picture - happens before somebody presses
+   the button. */
 (function(){
   var box = document.getElementById('ntpromo');
   if(!box) return;
   var id = box.getAttribute('data-yt');
-  box.querySelector('.promo-play').addEventListener('click', function(){
+  box.querySelector('button').addEventListener('click', function(){
     var f = document.createElement('iframe');
     f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
     f.title = 'Nebula Tide';
     f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
     f.allowFullscreen = true;
-    /* Remove only the poster, the scrim and the button - the headline,
-       the download buttons and the fine print sit in the same header
-       and must stay. box.innerHTML = '' once cleared all of them along
-       with the poster. */
-    ['.promo-poster', '.promo-scrim', '.promo-play'].forEach(function(sel){
-      var el = box.querySelector(sel); if(el) el.remove();
-    });
+    box.innerHTML = '';
     box.appendChild(f);
-    /* The video now paints over the text - same stacking order the
-       page already had, just with something opaque on top. Hiding the
-       text properly rather than leaving it invisible-but-tabbable is
-       the difference between a keyboard user reaching real buttons
-       later in the page and reaching a ghost of this row first. */
-    var body = box.querySelector('.hero-video-body');
-    if (body) { body.style.display = 'none'; }
   }, { once:true });
 })();
 </script>
 <script src="assets/track.js" defer></script>
-<link rel="stylesheet" href="/assets/hub-download.css">
 <script src="/assets/hub-download.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
 <script src="assets/vendor/supabase-2.116.0.js" defer></script>
@@ -665,5 +334,6 @@ if('IntersectionObserver' in window &&
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/store-state.js" defer></script>
 <script src="assets/platforms.js" defer></script>
+<script src="/assets/product.js" defer></script>
 </body>
 </html>
