@@ -71,7 +71,6 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     label: "SecondOut — lifetime license, one year of updates included",
   },
   stemsorter: {
-    // Launch price. The list price is 7000; put it back when launch is over.
     amount_cents: 3500,
     label: "Stem Sorter — lifetime license for two computers, one year of updates included",
   },
