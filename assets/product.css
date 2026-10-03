@@ -333,3 +333,40 @@ code{font-family:var(--mono);font-size:.86em;background:rgba(255,255,255,.08);bo
 .hero .slots .promo-line,.hero .slots .code-row,.hero .slots .pay-alt-row,.hero .slots .buy-status{justify-content:center;text-align:center}
 @media (max-width:700px){ .hero .slots .pay-alt-row{align-items:center} }
 .paper .more{color:color-mix(in srgb,var(--accent) 60%,#000)}
+
+/* ---------- a photograph edge to edge, nothing on it ---------- */
+.bleed{margin:clamp(40px,6vh,72px) 0 0;position:relative}
+.bleed img{width:100%;height:clamp(300px,56vw,860px);object-fit:cover}
+.bleed::before,.bleed::after{content:"";position:absolute;left:0;right:0;height:14%;z-index:1;pointer-events:none}
+.bleed::before{top:0;background:linear-gradient(#000,transparent)}
+.bleed::after{bottom:0;background:linear-gradient(transparent,#000)}
+.bleed figcaption{position:relative;z-index:2;font-size:14px;color:var(--dim);text-align:center;margin:8px auto 0;padding:0 var(--gut);max-width:76ch}
+
+/* ---------- a comparison table ---------- */
+.compare{max-width:1080px;margin:0 auto;padding:0 var(--gut) clamp(56px,9vh,104px);overflow-x:auto}
+.compare table{width:100%;border-collapse:collapse;font-size:15px;min-width:560px}
+.compare th,.compare td{padding:14px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.compare thead th{font-size:13px;font-weight:600;color:var(--muted)}
+.compare thead th.us{color:var(--accent)}
+.compare tbody th{font-weight:400;color:var(--text)}
+.compare td{color:var(--muted)}
+.compare td.us{color:var(--text);font-weight:500}
+.paper .compare th,.paper .compare td{border-color:var(--paper-line)}
+.paper .compare tbody th,.paper .compare td.us{color:var(--ink)}
+.paper .compare td,.paper .compare thead th{color:var(--ink-2)}
+
+/* ---------- the Hub download, when there is no Buy button ---------- */
+.hero [data-hub-get]{margin:0 auto 14px}
+.buy [data-hub-get]{margin:0 0 10px}
+.buy [data-hub-get].hub-get{align-items:flex-start;text-align:left}
+.paper .hub-get{--hub-fg:var(--ink);--hub-muted:var(--ink-2);--hub-line:rgba(0,0,0,.2)}
+.hub-btn{font-family:var(--body)!important;font-weight:600!important}
+
+/* ---------- a product inside a bundle ---------- */
+.grid .item .sub{font-size:13px;font-weight:500;color:var(--accent);margin:-2px 0 10px;letter-spacing:.01em}
+.grid .item ul{margin:12px 0 0;padding:0 0 0 18px;color:var(--muted);font-size:14.5px;line-height:1.55}
+.grid .item ul li{margin:0 0 5px}
+.grid .item .n{font-size:13px;color:var(--dim);margin:10px 0 0}
+.grid .item .ph{aspect-ratio:16/10;border-radius:10px;margin:0 0 18px;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 0%,#14233a,#070b12);outline:1px solid rgba(255,255,255,.08);outline-offset:-1px;
+  font-weight:200;font-size:clamp(26px,3vw,40px);letter-spacing:-.02em;color:#cfe3ff}

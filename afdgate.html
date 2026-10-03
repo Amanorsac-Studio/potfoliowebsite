@@ -3,429 +3,271 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AFD Gate: the gate that listens to one band and turns down another | Amanorsac Studio</title>
-<meta name="description" content="AFD Gate, the Amanorsac Frequency Dependent Gate, is a linear-phase gate for close-miked drums. One band decides when the gate opens, another decides what gets turned down, so a snare hit can open a gate that only cuts cymbal wash. VST3 and standalone on Windows and macOS.">
-<meta property="og:title" content="AFD Gate — filter the trigger, shape the tail">
-<meta property="og:description" content="A linear-phase gate that listens to one band of the signal and turns down another. Built for spill, bleed and cymbal wash on close-miked kits.">
-<meta property="og:image" content="https://amanorsac.studio/images/apps/afdgate/social.png">
-<meta property="og:url" content="https://amanorsac.studio/afdgate.html">
+<meta name="google-adsense-account" content="ca-pub-6190327414594776">
+<title>AFD Gate | The frequency dependent drum gate | Amanorsac Studio</title>
+<meta name="description" content="AFD Gate is a linear-phase, frequency dependent gate for close-miked drums. One band decides when the gate opens and another decides what gets turned down. VST3 and standalone for Windows and macOS. $12, no activation.">
 <link rel="icon" href="images/apps/afdgate/icon.svg" type="image/svg+xml">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
-<style>
-/* ---------- fonts ----------
-   Served from this site rather than fonts.googleapis.com. That stylesheet
-   blocked the first paint on every visit while the browser opened a
-   connection to a third party and waited for an answer. These are the
-   same typefaces, variable-weight, latin only, and they come down the
-   connection the page is already using. Nothing about visitors is shared
-   with Google to render text any more. */
-/* latin-ext */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* =====================================================================
-   AFD Gate product page.
-
-   The plugin's own colours: a deep navy chassis, one blue for the
-   things the detector does, and the amber it uses for the gated band -
-   which is the whole idea of the product, so the page keeps the two
-   colours doing exactly the two jobs they do in the software.
-   ===================================================================== */
-:root{
-  --bg:#080D16; --panel:#101827; --panel-2:#16203247; --line:rgba(255,255,255,.09);
-  --text:#E6EDF7; --muted:#9DAFC6; --dim:#7387A0;
-  --blue:#4A8BF0; --blue-soft:#0C1B33; --amber:#C9A227;
-  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
-  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --r:14px; --r-lg:20px;
-  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-html,body{overflow-x:clip}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
-  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-img{max-width:100%;height:auto;display:block}
-a{color:inherit}
-:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
-.wrap{max-width:1100px;margin:0 auto;padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
-section{padding:clamp(58px,9vh,108px) 0}
-
-.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
-  padding:13px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 88%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
-.top .back:hover{color:var(--text)}
-.top .name{margin-left:auto;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
-.top .name b{color:var(--blue);font-weight:700}
-.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
-.top .sa-av{color:#06121f}
-
-.cta{display:inline-flex;align-items:center;justify-content:center;gap:9px;
-  font-family:var(--display);font-weight:600;font-size:15px;text-decoration:none;border:0;cursor:pointer;
-  border-radius:999px;padding:14px 28px;min-height:50px;
-  background:var(--blue);color:#04101f;transition:transform var(--dur) var(--ease)}
-.cta:hover{transform:translateY(-2px)}
-.cta:active{transform:translateY(0) scale(.985)}
-.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-
-.hero{padding-top:clamp(52px,8vh,92px)}
-.badges{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 26px}
-.badges span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--blue);border:1px solid color-mix(in srgb,var(--blue) 36%,transparent);
-  background:color-mix(in srgb,var(--blue) 10%,transparent);border-radius:999px;padding:5px 12px}
-h1{font-family:var(--display);font-weight:800;letter-spacing:-.02em;line-height:1;
-  font-size:clamp(44px,8vw,96px);margin:0 0 14px}
-.hero .one{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.8vw,30px);
-  letter-spacing:-.02em;color:var(--blue);margin:0 0 18px}
-.hero .sub{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);max-width:62ch;margin:0 0 30px}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
-.fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dim);margin:0}
-.shot{margin-top:clamp(34px,6vh,60px);border:1px solid var(--line);border-radius:var(--r-lg);
-  overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.6)}
-.shot-cap{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dim);margin:12px 0 0}
-
-h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
-  font-size:clamp(26px,3.4vw,40px);margin:0 0 14px}
-.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--blue);margin:0 0 12px}
-.lede{color:var(--muted);max-width:66ch;margin:0 0 40px;font-size:17px}
-.lede b{color:var(--text);font-weight:600}
-p.body{color:var(--muted);max-width:66ch;margin:0 0 18px}
-p.body b{color:var(--text);font-weight:600}
-
-/* a feature: a wide picture with its claim under it */
-.feat{margin:0 0 clamp(44px,7vh,80px)}
-.feat h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.2vw,26px);
-  letter-spacing:-.015em;margin:0 0 10px}
-.feat p{color:var(--muted);max-width:64ch;margin:0 0 22px}
-.feat .pic{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
-  box-shadow:0 18px 54px rgba(0,0,0,.5)}
-.amber{color:var(--amber)}
-.bluetext{color:var(--blue)}
-
-.trio{border-top:1px solid var(--line)}
-.trio > div{display:grid;grid-template-columns:minmax(180px,250px) 1fr;gap:18px;
-  padding:24px 0;border-bottom:1px solid var(--line)}
-.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
-.trio p{margin:0;color:var(--muted);max-width:62ch}
-@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
-
-.gal{display:grid;grid-auto-flow:column;grid-auto-columns:min(560px,86vw);gap:16px;
-  overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:14px}
-.gal figure{margin:0;scroll-snap-align:start}
-.gal .pic{border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
-.gal figcaption{font-size:13.5px;color:var(--muted);padding:10px 4px 0}
-
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
-table{width:100%;border-collapse:collapse;min-width:560px;background:var(--panel)}
-th,td{text-align:left;padding:13px 18px;font-size:14.5px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:var(--body);font-weight:500;color:var(--muted);width:34%}
-td{color:var(--text)}
-td code{font-family:var(--mono);font-size:.9em}
-tr:last-child th,tr:last-child td{border-bottom:0}
-
-.warn{margin-top:22px;background:#1A1510;border:1px solid color-mix(in srgb,var(--amber) 38%,transparent);
-  border-left:3px solid var(--amber);border-radius:0 var(--r) var(--r) 0;padding:18px 22px}
-.warn b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 7px}
-.warn p{margin:0 0 8px;color:var(--muted);font-size:14.5px}
-.warn p:last-child{margin:0}
-.warn code{font-family:var(--mono);font-size:.88em;color:var(--text);background:#241E15;border-radius:4px;padding:2px 6px}
-
-.buy{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
-  gap:clamp(20px,4vw,48px);align-items:center}
-.buy .slot{font-family:var(--display);font-weight:800;font-size:clamp(32px,4.6vw,52px);
-  letter-spacing:-.03em;line-height:1.04;color:var(--blue);margin:0}
-.buy .slot small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--dim);font-weight:500;margin-top:10px}
-.buy h2{margin:0 0 8px}
-.buy p{margin:0 0 18px;color:var(--muted);max-width:52ch}
-@media (max-width:700px){ .buy{grid-template-columns:1fr;gap:16px} }
-
-details{border-bottom:1px solid var(--line)}
-details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
-  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
-details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-family:var(--mono);color:var(--muted);font-size:18px;
-  transition:transform var(--dur) var(--ease)}
-details[open] summary::after{transform:rotate(45deg)}
-details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
-details code{font-family:var(--mono);font-size:.88em;color:var(--text)}
-
-footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
-  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
-footer a:hover{color:var(--text)}
-footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--dim)}
-
-.rise{opacity:0;transform:translateY(16px);
-  transition:opacity 620ms var(--ease),transform 620ms var(--ease)}
-.rise.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{transition:none!important;animation:none!important}
-  .rise{opacity:1;transform:none}
-}
-</style>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="preload" as="image" href="images/photos/afdgate-control-1200.webp" imagesrcset="images/photos/afdgate-control-1200.webp 1200w, images/photos/afdgate-control.webp 2400w" imagesizes="100vw">
+<link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+<style>:root{--accent:#4aa3ff;--accent-ink:#001a33}</style>
 <link rel="canonical" href="https://amanorsac.studio/afdgate">
+<meta property="og:title" content="AFD Gate">
+<meta property="og:description" content="Filter the trigger, shape the tail. A linear-phase drum gate where one band opens the gate and another decides what gets turned down.">
+<meta property="og:image" content="https://amanorsac.studio/images/photos/afdgate-control.webp">
+<meta property="og:url" content="https://amanorsac.studio/afdgate">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   "name": "AFD Gate",
-  "alternateName": "Amanorsac Frequency Dependent Gate",
   "url": "https://amanorsac.studio/afdgate",
-  "description": "A linear-phase gate for close-miked drums that separates detection from action: one band decides when the gate opens, another decides what is turned down.",
+  "description": "A linear-phase frequency dependent gate for close-miked drums. One band decides when the gate opens, another decides what gets turned down.",
   "operatingSystem": "Windows, macOS",
   "applicationCategory": "MultimediaApplication",
-  "applicationSubCategory": "Audio plugin",
+  "applicationSubCategory": "Audio plug-in",
   "softwareVersion": "1.3.0",
+  "image": "https://amanorsac.studio/images/photos/afdgate-control.webp",
   "offers": { "@type": "Offer", "price": "12", "priceCurrency": "USD" },
-  "image": "https://amanorsac.studio/images/apps/afdgate/social.png",
   "author": { "@id": "https://amanorsac.studio/#studio" },
   "publisher": { "@id": "https://amanorsac.studio/#studio" }
 }
 </script>
-<link rel="stylesheet" href="assets/site-auth.css">
-<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-app="afdgate">
+<a class="skip" href="#main">Skip to content</a>
 
-<div class="top">
-  <a class="back" href="apps.html">← App Store</a>
-  <span class="name">AFD <b>Gate</b></span>
-  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
-</div>
-
-<header class="hero wrap">
-  <div class="badges"><span>$12</span><span>VST3</span><span>Standalone</span><span>Windows</span><span>macOS</span><span>Linear phase</span></div>
-  <h1>AFD GATE</h1>
-  <p class="one">Filter the trigger. Shape the tail.</p>
-  <p class="sub">AFD Gate, the Amanorsac Frequency Dependent Gate, is a linear-phase gate for close-miked drums. Drag one band to choose what the detector listens to, and another to choose what actually gets turned down — so a snare hit can open a gate that only cuts cymbal wash. A decibel-domain envelope keeps tails even, lookahead preserves transients, and a retrigger lockout stops buzz and wash from flapping the gate.</p>
-  <div class="cta-row">
-    <button class="cta" data-buy type="button">Buy — $12</button>
-    <a class="cta ghost" href="#how">How it works</a>
-  </div>
-  <p class="plat-row" data-platforms hidden></p>
-  <p class="fine">$12 once · version 1.3.0 · runs offline with no activation, ever</p>
-  <p class="promo-line" data-promo hidden></p>
-  <p class="buy-status" data-buy-status hidden></p>
-  <p class="pay-alt-row" data-pay-alt hidden></p>
-  <p class="code-row" data-code-box hidden></p>
-  <ul class="assure" data-assure hidden></ul>
-  <div class="shot rise">
-    <img src="images/apps/afdgate/ui.webp" width="2360" height="1540"
-         alt="AFD Gate's interface: the detector display with the opening threshold drawn across it, the trigger and gated band selectors, and the trigger, envelope and output controls">
-  </div>
-  <p class="shot-cap">The full interface · the detector trace, the two band selectors, and everything that shapes the envelope</p>
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo.svg" alt="">Amanorsac Studio</a>
+  <nav aria-label="Site">
+    <a href="/apps.html" aria-current="page">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
 </header>
 
-<section class="wrap">
-  <p class="eyebrow">Why it exists</p>
-  <h2>Most gates decide with the whole signal, and act on the whole signal.</h2>
-  <p class="body">On a close-miked kit that is the wrong shape of tool. The snare mic hears the hats. The tom mics hear everything. A gate that ducks the whole channel takes the room with it, and what you get back is a kit that sounds like it was assembled rather than played.</p>
-  <p class="body"><b>AFD Gate splits the two decisions apart.</b> One band decides <span class="bluetext">when</span> the gate opens. A different band decides <span class="amber">what</span> gets turned down. A snare can open a gate that only cuts cymbal wash, and the snare body never moves.</p>
-</section>
+<div class="pbar">
+  <a class="pname" href="#main"><img src="images/apps/afdgate/icon.svg" alt="">AFD Gate</a>
+  <nav class="tabs" aria-label="On this page">
+    <a href="#overview">Overview</a>
+    <a href="#how">How It Works</a>
+    <a href="#drums">On the Kit</a>
+    <a href="#specs">Tech Specs</a>
+    <a href="#buy">Buy</a>
+  </nav>
+  <span class="pprice" data-price data-price-flip>$12</span>
+  <button class="btn bbtn" data-buy type="button">Buy — $12</button>
+</div>
 
-<section id="how" class="wrap">
-  <div class="feat rise">
-    <h3>Choose what opens the gate.</h3>
-    <p>The trigger band is the only part of the signal the detector hears. Drag an edge to move one end, drag the middle to slide the whole band, double-click to reset. The gated band below it is what actually gets turned down, so a snare can open a gate that only cuts cymbal spill.</p>
-    <div class="pic"><img src="images/apps/afdgate/trigger.webp" width="2200" height="742" loading="lazy"
-      alt="The two band selectors on a logarithmic scale from 20 Hz to 20 kHz: the trigger band in blue above, the gated band in amber below"></div>
-  </div>
+<main id="main">
 
-  <div class="feat rise">
-    <h3>See the decision, not just the result.</h3>
-    <p>The display draws the filtered detector against the opening threshold, with the hysteresis line beneath it and gain reduction filled in behind. If the gate misses a ghost note you can see why before you touch a control.</p>
-    <div class="pic"><img src="images/apps/afdgate/detector.webp" width="2200" height="791" loading="lazy"
-      alt="The detector display: the filtered signal traced against the opening threshold, with gain reduction shaded behind it"></div>
-  </div>
-
-  <div class="feat rise">
-    <h3>Compare, undo, recall.</h3>
-    <p>Two independent setups for A and B, undo and redo across every control, factory presets with step arrows, and setup files on disk. The preset name is marked the moment you change anything, so you always know whether you are still on it.</p>
-    <div class="pic"><img src="images/apps/afdgate/toolbar.webp" width="2200" height="532" loading="lazy"
-      alt="The session toolbar: undo, redo, the A and B setups, copy between them, the preset list with step arrows, load, save and about"></div>
-  </div>
-
-  <div class="trio">
-    <div><h3>An envelope that behaves</h3>
-      <p>Attack and release are time constants smoothed in the decibel domain, so a release travels the same number of decibels per unit time from the start of the tail to the end, instead of collapsing at the front. Hold bridges the gaps between hits, hysteresis stops the gate chattering at the threshold, and retrigger locks out a re-open after a close.</p></div>
-    <div><h3>Lookahead that costs nothing to report</h3>
-      <p>Lookahead delays the detector less than the audio, so the gate is already open when a transient lands. The latency reported to the host does not change with the setting.</p></div>
-    <div><h3>Trigger from anywhere</h3>
-      <p>An external sidechain bus takes the decision from another track, and falls back to the track's own signal when the bus is absent.</p></div>
-    <div><h3>Audition what it hears</h3>
-      <p>Listen to the filtered detector on its own. It is the fastest way to know whether the band you picked is actually hearing the drum or the thing beside it.</p></div>
-  </div>
-</section>
-
-<section class="wrap">
-  <p class="eyebrow">Presets</p>
-  <h2>Seven starting points, one per job.</h2>
-  <p class="lede">Kick, snare, toms, cymbal spill and the rest, each with the bands already in a sensible place. Step through them with the arrows without letting go of the mouse.</p>
-  <div class="shot rise" style="margin-top:0">
-    <img src="images/apps/afdgate/presets.webp" width="1800" height="1120" loading="lazy"
-      alt="The preset list open, showing the factory presets named for the drum they were built for">
-  </div>
-</section>
-
-<section class="wrap">
-  <p class="eyebrow">The same plugin, three jobs</p>
-  <h2>What it looks like once it is working.</h2>
-  <div class="gal">
-    <figure><div class="pic"><img src="images/apps/afdgate/kick.webp" width="2360" height="1540" loading="lazy" alt="AFD Gate on a kick drum"></div>
-      <figcaption>Kick. The trigger band down where the beater is, everything above it ignored by the detector.</figcaption></figure>
-    <figure><div class="pic"><img src="images/apps/afdgate/snare.webp" width="2360" height="1540" loading="lazy" alt="AFD Gate on a snare"></div>
-      <figcaption>Snare. Natural body, with the hysteresis line holding the gate open through the ring.</figcaption></figure>
-    <figure><div class="pic"><img src="images/apps/afdgate/frequency.webp" width="2360" height="1540" loading="lazy" alt="AFD Gate in frequency mode, cutting cymbal spill"></div>
-      <figcaption>Cymbal spill, in frequency mode. The snare opens the gate; only the band above it is turned down.</figcaption></figure>
-  </div>
-</section>
-
-<section class="wrap">
-  <p class="eyebrow">Specifications</p>
-  <h2>The numbers, and where they came from.</h2>
-  <div class="tablewrap">
-    <table>
-      <tbody>
-        <tr><th>Formats</th><td>VST3 and standalone, on Windows x64 and macOS</td></tr>
-        <tr><th>iOS</th><td>The iOS target compiles in CI and produces both the container app and the AUv3 extension. It is not released — never signed, never built for a device, never loaded by a host.</td></tr>
-        <tr><th>Channels</th><td>Mono or linked stereo, with an optional stereo sidechain bus</td></tr>
-        <tr><th>Latency</th><td>128 samples of band-split group delay plus 5 ms, reported to the host</td></tr>
-        <tr><th>Detector</th><td>Two-pole band-pass, 12 dB per octave each side, 20 Hz to 20 kHz</td></tr>
-        <tr><th>Band split</th><td>257-tap Blackman-windowed linear-phase complementary pair</td></tr>
-        <tr><th>Sample rates</th><td>Tested at 44.1, 48, 96 and 192 kHz</td></tr>
-        <tr><th>Threshold</th><td><code>-72</code> to <code>0 dBFS</code>, depth <code>0</code> to <code>80 dB</code></td></tr>
-        <tr><th>Envelope</th><td>Attack <code>0.01</code>–<code>30 ms</code>, hold <code>0</code>–<code>250 ms</code>, release <code>5</code>–<code>1500 ms</code></td></tr>
-        <tr><th>Lookahead</th><td><code>0</code> to <code>5 ms</code>, with no change to reported latency</td></tr>
-        <tr><th>Interface</th><td>Resizable. The size is stored with the session.</td></tr>
-        <tr><th>Network</th><td>None. It runs offline, with no telemetry and no activation.</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="body" style="margin-top:22px">Two things worth saying plainly, because they are the ones that get checked: the linear-phase band split reconstructs the input exactly when the gate is open at unity, and the plugin passes pluginval at strictness level 10 with no warnings.</p>
-
-  <div class="warn">
-    <b>Windows will warn you once.</b>
-    <p>The build is not code-signed yet, so SmartScreen shows a blue box saying it protected your PC. That is Windows not recognising a new publisher, not Windows finding a problem with the file.</p>
-    <p>Click <code>More info</code>, then <code>Run anyway</code>.</p>
-  </div>
-</section>
-
-<section class="wrap">
-  <div class="buy rise">
-    <p class="slot">$12<small>Once, and that is all</small></p>
-    <div>
-      <h2>No activation. No account needed to run it.</h2>
-      <p>Twelve dollars, and once it is yours it simply runs: offline, with no key to type, no server to reach and nothing phoning home. You buy it here because that is where the download lives, not because the plugin will ever ask who you are.</p>
-      <button class="cta" data-buy type="button">Buy — $12</button>
-      <a class="cta ghost" href="#how">How it works</a>
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">VST3 and Standalone · Windows and macOS · Linear Phase</p>
+    <h1>AFD Gate</h1>
+    <p class="tag">Filter the trigger. Shape the tail.</p>
+    <p class="intro">AFD Gate, the Amanorsac Frequency Dependent Gate, is a linear-phase gate for close-miked drums. You choose which part of the sound opens the gate, and which part gets turned down, so a snare hit can open a gate that only cuts the cymbal wash above it.</p>
+    <div class="ctas">
+      <button class="btn" data-buy type="button">Buy — $12</button>
+      <a class="more" href="#how">See how it works</a>
+    </div>
+    <p class="plat-row" data-platforms hidden></p>
+    <p class="fine">$12 once · version 1.3.0 · runs offline with no activation, ever</p>
+    <div class="slots">
       <p class="promo-line" data-promo hidden></p>
+      <p class="buy-status" data-buy-status hidden></p>
+      <p class="pay-alt-row" data-pay-alt hidden></p>
+      <p class="code-row" data-code-box hidden></p>
+      <ul class="assure" data-assure hidden></ul>
+    </div>
+  </div>
+  <div class="hero-img">
+    <img src="images/photos/afdgate-control-1200.webp"
+         srcset="images/photos/afdgate-control-1200.webp 1200w, images/photos/afdgate-control.webp 2400w" sizes="100vw"
+         width="2400" height="1340" fetchpriority="high"
+         alt="An engineer at a large console with AFD Gate on the screen, a drum kit visible through the control room glass">
+  </div>
+</section>
+
+<section class="block" id="overview">
+  <div class="wrap">
+    <h2>A Gate That Knows Which Drum It Is On</h2>
+    <p>Most gates make their decision using the whole signal, and then turn down the whole signal. On a close-miked kit that is the wrong tool for the job. The snare mic hears the hi-hats and the tom mics hear everything. A gate that ducks the whole channel takes the room with it, and you end up with a kit that sounds assembled rather than played.</p>
+    <p>AFD Gate splits those two decisions apart. <b>One band decides when the gate opens. A different band decides what gets turned down.</b> So a snare can open a gate that only cuts the cymbal wash, and the body of the snare never moves.</p>
+  </div>
+</section>
+
+<figure class="shot rise">
+  <img src="images/apps/afdgate/ui.webp" width="2360" height="1540" loading="lazy"
+       alt="AFD Gate's interface: the detector display with the opening threshold drawn across it, the trigger and gated band selectors, and the envelope and output controls">
+  <figcaption>The whole interface: the detector trace, the two band selectors, and everything that shapes the envelope.</figcaption>
+</figure>
+
+<div class="facts rise" style="margin-top:clamp(64px,10vh,112px)">
+  <div><b>2</b><span>bands: one that listens and one that gets turned down</span></div>
+  <div><b>257</b><span>tap linear-phase band split that rebuilds the input exactly</span></div>
+  <div><b>7</b><span>factory presets, one for each job on the kit</span></div>
+  <div><b>0</b><span>activations, accounts or network calls. It just runs</span></div>
+</div>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <p class="kick">Trigger</p>
+    <h2>Choose What Opens the Gate</h2>
+    <p>The trigger band is the only part of the signal the detector hears. Drag an edge to move one end, drag the middle to slide the whole band, and double-click to reset it. The gated band underneath is the part that actually gets turned down, so you can set a gate that opens on the snare and only cuts the spill above it.</p>
+  </div>
+</section>
+
+<figure class="shot rise">
+  <img src="images/apps/afdgate/trigger.webp" width="2200" height="742" loading="lazy"
+       alt="The two band selectors on a logarithmic scale from 20 Hz to 20 kHz: the trigger band in blue above, the gated band in amber below">
+  <figcaption>The trigger band in blue decides when. The gated band in amber decides what.</figcaption>
+</figure>
+
+<section class="band right rise">
+  <img src="images/photos/afdgate-snare-1200.webp"
+       srcset="images/photos/afdgate-snare-1200.webp 1200w, images/photos/afdgate-snare.webp 2400w" sizes="100vw"
+       width="2400" height="1340" loading="lazy"
+       alt="A snare drum under a close mic in a dark live room, with AFD Gate open on a laptop beside the kit">
+  <div class="in"><div class="copy">
+    <p class="kick">Detector</p>
+    <h2>See the Decision, Not Just the Result</h2>
+    <p>The display draws the filtered detector signal against the opening threshold, with the hysteresis line underneath and the gain reduction filled in behind. If the gate misses a ghost note, you can see why before you touch a single control.</p>
+  </div></div>
+</section>
+
+<figure class="shot rise">
+  <img src="images/apps/afdgate/detector.webp" width="2200" height="791" loading="lazy"
+       alt="The detector display: the filtered signal traced against the opening threshold, with gain reduction shaded behind it">
+</figure>
+
+<div class="grid rise" style="padding-top:clamp(48px,8vh,88px)">
+  <div class="item">
+    <h3>An Envelope That Behaves</h3>
+    <p>Attack and release are smoothed in decibels, so a release falls evenly from the start of the tail to the end instead of collapsing at the front. Hold bridges the gaps between hits, hysteresis stops chatter at the threshold, and retrigger lockout stops buzz and wash from flapping the gate.</p>
+  </div>
+  <div class="item">
+    <h3>Lookahead for Free</h3>
+    <p>Lookahead delays the detector less than the audio, so the gate is already open when a transient lands. The latency reported to your DAW does not change when you change the setting.</p>
+  </div>
+  <div class="item">
+    <h3>Trigger From Anywhere</h3>
+    <p>An external sidechain input can take the decision from another track, and it falls back to the track's own signal when nothing is connected. You can also listen to the filtered detector on its own to check exactly what it is hearing.</p>
+  </div>
+</div>
+
+<div class="split rise" style="padding-top:0">
+  <div class="media"><img src="images/apps/afdgate/toolbar.webp" width="2200" height="532" loading="lazy"
+       alt="The session toolbar: undo, redo, the A and B setups, the preset list with step arrows, load, save and about"></div>
+  <div>
+    <h3>Compare, Undo and Recall</h3>
+    <p>You get two independent setups for A and B comparisons, undo and redo across every control, factory presets with step arrows and setup files on disk. The preset name is marked the moment you change anything, so you always know whether you are still on it.</p>
+  </div>
+</div>
+
+<section class="block" id="drums">
+  <div class="wrap">
+    <p class="kick">On the Kit</p>
+    <h2>One Plug-in, Three Jobs</h2>
+    <p>AFD Gate comes with seven factory presets for the kick, snare, toms, cymbal spill and the rest, each with the bands already in a sensible place. Step through them with the arrows without letting go of the mouse. Here is what it looks like once it is working.</p>
+  </div>
+</section>
+
+<div class="grid rise" style="padding-top:0">
+  <div class="item">
+    <img src="images/apps/afdgate/kick.webp" width="2360" height="1540" loading="lazy" alt="AFD Gate on a kick drum">
+    <h3>Kick</h3>
+    <p>The trigger band sits down where the beater is, and everything above it is ignored by the detector.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/afdgate/snare.webp" width="2360" height="1540" loading="lazy" alt="AFD Gate on a snare">
+    <h3>Snare</h3>
+    <p>The natural body of the drum, with the hysteresis line holding the gate open through the ring.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/afdgate/frequency.webp" width="2360" height="1540" loading="lazy" alt="AFD Gate in frequency mode, cutting cymbal spill">
+    <h3>Cymbal Spill</h3>
+    <p>In frequency mode the snare opens the gate, and only the band above it is turned down.</p>
+  </div>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <h2>No Activation, No Account</h2>
+    <p>Once AFD Gate is yours it simply runs. There is no key to type, no server to reach and nothing phoning home. You buy it here because this is where the download lives, not because the plug-in will ever ask who you are. Install it on every computer you own.</p>
+  </div>
+</section>
+
+<section class="paper specs" id="specs">
+  <h2 class="sec-h">Tech Specs</h2>
+  <div class="spec">
+    <div><h4>Formats</h4><p>VST3 and standalone, on Windows x64 and macOS.</p></div>
+    <div><h4>Channels</h4><p>Mono or linked stereo, with an optional stereo sidechain input.</p></div>
+    <div><h4>Latency</h4><p>128 samples of band split group delay plus 5 ms, reported to the host.</p></div>
+    <div><h4>Detector</h4><p>Two pole band-pass, 12 dB per octave each side, 20 Hz to 20 kHz.</p></div>
+    <div><h4>Band Split</h4><p>257 tap Blackman windowed linear-phase complementary pair. Rebuilds the input exactly when the gate is open at unity.</p></div>
+    <div><h4>Sample Rates</h4><p>Tested at 44.1, 48, 96 and 192 kHz.</p></div>
+    <div><h4>Threshold</h4><p>-72 to 0 dBFS. Depth 0 to 80 dB.</p></div>
+    <div><h4>Envelope</h4><p>Attack 0.01 to 30 ms, hold 0 to 250 ms, release 5 to 1500 ms.</p></div>
+    <div><h4>Lookahead</h4><p>0 to 5 ms, with no change to reported latency.</p></div>
+    <div><h4>Interface</h4><p>Resizable. The size is saved with the session.</p></div>
+    <div><h4>Validation</h4><p>Passes pluginval at strictness level 10 with no warnings.</p></div>
+    <div><h4>Network</h4><p>None. Runs offline, with no telemetry and no activation.</p></div>
+  </div>
+</section>
+
+<section class="faq">
+  <h2 class="sec-h">Questions</h2>
+  <details><summary>What does linear phase actually give me here?</summary>
+    <div>When the gate is open, the two bands add back up to exactly the signal you put in. Nothing is smeared and nothing is phase shifted, so leaving the plug-in in the chain costs you nothing while it is not gating.</div></details>
+  <details><summary>What is the difference between the trigger band and the gated band?</summary>
+    <div>The trigger band is what the detector listens to, so it decides when the gate opens. The gated band is what gets turned down in frequency mode. Keeping them separate is the whole point: a snare can open a gate that only cuts what is above it.</div></details>
+  <details><summary>Does it add latency?</summary>
+    <div>128 samples of band split group delay plus 5 ms, and it tells your DAW, so your session stays in time. Changing the lookahead does not change that number.</div></details>
+  <details><summary>Does it need the internet or a licence key?</summary>
+    <div>Neither. There is no activation, no telemetry and no network use at all. Buying puts the download in your My Apps, and after that the plug-in has nothing to check.</div></details>
+  <details><summary>Windows or Mac?</summary>
+    <div>Both, as VST3 and standalone, from one purchase. An iOS version compiles in testing but has not been released.</div></details>
+  <details><summary>Windows says it protected my PC. Is something wrong?</summary>
+    <div>No. The Windows build is not code signed yet, so SmartScreen shows a blue box the first time because it does not recognise a new publisher. Click More info, then Run anyway.</div></details>
+</section>
+
+<section class="paper buy" id="buy">
+  <div class="card">
+    <img src="images/photos/afdgate-control-1200.webp" width="1200" height="670" loading="lazy" alt="AFD Gate on the console screen in a control room">
+    <div>
+      <h2>AFD Gate</h2>
+      <p class="price" data-price>$12</p>
+      <p class="terms">Bought once, and that is all. VST3 and standalone for Windows and macOS, with no activation and no account needed to run it. It is also part of the Studio Bundle.</p>
+      <div class="ctas">
+        <button class="btn" data-buy type="button">Buy — $12</button>
+        <a class="more" href="/store/package">See the Studio Bundle</a>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Questions, answered.</h2>
-  <details><summary>What does "linear phase" actually buy me here?</summary>
-    <div>When the gate is open, the two bands sum back to exactly the signal you put in. Nothing is smeared and nothing is phase-shifted, so leaving the plugin in the chain costs you nothing while it is not gating.</div></details>
-  <details><summary>What is the difference between the trigger band and the gated band?</summary>
-    <div>The trigger band is what the detector listens to — it decides when the gate opens. The gated band is what gets turned down in frequency mode. Keeping them separate is the whole point: a snare can open a gate that only cuts what is above it.</div></details>
-  <details><summary>Does it add latency?</summary>
-    <div>128 samples of band-split group delay plus 5 ms, and it tells the host, so your session stays in time. Changing the lookahead does not change that number.</div></details>
-  <details><summary>Does it need the internet, or a licence key?</summary>
-    <div>Neither. There is no activation, no telemetry and no network use at all.</div></details>
-  <details><summary>Windows or Mac?</summary>
-    <div>Both, as VST3 and standalone, from the one purchase. iOS is a separate matter — see the specifications.</div></details>
-  <details><summary>Is there really no licence key?</summary>
-    <div>None. Buying puts the download in your <a href="/my-apps.html">My Apps</a>, and after that the plugin has nothing to check and no way to check it. Install it on every machine you own.</div></details>
-</section>
+</main>
 
-<footer>
-  <a href="apps.html">App Store</a>
-  <a href="secondout.html">SecondOut</a>
-  <a href="aether.html">AETHER</a>
-  <a href="nebulatide2.html">Nebula Tide 2</a>
-  <a href="legal.html">Legal</a>
-  <a href="about.html#contact">Contact</a>
-  <span class="who">Amanorsac Studio</span>
+<footer class="foot">
+  <div class="in">
+    <a href="/apps.html">App Store</a>
+    <a href="/secondout.html">SecondOut</a>
+    <a href="/ambanalog.html">AMB Analog</a>
+    <a href="/ambdigital.html">AMB Digital</a>
+    <a href="/legal.html">Legal</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/about.html#contact">Contact</a>
+    <span class="who">Amanorsac Studio</span>
+  </div>
 </footer>
 
-<script>
-(function(){
-  if('IntersectionObserver' in window &&
-     !matchMedia('(prefers-reduced-motion: reduce)').matches){
-    var ro = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
-    }, { threshold:.15 });
-    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
-  } else {
-    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
-  }
-})();
-</script>
 <script src="assets/track.js" defer></script>
 <script src="assets/vendor/supabase-2.116.0.js"></script>
 <script src="assets/supabase-client.js"></script>
@@ -436,5 +278,6 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spaci
 <script src="assets/site-auth.js" defer></script>
 <script src="assets/app-purchase.js" defer></script>
 <script src="assets/platforms.js" defer></script>
+<script src="/assets/product.js" defer></script>
 </body>
 </html>

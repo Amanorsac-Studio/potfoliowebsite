@@ -4,299 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-adsense-account" content="ca-pub-6190327414594776">
-<title>Stem Sorter: your files on the right tracks of your template, in your DAW | Amanorsac App Store</title>
+<title>Stem Sorter | Quickly import session files into your mix template | Amanorsac Studio</title>
 <meta name="description" content="Stem Sorter reads the names of your recorded files and puts every one on the right track of your template, in Studio One, Logic, Pro Tools, Cubase, Ableton, REAPER and more. Windows and macOS. $35, once.">
-<meta property="og:title" content="Your files. Your template. Your DAW.">
-<meta property="og:description" content="Drop in your recordings and Stem Sorter puts every file on the right track of your template, in the DAW you use. Windows and macOS.">
-<meta property="og:image" content="https://amanorsac.studio/images/apps/stemsorter/17-light.webp">
-<meta property="og:url" content="https://amanorsac.studio/stemsorter.html">
 <link rel="icon" href="images/apps/stemsorter-logo.svg" type="image/svg+xml">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
-<style>
-/* ---------- fonts ----------
-   Served from this site rather than fonts.googleapis.com. That stylesheet
-   blocked the first paint on every visit while the browser opened a
-   connection to a third party and waited for an answer. These are the
-   same typefaces, variable-weight, latin only, and they come down the
-   connection the page is already using. Nothing about visitors is shared
-   with Google to render text any more. */
-/* latin-ext */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* =====================================================================
-   Stem Sorter product page. The same skeleton every product page here
-   uses, wearing the app's own colours: near-black panels, one cyan
-   accent, and amber kept for exactly what the app keeps it for - the
-   rows that want a human look before you build.
-   ===================================================================== */
-:root{
-  --bg:#0a1018; --panel:#111c2a; --panel-2:#16222f; --line:rgba(255,255,255,.08);
-  --text:#e4ebf3; --muted:#9fb0c2; --dim:#7d8fa3;
-  --accent:#2ad2e8; --accent-soft:#08252c;
-  --am:#e5a44b; --go:#4fd58f; --vi:#7b8ff5;
-  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
-  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --r:14px; --r-lg:22px;
-  --ease:cubic-bezier(.16,1,.3,1); --dur:240ms;
-}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-html,body{overflow-x:clip}
-body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);
-  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-img{max-width:100%;height:auto;display:block}
-a{color:inherit}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
-
-.wrap{max-width:1120px;margin:0 auto;
-  padding-left:clamp(18px,4vw,40px);padding-right:clamp(18px,4vw,40px)}
-section{padding:clamp(64px,10vh,120px) 0}
-
-/* ---------- top bar ---------- */
-.top{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:18px;
-  padding:14px clamp(18px,4vw,40px);background:color-mix(in srgb,var(--bg) 86%,transparent);
-  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
-.top .back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
-.top .back:hover{color:var(--text)}
-.top .name{margin-left:auto;display:flex;align-items:center;gap:9px;
-  font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:-.01em}
-.top .name img{width:18px;height:18px}
-.top .name b{color:var(--accent);font-weight:700}
-.top .sa{--sa-fg:var(--text);--sa-bg:var(--panel);--sa-line:var(--line);--sa-muted:var(--muted)}
-.top .sa-av{color:#04161a}
-
-/* ---------- hero ---------- */
-.hero{padding-top:clamp(56px,9vh,100px)}
-.hero .status{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
-  border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);
-  border-radius:999px;padding:6px 14px;margin:0 0 26px}
-h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:1.05;
-  font-size:clamp(34px,5.6vw,64px);margin:0 0 22px;max-width:15ch}
-.hero .sub{font-size:clamp(16px,1.6vw,19px);color:var(--muted);max-width:58ch;margin:0 0 30px}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
-.cta{display:inline-block;font-family:var(--display);font-weight:600;font-size:15px;
-  text-decoration:none;border:0;cursor:pointer;border-radius:999px;padding:14px 28px;
-  background:var(--accent);color:#04222a;transition:transform var(--dur) var(--ease)}
-.cta:hover{transform:translateY(-2px)}
-.cta:active{transform:translateY(0) scale(.98)}
-.cta[disabled]{opacity:.65;cursor:default;transform:none}
-.cta.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-.hero .fine{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);margin:0}
-.buy-status{font-size:14px;color:var(--muted);margin:12px 0 0;max-width:56ch}
-.buy-status.bad{color:#f27c8f}
-.buy-status a{color:var(--accent)}
-.hero-shot{margin-top:clamp(36px,6vh,64px);border:1px solid var(--line);
-  border-radius:var(--r-lg);overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.55)}
-.dl-count{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--accent);margin:14px 0 0}
-
-/* ---------- reviews ---------- */
-.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--accent);margin:0 0 12px}
-.stars{display:inline-flex;gap:2px;vertical-align:middle}
-.star{font-size:16px;line-height:1;color:var(--line)}
-.star.on{color:var(--accent)}
-.rv-stats{display:flex;align-items:center;gap:10px;margin:0 0 34px}
-.rv-stats .rv-n{font-size:14.5px;color:var(--muted)}
-.rv-list{list-style:none;margin:0 0 40px;padding:0;
-  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.rv{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px}
-.rv-head{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
-.rv-head .star{font-size:13px}
-.rv-who{font-size:12.5px;color:var(--dim)}
-.rv-body{margin:0;color:var(--text);font-size:14.5px;line-height:1.65}
-.rv-empty{color:var(--muted);font-size:14.5px;margin:0 0 40px}
-.rv-panel{max-width:480px;background:var(--panel);border:1px solid var(--line);
-  border-radius:var(--r-lg);padding:clamp(24px,4vw,34px)}
-.rv-legend{font-family:var(--display);font-weight:700;font-size:18px;margin:0 0 16px}
-.rv-pick{display:flex;gap:6px;margin:0 0 20px}
-.rv-pick .star{font-size:30px;cursor:pointer;transition:transform 120ms var(--ease),color 120ms}
-.rv-pick .star:hover,.rv-pick .star.hover{transform:scale(1.12)}
-.rv-pick .star.on{color:var(--accent)}
-.rv-lbl{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--dim);margin:0 0 7px}
-.rv-lbl span{text-transform:none;letter-spacing:0}
-.rv-body-in,.rv-name-in{width:100%;background:var(--bg);border:1px solid var(--line);
-  border-radius:10px;padding:11px 13px;color:var(--text);font-family:var(--body);
-  font-size:14.5px;resize:vertical;margin:0 0 16px}
-.rv-body-in:focus,.rv-name-in:focus{outline:none;border-color:var(--accent)}
-.rv-go{width:100%;justify-content:center;text-align:center;border:0;cursor:pointer}
-.rv-go[disabled]{opacity:.6;cursor:default}
-.rv-msg{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:1.2em;text-align:center}
-.rv-msg.bad{color:#f27c8f}
-.rv-done{text-align:center;padding:6px 0 4px}
-.rv-done[hidden]{display:none}
-.rv-tick{width:44px;height:44px;margin:0 auto 14px;border-radius:50%;
-  display:grid;place-items:center;font-size:20px;color:var(--accent);background:var(--accent-soft)}
-.rv-done h3{font-size:19px;margin:0 0 8px}
-.rv-done p{color:var(--muted);font-size:14px;line-height:1.6;margin:0}
-
-/* ---------- section headings ---------- */
-h2{font-family:var(--display);font-weight:700;letter-spacing:-.02em;line-height:1.12;
-  font-size:clamp(25px,3.2vw,38px);margin:0 0 14px}
-.lede{color:var(--muted);max-width:62ch;margin:0 0 40px;font-size:17px}
-.lede code{font-family:var(--mono);font-size:.86em;color:var(--text);
-  background:var(--panel-2);border-radius:5px;padding:2px 6px}
-
-/* ---------- feature rows ---------- */
-.feat{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,4vw,56px);
-  align-items:center;margin-bottom:clamp(48px,8vh,84px)}
-.feat.flip{grid-template-columns:1.15fr 1fr}
-.feat.flip .feat-copy{order:2}
-.feat .kicker,.feat-wide .kicker{font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--k,var(--accent));margin:0 0 10px}
-.feat h3,.feat-wide h3{font-family:var(--display);font-weight:700;
-  font-size:clamp(20px,2.2vw,26px);letter-spacing:-.015em;margin:0 0 12px}
-.feat p{color:var(--muted);margin:0;max-width:46ch}
-.feat .shot,.feat-wide .shot{border:1px solid var(--line);border-radius:var(--r);
-  overflow:hidden;box-shadow:0 14px 48px rgba(0,0,0,.45)}
-.feat-wide{margin-bottom:clamp(48px,8vh,84px)}
-.feat-wide p{color:var(--muted);max-width:60ch;margin:0 0 26px}
-.feat code,.feat-wide code,.trio code,details code,.guide code{font-family:var(--mono);
-  font-size:.85em;color:var(--text);background:var(--panel-2);border-radius:5px;padding:2px 6px}
-
-/* the quiet ones */
-.trio{border-top:1px solid var(--line)}
-.trio > div{display:grid;grid-template-columns:minmax(180px,260px) 1fr;gap:18px;
-  padding:26px 0;border-bottom:1px solid var(--line)}
-.trio h3{font-family:var(--display);font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
-.trio p{margin:0;color:var(--muted);max-width:62ch}
-@media (max-width:640px){ .trio > div{grid-template-columns:1fr;gap:6px} }
-
-/* ---------- workflow ---------- */
-.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;counter-reset:step}
-.step{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
-  padding:22px 20px;counter-increment:step}
-.step::before{content:counter(step,decimal-leading-zero);display:block;
-  font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--accent);margin-bottom:12px}
-.step b{display:block;font-family:var(--display);font-weight:600;font-size:16px;margin-bottom:6px}
-.step p{margin:0;font-size:14px;color:var(--muted)}
-@media (max-width:980px){ .steps{grid-template-columns:1fr 1fr 1fr} }
-@media (max-width:640px){ .steps{grid-template-columns:1fr 1fr} }
-@media (max-width:420px){ .steps{grid-template-columns:1fr} }
-
-/* ---------- compatibility ---------- */
-.compat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.compat div{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px}
-.compat b{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--accent);margin:0 0 10px;font-weight:500}
-.compat p{margin:0;font-size:14.5px;color:var(--muted)}
-@media (max-width:860px){ .compat{grid-template-columns:1fr 1fr} }
-@media (max-width:480px){ .compat{grid-template-columns:1fr} }
-
-/* ---------- the template guideline ---------- */
-.guide{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:clamp(26px,4vw,40px)}
-.guide h2{margin:0 0 12px}
-.guide > p{color:var(--muted);max-width:64ch;margin:0 0 22px}
-.guide ul{margin:0;padding:0;list-style:none;display:grid;gap:16px}
-.guide li{display:grid;grid-template-columns:22px 1fr;gap:12px;color:var(--muted);max-width:70ch}
-.guide li::before{content:"→";font-family:var(--mono);color:var(--accent);line-height:1.7}
-
-/* ---------- the price ---------- */
-.price{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:auto 1fr;
-  gap:clamp(20px,4vw,48px);align-items:center}
-.price .big{font-family:var(--display);font-weight:800;font-size:clamp(48px,7vw,84px);
-  letter-spacing:-.04em;line-height:1;color:var(--accent);margin:0}
-.price h2{margin:0 0 8px}
-.price p{margin:0 0 18px;color:var(--muted);max-width:52ch}
-@media (max-width:700px){ .price{grid-template-columns:1fr;gap:14px} }
-
-/* ---------- faq ---------- */
-details{border-bottom:1px solid var(--line)}
-details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;
-  align-items:center;gap:16px;padding:20px 0;font-family:var(--display);font-weight:600;font-size:16.5px}
-details summary::-webkit-details-marker{display:none}
-details summary::after{content:"+";font-family:var(--mono);color:var(--muted);
-  font-size:18px;transition:transform var(--dur) var(--ease)}
-details[open] summary::after{transform:rotate(45deg)}
-details div{padding:0 0 20px;color:var(--muted);max-width:64ch}
-
-.finale{border-top:1px solid var(--line)}
-.finale h2{max-width:22ch}
-
-footer{border-top:1px solid var(--line);padding:26px clamp(18px,4vw,40px);
-  display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-footer a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);text-decoration:none;
-  display:inline-flex;align-items:center;min-height:24px}
-footer a:hover{color:var(--text)}
-footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
-
-/* ---------- motion ---------- */
-.rise{opacity:0;transform:translateY(18px);
-  transition:opacity 640ms var(--ease),transform 640ms var(--ease)}
-.rise.in{opacity:1;transform:none}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{transition:none!important;animation:none!important}
-  .rise{opacity:1;transform:none}
-}
-@media (max-width:820px){
-  .feat,.feat.flip{grid-template-columns:1fr}
-  .feat.flip .feat-copy{order:0}
-}
-</style>
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="preload" as="image" href="images/photos/stemsorter-session-1200.webp" imagesrcset="images/photos/stemsorter-session-1200.webp 1200w, images/photos/stemsorter-session.webp 2400w" imagesizes="100vw">
+<link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="/assets/sale.css">
+<style>:root{--accent:#2ad2e8;--accent-ink:#00191d}</style>
 <link rel="canonical" href="https://amanorsac.studio/stemsorter">
+<meta property="og:title" content="Stem Sorter">
+<meta property="og:description" content="Quickly import session files into your mix template. Stem Sorter puts every recorded file on the right track of your template, in the DAW you use. Windows and macOS.">
+<meta property="og:image" content="https://amanorsac.studio/images/photos/stemsorter-session.webp">
+<meta property="og:url" content="https://amanorsac.studio/stemsorter">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
@@ -309,203 +30,273 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
   "applicationCategory": "MultimediaApplication",
   "applicationSubCategory": "Audio software",
   "softwareVersion": "0.8.1",
-  "image": "https://amanorsac.studio/images/apps/stemsorter/17-light.webp",
+  "image": "https://amanorsac.studio/images/photos/stemsorter-session.webp",
   "author": { "@id": "https://amanorsac.studio/#studio" },
   "publisher": { "@id": "https://amanorsac.studio/#studio" },
   "offers": { "@type": "Offer", "price": "35", "priceCurrency": "USD" }
 }
 </script>
-<link rel="stylesheet" href="assets/site-auth.css">
-<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-app="stemsorter">
+<a class="skip" href="#main">Skip to content</a>
 
-<div class="top">
-  <a class="back" href="apps.html">← App Store</a>
-  <span class="name"><img src="images/apps/stemsorter-logo.svg" alt="">Stem <b>Sorter</b></span>
-  <span data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
-</div>
-
-<header class="hero wrap">
-  <span class="status">$35 · Windows &amp; macOS · works with 10 DAWs</span>
-  <h1>Your files. Your template. Your DAW.</h1>
-  <p class="sub">Stem Sorter reads the names of your recorded files, works out what each one is, and puts every one on the right track of your template. Kick on the kick track, overheads on the overheads, tenor 2 on tenor 2. In Studio One, Logic, Pro Tools, Cubase, Ableton, REAPER and more.</p>
-  <div class="cta-row">
-    <button class="cta" data-buy type="button">Buy — $35</button>
-    <a class="cta ghost" href="#how">See how it works</a>
-  </div>
-  <p class="plat-row" data-platforms hidden></p>
-  <p class="fine">$35 once · one licence, two computers · Windows 10/11 and macOS 11+ · installs through Amanorsac Hub</p>
-  <p class="promo-line" data-promo hidden></p>
-  <p class="buy-status" data-buy-status hidden></p>
-  <p class="pay-alt-row" data-pay-alt hidden></p>
-  <p class="code-row" data-code-box hidden></p>
-  <p class="dl-count" hidden></p>
-  <div class="hero-shot rise">
-    <img src="images/apps/stemsorter/18-review-first.webp" width="1400" height="900"
-         alt="Stem Sorter with thirty-nine channels matched to template tracks; the three doubtful matches sit at the top in amber for review" fetchpriority="high">
-  </div>
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo.svg" alt="">Amanorsac Studio</a>
+  <nav aria-label="Site">
+    <a href="/apps.html" aria-current="page">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
 </header>
 
-<section id="features" class="wrap">
-  <h2>Every session starts the same way.</h2>
-  <p class="lede">Forty files land in a folder: <code>KICK #03</code>, <code>OVH L #03</code>, <code>TNR 2 #03</code>, <code>SNARE DWN #03</code>. You open your template and drag them in one by one, find the right track, fix the levels. Twenty minutes later you can finally press play. Now do that every Sunday, for every client, after every rehearsal.</p>
+<div class="pbar">
+  <a class="pname" href="#main"><img src="images/apps/stemsorter-logo.svg" alt="">Stem Sorter</a>
+  <nav class="tabs" aria-label="On this page">
+    <a href="#overview">Overview</a>
+    <a href="#daws">DAWs</a>
+    <a href="#features">Features</a>
+    <a href="#specs">Tech Specs</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#buy">Buy</a>
+  </nav>
+  <span class="pprice" data-price data-price-flip>$35</span>
+  <button class="btn bbtn" data-buy type="button">Buy — $35</button>
+</div>
 
-  <div class="feat-wide rise">
-    <p class="kicker">Names</p>
-    <h3>It understands names.</h3>
-    <p><code>OH</code>, <code>OVH</code>, <code>Overheads</code> and <code>Over L</code> are all overheads. <code>LV</code>, <code>Lead Vox</code> and <code>WL</code> are your lead vocal. <code>TNR 2</code> is the second tenor mic. Stem Sorter already knows hundreds of these, and you can teach it your engineers' names in seconds.</p>
-  </div>
+<main id="main">
 
-  <div class="feat rise">
-    <div class="feat-copy">
-      <p class="kicker">Template</p>
-      <h3>It knows your template.</h3>
-      <p>Point it at your template. It reads every track and folder and matches each incoming channel to the right one: left and right, 1, 2 and 3. The few channels it isn't sure about go to the top of the list in amber, so you check three rows, not forty.</p>
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">New · Windows and macOS · works with 10 DAWs</p>
+    <h1>Stem Sorter</h1>
+    <p class="tag">Quickly import session files into your mix template.</p>
+    <p class="intro">Stem Sorter reads the names of your recorded files, works out what each one is, and puts every file on the right track of your template. Kick on the kick track, overheads on the overheads, tenor 2 on tenor 2, in the DAW you already use.</p>
+    <div class="ctas">
+      <button class="btn" data-buy type="button">Buy — $35</button>
+      <a class="more" href="#how">See how it works</a>
     </div>
-    <div class="shot"><img src="images/apps/stemsorter/15-new-layout.webp" width="1400" height="900"
-      alt="The track assignments list: thirty-four channels placed, three to review, each with its template track, match confidence and level" loading="lazy"></div>
-  </div>
-
-  <div class="feat-wide rise">
-    <p class="kicker">Build</p>
-    <h3>It hands you a session.</h3>
-    <p>Press Build and get a session for your DAW with every file in place. Studio One and REAPER open ready to play. Logic, Pro Tools, Cubase and Digital Performer get an AAF with your tracks named and in order. Your inserts, sends and buses stay exactly as you saved them.</p>
-  </div>
-</section>
-
-<section class="wrap" id="daws">
-  <h2>Works with your DAW.</h2>
-  <p class="lede">Pick your DAW in the sidebar. Everything else stays the same.</p>
-  <div class="trio">
-    <div><h3>Studio One &middot; Fender Studio Pro</h3>
-      <p>A ready-to-open song, every clip on its track. Or add new files to a song you already have going.</p></div>
-    <div><h3>REAPER</h3>
-      <p>A ready-to-open project, every item on its track. Or add to an existing project.</p></div>
-    <div><h3>Logic Pro &middot; Pro Tools &middot; Cubase / Nuendo &middot; Digital Performer</h3>
-      <p>An AAF file with the audio inside, tracks named and ordered like your template, plus the import steps for your DAW.</p></div>
-    <div><h3>Ableton Live &middot; FL Studio &middot; Bitwig Studio &middot; Reason</h3>
-      <p>A folder of renamed files, numbered in your template's order, with a track sheet showing where each one goes.</p></div>
-  </div>
-</section>
-
-<section class="wrap">
-  <h2>More than a sorter.</h2>
-
-  <div class="feat rise">
-    <div class="feat-copy">
-      <p class="kicker">Review</p>
-      <h3>Fix anything in one click.</h3>
-      <p>Click any track cell and a list opens right there. Type a few letters, press Enter, and Stem Sorter jumps to the next row that needs you. No pop-up windows.</p>
-    </div>
-    <div class="shot"><img src="images/apps/stemsorter/12-inline-dropdown.webp" width="1400" height="900"
-      alt="Stem Sorter's inline track list open on a doubtful channel, filtered by typing a few letters" loading="lazy"></div>
-  </div>
-
-  <div class="feat flip rise">
-    <div class="feat-copy">
-      <p class="kicker">Levels</p>
-      <h3>Normalize while you sort.</h3>
-      <p>Bring everything to a target by peak, average level (RMS) or loudness (LUFS). Move each track on its own, move the whole session together so the engineer's balance stays, or move each group (drums, BGVs) together. You see every level and gain before you build, and your original files are never changed.</p>
-    </div>
-    <div class="shot"><img src="images/apps/stemsorter/16-options-drawer.webp" width="1400" height="900"
-      alt="The Options drawer: normalize by peak, RMS or LUFS, per track, linked or by group, and placement choices" loading="lazy"></div>
-  </div>
-
-  <div class="feat-wide rise">
-    <p class="kicker">Mid-project</p>
-    <h3>Add to a song you already have going.</h3>
-    <p>New files arrived mid-project? Pick the song and Stem Sorter places them after what's already there, keeping a backup of the previous version.</p>
-    <div class="shot"><img src="images/apps/stemsorter/07-add-to-existing.webp" width="1280" height="820"
-      alt="Add to existing song mode, with placement options for after existing content or at bar one" loading="lazy"></div>
-  </div>
-
-  <div class="trio">
-    <div><h3>It remembers</h3>
-      <p>Every choice you confirm is saved for that template. The next service from the same rig sorts itself.</p></div>
-    <div><h3>Takes stay lined up</h3>
-      <p>Live captures arrive as <code>#01</code>, <code>#02</code>, <code>#03</code> per channel. Stem Sorter lays each take out one after another, so every channel stays in sync across the whole service.</p></div>
-    <div><h3>One template, every DAW</h3>
-      <p>Write your track list once, or let Stem Sorter copy it from your Studio One or REAPER template, and use it for Logic, Pro Tools, Ableton or anything else.</p></div>
-    <div><h3>Safe by design</h3>
-      <p>Stem Sorter never rebuilds your mixer and never creates or deletes tracks. It only adds clips, in the DAW's own format. That is why the songs it builds open cleanly.</p></div>
-  </div>
-</section>
-
-<section class="wrap">
-  <h2>Dark or light.</h2>
-  <p class="lede">Two themes, switched live. Your template's track colours come along.</p>
-  <div class="hero-shot rise" style="margin-top:0">
-    <img src="images/apps/stemsorter/17-light.webp" width="1400" height="900"
-      alt="Stem Sorter in its light theme with the inline track list open" loading="lazy">
-  </div>
-</section>
-
-<section id="how" class="wrap">
-  <h2>Five steps, about a minute.</h2>
-  <div class="steps">
-    <div class="step rise"><b>Pick your DAW</b><p>In the sidebar.</p></div>
-    <div class="step rise"><b>Choose your template</b><p>And the folder your files are in.</p></div>
-    <div class="step rise"><b>Click Match files</b><p>One row per channel, takes grouped together.</p></div>
-    <div class="step rise"><b>Check the amber rows</b><p>At the top. Click a track to change it.</p></div>
-    <div class="step rise"><b>Build</b><p>Open the session and press play.</p></div>
-  </div>
-</section>
-
-<section class="wrap">
-  <h2>What it runs on.</h2>
-  <div class="compat">
-    <div><b>DAWs</b><p>Fender Studio Pro and Studio One 6, 7 and 8 (optimised for 8). REAPER 6 and 7. Logic Pro, Pro Tools, Cubase Pro and Nuendo, and Digital Performer via AAF import. Ableton Live, FL Studio, Bitwig Studio and Reason via a prepared file folder.</p></div>
-    <div><b>Audio</b><p>WAV, BWF, RF64 and AIFF, mono or stereo, any sample rate. FLAC and MP3 are placed but not normalized.</p></div>
-    <div><b>Computer</b><p>Windows 10 and 11 (64-bit). macOS 11 Big Sur and later, Apple Silicon and Intel.</p></div>
-    <div><b>Licence</b><p>One key covers two computers. Activate once online; after that it works offline, checking in at least every 30 days.</p></div>
-  </div>
-</section>
-
-<section class="wrap">
-  <div class="guide rise">
-    <h2>Set up your template once.</h2>
-    <p>Stem Sorter only places files on tracks that already exist. That is what keeps your sessions safe, so give it room:</p>
-    <ul>
-      <li><span>Keep a few <b>spare tracks</b> in each section: <code>SPARE 1</code>&ndash;<code>SPARE 4</code> under BGVs, a couple under Keys, one or two under Drums. Stem Sorter uses tracks named <code>SPARE</code>, <code>EXTRA</code>, <code>FREE</code>, <code>OPEN</code> or <code>TBD</code> when a channel has nowhere else to go.</span></li>
-      <li><span>Name tracks the way files arrive: <code>OH L</code>, <code>SNARE BOTTOM</code>, <code>TNR 2</code>, <code>CRWD R</code>. The closer the names, the fewer rows to check.</span></li>
-    </ul>
-  </div>
-</section>
-
-<section class="wrap">
-  <div class="price rise">
-    <p class="big">$35</p>
-    <div>
-      <h2>Bought once. Yours on two computers.</h2>
-      <p>One licence key covers the studio machine and the laptop that goes out to the room. A year of updates is included, and the version you have keeps working after that.</p>
-      <button class="cta" data-buy type="button">Buy — $35</button>
+    <p class="plat-row" data-platforms hidden></p>
+    <p class="fine">$35 once · one licence for two computers · Windows 10 and 11, macOS 11 and later · installs through Amanorsac Hub</p>
+    <div class="slots">
       <p class="promo-line" data-promo hidden></p>
+      <p class="buy-status" data-buy-status hidden></p>
+      <p class="pay-alt-row" data-pay-alt hidden></p>
+      <p class="code-row" data-code-box hidden></p>
+      <p class="dl-count" hidden></p>
     </div>
+  </div>
+  <div class="hero-img">
+    <img src="images/photos/stemsorter-session-1200.webp"
+         srcset="images/photos/stemsorter-session-1200.webp 1200w, images/photos/stemsorter-session.webp 2400w" sizes="100vw"
+         width="2400" height="1340" fetchpriority="high"
+         alt="An engineer at a studio desk with Stem Sorter on the monitor, building a new Studio One song from a folder of recorded channels">
   </div>
 </section>
 
-<section class="wrap">
-  <h2>Questions, answered.</h2>
+<section class="block" id="overview">
+  <div class="wrap">
+    <h2>Every Session Starts the Same Way</h2>
+    <p>Forty files land in a folder with names like <code>KICK #03</code>, <code>OVH L #03</code>, <code>TNR 2 #03</code> and <code>SNARE DWN #03</code>. You open your template and drag them in one by one, find the right track for each, then fix the levels. Twenty minutes later you can finally press play. Now do that every Sunday, for every client and after every rehearsal.</p>
+    <p>Stem Sorter does that part for you. Point it at the folder and your template, and it matches every file to its track, shows you the few it is not sure about, and builds the session. <b>The dragging is gone, and you start the mix with every file already in place.</b></p>
+  </div>
+</section>
+
+<figure class="shot rise">
+  <img src="images/apps/stemsorter/18-review-first.webp" width="1400" height="900" loading="lazy"
+       alt="Stem Sorter with thirty-nine channels matched to template tracks; the three doubtful matches sit at the top in amber for review">
+  <figcaption>Thirty-nine channels matched. The three it was not sure about wait at the top in amber.</figcaption>
+</figure>
+
+<div class="facts rise" style="margin-top:clamp(64px,10vh,112px)">
+  <div><b>10</b><span>DAWs supported, from Studio One to Pro Tools</span></div>
+  <div><b>5</b><span>steps from a folder of files to a session you can play</span></div>
+  <div><b>0</b><span>original recordings changed. It works on copies</span></div>
+  <div><b>2</b><span>computers on one licence, the studio and the laptop</span></div>
+</div>
+
+<section class="block" id="names">
+  <div class="wrap">
+    <p class="kick">Matching</p>
+    <h2>It Understands How Engineers Name Things</h2>
+    <p>Every engineer names channels differently. <code>OH</code>, <code>OVH</code>, <code>Overheads</code> and <code>Over L</code> are all overheads. <code>LV</code>, <code>Lead Vox</code> and <code>WL</code> are all the lead vocal, and <code>TNR 2</code> is the second tenor mic. Stem Sorter already knows hundreds of these names, and when your engineer uses one it has never seen, you can teach it in a few seconds and it remembers for good.</p>
+  </div>
+</section>
+
+<section class="block" id="template">
+  <div class="wrap">
+    <p class="kick">Template</p>
+    <h2>It Knows Your Template</h2>
+    <p>Point Stem Sorter at your template and it reads every track and folder in it. Then it matches each incoming channel to the right track, including left and right, and 1, 2 and 3. The few channels it is not sure about go to the top of the list in amber, so you check three rows instead of forty.</p>
+  </div>
+</section>
+
+<figure class="bleed rise">
+  <img src="images/photos/stemsorter-screen-1200.webp"
+       srcset="images/photos/stemsorter-screen-1200.webp 1200w, images/photos/stemsorter-screen.webp 2400w" sizes="100vw"
+       width="2400" height="1340" loading="lazy"
+       alt="A close view of Stem Sorter on a studio monitor: thirty-four channels placed, three to review, with match confidence and loudness for each">
+</figure>
+
+<section class="block" id="build">
+  <div class="wrap">
+    <p class="kick">Build</p>
+    <h2>Press Build and Get a Session</h2>
+    <p>When the list looks right, press Build and Stem Sorter writes a session for your DAW with every file in place. Studio One and REAPER open ready to play. Logic, Pro Tools, Cubase and Digital Performer get an AAF with your tracks named and in order. Your inserts, sends and buses stay exactly as you saved them, because Stem Sorter only adds clips and never rebuilds your mixer.</p>
+  </div>
+</section>
+
+<figure class="shot rise">
+  <img src="images/apps/stemsorter/15-new-layout.webp" width="1400" height="900" loading="lazy"
+       alt="The track assignments list: thirty-four channels placed, three to review, each with its template track, match confidence and level">
+  <figcaption>One row per channel, with the template track it is going to, how sure Stem Sorter is, and the level.</figcaption>
+</figure>
+
+<section class="block" id="daws">
+  <div class="wrap">
+    <h2>Works With Your DAW</h2>
+    <p>Pick your DAW in the sidebar and everything else stays the same. What you get at the end depends on what your DAW can open.</p>
+  </div>
+</section>
+
+<div class="grid two rise" style="padding-top:0">
+  <div class="item">
+    <h3>Studio One and Fender Studio Pro</h3>
+    <p>A song that opens ready to play, with every clip on its track. Or add new files to a song you already have going.</p>
+  </div>
+  <div class="item">
+    <h3>REAPER</h3>
+    <p>A project that opens ready to play, with every item on its track. Or add new files to an existing project.</p>
+  </div>
+  <div class="item">
+    <h3>Logic Pro, Pro Tools, Cubase, Nuendo and Digital Performer</h3>
+    <p>An AAF file with the audio inside, tracks named and ordered like your template, plus the import steps for your DAW.</p>
+  </div>
+  <div class="item">
+    <h3>Ableton Live, FL Studio, Bitwig Studio and Reason</h3>
+    <p>A folder of renamed files, numbered in your template's order, with a track sheet that shows where each one goes.</p>
+  </div>
+</div>
+
+<section class="band right rise">
+  <img src="images/mixing-studio.webp" width="1400" height="933" loading="lazy"
+       alt="The Amanorsac Studio control room: a mixing desk, monitors and keyboards under warm light">
+  <div class="in"><div class="copy">
+    <p class="kick">Every Sunday</p>
+    <h2>Built for Churches and Live Recordings</h2>
+    <p>Stem Sorter came out of mixing church services and live recordings, where the same rig sends the same forty channels every week. Live captures arrive as <code>#01</code>, <code>#02</code> and <code>#03</code> for each channel, and Stem Sorter lays each take out one after another so every channel stays in sync across the whole service.</p>
+    <p>Every choice you confirm is saved for that template, so the next service from the same rig sorts itself.</p>
+  </div></div>
+</section>
+
+<section class="block" id="features">
+  <div class="wrap">
+    <h2>More Than a Sorter</h2>
+  </div>
+</section>
+
+<div class="split rise" style="padding-top:0">
+  <div class="media"><img src="images/apps/stemsorter/12-inline-dropdown.webp" width="1400" height="900" loading="lazy"
+       alt="Stem Sorter's inline track list open on a doubtful channel, filtered by typing a few letters"></div>
+  <div>
+    <p class="kick">Review</p>
+    <h3>Fix Anything in One Click</h3>
+    <p>Click any track cell and a list opens right there. Type a few letters, press Enter, and Stem Sorter jumps to the next row that needs you. There are no pop-up windows to fight with.</p>
+  </div>
+</div>
+
+<div class="split flip rise">
+  <div class="media"><img src="images/apps/stemsorter/16-options-drawer.webp" width="1400" height="900" loading="lazy"
+       alt="The Options drawer: normalize by peak, RMS or LUFS, per track, linked or by group, and placement choices"></div>
+  <div>
+    <p class="kick">Levels</p>
+    <h3>Normalize While You Sort</h3>
+    <p>Bring everything to a target level by peak, by average level (RMS) or by loudness (LUFS). You can move each track on its own, move the whole session together so the engineer's balance stays, or move each group such as drums or backing vocals together.</p>
+    <p>You see every level and gain change before you build, and your original files are never touched.</p>
+  </div>
+</div>
+
+<div class="split rise">
+  <div class="media"><img src="images/apps/stemsorter/07-add-to-existing.webp" width="1280" height="820" loading="lazy"
+       alt="Add to existing song mode, with placement options for after existing content or at bar one"></div>
+  <div>
+    <p class="kick">Mid-project</p>
+    <h3>Add to a Song You Already Have Going</h3>
+    <p>When new files arrive halfway through a project, pick the song and Stem Sorter places them after what is already there. It keeps a backup of the previous version first, so nothing is lost.</p>
+  </div>
+</div>
+
+<div class="grid rise" style="padding-top:clamp(32px,6vh,64px)">
+  <div class="item">
+    <img src="images/apps/stemsorter/17-light.webp" width="1400" height="900" loading="lazy" alt="Stem Sorter in its light theme with the inline track list open">
+    <h3>Dark or Light</h3>
+    <p>Two themes that switch live, and your template's own track colours come along.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/stemsorter/05-aliases.webp" width="1280" height="820" loading="lazy" alt="The name aliases editor in Stem Sorter">
+    <h3>One Template, Every DAW</h3>
+    <p>Write your track list once, or let Stem Sorter copy it from your Studio One or REAPER template, then use it for Logic, Pro Tools, Ableton or anything else.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/stemsorter/06-built.webp" width="1280" height="820" loading="lazy" alt="Stem Sorter after a build, with the finished session ready to open">
+    <h3>Safe by Design</h3>
+    <p>Stem Sorter never rebuilds your mixer and never creates or deletes tracks. It only adds clips, in the DAW's own format, which is why the sessions it builds open cleanly.</p>
+  </div>
+</div>
+
+<section class="block" id="how">
+  <div class="wrap">
+    <h2>Five Steps, About a Minute</h2>
+    <p>Pick your DAW in the sidebar. Choose your template and the folder your files are in. Click Match files, and you get one row per channel with the takes grouped together. Check the amber rows at the top and click a track to change any of them. Then press Build, open the session and press play.</p>
+  </div>
+</section>
+
+<section class="block" style="padding-top:clamp(24px,4vh,48px)">
+  <div class="wrap">
+    <h2>Set Up Your Template Once</h2>
+    <p>Stem Sorter only places files on tracks that already exist. That is what keeps your sessions safe, so give it room. Keep a few spare tracks in each section, such as <code>SPARE 1</code> to <code>SPARE 4</code> under the backing vocals, a couple under keys and one or two under drums. Stem Sorter uses tracks named <code>SPARE</code>, <code>EXTRA</code>, <code>FREE</code>, <code>OPEN</code> or <code>TBD</code> when a channel has nowhere else to go.</p>
+    <p>Name your tracks the way your files arrive, like <code>OH L</code>, <code>SNARE BOTTOM</code>, <code>TNR 2</code> and <code>CRWD R</code>. The closer the names, the fewer rows you will need to check.</p>
+  </div>
+</section>
+
+<section class="paper specs" id="specs">
+  <h2 class="sec-h">Tech Specs</h2>
+  <div class="spec">
+    <div><h4>Platforms</h4><p>Windows 10 and 11 (64 bit).</p><p>macOS 11 Big Sur and later, Apple silicon and Intel.</p></div>
+    <div><h4>Full Session DAWs</h4><p>Fender Studio Pro and Studio One 6, 7 and 8 (optimised for 8). REAPER 6 and 7.</p></div>
+    <div><h4>AAF DAWs</h4><p>Logic Pro, Pro Tools, Cubase Pro and Nuendo, and Digital Performer via AAF import.</p></div>
+    <div><h4>File Folder DAWs</h4><p>Ableton Live, FL Studio, Bitwig Studio and Reason via a prepared, numbered file folder and track sheet.</p></div>
+    <div><h4>Audio Files</h4><p>WAV, BWF, RF64 and AIFF, mono or stereo, any sample rate. FLAC and MP3 are placed but not normalized.</p></div>
+    <div><h4>Normalize</h4><p>Peak, RMS or LUFS. Per track, linked across the session, or by group. Originals are never changed.</p></div>
+    <div><h4>Takes</h4><p>Numbered live takes laid out one after another, with every channel kept in sync.</p></div>
+    <div><h4>Licence</h4><p>One key for two computers. Activate once online, then it works offline and checks in at least every 30 days.</p></div>
+    <div><h4>Signing</h4><p>Windows installer Authenticode signed. macOS app Developer ID signed and notarized by Apple.</p></div>
+  </div>
+</section>
+
+<section class="faq">
+  <h2 class="sec-h">Questions</h2>
   <details><summary>Will it change my original recordings?</summary>
-    <div>No. When it normalizes, it works on copies (or, in REAPER, on item gain you can undo).</div></details>
+    <div>No. When it normalizes, it works on copies, or in REAPER on item gain that you can undo.</div></details>
   <details><summary>Do I need to be online?</summary>
     <div>Only to activate. After that it works offline and checks your licence quietly when it can.</div></details>
   <details><summary>Can I use it on my laptop and my studio computer?</summary>
-    <div>Yes, one key covers two computers. You can free a seat from the About screen or from <a href="/my-apps.html">My Apps</a> at amanorsac.studio.</div></details>
+    <div>Yes, one key covers two computers. You can free a seat from the About screen or from <a href="/my-apps.html">My Apps</a> here on the site.</div></details>
   <details><summary>My engineer names things differently.</summary>
-    <div>Open <em>Edit name aliases</em>, add their names, and save. Stem Sorter learns them for good, and you can share the file with other producers.</div></details>
-  <details><summary>Why doesn't it create missing tracks?</summary>
-    <div>Creating tracks means rewriting parts of your session that can't be guaranteed safe across DAW versions. Spare tracks in your template give you the same result with no risk.</div></details>
-  <details><summary>What if a file doesn't match any track?</summary>
+    <div>Open Edit name aliases, add their names and save. Stem Sorter learns them for good, and you can share the file with other producers.</div></details>
+  <details><summary>Why does it not create missing tracks?</summary>
+    <div>Creating tracks means rewriting parts of your session that cannot be guaranteed safe across DAW versions. Spare tracks in your template give you the same result with no risk.</div></details>
+  <details><summary>What if a file does not match any track?</summary>
     <div>It appears at the top in amber. Assign it to any track in a click, skip it, or add a spare track to your template so it has a home next time.</div></details>
   <details><summary>Is it signed?</summary>
-    <div>Yes. The Windows installer is Authenticode-signed, and the macOS app is Developer ID-signed and notarized by Apple.</div></details>
+    <div>Yes. The Windows installer is Authenticode signed, and the macOS app is Developer ID signed and notarized by Apple.</div></details>
 </section>
 
-<section id="reviews" class="wrap">
+<section class="reviews" id="reviews">
   <p class="eyebrow">From people who use it</p>
-  <h2>What engineers are saying.</h2>
+  <h2 class="sec-h">What Engineers Are Saying</h2>
   <div class="rv-stats" hidden></div>
   <ul class="rv-list"></ul>
   <p class="rv-empty" hidden>Be the first to leave one.</p>
@@ -517,56 +308,52 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
         <span class="star">&#9733;</span><span class="star">&#9733;</span>
       </div>
       <label class="rv-lbl" for="rv-body">Your review</label>
-      <textarea class="rv-body-in" id="rv-body" rows="3"
-        placeholder="How long did it used to take you?"></textarea>
-      <label class="rv-lbl" for="rv-name">Name <span>(optional)</span></label>
+      <textarea class="rv-body-in" id="rv-body" rows="3" placeholder="How long did it used to take you?"></textarea>
+      <label class="rv-lbl" for="rv-name">Name (optional)</label>
       <input class="rv-name-in" id="rv-name" type="text" maxlength="60" placeholder="Shown with your review">
-      <button class="cta rv-go" type="submit">Post review</button>
+      <button class="btn rv-go" type="submit">Post review</button>
       <p class="rv-msg" role="status"></p>
     </form>
     <div class="rv-done" hidden>
       <p class="rv-tick" aria-hidden="true">&#10003;</p>
       <h3>Thank you.</h3>
-      <p>It goes up once I've actually read it — usually within a day or two.</p>
+      <p>It goes up once I have read it, usually within a day or two.</p>
     </div>
   </div>
 </section>
 
-<section class="wrap finale">
-  <h2>Next Sunday's files can sort themselves.</h2>
-  <p class="lede">Twenty minutes of dragging, or one press of Build. Windows and macOS, ten DAWs, one key for two computers.</p>
-  <div class="cta-row">
-    <button class="cta" data-buy type="button">Buy — $35</button>
-    <a class="cta ghost" href="apps.html">Back to the App Store</a>
+<section class="paper buy" id="buy">
+  <div class="card">
+    <img src="images/photos/stemsorter-session-1200.webp" width="1200" height="670" loading="lazy" alt="An engineer building a session with Stem Sorter">
+    <div>
+      <h2>Stem Sorter</h2>
+      <p class="price" data-price>$35</p>
+      <p class="terms">Bought once and yours on two computers, the studio machine and the laptop that goes out to the room. A year of updates is included, and the version you have keeps working after that.</p>
+      <div class="ctas">
+        <button class="btn" data-buy type="button">Buy — $35</button>
+        <a class="more" href="/apps.html">See all apps</a>
+      </div>
+    </div>
   </div>
-  <p class="fine">Stem Sorter is not affiliated with any DAW maker; all product names are trademarks of their owners.</p>
 </section>
 
-<footer>
-  <a href="apps.html">App Store</a>
-  <a href="secondout.html">SecondOut</a>
-  <a href="pulseroom.html">PulseRoom</a>
-  <a href="nebulatide.html">Nebula Tide</a>
-  <a href="index.html">Studio</a>
-  <a href="about.html#contact">Contact</a>
-  <span class="who">Amanorsac Studio</span>
+<p class="note" style="padding-top:clamp(32px,5vh,56px)">Stem Sorter is not affiliated with any DAW maker. All product names are trademarks of their owners.</p>
+
+</main>
+
+<footer class="foot">
+  <div class="in">
+    <a href="/apps.html">App Store</a>
+    <a href="/chordlight88.html">Chordlight 88</a>
+    <a href="/nebulatide2.html">Nebula Tide 2</a>
+    <a href="/secondout.html">SecondOut</a>
+    <a href="/legal.html">Legal</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/about.html#contact">Contact</a>
+    <span class="who">Amanorsac Studio</span>
+  </div>
 </footer>
 
-<script>
-/* Buying and downloading are assets/app-purchase.js's job; this is only
-   the reveal-on-scroll, and it gives up gracefully. */
-(function(){
-  if('IntersectionObserver' in window &&
-     !matchMedia('(prefers-reduced-motion: reduce)').matches){
-    var ro = new IntersectionObserver(function(es){
-      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } });
-    }, { threshold:.15 });
-    document.querySelectorAll('.rise').forEach(function(el){ ro.observe(el); });
-  }else{
-    document.querySelectorAll('.rise').forEach(function(el){ el.classList.add('in'); });
-  }
-})();
-</script>
 <link rel="stylesheet" href="/assets/hub-download.css">
 <script src="/assets/hub-download.js" defer></script>
 <script src="assets/app-reviews.js" defer></script>
@@ -579,5 +366,6 @@ footer .who{margin-left:auto;font-family:var(--mono);font-size:10px;
 <script src="assets/buy-dock.js" defer></script>
 <script src="assets/app-purchase.js" defer></script>
 <script src="assets/platforms.js" defer></script>
+<script src="/assets/product.js" defer></script>
 </body>
 </html>
