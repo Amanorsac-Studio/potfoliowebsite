@@ -55,6 +55,13 @@ export default {
           return Response.redirect(SITE + '/mixing.html', 301);
         }
 
+        /* The Studio Bundle moved out of the store and onto its own page
+           next to the apps it is made of. Old links and the tiles people
+           already shared still land on it. */
+        if (path === '/store/package' || path === '/store/package/' || path === '/store/package.html') {
+          return Response.redirect(SITE + '/studiobundle', 301);
+        }
+
         /* The privacy policy, at exactly this address and no other.
 
            It is the URL handed to Apple and to Google Play, and a
@@ -995,7 +1002,8 @@ async function payOptions(request, env) {
   const waHere = !!(wa && wa.live && wa.url && app && !app.free &&
                     (!waCountries.length || (known && waCountries.includes(country))));
 
-  /* MTN MoMo at the studio's own request link, Ghana only: the buyer
+  /* MTN MoMo at the studio's own request link (catalog momo.countries;
+     empty means every paid app page, everywhere): the buyer
      pays, sends the screenshot, and a code comes back. Same manual
      road as WhatsApp, with the wallet in front of the conversation. */
   const mm = c.momo || null;
@@ -1844,6 +1852,7 @@ const PAGES = [
   ['/blog',        'weekly',  '0.9'],
   ['/about',       'monthly', '0.8'],
   ['/nebulatide2', 'monthly', '0.7'],
+  ['/studiobundle','monthly', '0.7'],
   ['/secondout',   'monthly', '0.7'],
   ['/ambanalog',   'monthly', '0.7'],
   ['/alignpro',    'monthly', '0.7'],

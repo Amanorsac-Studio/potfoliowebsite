@@ -195,7 +195,7 @@
     "wallet_note": "Mobile money, bank transfer or a local card."
   },
   "momo": {
-    "_": "MTN MoMo by hand, Ghana only. The buyer pays at the studio's own",
+    "_": "MTN MoMo by hand. Shown on every paid app page to everyone (countries empty = everywhere), labelled as the Ghana option. The buyer pays at the studio's own",
     "_2": "request link (or scans the code), then sends the screenshot to the",
     "_3": "WhatsApp number with the app name and their account email. You make",
     "_4": "them a code at /portal/admin-codes or grant the app by email, and it",
@@ -206,9 +206,7 @@
     "name": "Stephen Amanor Sackey",
     "qr": "/images/momo-qr.jpg",
     "whatsapp": "https://wa.me/233246858947",
-    "countries": [
-      "GH"
-    ]
+    "countries": []
   },
   "whatsapp": {
     "_": "Mobile money, by hand, over WhatsApp. This is the stand-in for",

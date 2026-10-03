@@ -214,8 +214,9 @@
         'and a code comes back that unlocks it in My&nbsp;Apps.</span>';
     }
 
-    /* MTN MoMo at the studio's own link, with the code to scan. Ghana
-       only, by the endpoint. It is a manual road and says so: pay, send
+    /* MTN MoMo at the studio's own link, with the code to scan. Shown
+       on every paid app page and labelled as the Ghana option; the
+       endpoint decides where (catalog momo.countries, empty = all). It is a manual road and says so: pay, send
        the screenshot with the app's name and the account's email, and
        the code comes back. Folded closed so the row stays quiet. */
     var momoHtml = '';
@@ -223,7 +224,7 @@
       var mo = pay.momo;
       var amount = (pay.paystack && pay.paystack.display) ? pay.paystack.display + ' (' + pay.paystack.usd_display + ')' : null;
       momoHtml =
-        '<details class="pay-momo"><summary>Pay with MTN MoMo' + (mo.number ? ' \u00b7 ' + esc(mo.number) : '') + '</summary>' +
+        '<details class="pay-momo"><summary>In Ghana? Pay with MTN MoMo' + (mo.number ? ' \u00b7 ' + esc(mo.number) : '') + '</summary>' +
         '<div class="pay-momo-body">' +
           (mo.qr ? '<img src="' + esc(mo.qr) + '" alt="MoMo QR code' + (mo.name ? ' for ' + esc(mo.name) : '') + '" width="160" height="160" loading="lazy">' : '') +
           '<ol>' +

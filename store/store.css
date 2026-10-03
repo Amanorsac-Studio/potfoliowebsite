@@ -446,3 +446,16 @@ span.msg{display:inline-block;padding:6px 10px;font-size:13px;margin-left:8px}
 .pay-way ol b{color:var(--text)}
 .pay-way img{width:220px;height:220px;border-radius:12px;background:#fff;padding:6px;display:block}
 .pay-way .btn{margin-top:4px}
+
+/* the call for creators, fixed at the top of the store front */
+.collab{padding:18px 0 0}
+.collab-in{display:grid;grid-template-columns:1fr auto;gap:18px 32px;align-items:center;padding:24px 28px;border-radius:var(--r-lg);
+  background:linear-gradient(120deg,color-mix(in srgb,#25D366 22%,var(--card)),var(--card) 72%);border:1px solid color-mix(in srgb,#25D366 40%,var(--border))}
+.collab .eyebrow{margin-bottom:6px}
+.collab h2{font-size:clamp(20px,2.4vw,26px);line-height:1.2;margin:0 0 8px}
+.collab p{color:var(--dim);font-size:14.5px;line-height:1.6;margin:0;max-width:68ch}
+.collab .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.collab figure{margin:0;text-align:center}
+.collab figure img{width:150px;height:150px;border-radius:12px;background:#fff;display:block}
+.collab figcaption{font-size:12px;color:var(--dim);margin-top:8px}
+@media (max-width:640px){.collab-in{grid-template-columns:1fr;padding:20px}.collab figure{justify-self:start}}

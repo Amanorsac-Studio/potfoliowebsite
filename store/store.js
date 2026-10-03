@@ -267,7 +267,7 @@
 
   /* the one thing on the store that is sold by hand, not by checkout */
   function bundleBanner() {
-    return '<a class="bundle" href="/store/package"><div><p class="eyebrow">The Studio Bundle · for church musicians and singers</p>' +
+    return '<a class="bundle" href="/studiobundle.html"><div><p class="eyebrow">The Studio Bundle · for church musicians and singers</p>' +
       '<h2>Mix your own stream. Mix your own songs.</h2>' +
       '<p>A Fender Studio Pro mixing or live-stream template built for your church, AMB Analog, AMB Digital, SecondOut, AFD Gate, and a session to set it all up.</p></div>' +
       '<div class="price"><b>$250</b><span>tell us you are interested →</span></div></a>';

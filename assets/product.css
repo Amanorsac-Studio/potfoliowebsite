@@ -387,3 +387,9 @@ code{font-family:var(--mono);font-size:.86em;background:rgba(255,255,255,.08);bo
 .plans .who{color:var(--ink-2);font-size:15px;margin:0 0 14px}
 .plans ul{margin:0 0 20px;padding:0 0 0 18px;color:var(--ink-2);font-size:15px}
 @media (max-width:860px){ .plans{grid-template-columns:1fr} }
+/* MoMo row under the buy button: the hero centres its text and --ink is
+   the paper's dark ink, so both are set back for this panel */
+.pay-momo{text-align:left}
+.pay-momo .pay-momo-body ol b,.pay-momo .pay-momo-body ol a{color:#f5f5f7}
+.pay-momo-body ol a{text-decoration:underline;text-underline-offset:2px}
+.paper .pay-momo .pay-momo-body ol b,.paper .pay-momo .pay-momo-body ol a{color:var(--ink)}
