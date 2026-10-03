@@ -382,6 +382,41 @@
         "note": "Early bird on 2.0"
       }
     },
+    "stemsorter": {
+      "name": "Stem Sorter",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
+      "tagline": "Your files. Your template. Your DAW.",
+      "icon": "images/apps/stemsorter-logo.svg",
+      "art": "images/apps/stemsorter/17-light.webp",
+      "page": "stemsorter.html",
+      "color": "#2ad2e8",
+      "free": false,
+      "price_cents": 3500,
+      "licensed": true,
+      "version": "0.8.1",
+      "installers": {
+        "windows": {
+          "key": "stemsorter/StemSorter-Windows.zip",
+          "alt_keys": [
+            "STEMSORTER/StemSorter-Windows.zip"
+          ],
+          "as": "StemSorter-Windows.zip",
+          "type": "application/zip",
+          "size": "9 MB"
+        },
+        "mac": {
+          "key": "stemsorter/StemSorter-macOS.zip",
+          "alt_keys": [
+            "STEMSORTER/StemSorter-macOS.zip"
+          ],
+          "as": "StemSorter-macOS.zip",
+          "type": "application/zip",
+          "size": "12 MB"
+        }
+      }
+    },
     "nebulatide2": {
       "name": "Nebula Tide 2",
       "vendor": "Amanorsac Studio",
@@ -557,41 +592,6 @@
             "SECOND OUT/SecondOut-1.3.2-macOS.zip"
           ],
           "as": "SecondOut-1.3.2-macOS.zip",
-          "type": "application/zip",
-          "size": "12 MB"
-        }
-      }
-    },
-    "stemsorter": {
-      "name": "Stem Sorter",
-      "vendor": "Amanorsac Studio",
-      "kind": "app",
-      "status": "available",
-      "tagline": "Your files. Your template. Your DAW.",
-      "icon": "images/apps/stemsorter-logo.svg",
-      "art": "images/apps/stemsorter/17-light.webp",
-      "page": "stemsorter.html",
-      "color": "#2ad2e8",
-      "free": false,
-      "price_cents": 3500,
-      "licensed": true,
-      "version": "0.8.1",
-      "installers": {
-        "windows": {
-          "key": "stemsorter/StemSorter-Windows.zip",
-          "alt_keys": [
-            "STEMSORTER/StemSorter-Windows.zip"
-          ],
-          "as": "StemSorter-Windows.zip",
-          "type": "application/zip",
-          "size": "9 MB"
-        },
-        "mac": {
-          "key": "stemsorter/StemSorter-macOS.zip",
-          "alt_keys": [
-            "STEMSORTER/StemSorter-macOS.zip"
-          ],
-          "as": "StemSorter-macOS.zip",
           "type": "application/zip",
           "size": "12 MB"
         }
