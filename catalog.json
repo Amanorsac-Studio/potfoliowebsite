@@ -398,8 +398,9 @@
       "version": "0.8.1",
       "installers": {
         "windows": {
-          "key": "STEMSORTER/StemSorter-Windows.zip",
+          "key": "STEMSORTER/StemSorter-Windows_2.zip",
           "alt_keys": [
+            "STEMSORTER/StemSorter-Windows.zip",
             "stemsorter/StemSorter-Windows.zip"
           ],
           "as": "StemSorter-Windows.zip",
@@ -407,13 +408,14 @@
           "size": "17 MB"
         },
         "mac": {
-          "key": "STEMSORTER/StemSorter-macOS.zip",
+          "key": "STEMSORTER/StemSorter-macOS_2.zip",
           "alt_keys": [
+            "STEMSORTER/StemSorter-macOS.zip",
             "stemsorter/StemSorter-macOS.zip"
           ],
           "as": "StemSorter-macOS.zip",
           "type": "application/zip",
-          "size": "17 MB"
+          "size": "27 MB"
         }
       }
     },
