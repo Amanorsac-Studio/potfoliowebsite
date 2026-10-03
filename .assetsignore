@@ -48,7 +48,6 @@ hub/
 # repository because they are finished work waiting on a decision -
 # they are simply not uploaded, so the Worker answers 404.html for
 # them the same as it would for a made-up address.
-stemsorter.html
 harmoniemd.html
 
 # The loading bay for pictures, and the button that sends them. Both
