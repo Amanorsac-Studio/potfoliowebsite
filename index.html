@@ -883,13 +883,18 @@ var CONFIG = {
   (function(){
     var box = document.getElementById('ytp');
     var L   = CONFIG.listen;
+    // A whole pasted link works as well as the bare id after list=
+    if(L && L.playlist){
+      var lm = String(L.playlist).match(/[?&]list=([\w-]+)/);
+      L.playlist = lm ? lm[1] : String(L.playlist).trim();
+    }
     if(!box || !L || !L.playlist) return;
 
     var tracks  = L.tracks || [];
     var listEl  = document.getElementById('ytp-tracks');
     var scroll  = document.getElementById('ytp-scroll');
     var countEl = document.getElementById('ytp-count');
-    var player  = null, ready = false, booted = false, pending = -1;
+    var player  = null, ready = false, booted = false, pending = -1, dead = false;
     var total   = tracks.length;   // live count once the player reports in
 
     function esc(s){
@@ -918,6 +923,7 @@ var CONFIG = {
       var b = e.target.closest ? e.target.closest('.ytp-row') : null;
       if(!b) return;
       var i = +b.getAttribute('data-i');
+      if(dead){ window.open(findUrl(i), '_blank', 'noopener'); return; }
       if(ready && player){ player.playVideoAt(i); return; }
       // clicked before the player loaded: remember which one, and start
       // loading now rather than swallowing the click
@@ -971,6 +977,7 @@ var CONFIG = {
       try { ids = player.getPlaylist() || []; } catch(e){}
       if(!ids.length){
         if((tries||0) < 12) setTimeout(function(){ sync((tries||0)+1); }, 400);
+        else unreachable();
         return;
       }
 
@@ -1025,8 +1032,34 @@ var CONFIG = {
       if(countEl) countEl.textContent = ((idx < 0 ? 0 : idx) + 1) + ' / ' + total;
     }
 
+    /* YouTube could not give us the playlist (a wrong or private id, or
+       the list was deleted). Rather than leave a dead black frame, the
+       frame says so and every row opens that record on YouTube. */
+    function findUrl(i){
+      var t = tracks[i] || {};
+      return 'https://www.youtube.com/results?search_query=' +
+        encodeURIComponent((t.t || '') + ' ' + (t.by || ''));
+    }
+    function unreachable(){
+      if(dead) return;
+      dead = true; clearTimeout(giveUp);
+      try { if(player && player.destroy) player.destroy(); } catch(e){}
+      var frame = box.querySelector('.ytp-frame');
+      if(frame){
+        frame.innerHTML = '<div class="ytp-off"><p>The player could not load this playlist right now.</p>' +
+          '<p>Pick a record from the list and it opens on YouTube.</p></div>';
+      }
+      box.classList.add('noctl', 'off');
+      var out = document.getElementById('ytp-out');
+      if(out && CONFIG.social && CONFIG.social.youtube) out.href = CONFIG.social.youtube;
+      if(listEl.children.length !== tracks.length){
+        listEl.innerHTML = tracks.map(function(t,i){ return rowHtml(i, t.t, t.by, t.d); }).join('');
+      }
+      if(countEl) countEl.textContent = tracks.length + ' records';
+    }
+
     function fallback(){
-      if(ready) return;
+      if(ready || dead) return;
       var slot = document.getElementById('yt-player');
       if(!slot) return;
       var f = document.createElement('iframe');
@@ -1051,7 +1084,9 @@ var CONFIG = {
             clearTimeout(giveUp); ready = true; sync(0);
             if(pending >= 0){ player.playVideoAt(pending); pending = -1; }
           },
-          onStateChange: paint
+          onStateChange: paint,
+          // 2 bad id, 100 removed or private, 101/150 embedding refused
+          onError: function(e){ if(!ready || !player.getPlaylist || !(player.getPlaylist()||[]).length) unreachable(); }
         }
       });
     }
