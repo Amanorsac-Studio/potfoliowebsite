@@ -10,6 +10,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
 <link rel="preload" as="image" href="images/photos/ambdigital-suite-1200.webp" imagesrcset="images/photos/ambdigital-suite-1200.webp 1200w, images/photos/ambdigital-suite.webp 2400w" imagesizes="100vw">
 <link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="/assets/shell.css">
 <link rel="stylesheet" href="assets/site-auth.css">
 <link rel="stylesheet" href="/assets/sale.css">
 <style>:root{--accent:#5aa8ff;--accent-ink:#001a35}</style>
@@ -40,16 +41,21 @@
 <a class="skip" href="#main">Skip to content</a>
 
 <header class="gnav">
-  <a class="logo" href="/index.html"><img src="/images/logo.svg" alt="">Amanorsac Studio</a>
+  <a class="logo" href="/index.html"><img src="/images/logo-onDark.svg" alt="Amanorsac Studio"></a>
   <nav aria-label="Site">
     <a href="/apps.html" aria-current="page">Apps</a>
     <a href="/mixing.html">Mixing</a>
     <a href="/store/">Store</a>
     <a href="/blog.html">Blog</a>
     <a href="/about.html">About</a>
+    <a href="/client">Clients</a>
   </nav>
-  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html">Sign in</a></span>
+  <span class="social" id="head-social"></span>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client">Sign in</a></span>
 </header>
+<nav class="gnav-rooms" aria-label="Rooms">
+  <a href="/apps.html">Apps</a><a href="/mixing.html">Mixing</a><a href="/store/">Store</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/client">Clients</a>
+</nav>
 
 <div class="pbar">
   <a class="pname" href="#main"><img src="images/apps/digital/icon.svg" alt="">AMB Digital</a>
@@ -244,16 +250,47 @@
 
 </main>
 
-<footer class="foot">
-  <div class="in">
-    <a href="/apps.html">App Store</a>
-    <a href="/ambanalog.html">AMB Analog</a>
-    <a href="/afdgate.html">AFD Gate</a>
-    <a href="/secondout.html">SecondOut</a>
-    <a href="/store/package">Studio Bundle</a>
-    <a href="/legal.html">Legal</a>
-    <a href="/privacy.html">Privacy</a>
-    <span class="who">Amanorsac Studio · Accra, Ghana</span>
+<footer class="sfoot">
+  <div class="cols">
+    <div class="sf-brand">
+      <img src="/images/logo-onDark.svg" alt="Amanorsac Studio">
+      <p>Amanorsac Studio. Mixing, mastering and music software from a working studio.</p>
+      <p>Charlottesville, Virginia, and remote worldwide.</p>
+      <div class="social" id="social-icons"></div>
+    </div>
+    <div><h4>Apps</h4><ul>
+      <li><a href="/chordlight88.html">Chordlight 88</a></li>
+      <li><a href="/stemsorter.html">Stem Sorter</a></li>
+      <li><a href="/nebulatide2.html">Nebula Tide 2</a></li>
+      <li><a href="/performlive.html">PerformLive</a></li>
+      <li><a href="/apps.html">All apps</a></li>
+    </ul></div>
+    <div><h4>Plug-ins</h4><ul>
+      <li><a href="/ambanalog.html">AMB Analog</a></li>
+      <li><a href="/ambdigital.html">AMB Digital</a></li>
+      <li><a href="/afdgate.html">AFD Gate</a></li>
+      <li><a href="/secondout.html">SecondOut</a></li>
+      <li><a href="/store/package">Studio Bundle</a></li>
+    </ul></div>
+    <div><h4>Studio</h4><ul>
+      <li><a href="/mixing.html">Mixing and Mastering</a></li>
+      <li><a href="/store/">Store</a></li>
+      <li><a href="/blog.html">Blog</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/about.html#contact">Contact</a></li>
+    </ul></div>
+    <div><h4>Your Account</h4><ul>
+      <li><a href="/client">Sign in</a></li>
+      <li><a href="/my-apps.html">My Apps</a></li>
+      <li><a href="/hub.html">Amanorsac Hub</a></li>
+      <li><a href="/redeem.html">Redeem a code</a></li>
+    </ul></div>
+  </div>
+  <div class="base">
+    <span>© Amanorsac Studio</span>
+    <a href="/privacy">Privacy</a>
+    <a href="/legal.html">Licence and terms</a>
+    <span>Stephen Amanor Sackey · Virginia, United States</span>
   </div>
 </footer>
 
@@ -268,5 +305,6 @@
 <script src="assets/app-purchase.js" defer></script>
 <script src="assets/platforms.js" defer></script>
 <script src="/assets/product.js" defer></script>
+<script src="/assets/shell.js" defer></script>
 </body>
 </html>

@@ -16,29 +16,22 @@
 <body data-page="package">
 <a class="skip" href="#main">Skip to content</a>
 
-<nav class="rack" aria-label="Rooms">
-  <a class="rack-brand" href="/index.html" aria-label="Studio Amanorsac — home"><img src="/images/logo-dark.svg" alt="Studio Amanorsac"></a>
-  <div class="rack-nav">
-    <a class="strip" href="/index.html"><span class="strip-name">Home</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/mixing.html"><span class="strip-name">Mixing</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/blog.html"><span class="strip-name">Blog</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/apps.html"><span class="strip-name">Apps</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip on" href="/store/"><span class="strip-name">Store</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/client"><span class="strip-name">Clients</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/about.html"><span class="strip-name">About</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-  </div>
-  <div class="rack-foot">EST</div>
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo-onDark.svg" alt="Amanorsac Studio"></a>
+  <nav aria-label="Site">
+    <a href="/apps.html">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/" aria-current="page">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+    <a href="/client">Clients</a>
+  </nav>
+  <span class="social" id="head-social"></span>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client">Sign in</a></span>
+</header>
+<nav class="gnav-rooms" aria-label="Rooms">
+  <a href="/apps.html">Apps</a><a href="/mixing.html">Mixing</a><a href="/store/" aria-current="page">Store</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/client">Clients</a>
 </nav>
-
-<div class="sitehead">
-  <a class="sitehead-name" href="/index.html">
-    <img class="sh-mark" src="/images/logo-dark.svg" alt="Amanorsac Studio">
-    <span class="txt">Stephen Amanor Sackey</span>
-  </a>
-  <div class="sitehead-actions">
-    <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
-  </div>
-</div>
 
 <header class="top"><div class="wrap">
   <a class="brand" href="/store/"><img src="/images/logo-onDark.svg" alt=""><span>Amanorsac</span><small>Store</small></a>
@@ -161,14 +154,54 @@
 </div>
 </main>
 
-<footer class="store"><div class="wrap">
-  <span>© Amanorsac Studio · <a href="/">amanorsac.studio</a> · <a href="/apps.html">Apps</a></span>
-  <span><a href="/store/creators">Sell on the store</a> · <a href="/privacy">Privacy</a> · <a href="/legal.html">Terms</a></span>
-</div></footer>
+<footer class="sfoot">
+  <div class="cols">
+    <div class="sf-brand">
+      <img src="/images/logo-onDark.svg" alt="Amanorsac Studio">
+      <p>Amanorsac Studio. Mixing, mastering and music software from a working studio.</p>
+      <p>Charlottesville, Virginia, and remote worldwide.</p>
+      <div class="social" id="social-icons"></div>
+    </div>
+    <div><h4>Apps</h4><ul>
+      <li><a href="/chordlight88.html">Chordlight 88</a></li>
+      <li><a href="/stemsorter.html">Stem Sorter</a></li>
+      <li><a href="/nebulatide2.html">Nebula Tide 2</a></li>
+      <li><a href="/performlive.html">PerformLive</a></li>
+      <li><a href="/apps.html">All apps</a></li>
+    </ul></div>
+    <div><h4>Plug-ins</h4><ul>
+      <li><a href="/ambanalog.html">AMB Analog</a></li>
+      <li><a href="/ambdigital.html">AMB Digital</a></li>
+      <li><a href="/afdgate.html">AFD Gate</a></li>
+      <li><a href="/secondout.html">SecondOut</a></li>
+      <li><a href="/store/package">Studio Bundle</a></li>
+    </ul></div>
+    <div><h4>Studio</h4><ul>
+      <li><a href="/mixing.html">Mixing and Mastering</a></li>
+      <li><a href="/store/">Store</a></li>
+      <li><a href="/blog.html">Blog</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/about.html#contact">Contact</a></li>
+    </ul></div>
+    <div><h4>Your Account</h4><ul>
+      <li><a href="/client">Sign in</a></li>
+      <li><a href="/my-apps.html">My Apps</a></li>
+      <li><a href="/hub.html">Amanorsac Hub</a></li>
+      <li><a href="/redeem.html">Redeem a code</a></li>
+    </ul></div>
+  </div>
+  <div class="base">
+    <span>© Amanorsac Studio</span>
+    <a href="/privacy">Privacy</a>
+    <a href="/legal.html">Licence and terms</a>
+    <span>Stephen Amanor Sackey · Virginia, United States</span>
+  </div>
+</footer>
 
 <script src="/assets/vendor/supabase-2.116.0.js" defer></script>
 <script src="/assets/supabase-client.js" defer></script>
 <script src="/assets/site-auth.js" defer></script>
 <script src="/store/store.js" defer></script>
+<script src="/assets/shell.js" defer></script>
 </body>
 </html>

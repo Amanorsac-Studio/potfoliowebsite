@@ -5,692 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google-adsense-account" content="ca-pub-6190327414594776">
 <title>Music Software: Multitrack Playback, Worship Pads &amp; Mixing Tools | Amanorsac Studio</title>
-<meta name="description" content="PerformLive multitrack playback, HarmonieMD choir rehearsal studio, Nebula Tide worship pads and PulseRoom mixing toolkit. Audio software built in rehearsals and mix sessions.">
+<meta name="description" content="Chordlight 88, Stem Sorter, Nebula Tide 2, PerformLive, PulseRoom and the AMB plug-in bundles. Music software for players, singers and engineers, built in rehearsals and mix sessions.">
 <meta property="og:title" content="The Studio Amanorsac App Store">
-<meta property="og:description" content="HarmonieMD · PerformLive · Nebula Tide · PulseRoom — four instruments, one desk.">
+<meta property="og:description" content="Chordlight 88, Stem Sorter, Nebula Tide 2, PerformLive and the studio's plug-ins. Built in rehearsals and mix sessions.">
 <link rel="icon" href="images/logo.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="images/logo.svg">
-<meta property="og:image" content="https://amanorsac.studio/images/hero-home.jpg">
+<meta property="og:image" content="https://amanorsac.studio/images/gen/apps-desk.webp">
 <meta property="og:url" content="https://amanorsac.studio/apps.html">
 <meta property="og:site_name" content="Studio Amanorsac">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://amanorsac.studio/images/hero-home.jpg">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/sora-latin.woff2">
-<link rel="preload" as="font" type="font/woff2" crossorigin href="fonts/inter-latin.woff2">
-<style>
-/* ---------- fonts ----------
-   Served from this site rather than fonts.googleapis.com. That stylesheet
-   blocked the first paint on every visit while the browser opened a
-   connection to a third party and waited for an answer. These are the
-   same typefaces, variable-weight, latin only, and they come down the
-   connection the page is already using. Nothing about visitors is shared
-   with Google to render text any more. */
-/* latin-ext */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url(fonts/inter-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'JetBrains Mono';
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url(fonts/jetbrains-mono-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin-ext.woff2) format('woff2');
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Sora';
-  font-style: normal;
-  font-weight: 400 800;
-  font-display: swap;
-  src: url(fonts/sora-latin.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* ===========================================================
-   Stephen Amanor Sackey — shared design system
-   One stylesheet for all five pages. Each page sets
-   data-room on <body> to pick up its own accent colour.
-   =========================================================== */
-
-:root{
-  --ink:#F7F6F2; --panel:#FFFFFF; --panel-2:#F0EEE8; --line:#E3E0D8;
-  --paper:#1A1830; --muted:#6B6358; --signal:#3C3489;
-  --accent:#EF9F27;                      /* home / default: brand orange */
-  --display:'Sora',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-  --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --rail:104px; --gut:clamp(20px,5vw,72px);
-  --r-sm:10px; --r:18px; --r-lg:28px; --r-pill:999px;
-  --shadow-1:0 1px 2px rgba(26,24,48,.06), 0 10px 24px -14px rgba(26,24,48,.28);
-  --shadow-2:0 2px 4px rgba(26,24,48,.08), 0 20px 40px -18px rgba(26,24,48,.34);
-  /* motion tokens — strong curves; browser defaults are too weak */
-  --ease-out:cubic-bezier(.23,1,.32,1);
-  --ease-in-out:cubic-bezier(.77,0,.175,1);
-  --dur-fast:160ms; --dur:240ms; --dur-slow:520ms;
-}
-body[data-room="mixing"]{ --accent:#C0722B; --ink:#F2E6D2; --panel:#FBF4E6; --panel-2:#EAD9BF; --line:#DDC9A8; }  /* warm copper console */
-body[data-room="live"]  { --accent:#C24A3E; --ink:#F6E3DC; --panel:#FDF0EB; --panel-2:#EFD3CA; --line:#E4C1B6; }  /* on-air blush */
-/* The store is dark. Every app in it is dark, and four dark product
-   pages hanging off a paper-white shelf read as two different sites.
-   The chrome is entirely token-driven, so flipping these flips the
-   rail, the header and the footer with it. */
-body[data-room="apps"]  { --accent:#8B7BFF; --signal:#4FA8FF;
-  --ink:#07050F; --paper:#EDEAF7; --panel:#120E22; --panel-2:#191234;
-  --line:#251C46; --muted:#948CB8;
-  --shadow-1:0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.7);
-  --shadow-2:0 2px 6px rgba(0,0,0,.5), 0 26px 54px -18px rgba(0,0,0,.8); }
-body[data-room="piano"] { --accent:#9A7B3F; --ink:#F0E7D2; --panel:#FAF4E5; --panel-2:#E7D9BD; --line:#D9C8A4; }  /* parchment gold */
-
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-/* Full-bleed strips are sized with 100vw, which includes the scrollbar
-   on Windows; the few px of overflow made the whole site shift sideways
-   over blank white. clip removes the overflow without breaking sticky. */
-html,body{overflow-x:clip}
-body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--body);
-  font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased}
-a{color:inherit}
-img{display:block;max-width:100%}
-:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
-
-/* ---------- channel rack (room navigation) ---------- */
-.rack{position:fixed;left:0;top:0;bottom:0;width:var(--rail);border-right:1px solid var(--line);
-  background:color-mix(in srgb,var(--panel) 78%,transparent);
-  -webkit-backdrop-filter:blur(18px) saturate(160%);backdrop-filter:blur(18px) saturate(160%);
-  display:flex;flex-direction:column;padding:20px 0;z-index:40}
-.rack-brand{padding:2px 12px 14px;border-bottom:1px solid var(--line);margin-bottom:6px;text-decoration:none;display:block}
-.rack-brand img{width:100%;height:auto;display:block}
-.rack-nav{display:flex;flex-direction:column;flex:1;justify-content:center}
-.strip{display:block;text-decoration:none;padding:10px 0 10px 14px;border-left:2px solid transparent;
-  transition:background .25s,border-color .25s}
-.strip:hover{background:var(--panel-2)}
-.strip.on{border-left-color:var(--accent);background:var(--panel-2)}
-.strip-name{font-family:var(--body);font-size:12px;font-weight:600;letter-spacing:-.005em;
-  color:var(--muted);transition:color var(--dur) var(--ease-out)}
-.strip.on .strip-name{color:var(--paper)}
-.meter{display:flex;gap:2px;margin-top:5px}
-.meter i{width:4px;height:8px;background:var(--line);border-radius:.5px;transition:background .28s}
-.strip.on .meter i:nth-child(-n+3){background:var(--signal)}
-.strip.on .meter i:nth-child(4),.strip.on .meter i:nth-child(5){background:var(--accent)}
-.rack-foot{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:var(--muted);
-  text-align:center;padding-top:14px;border-top:1px solid var(--line)}
-
-/* ---------- site header (top bar) ---------- */
-.sitehead{position:fixed;top:0;left:var(--rail);right:0;height:62px;z-index:45;
-  display:flex;align-items:center;justify-content:space-between;
-  background:color-mix(in srgb,var(--ink) 72%,transparent);
-  -webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
-.sitehead::after{content:"";position:absolute;left:0;right:0;bottom:-20px;height:20px;pointer-events:none;
-  background:linear-gradient(180deg,color-mix(in srgb,var(--ink) 55%,transparent),transparent)}
-/* The links along the top were between 11 and 23 pixels tall, which is
-   under the 24px a finger can reliably hit. Each one below grows its box
-   to 24px and gives back the same number of pixels in the gap beside it,
-   so the text and icons stay exactly where they were. */
-.sitehead-name{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;padding-left:var(--gut);white-space:nowrap;
-  display:inline-flex;align-items:center;min-height:24px}
-.sitehead-name:hover{color:var(--paper)}
-/* the wordmark only stands in for the name on a phone */
-.sh-mark{display:none}
-.sitehead-actions{display:flex;align-items:center;gap:15px;background:var(--accent);color:#fff;
-  border-radius:var(--r-pill);padding:10px clamp(16px,2.4vw,22px);margin-right:var(--gut);
-  box-shadow:var(--shadow-1);transition:transform var(--dur-fast) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
-.sitehead-actions:hover{transform:translateY(-1px);box-shadow:var(--shadow-2)}
-.sitehead-actions a{color:#fff;text-decoration:none;display:inline-flex;align-items:center}
-.sh-login{font-family:var(--body);font-size:14px;font-weight:600;letter-spacing:0;opacity:.97;
-  min-height:24px;transition:opacity var(--dur) var(--ease-out)}
-.sh-login:hover{opacity:1}
-.sh-social{display:inline-flex;align-items:center;gap:5px}   /* the boxes below grew 6px each; this gives back the same total */
-.sh-social a{opacity:.9;transition:opacity .2s,transform .2s;
-  display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px}
-.sh-social a:hover{opacity:1;transform:translateY(-1px)}
-.sh-social svg{width:18px;height:18px;display:block;fill:currentColor}
-@media(max-width:860px){
-  main{padding-top:0}
-  /* ---------- the top bar, phone ----------
-     A full-width block of accent colour across the top read as a band
-     stuck to the page. Facebook's answer is the one worth copying: the
-     page's own background, the wordmark on the left, plain icons on the
-     right, one hairline underneath. Desktop is untouched. */
-  .sitehead{position:sticky;top:0;left:0;height:56px;z-index:50;padding:0 14px;
-    background:color-mix(in srgb,var(--ink) 94%,transparent);
-    border-bottom:1px solid var(--line)}
-  .sitehead::after{display:none}
-  .sitehead-name{display:flex;align-items:center;padding-left:0;flex:none}
-  .sitehead-name .txt{display:none}
-  .sh-mark{display:block;height:33px;width:auto}
-  /* the actions lose the pill and become what they are: icons */
-  .sitehead-actions{width:auto;margin-right:0;padding:0;gap:16px;height:auto;
-    background:transparent;color:var(--paper);box-shadow:none;border-radius:0}
-  .sitehead-actions:hover{transform:none;box-shadow:none}
-  .sitehead-actions a{color:var(--paper)}
-  .sh-social{gap:12px}   /* likewise, so the row is the width it always was */
-  .sh-social svg{width:21px;height:21px}
-  .sh-social a{opacity:.82}
-  /* one thing here is a destination rather than a link out, so it keeps
-     its name and its colour */
-  .sh-login{order:2;background:var(--accent);color:#fff;border-radius:var(--r-pill);
-    padding:8px 15px;font-size:13.5px;font-weight:600;line-height:1}
-  .sh-login:active{transform:scale(.96)}
-}
-
-/* ---------- the account chip in the top bar ----------
-   site-auth.js fills .sh-auth: "Sign in" for a visitor, initials and a
-   menu for someone signed in. Inside the accent pill everything is white
-   and borderless, the way the old Clients link sat there; on a phone the
-   pill dissolves and the link becomes its own accent-coloured button,
-   exactly as .sh-login already does. */
-.sh-auth{--sa-fg:#fff;--sa-line:rgba(255,255,255,.4);--sa-accent:#fff;--sa-bg:var(--panel);--sa-muted:var(--muted)}
-.sh-auth .sa-in{padding:4px 10px;border-color:transparent;font-size:14px}
-.sh-auth .sa-in:hover{background:rgba(255,255,255,.14)}
-.sh-auth .sa-chip{border-color:transparent;padding:2px 8px 2px 2px}
-.sh-auth .sa-chip:hover,.sh-auth .sa[data-open] .sa-chip{background:rgba(255,255,255,.14);border-color:transparent}
-.sh-auth .sa-av{color:var(--accent)}
-.sh-auth .sa-dot{border-color:var(--accent)}
-.sh-auth .sa-item:hover{background:color-mix(in srgb,var(--accent) 22%,transparent)}
-.sh-auth .sa-item svg{stroke:var(--accent)}
-.sh-auth .sa-k{color:var(--accent);background:color-mix(in srgb,var(--accent) 18%,transparent)}
-@media(max-width:860px){
-  .sh-auth{--sa-fg:var(--paper);--sa-line:var(--line);order:2}
-  .sh-auth .sa-in{background:var(--accent);color:#fff;padding:8px 15px;font-size:13.5px;line-height:1}
-  .sh-auth .sa-in svg{display:none}
-  .sh-auth .sa-chip{border-color:var(--line)}
-  .sh-auth .sa-dot{border-color:var(--ink)}
-}
-/* once someone is in, one quiet line above the shelf points at their keys */
-.mine{align-items:center;justify-content:space-between;gap:12px 18px;flex-wrap:wrap;margin:-34px 0 38px;
-  padding:13px 18px;border:1px solid var(--line);border-radius:var(--r);
-  background:color-mix(in srgb,var(--panel) 82%,transparent);color:var(--muted);font-size:14.5px}
-.mine b{color:var(--paper);font-weight:600}
-.mine a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
-.mine a:hover{text-decoration:underline;text-underline-offset:3px}
-
-/* ---------- shell ---------- */
-main{margin-left:var(--rail);padding:62px var(--gut) 0}
-.wrap{max-width:1080px;margin:0 auto}
-section{padding:clamp(88px,12vh,164px) 0}
-.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;
-  color:var(--accent);margin:0 0 30px;display:flex;align-items:center;gap:12px}
-.eyebrow::after{content:"";flex:1;height:1px;background:var(--line);max-width:180px}
-h2{font-family:var(--display);font-weight:700;font-size:clamp(34px,5.4vw,64px);line-height:1.02;margin:0 0 22px;letter-spacing:-.032em}
-h3{font-family:var(--display);font-weight:600;font-size:25px;margin:0 0 11px;letter-spacing:-.018em}
-h1,h2,h3{text-wrap:balance}
-p,.lede{text-wrap:pretty}
-.lede{color:var(--muted);max-width:54ch;margin:0 0 64px;font-size:18.5px;line-height:1.78}
-p{margin:0 0 16px}
-
-/* ---------- hero ---------- */
-.hero{min-height:93vh;min-height:93dvh;display:flex;flex-direction:column;justify-content:center;padding-top:clamp(52px,8vh,92px)}
-.hero.short{min-height:72vh;min-height:72dvh}
-.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
-  color:var(--accent);margin-bottom:30px}
-h1{font-family:var(--display);font-weight:800;font-size:clamp(44px,8.4vw,104px);line-height:.98;
-  margin:0 0 30px;letter-spacing:-.042em}
-h1 em{font-style:normal;font-weight:800;color:var(--accent)}
-.hero.short h1{font-size:clamp(40px,7.4vw,86px)}
-.hero-thesis{font-size:clamp(18px,2.2vw,24px);line-height:1.6;max-width:36ch;margin:0 0 38px;letter-spacing:-.008em}
-.roles{display:flex;flex-wrap:wrap;gap:8px 10px;list-style:none;padding:0;margin:0 0 38px}
-.roles li{font-family:var(--body);font-size:13.5px;font-weight:500;color:var(--muted);
-  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-pill);padding:8px 16px}
-.wave{display:flex;align-items:flex-end;gap:3px;height:62px;opacity:.85}
-.wave span{flex:1;background:linear-gradient(180deg,var(--accent),var(--signal));border-radius:1px;
-  transform-origin:bottom;animation:pulse 2.6s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scaleY(.82)}50%{transform:scaleY(1)}}
-.wave.idle span{animation-play-state:paused}
-
-/* ---------- pill call to action ---------- */
-.cta{display:inline-flex;align-items:center;gap:9px;font-family:var(--body);font-size:15.5px;font-weight:600;
-  text-decoration:none;background:var(--accent);color:#fff;border:0;border-radius:var(--r-pill);
-  padding:16px 28px;cursor:pointer;box-shadow:var(--shadow-1);
-  transition:transform var(--dur-fast) var(--ease-out),box-shadow var(--dur) var(--ease-out),filter var(--dur) var(--ease-out)}
-.cta:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);filter:saturate(1.06)}
-.cta:active{transform:scale(.97);box-shadow:var(--shadow-1)}
-.cta.ghost{background:transparent;color:var(--paper);border:1.5px solid color-mix(in srgb,var(--paper) 22%,transparent);box-shadow:none}
-.cta.ghost:hover{border-color:var(--paper);background:color-mix(in srgb,var(--panel) 60%,transparent)}
-.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 40px}
-
-/* ---------- credits / timeline clips ---------- */
-.ruler{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;
-  color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:4px}
-.lane{display:grid;grid-template-columns:160px 1fr;gap:26px;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}
-.lane-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}
-.clip{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-sm);
-  padding:20px 24px;transition:border-color .25s,transform .25s,background .25s}
-.lane:hover .clip{background:var(--panel-2);border-color:var(--muted);transform:translateX(3px)}
-.clip-title{font-size:17px;font-weight:500;margin:0 0 3px}
-.clip-title span{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:-.015em}
-.clip-role{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;color:var(--accent);text-transform:uppercase;margin:0}
-.clip-note{color:var(--muted);font-size:14.5px;margin:6px 0 0}
-
-/* ---------- grids ---------- */
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:14px;background:none;border:0}
-.cell{background:var(--panel);padding:34px 30px;border-radius:var(--r);border:1px solid var(--line);
-  transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
-.cell:hover{transform:translateY(-2px);box-shadow:var(--shadow-1)}
-@media(min-width:620px) and (max-width:1000px){ .grid{grid-template-columns:repeat(2,1fr)} }
-.cell p{color:var(--muted);font-size:15px;margin:0}
-.cell .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:12px}
-
-/* ---------- numbered process ---------- */
-.steps{list-style:none;padding:0;margin:0;counter-reset:s}
-.steps li{counter-increment:s;display:grid;grid-template-columns:56px 1fr;gap:22px;padding:28px 0;border-bottom:1px solid var(--line)}
-.steps li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);font-size:11px;letter-spacing:.1em;
-  color:var(--accent);padding-top:5px}
-.steps h3{font-size:21px;margin:0 0 5px}
-.steps p{color:var(--muted);font-size:15px;margin:0}
-
-/* ---------- media embeds ---------- */
-.media-grid{display:grid;gap:18px}
-.media-grid.two{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.embed{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--panel)}
-.embed-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
-  padding:11px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
-.embed-label b{color:var(--accent);font-weight:400}
-.embed iframe{display:block;width:100%;border:0}
-.embed.video iframe{aspect-ratio:16/9;height:auto}
-.embed.audio iframe{height:152px}
-.embed.audio.tall iframe{height:352px}
-
-/* ---------- A/B audio player ---------- */
-.ab{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);padding:24px 26px;margin-bottom:14px;box-shadow:var(--shadow-1)}
-.ab-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:14px}
-.ab-head h3{margin:0;font-size:22px}
-.ab-head .who{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.ab-toggle{display:flex;gap:0;border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px;width:max-content}
-.ab-toggle button{background:var(--panel-2);border:0;color:var(--muted);font-family:var(--mono);font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;padding:10px 18px;cursor:pointer;transition:background .2s,color .2s}
-.ab-toggle button.on{background:var(--accent);color:var(--ink)}
-.ab audio{width:100%;height:38px}
-.ab-note{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--muted);margin:11px 0 0;line-height:1.7}
-
-/* ---------- photos ---------- */
-.shot{position:relative;overflow:hidden;border-radius:var(--r);background:var(--panel-2);box-shadow:var(--shadow-1)}
-.shot img{width:100%;height:100%;object-fit:cover;filter:saturate(.88) contrast(1.04);
-  transition:transform var(--dur-slow) var(--ease-out)}
-.shot::after{content:"";position:absolute;inset:0;background:var(--accent);mix-blend-mode:soft-light;opacity:.26;transition:opacity .5s;pointer-events:none}
-.shot:hover img{transform:scale(1.03)}
-.shot:hover::after{opacity:0}
-.shot.empty{display:flex;align-items:center;justify-content:center;border-style:dashed;min-height:170px}
-.shot.empty img{display:none}
-.shot.empty::after{display:none}
-.slot-note{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-align:center;padding:20px;line-height:1.8;margin:0}
-.slot-note b{display:block;color:var(--accent);font-weight:400;margin-bottom:5px}
-.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
-.gallery .shot{aspect-ratio:4/5}
-
-/* =====================================================================
-   THE APP STORE
-   One dark shelf, four columns. Each column is: the app's own mark, its
-   name, a line about it, a real capture, and a sentence. Nothing else -
-   the depth lives on each product page now, so this page's whole job is
-   to show you what exists and let you pick.
-   ===================================================================== */
-
-/* The store is a shelf, not an essay, so it gets a wider column than
-   the reading pages share. */
-body[data-room="apps"] .wrap{max-width:1280px}
-
-/* the sky behind the shelf: two glows and one arc, as cheap as it looks */
-.aurora{position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:
-    radial-gradient(58% 42% at 50% -6%, rgba(139,123,255,.24) 0%, transparent 62%),
-    radial-gradient(70% 46% at 12% 108%, rgba(103,79,214,.26) 0%, transparent 60%),
-    radial-gradient(70% 46% at 88% 112%, rgba(64,120,255,.20) 0%, transparent 58%),
-    var(--ink)}
-
-/* ---------- the marquee ---------- */
-.marquee{text-align:center;padding:clamp(48px,9vh,104px) 0 clamp(30px,5vh,56px);min-height:0}
-.marquee .suite{font-family:var(--display);font-weight:600;
-  font-size:clamp(13px,1.5vw,17px);letter-spacing:.42em;text-transform:uppercase;
-  color:#B9AEFF;margin:0 0 14px;padding-left:.42em}
-.marquee h1{font-family:var(--display);font-weight:800;text-transform:uppercase;
-  font-size:clamp(32px,6.9vw,92px);line-height:.98;letter-spacing:-.012em;margin:0 0 20px;
-  background:linear-gradient(96deg,#A855F7 0%,#8B7BFF 34%,#5B8DEF 68%,#38BDF8 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  padding-bottom:.06em}
-.marquee .said{font-family:var(--display);font-weight:400;
-  font-size:clamp(15px,2vw,24px);color:#C9C3E8;margin:0 auto;max-width:34ch;letter-spacing:-.01em}
-/* the hairline under the marquee, brightest in the middle */
-.hairline{height:1px;margin:clamp(26px,5vh,52px) 0 0;
-  background:linear-gradient(90deg,transparent,rgba(139,123,255,.55) 22%,#CFC6FF 50%,rgba(80,140,255,.55) 78%,transparent)}
-.hairline + .glowdot{width:9px;height:9px;border-radius:999px;margin:-5px auto 0;
-  background:#EAE4FF;box-shadow:0 0 18px 4px rgba(160,140,255,.7)}
-
-/* ---------- the four columns ---------- */
-.shelf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2.1vw,28px);
-  padding:clamp(38px,6vh,68px) 0 0}
-.app{display:flex;flex-direction:column;text-decoration:none;color:inherit;
-  transition:transform var(--dur) var(--ease-out)}
-.app:hover{transform:translateY(-4px)}
-.app:active{transform:translateY(-1px) scale(.995)}
-/* A tile whose page is not being served. It keeps its place in the
-   shelf and loses everything that implies you can go there: no lift on
-   hover, no pointer, no "Explore" line. */
-.app.nolink{cursor:default;pointer-events:none}
-.app.nolink:hover,.app.nolink:active{transform:none}
-.app.nolink:hover .mark{box-shadow:none}
-.app.nolink .app-shot{filter:saturate(.55) brightness(.9)}
-
-/* name row: the mark, then the two-tone wordmark and its line */
-.app-id{display:flex;align-items:center;gap:13px;margin:0 0 16px;
-  min-height:clamp(46px,4.4vw,60px)}
-.mark{flex:none;width:clamp(46px,4.4vw,60px);aspect-ratio:1;border-radius:15px;
-  display:grid;place-items:center;
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.16), 0 8px 22px rgba(0,0,0,.5);
-  transition:box-shadow var(--dur) var(--ease-out)}
-.app:hover .mark{box-shadow:inset 0 1px 1px rgba(255,255,255,.2),
-  0 10px 30px color-mix(in srgb,var(--k) 34%,transparent)}
-.mark svg{width:58%;height:58%;display:block;overflow:visible}
-.app-name{font-family:var(--display);font-weight:700;letter-spacing:-.03em;
-  font-size:clamp(18px,1.85vw,24px);line-height:1.12;margin:0;color:#fff}
-.app-name em{font-style:normal;color:var(--k)}
-
-/* the capture */
-.app-shot{position:relative;border-radius:14px;overflow:hidden;background:#05040B;
-  border:1px solid color-mix(in srgb,var(--k) 26%,transparent);
-  box-shadow:0 14px 40px rgba(0,0,0,.55);
-  transition:border-color var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
-.app:hover .app-shot{border-color:color-mix(in srgb,var(--k) 58%,transparent);
-  box-shadow:0 20px 54px rgba(0,0,0,.6), 0 0 44px -18px var(--k)}
-/* The whole interface, not a crop of its top-left corner. These are
-   wide screenshots of software; cropping them to a 4:3 tile cut the
-   controls off and, on a phone, left a meaningless slice. The frame
-   keeps a fixed shape so the grid stays even, and the picture sits
-   inside it complete. */
-/* The frame keeps one shape so the shelf stays level; the picture
-   fills it and object-fit decides what to do with the leftover -
-   never a crop, never a stretch. place-items:center left the image
-   sizing itself from its own width, which made the frame taller
-   than 4:3 and knocked the prices out of line. */
-.app-shot{aspect-ratio:4/3;display:block;min-height:0}
-/* The picture is laid into the frame rather than flowed through it:
-   inset on all four sides gives it a definite box whatever its own
-   proportions are, so a portrait screenshot cannot make one card
-   taller than the four beside it. */
-/* width and height are spelled out rather than left to the four insets:
-   an absolutely positioned image with auto height falls back to its own
-   intrinsic height and ignores `bottom`, which is what was cropping the
-   tall screenshots. */
-.app-shot img{position:absolute;top:10px;left:10px;
-  width:calc(100% - 20px);height:calc(100% - 20px);
-  object-fit:contain;object-position:center;display:block;border-radius:6px}
-@media (max-width:720px){
-  .app-shot{aspect-ratio:16/10}
-  .app-shot img{top:8px;left:8px;width:calc(100% - 16px);height:calc(100% - 16px)}
-}
-
-/* Still real screenshots, not mockups - dimmed and labelled rather than
-   swapped out, so the capture keeps proving the app is real work in
-   progress instead of a promise with nothing behind it. */
-.app-shot .soon{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  background:rgba(5,4,11,.72)}
-.app-shot .soon span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;
-  text-transform:uppercase;color:#fff;border:1px solid rgba(255,255,255,.4);
-  border-radius:999px;padding:9px 20px;backdrop-filter:blur(2px)}
-
-/* One sentence, two lines, never three - so the row of prices under a
-   shelf of cards is a straight line rather than a staircase. Each row
-   below the picture holds its height whether it has anything in it or
-   not, which is what keeps the columns level. */
-.app-note{color:#9C95BC;font-size:clamp(13px,1.15vw,15px);line-height:1.55;
-  text-align:center;margin:18px 0 0;padding:0 4px;
-  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
-  min-height:calc(2 * 1.55em)}
-.app-badge{text-align:center;margin:12px 0 0;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.06em;color:var(--k);min-height:14px}
-.app-dot{margin:0 7px;opacity:.5}
-
-/* the price, the way a shop writes one: what it was, then what it is */
-.app-price{text-align:center;margin:12px 0 0;min-height:46px;
-  font-family:var(--body);color:#fff}
-.app-price s{display:block;font-size:12.5px;line-height:1.35;color:#8C85AC;
-  text-decoration-thickness:1px;margin:0 0 1px}
-.app-price b{font-size:clamp(19px,1.7vw,23px);font-weight:700;letter-spacing:-.02em;
-  vertical-align:middle}
-.app-price .free,.app-price .pwyw{font-size:clamp(15px,1.3vw,17px);font-weight:600;
-  color:#A9A2C8;letter-spacing:.01em}
-.app-price .save{display:inline-block;margin-left:8px;vertical-align:middle;
-  background:#E11D2E;color:#fff;border-radius:999px;padding:3px 9px;
-  font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;
-  text-transform:uppercase}
-
-/* Measured, not guessed: at 10px and .72 opacity this read 4.15:1 against
-   the shelf, under the 4.5:1 the Build Standard requires of body text.
-   A point larger and less transparent clears it on every tile colour. */
-.app-go{margin-top:auto;padding-top:16px;text-align:center;
-  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--k);opacity:.92;transition:opacity var(--dur) var(--ease-out)}
-.app:hover .app-go{opacity:1}
-
-@media (max-width:1080px){ .shelf{grid-template-columns:repeat(3,minmax(0,1fr))} }
-@media (max-width:700px){ .shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:26px} }
-@media (max-width:480px){ .shelf{grid-template-columns:minmax(0,1fr);gap:38px} }
-
-/* ---------- what they all have in common ---------- */
-.traits{display:grid;grid-template-columns:repeat(5,1fr);align-items:stretch;
-  margin:clamp(52px,8vh,96px) 0 0;
-  background:color-mix(in srgb,#160F30 74%,transparent);
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-  border:1px solid rgba(139,123,255,.24);border-radius:20px;
-  padding:clamp(16px,2vw,22px) clamp(10px,2vw,26px)}
-.trait{display:flex;align-items:center;justify-content:center;gap:11px;
-  padding:10px clamp(8px,1.4vw,20px);position:relative}
-.trait + .trait::before{content:"";position:absolute;left:0;top:18%;bottom:18%;width:1px;
-  background:rgba(139,123,255,.22)}
-.trait svg{flex:none;width:26px;height:26px;fill:none;stroke:#B4A8FF;stroke-width:1.6;
-  stroke-linecap:round;stroke-linejoin:round}
-.trait b{font-family:var(--body);font-weight:500;font-size:clamp(13px,1.2vw,15.5px);
-  line-height:1.28;color:#DED8F5;max-width:13ch}
-@media (max-width:1000px){ .traits{grid-template-columns:repeat(3,1fr);row-gap:6px}
-  .trait:nth-child(3n+1)::before{display:none} }
-@media (max-width:620px){ .traits{grid-template-columns:1fr 1fr}
-  .trait::before{display:none} }
-
-/* ---------- the close ---------- */
-.close-cta{text-align:center;padding:clamp(64px,10vh,120px) 0 0}
-.close-cta h2{font-size:clamp(28px,4.4vw,52px);margin:0 0 16px}
-.close-cta p{color:var(--muted);max-width:52ch;margin:0 auto 30px;font-size:17px}
-.signoff{display:flex;justify-content:center;
-  padding:clamp(56px,9vh,110px) 0 clamp(20px,4vh,44px)}
-.signoff img{width:min(300px,64vw);height:auto;opacity:.9}
-
-/* ---------- keyboard motif (piano) ---------- */
-.keys{display:flex;height:74px;border:1px solid var(--line);border-radius:3px;overflow:hidden;margin:0 0 8px}
-.keys i{flex:1;background:#F2ECDE;border-right:1px solid #cbbfae;position:relative}
-.keys i:last-child{border-right:0}
-.keys i.b{flex:.62;background:#120E0B}
-.keys i.f{background:var(--accent)}
-
-/* ---------- about ---------- */
-.about-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:40px;align-items:start}
-.about p{max-width:54ch;font-size:17px;line-height:1.75}
-.about p.first::first-letter{font-family:var(--display);font-size:56px;line-height:.85;float:left;padding:6px 12px 0 0;color:var(--accent)}
-.portrait{aspect-ratio:4/5;position:sticky;top:40px}
-
-/* ---------- contact ---------- */
-.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
-.mail{font-family:var(--display);font-size:clamp(24px,3.6vw,40px);text-decoration:none;display:inline-block;
-  line-height:1.2;border-bottom:1px solid var(--line);transition:border-color .25s,color .25s;word-break:break-word}
-.mail:hover{color:var(--accent);border-color:var(--accent)}
-.contact-meta{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--muted);margin-top:26px;line-height:2}
-form{display:flex;flex-direction:column;gap:16px}
-.field{display:flex;flex-direction:column;gap:7px}
-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-input,select,textarea{background:var(--panel);border:1.5px solid var(--line);border-radius:12px;color:var(--paper);
-  font-family:var(--body);font-size:15px;padding:12px 14px;transition:border-color .2s}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none}
-textarea{resize:vertical;min-height:118px}
-button.send{background:var(--accent);color:#fff;border:0;border-radius:var(--r-pill);font-family:var(--body);font-size:15.5px;
-  font-weight:600;padding:16px 30px;cursor:pointer;box-shadow:var(--shadow-1);align-self:flex-start;
-  transition:transform var(--dur-fast) var(--ease-out),box-shadow var(--dur) var(--ease-out)}
-button.send:hover{transform:translateY(-2px);box-shadow:var(--shadow-2)}
-button.send:active{transform:scale(.97)}
-button.send[disabled]{opacity:.55;cursor:default}
-.form-msg{font-family:var(--mono);font-size:11px;letter-spacing:.06em;line-height:1.7;margin:0;min-height:1.2em}
-.form-msg.ok{color:var(--signal)}
-.form-msg.err{color:#D98A6A}
-.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-/* The one control whose whole job is accessibility should not itself be
-   hard to read. Only ever seen on keyboard focus, so darkening the fill
-   enough for white text costs the design nothing. */
-.skip{position:absolute;left:-9999px;top:0;z-index:200;
-  background:color-mix(in srgb,var(--accent) 63%,#000);color:#fff;
-  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:12px 18px}
-.skip:focus{left:0}
-
-/* ---------- cross-links + footer ---------- */
-.next{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.next a{text-decoration:none;border:1px solid var(--line);border-radius:var(--r);padding:30px 32px;background:var(--panel);
-  transition:transform var(--dur) var(--ease-out),box-shadow var(--dur) var(--ease-out),border-color var(--dur) var(--ease-out)}
-.next a:hover{transform:translateY(-3px);box-shadow:var(--shadow-2)}
-.next a:active{transform:scale(.99)}
-.next a:hover{border-color:var(--muted);background:var(--panel-2)}
-.next span{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
-.next b{font-family:var(--display);font-weight:400;font-size:22px}
-footer{margin-left:var(--rail);padding:24px var(--gut);border-top:1px solid var(--line);font-family:var(--mono);
-  font-size:10px;letter-spacing:.11em;color:var(--muted);text-transform:uppercase;
-  display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
-footer a{text-decoration:none;display:inline-flex;align-items:center;min-height:24px}
-footer{align-items:center}   /* the links are 24px tall now; keep the rows centred */
-footer a:hover{color:var(--accent)}
-
-body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;opacity:.032;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
-
-.rise{opacity:0;transform:translateY(16px);
-  transition:opacity var(--dur-slow) var(--ease-out),transform var(--dur-slow) var(--ease-out)}
-.rise.in{opacity:1;transform:none}
-
-/* press feedback — nothing pressable should feel dead */
-.strip:active,.sitehead-name:active{background:var(--panel-2)}
-.sh-login:active,.sh-social a:active{transform:translateY(1px)}
-.arr:active .arr-media{transform:scale(.994);transition:transform var(--dur-fast) var(--ease-out)}
-.mail:active{transform:translateY(1px)}
-
-@media (max-width:900px){
-  .about-grid,.contact-grid{grid-template-columns:1fr;gap:32px}
-  .portrait{position:static;max-width:330px}
-}
-@media (max-width:860px){
-  :root{--rail:0px}
-  /* ---------- the rail becomes a floating tab bar ----------
-     As a scrolling strip along the top it truncated "Contact" mid-word,
-     which reads as a broken page rather than a scrollable one. Six equal
-     tabs in a pill fit the width honestly, sit under the thumb, and give
-     the site the app feel it wants on a phone. */
-  .rack{position:fixed;left:12px;right:12px;top:auto;z-index:60;
-    bottom:calc(10px + env(safe-area-inset-bottom,0px));
-    width:auto;height:auto;flex-direction:row;align-items:center;
-    padding:6px 7px;border:1px solid var(--line);border-right-width:1px;
-    border-radius:var(--r-pill);
-    background:color-mix(in srgb,var(--panel) 88%,transparent);
-    -webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);
-    box-shadow:0 6px 16px rgba(26,24,48,.14), 0 20px 48px rgba(26,24,48,.22)}
-  .rack-brand,.rack-foot,.meter{display:none}
-  .rack-nav{flex-direction:row;flex:1;justify-content:space-between;gap:2px;min-width:0}
-  .strip{flex:1 1 0;min-width:0;text-align:center;white-space:nowrap;
-    border-left:0;border-radius:var(--r-pill);padding:9px 3px;
-    transition:background var(--dur) var(--ease-out)}
-  .strip:hover{background:transparent}
-  .strip.on{background:color-mix(in srgb,var(--accent) 15%,transparent)}
-  .strip.on .strip-name{color:var(--accent)}
-  .strip-name{font-size:11.5px;letter-spacing:-.012em}
-  /* "Piano & MD" will not share a phone with five other labels */
-  .strip-name[data-short]{font-size:0}
-  .strip-name[data-short]::after{content:attr(data-short);font-size:11.5px}
-  /* the bar floats over the page, so the page has to end above it */
-  footer{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
-
-  /* Apple-tight rhythm: 12vh between bands is two thirds of a phone
-     screen of nothing, which reads as the page having ended. */
-  section{padding:clamp(52px,7vh,88px) 0}
-  /* the earlier padding-top:0 sits above the rule it means to beat, so
-     the desktop header offset was still opening a gap over the hero */
-  main{padding-top:0}
-  main,footer{margin-left:0}
-  .lane{grid-template-columns:1fr;gap:9px}
-  .hero{min-height:74vh;min-height:74dvh}
-  .steps li{grid-template-columns:38px 1fr;gap:12px}
-}
-@media (prefers-reduced-transparency:reduce){
-  .sitehead,.rack{background:var(--ink);-webkit-backdrop-filter:none;backdrop-filter:none;
-    border-bottom:1px solid var(--line)}
-  .sitehead::after{display:none}
-}
-@media (prefers-contrast:more){
-  .cta,.arr-go,.sitehead-actions{outline:2px solid var(--paper);outline-offset:-2px}
-  .cell,.next a,.embed{border-color:var(--paper)}
-}
-@media (prefers-reduced-motion:reduce){
-  html{scroll-behavior:auto}
-  *,*::before,*::after{animation:none!important;transition:none!important}
-  .rise{opacity:1;transform:none}
-}
-
-/* ---------- full-bleed hero image ---------- */
-.hero{position:relative;isolation:isolate}
-.hero-bg{position:absolute;top:0;bottom:0;left:50%;
-  margin-left:calc(-50vw + var(--rail)/2);width:calc(100vw - var(--rail));
-  z-index:-2;overflow:hidden;background:var(--panel)}
-.hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 30%;
-  filter:saturate(.68) contrast(1.02) brightness(1.06)}
-.hero-bg::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,var(--ink) 0%,color-mix(in srgb,var(--ink) 90%,transparent) 42%,color-mix(in srgb,var(--ink) 55%,transparent) 72%,color-mix(in srgb,var(--ink) 78%,transparent) 100%)}
-.hero-bg.tint::after{background:linear-gradient(180deg,color-mix(in srgb,var(--ink) 45%,transparent) 0%,color-mix(in srgb,var(--ink) 80%,transparent) 55%,var(--ink) 100%)}
-.hero-bg .field{position:absolute;inset:0;display:flex;align-items:center;gap:4px;padding:0 3vw;opacity:.16}
-.hero-bg .field span{flex:1;background:var(--accent);border-radius:1px;transform-origin:center}
-.hero .wave{position:relative;z-index:1}
-.hero > *:not(.hero-bg){position:relative;z-index:1}
-
-/* ---------- full-bleed image band ---------- */
-.band{position:relative;left:50%;margin-left:calc(-50vw + var(--rail)/2);width:calc(100vw - var(--rail));
-  height:clamp(260px,44vh,480px);overflow:hidden;background:var(--panel-2);
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.band img{width:100%;height:100%;object-fit:cover;filter:saturate(.8) contrast(1.05) brightness(.86)}
-.band .cap{position:absolute;left:var(--gut);bottom:26px;font-family:var(--mono);font-size:10px;
-  letter-spacing:.16em;text-transform:uppercase;color:#F7F6F2;text-shadow:0 1px 14px rgba(26,24,48,.92)}
-.band.empty{display:flex;align-items:center;justify-content:center;border-style:dashed}
-
-/* ---------- taller gallery, feature first tile ---------- */
-.gallery .shot:first-child{grid-column:span 2}
-@media (max-width:640px){ .gallery .shot:first-child{grid-column:span 1} }
-
-</style>
-<link rel="canonical" href="https://amanorsac.studio/apps">
+<meta name="twitter:image" content="https://amanorsac.studio/images/gen/apps-desk.webp">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="assets/site-auth.css">
+<link rel="stylesheet" href="assets/hub-download.css">
+<link rel="stylesheet" href="/assets/sale.css">
+<style>:root{--accent:#8b9dff;--accent-ink:#0a0f3a}</style>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -725,446 +56,251 @@ body::after{content:"";position:fixed;inset:0;z-index:100;pointer-events:none;op
   ]
 }
 </script>
-<link rel="stylesheet" href="assets/site-auth.css">
-<link rel="stylesheet" href="assets/hub-download.css">
-<link rel="stylesheet" href="/assets/sale.css">
 </head>
 <body data-room="apps">
-
 <a class="skip" href="#main">Skip to content</a>
 
-<nav class="rack" aria-label="Rooms">
-  <a class="rack-brand" href="index.html" aria-label="Studio Amanorsac — home"><img src="images/logo-dark.svg" alt="Studio Amanorsac"></a>
-  <div class="rack-nav">
-    <a class="strip" href="index.html"><span class="strip-name">Home</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="mixing.html"><span class="strip-name">Mixing</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="blog.html"><span class="strip-name">Blog</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip on" href="apps.html"><span class="strip-name">Apps</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/store/"><span class="strip-name">Store</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="/client"><span class="strip-name">Clients</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-    <a class="strip" href="about.html"><span class="strip-name">About</span><span class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></a>
-  </div>
-  <div class="rack-foot">EST</div>
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo-onDark.svg" alt="Amanorsac Studio"></a>
+  <nav aria-label="Site">
+    <a href="/apps.html" aria-current="page">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+    <a href="/client">Clients</a>
+  </nav>
+  <span class="social" id="head-social"></span>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client">Sign in</a></span>
+</header>
+<nav class="gnav-rooms" aria-label="Rooms">
+  <a href="/apps.html" aria-current="page">Apps</a><a href="/mixing.html">Mixing</a><a href="/store/">Store</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/client">Clients</a>
 </nav>
 
-<div class="sitehead">
-  <a class="sitehead-name" href="index.html">
-    <img class="sh-mark" src="images/logo-dark.svg" alt="Amanorsac Studio">
-    <span class="txt">Stephen Amanor Sackey</span>
-  </a>
-  <div class="sitehead-actions">
-    <span class="sh-auth" data-auth-slot><a class="sh-login" href="/client">Sign in</a></span>
-    <span class="sh-social" id="head-social"></span>
+<main id="main">
+
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">Apps and Plug-ins</p>
+    <h1>Amanorsac Apps</h1>
+    <p class="tag">Music software built in rehearsals and mix sessions, not in a product meeting.</p>
+    <p class="intro">Every app here was made because the studio needed it on a Sunday, in a lesson or at the desk. They all install and update through Amanorsac Hub, and every licence covers two computers.</p>
   </div>
+  <div class="hero-img">
+    <img src="images/gen/apps-desk-1200.webp" srcset="images/gen/apps-desk-1200.webp 1200w, images/gen/apps-desk.webp 2400w" sizes="100vw"
+         width="2400" height="1340" fetchpriority="high" alt="A dark production desk with plug-in windows glowing on a wide monitor, a MIDI keyboard and studio monitors">
+  </div>
+</section>
+
+<!-- shown by site-auth.js only when someone is signed in -->
+<p class="mine" data-auth-banner>
+  <span>Signed in as <b data-auth-name></b>. Your licence keys, devices and downloads are in one place.</span>
+  <a href="/my-apps.html">Open My Apps ›</a>
+</p>
+
+<!-- filled by assets/promo.js while a sale is on, empty otherwise -->
+<div data-sale-banner></div>
+
+<section class="room-h" style="padding-top:clamp(40px,6vh,72px)">
+  <h2>Every App</h2>
+  <p>Prices are in US dollars. In Ghana you can also pay by MTN MoMo on every app page.</p>
+</section>
+
+<section id="store" class="shelf" aria-label="The apps">
+    <a class="app wide" href="chordlight88.html" style="--k:#56b6ff">
+      <div class="app-shot"><img src="images/photos/chordlight-pianist-1200.webp" alt="A pianist with Chordlight 88 naming the chord on screen" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/chordlight88/icon.svg" alt=""><h2 class="app-name">Chordlight 88</h2></div>
+        <p class="app-note">The chord, the Nashville number and the sol-fa for every chord you play, on 88 lit keys. Version 2.0 records the take and draws the lesson video.</p>
+        <p class="app-badge" data-badge-app="chordlight88"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="stemsorter.html" style="--k:#2ad2e8">
+      <div class="app-shot"><img src="images/photos/stemsorter-session-1200.webp" alt="An engineer building a session with Stem Sorter" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/stemsorter-logo.svg" alt=""><h2 class="app-name">Stem Sorter</h2></div>
+        <p class="app-note">Quickly import session files into your mix template.</p>
+        <p class="app-badge" data-badge-app="stemsorter"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="nebulatide2.html" style="--k:#a594ff">
+      <div class="app-shot"><img src="images/photos/nt2-screen-1200.webp" alt="Nebula Tide 2 on a laptop above a keyboard" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/nt-logo.webp" alt=""><h2 class="app-name">Nebula Tide 2</h2></div>
+        <p class="app-note">Endless pads in all twelve keys, with shimmer, your own presets and a drag to the timeline.</p>
+        <p class="app-badge" data-badge-app="nebulatide2"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="performlive.html" style="--k:#8f91ff">
+      <div class="app-shot"><img src="images/photos/performlive-md-1200.webp" alt="A music director running PerformLive beside the stage" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/performlive.webp" alt=""><h2 class="app-name">PerformLive</h2></div>
+        <p class="app-note">Multitrack playback and stem performance for the stage.</p>
+        <p class="app-badge" data-badge-app="performlive"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="/store/package" style="--k:#ffcc33">
+      <div class="app-shot"><img src="images/gen/media-booth-1200.webp" alt="A young engineer mixing a church live stream" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><span class="mark" style="background:var(--k)"></span><h2 class="app-name">Studio Bundle</h2></div>
+        <p class="app-note">A Fender Studio Pro template for your church, four plug-ins and a setup session.</p>
+        <p class="app-badge"></p>
+        <div class="app-foot"><p class="app-price"><b>$250</b></p><p class="app-plats" hidden></p><p class="app-go">See the bundle ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="ambanalog.html" style="--k:#e8a24a">
+      <div class="app-shot"><img src="images/photos/ambanalog-studio-1200.webp" alt="AMB Analog in a warm analog studio" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/analog/icon.svg" alt=""><h2 class="app-name">AMB Analog</h2></div>
+        <p class="app-note">Ten analog processors, each with its own engine and its own presets.</p>
+        <p class="app-badge" data-badge-app="ambanalog"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="ambdigital.html" style="--k:#5aa8ff">
+      <div class="app-shot"><img src="images/photos/ambdigital-suite-1200.webp" alt="AMB Digital in a mastering room" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/digital/icon.svg" alt=""><h2 class="app-name">AMB Digital</h2></div>
+        <p class="app-note">Ten precision tools that draw what they are doing over your audio.</p>
+        <p class="app-badge" data-badge-app="ambdigital"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="secondout.html" style="--k:#3ee08f">
+      <div class="app-shot"><img src="images/photos/secondout-booth-1200.webp" alt="SecondOut in a church media booth" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/secondout-icon.png" alt=""><h2 class="app-name">SecondOut</h2></div>
+        <p class="app-note">One master bus, two independent outputs, for the stream and the room.</p>
+        <p class="app-badge" data-badge-app="secondout"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="afdgate.html" style="--k:#4aa3ff">
+      <div class="app-shot"><img src="images/photos/afdgate-control-1200.webp" alt="AFD Gate on a control room screen" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/afdgate/icon.svg" alt=""><h2 class="app-name">AFD Gate</h2></div>
+        <p class="app-note">A linear-phase gate for close-miked drums that only listens to its own drum.</p>
+        <p class="app-badge" data-badge-app="afdgate"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="pulseroom.html" style="--k:#2fd3e6">
+      <div class="app-shot"><img src="images/photos/pulseroom-studio-1200.webp" alt="PulseRoom in a home studio" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/pulseroom-logo.svg" alt=""><h2 class="app-name">PulseRoom</h2></div>
+        <p class="app-note">Drop a song in and get the tempo, delay times, reverb tails and EQ moves. Free.</p>
+        <p class="app-badge" data-badge-app="pulseroom"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="nebulatide.html" style="--k:#4fe3ff">
+      <div class="app-shot"><img src="images/photos/nt-sanctuary-1200.webp" alt="Nebula Tide on a laptop in a sanctuary" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/nt-logo.webp" alt=""><h2 class="app-name">Nebula Tide</h2></div>
+        <p class="app-note">The original endless drone pads in all twelve keys. Free.</p>
+        <p class="app-badge" data-badge-app="nebulatide"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="alignpro.html" style="--k:#7fd38a">
+      <div class="app-shot"><img src="images/gen/drum-mics-1200.webp" alt="A close-miked drum kit" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/alignpro/icon.svg" alt=""><h2 class="app-name">Align Pro</h2></div>
+        <p class="app-note">Multi-mic time and phase alignment, with a dial for how far to take it.</p>
+        <p class="app-badge" data-badge-app="alignpro"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <a class="app" href="aether.html" style="--k:#9ad8ff">
+      <div class="app-shot"><img src="images/gen/vocalist-air-1200.webp" alt="A singer on stage in golden light" loading="lazy"></div>
+      <div class="app-body">
+        <div class="app-id"><img src="images/apps/aether/icon.svg" alt=""><h2 class="app-name">AETHER</h2></div>
+        <p class="app-note">A dynamic air exciter you can aim at the centre or the sides.</p>
+        <p class="app-badge" data-badge-app="aether"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go">Learn more ›</p></div>
+      </div>
+    </a>
+    <div class="app nolink" style="--k:#f0b35a">
+      <div class="app-shot"><img src="images/gen/choir-rehearsal-1200.webp" alt="A choir rehearsing with phones and tablets" loading="lazy">
+        <span class="soon"><span>Coming soon</span></span></div>
+      <div class="app-body">
+        <div class="app-id"><span class="mark" style="background:var(--k)"></span><h2 class="app-name">HarmonieMD</h2></div>
+        <p class="app-note">The rehearsal studio for choirs. Every singer gets their own part.</p>
+        <p class="app-badge"></p>
+        <div class="app-foot"><p class="app-price"></p><p class="app-plats" hidden></p><p class="app-go"></p></div>
+      </div>
+    </div>
+</section>
+
+<div class="facts rise">
+  <div><b>2</b><span>computers on every licence, moved by you</span></div>
+  <div><b>1</b><span>Hub that installs and updates everything</span></div>
+  <div><b>30</b><span>days of offline use between licence check-ins</span></div>
+  <div><b>0</b><span>subscriptions. You buy it once</span></div>
 </div>
-<span class="aurora" aria-hidden="true"></span>
 
-<main id="main"><div class="wrap">
+<section class="band rise" id="access">
+  <img src="images/gen/hub-desk-1200.webp" srcset="images/gen/hub-desk-1200.webp 1200w, images/gen/hub-desk.webp 2400w" sizes="100vw"
+       width="2400" height="1340" loading="lazy" alt="A home studio desk at dusk with an app launcher on the screen">
+  <div class="in"><div class="copy">
+    <p class="kick">Amanorsac Hub</p>
+    <h2>One Hub. Every App.</h2>
+    <p>Every Amanorsac app installs through Amanorsac Hub. Sign in once with your free account and the Hub downloads, activates and keeps your apps up to date, free ones and bought ones alike, from one place.</p>
+    <div class="hub-wrap" data-hub-get style="margin:18px 0 8px"></div>
+    <p><a class="more" href="/hub.html">About the Hub</a> &nbsp; <a class="more" href="about.html#contact">Questions? Get in touch</a></p>
+  </div></div>
+</section>
 
-  <header class="marquee">
-    <p class="suite">A suite of</p>
-    <h1>Powerful audio apps</h1>
-    <p class="said">Built in the studio, not in a product meeting. Open it and you&rsquo;ll know what to do.</p>
-    <div class="hairline"></div><div class="glowdot"></div>
-  </header>
+</main>
 
-  <!-- shown by site-auth.js only when someone is signed in -->
-  <p class="mine" data-auth-banner>
-    <span>Signed in as <b data-auth-name></b> — your license keys, devices and downloads are in one place.</span>
-    <a href="/my-apps.html">Open My Apps <span aria-hidden="true">→</span></a>
-  </p>
-
-  <!-- Four columns, four doors. Each app's own mark, its own colour, and
-       a real capture of the thing running. -->
-  <!-- filled by assets/promo.js while a sale is on, empty otherwise -->
-  <div data-sale-banner></div>
-
-  <section id="store" class="shelf" aria-label="The apps">
-    <a class="app" href="chordlight88.html" style="--k:#9A7CFF">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#241C48 0%,#171230 58%,#0B0918 100%)">
-          <!-- Chordlight: the notes that are sounding, lit over the keybed -->
-          <svg viewBox="0 0 24 24">
-            <rect x="2"   y="14.5" width="2.4" height="4"    rx="1.2" fill="#9A7CFF" opacity=".34"/>
-            <rect x="5.6" y="9"    width="2.4" height="9.5"  rx="1.2" fill="#9A7CFF" opacity=".95"/>
-            <rect x="9.2" y="11.5" width="2.4" height="7"    rx="1.2" fill="#9A7CFF" opacity=".34"/>
-            <rect x="12.8" y="5.5" width="2.4" height="13"   rx="1.2" fill="#C4B0FF"/>
-            <rect x="16.4" y="12.5" width="2.4" height="6"   rx="1.2" fill="#9A7CFF" opacity=".34"/>
-            <rect x="20"  y="8"    width="2.4" height="10.5" rx="1.2" fill="#9A7CFF" opacity=".95"/>
-            <rect x="2" y="20.4" width="20.4" height="1.6" rx=".8" fill="#9A7CFF" opacity=".5"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Chord<em>light 88</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/chordlight88/notes.webp" alt="Chordlight 88: eighty-eight keys with six notes lit, named Fmaj9 and numbered 4maj9 in the key of C" loading="lazy" onerror="this.remove()">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Chord, number and sol-fa, live on 88 keys. 2.0 records the take and draws the lesson video.</p>
-      <p class="app-badge" data-badge-app="chordlight88"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="stemsorter.html" style="--k:#2AD2E8">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 6%,#0C3742 0%,#07222B 58%,#040F14 100%)">
-          <!-- Stem Sorter: files falling into lanes -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
-            <path d="M12 4v16M6 8v8M18 8v8" stroke="#2AD2E8" opacity=".85"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Stem <em>Sorter</em></h2>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C2A33 0%,#07161C 60%,#050C10 100%)"><img src="images/apps/stemsorter/18-review-first.webp" alt="Stem Sorter matching thirty-nine channels to the tracks of a template" loading="lazy" onerror="this.remove()">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Quickly import session files into your mix template.</p>
-      <p class="app-badge"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="nebulatide2.html" style="--k:#9D8BFA">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true" style="padding:0;overflow:hidden">
-          <img src="images/apps/nt-logo.webp" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
-        </span>
-        <span>
-          <h2 class="app-name">Nebula <em>Tide 2</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/nt2/stage.webp" alt="Nebula Tide 2: the stage, with the shimmer knob and the twelve keys in orbit" loading="lazy"></div>
-      <p class="app-note">Drone pads with shimmer, presets and drag-to-timeline.</p>
-      <p class="app-badge" data-badge-app="nebulatide2"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="performlive.html" style="--k:#7B7DF7">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 78% 0%,#2B2260 0%,#140F30 58%,#0B0820 100%)">
-          <!-- PerformLive: the pad grid, one pad live -->
-          <svg viewBox="0 0 24 24"><g fill="#7B7DF7" opacity=".34">
-            <rect x="1" y="1" width="9" height="9" rx="2.4"/><rect x="14" y="1" width="9" height="9" rx="2.4"/>
-            <rect x="1" y="14" width="9" height="9" rx="2.4"/></g>
-            <rect x="14" y="14" width="9" height="9" rx="2.4" fill="#9B9DFF"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Perform<em>Live</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/performlive.webp" alt="PerformLive: stem decks, scenes and warm pads laid out for a service" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multitrack playback and stem performance for the stage.</p>
-      <p class="app-badge"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go" aria-hidden="true"></p>
-    </a>
-
-    <a class="app" href="/store/package" style="--k:#FFCC00">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 6%,#4A3A08 0%,#2B2208 58%,#0F0B03 100%)">
-          <!-- The Studio Bundle: four blocks and a fader -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1.8" fill="#FFCC00" opacity=".9"/>
-            <rect x="14" y="3" width="7" height="7" rx="1.8" fill="#FFCC00" opacity=".55"/>
-            <rect x="3" y="14" width="7" height="7" rx="1.8" fill="#FFCC00" opacity=".55"/>
-            <path d="M17.5 13v8M15 17h5" stroke="#FFCC00" stroke-width="1.8"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Studio <em>Bundle</em></h2>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#3A2E08 0%,#1E1805 60%,#0B0903 100%)">
-        <span class="soon"><span>Template + 4 plugins + setup</span></span></div>
-      <p class="app-note">A Fender Studio Pro template, four plugins, and a setup session.</p>
-      <p class="app-badge"></p>
-      <p class="app-price"><b>$250</b></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">See the bundle →</p>
-    </a>
-
-    <a class="app" href="secondout.html" style="--k:#3fe083">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 0%,#12351F 0%,#0A1F14 58%,#05100B 100%)">
-          <!-- SecondOut: one source splitting into an unchanged path and a new one -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <rect x="1" y="9" width="7" height="6" rx="1.6" fill="#3fe083" opacity=".9"/>
-            <path d="M8 12 H12 M12 12 V6 H17 M12 12 V18 H17" stroke="#3fe083" stroke-width="1.8" opacity=".5"/>
-            <rect x="17" y="3" width="6" height="6" rx="1.6" fill="#3fe083" opacity=".28"/>
-            <rect x="17" y="15" width="6" height="6" rx="1.6" fill="#3fe083" opacity=".95"/>
-          </svg>
-        </span>
-        <span>
-          <h2 class="app-name">Second<em>Out</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/secondout-screenshot.png" alt="SecondOut plugin window showing an active stream to a second output device, buffer health, and drift correction" loading="lazy"></div>
-      <p class="app-note">Mirrors your master bus to a second device.</p>
-      <p class="app-badge" data-badge-app="secondout"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="pulseroom.html" style="--k:#F25C7F">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 15% 8%,#1D2230 0%,#0F1218 62%,#08090D 100%)">
-          <!-- PulseRoom: its own five-accent equalizer -->
-          <svg viewBox="0 0 24 24">
-            <rect x="1"    y="8"   width="3.4" height="8"  rx="1.7" fill="#3fd3e4"/>
-            <rect x="6.15" y="4.5" width="3.4" height="15" rx="1.7" fill="#a48bfa"/>
-            <rect x="11.3" y="1.5" width="3.4" height="21" rx="1.7" fill="#f2b13c"/>
-            <rect x="16.45" y="6"  width="3.4" height="12" rx="1.7" fill="#f25c7f"/>
-            <rect x="21.6" y="9.5" width="2.4" height="5"  rx="1.2" fill="#4fd58f"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Pulse<em>Room</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/S6-eq-cheat-sheet.webp" alt="PulseRoom: the EQ cheat sheet, boost and cut zones painted across the spectrum" loading="lazy"></div>
-      <p class="app-note">Drop a song in, get tempo, delay, reverb and EQ.</p>
-      <p class="app-badge" data-badge-app="pulseroom"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="nebulatide.html" style="--k:#4FE3FF">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 140% at 50% 118%,#0A3B54 0%,#04283F 46%,#020C16 100%)">
-          <!-- Nebula Tide: a star over the tide -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2">
-            <path d="M12 1.5c.6 3.4 1.6 4.4 5 5-3.4.6-4.4 1.6-5 5-.6-3.4-1.6-4.4-5-5 3.4-.6 4.4-1.6 5-5z" fill="#BDF3FF" stroke="none"/>
-            <path d="M2 16.5c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#4FE3FF" opacity=".9"/>
-            <path d="M2 21c2.5-2 5-2 7.5 0s5 2 7.5 0 3.5-1.3 5-.4" stroke="#16B8D8" opacity=".6"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Nebula <em>Tide</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/nt-idle.webp" alt="Nebula Tide: a glowing pad on stage with the twelve key planets in orbit below" loading="lazy"></div>
-      <p class="app-note">Endless drone pads in all twelve keys.</p>
-      <!-- filled in by assets/app-reviews.js; empty until there is a
-           real number, so a brand-new app shows nothing rather than
-           a zero -->
-      <p class="app-badge" data-badge-app="nebulatide"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="ambanalog.html" style="--k:#D4A24C">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#3A2A12 0%,#211708 58%,#0E0A05 100%)">
-          <!-- AMB Analog: a rack of machines -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <rect x="2" y="3.5" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6"/>
-            <rect x="2" y="9.6" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6" opacity=".72"/>
-            <rect x="2" y="15.7" width="20" height="5" rx="1.6" stroke="#D4A24C" stroke-width="1.6" opacity=".5"/>
-            <circle cx="6" cy="6" r="1.2" fill="#D4A24C" stroke="none"/>
-            <circle cx="6" cy="12.1" r="1.2" fill="#D4A24C" stroke="none" opacity=".72"/>
-            <circle cx="6" cy="18.2" r="1.2" fill="#D4A24C" stroke="none" opacity=".5"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AMB <em>Analog</em></h2>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#2A1E0C 0%,#181005 60%,#0B0703 100%)"><img src="images/apps/analog/A01.webp" alt="Heritage EQ, the five-band equaliser of the AMB Analog bundle" loading="lazy" onerror="this.remove()">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Ten analog processors, each with its own engine.</p>
-      <p class="app-badge" data-badge-app="ambanalog"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="ambdigital.html" style="--k:#3B82F6">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#0F2A4A 0%,#08172B 58%,#04090F 100%)">
-          <!-- AMB Digital: a spectrum with a curve drawn over it -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 17.5h18" stroke="#3B82F6" stroke-width="1.4" opacity=".5"/>
-            <path d="M3 15c3-.5 4-6 7-6s4 4 6 4 3-3 5-3" stroke="#3B82F6" stroke-width="1.8"/>
-            <path d="M5 17.5v-3M9 17.5v-6M13 17.5v-4M17 17.5v-5M21 17.5v-4" stroke="#3B82F6" stroke-width="1.4" opacity=".45"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AMB <em>Digital</em></h2>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C213A 0%,#07131F 60%,#03070C 100%)"><img src="images/apps/digital/prism-eq.png" alt="Prism EQ, the precision equaliser of the AMB Digital bundle" loading="lazy" onerror="this.remove()">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Ten precision tools that show you what they do.</p>
-      <p class="app-badge" data-badge-app="ambdigital"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="alignpro.html" style="--k:#2E9BF0">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 6%,#10314C 0%,#0A1C2C 58%,#050B12 100%)">
-          <!-- Align Pro: two arrivals brought onto one instant -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <circle cx="12" cy="12" r="9.2" stroke="#2E9BF0" stroke-width="1.6" opacity=".45"/>
-            <circle cx="12" cy="12" r="4.4" stroke="#2E9BF0" stroke-width="1.6"/>
-            <path d="M12 1.6v4.2M12 18.2v4.2M1.6 12h4.2M18.2 12h4.2" stroke="#2E9BF0" stroke-width="1.7"/>
-            <circle cx="12" cy="12" r="1.7" fill="#4ADE80" stroke="none"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Align <em>Pro</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/alignpro/auto.png" alt="Align Pro: eight drum mics grouped into four sources, correlation 0.32 before and 0.96 after" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">Multi-mic time and phase alignment, with a dial.</p>
-      <p class="app-badge" data-badge-app="alignpro"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="afdgate.html" style="--k:#4A8BF0">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#16233B 0%,#0C1626 58%,#060B13 100%)">
-          <!-- AFD Gate: the band that listens, and the band that moves -->
-          <svg viewBox="0 0 24 24">
-            <rect x="4" y="5.5" width="16" height="4.4" rx="2.2" fill="#4A8BF0"/>
-            <rect x="7" y="14.1" width="13" height="4.4" rx="2.2" fill="#C9A227" opacity=".92"/>
-            <path d="M2 3.2v17.6" stroke="#7387A0" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AFD <em>Gate</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/apps/afdgate/ui.webp" alt="AFD Gate: the detector trace above the trigger and gated band selectors" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">A linear-phase gate for close-miked drums.</p>
-      <p class="app-badge" data-badge-app="afdgate"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <a class="app" href="aether.html" style="--k:#35E0F0">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 50% 4%,#123A44 0%,#0A222B 58%,#070E14 100%)">
-          <!-- AETHER: the air shelf it draws -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round">
-            <path d="M1.5 17.5 H10 C14.5 17.5 14.5 7 19 6.5 H22.5" stroke="#35E0F0" stroke-width="2.2"/>
-            <path d="M1.5 17.5 H22.5" stroke="#5B6B78" stroke-width="1.1" opacity=".8"/>
-            <circle cx="19" cy="6.5" r="2.1" fill="#A9F4FA" stroke="none"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">AE<em>THER</em></h2>
-        </span>
-      </div>
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0E313A 0%,#08191F 60%,#050B0F 100%)"><img src="images/apps/aether/ui.webp" alt="AETHER's interface: analyser, presence and air knobs, glow, guard and focus" loading="lazy" onerror="this.remove()"></div>
-      <p class="app-note">A dynamic air exciter you can aim.</p>
-      <p class="app-badge" data-badge-app="aether"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go">Explore →</p>
-    </a>
-
-    <div class="app nolink" style="--k:#3ED598">
-      <div class="app-id">
-        <span class="mark" aria-hidden="true"
-              style="background:radial-gradient(130% 130% at 20% 0%,#123B2E 0%,#0A1F19 58%,#06110D 100%)">
-          <!-- HarmonieMD: three harmony lanes -->
-          <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-width="2.4">
-            <path d="M2 5h20" stroke="#7BE3B4" opacity=".45"/>
-            <path d="M2 12h20" stroke="#3ED598"/>
-            <path d="M2 19h20" stroke="#7BE3B4" opacity=".45"/>
-            <circle cx="7" cy="5" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/>
-            <circle cx="15" cy="12" r="2.9" fill="#3ED598" stroke="none"/>
-            <circle cx="10" cy="19" r="2.6" fill="#7BE3B4" stroke="none" opacity=".8"/></svg>
-        </span>
-        <span>
-          <h2 class="app-name">Harmonie<em>MD</em></h2>
-        </span>
-      </div>
-      <div class="app-shot"><img src="images/HD-04-md-editor.webp" alt="HarmonieMD: the multi-track editor with soprano, alto and tenor lanes under the song" loading="lazy">
-        <span class="soon"><span>Coming soon</span></span></div>
-      <p class="app-note">The rehearsal studio for choirs.</p>
-      <p class="app-badge"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go" aria-hidden="true"></p>
+<footer class="sfoot">
+  <div class="cols">
+    <div class="sf-brand">
+      <img src="/images/logo-onDark.svg" alt="Amanorsac Studio">
+      <p>Amanorsac Studio. Mixing, mastering and music software from a working studio.</p>
+      <p>Charlottesville, Virginia, and remote worldwide.</p>
+      <div class="social" id="social-icons"></div>
     </div>
-
-      <div class="app-shot" style="background:radial-gradient(120% 120% at 50% 0%,#0C2A33 0%,#07161C 60%,#050C10 100%)">
-        <span class="soon"><span>Something big coming</span></span></div>
-      <p class="app-note">Something the studio has been building.</p>
-      <p class="app-badge"></p>
-      <p class="app-price"></p>
-      <p class="app-plats" hidden></p>
-      <p class="app-go" aria-hidden="true"></p>
-    </div>
-
-  </section>
-
-  <!-- What is true of all four, so it does not need saying four times. -->
-  <div class="traits">
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>
-      <b>Proven on Sundays</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6M8 5v14M12 8v8M16 4v16M20 10v4"/></svg>
-      <b>Audio engine first</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17" cy="9" r="2.4"/><path d="M15.6 15.2A5 5 0 0 1 21 20"/></svg>
-      <b>Volunteer-ready</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4 4 0 0 1 .6-8 5.5 5.5 0 0 1 10.6 1.4A3.6 3.6 0 0 1 17.5 18z"/></svg>
-      <b>Works offline</b>
-    </div>
-    <div class="trait">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="2.5" width="8" height="19" rx="2"/><path d="M11 18.6h2"/></svg>
-      <b>More on the way</b>
-    </div>
+    <div><h4>Apps</h4><ul>
+      <li><a href="/chordlight88.html">Chordlight 88</a></li>
+      <li><a href="/stemsorter.html">Stem Sorter</a></li>
+      <li><a href="/nebulatide2.html">Nebula Tide 2</a></li>
+      <li><a href="/performlive.html">PerformLive</a></li>
+      <li><a href="/apps.html">All apps</a></li>
+    </ul></div>
+    <div><h4>Plug-ins</h4><ul>
+      <li><a href="/ambanalog.html">AMB Analog</a></li>
+      <li><a href="/ambdigital.html">AMB Digital</a></li>
+      <li><a href="/afdgate.html">AFD Gate</a></li>
+      <li><a href="/secondout.html">SecondOut</a></li>
+      <li><a href="/store/package">Studio Bundle</a></li>
+    </ul></div>
+    <div><h4>Studio</h4><ul>
+      <li><a href="/mixing.html">Mixing and Mastering</a></li>
+      <li><a href="/store/">Store</a></li>
+      <li><a href="/blog.html">Blog</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/about.html#contact">Contact</a></li>
+    </ul></div>
+    <div><h4>Your Account</h4><ul>
+      <li><a href="/client">Sign in</a></li>
+      <li><a href="/my-apps.html">My Apps</a></li>
+      <li><a href="/hub.html">Amanorsac Hub</a></li>
+      <li><a href="/redeem.html">Redeem a code</a></li>
+    </ul></div>
   </div>
-
-  <section id="access" class="close-cta">
-    <h2>One Hub. Every app.</h2>
-    <p>Every Amanorsac app installs through Amanorsac Hub. Sign in once with your free account and the Hub downloads, activates and keeps your apps up to date — free ones and bought ones alike — from one place.</p>
-    <div class="center" data-hub-get style="margin:0 0 8px"></div>
-    <div class="hero-cta" style="justify-content:center;margin-top:28px">
-      <a class="cta ghost" href="about.html#contact">Questions? Get in touch</a>
-      <a class="cta ghost" href="index.html">Back to the studio</a>
-    </div>
-  </section>
-
-  <div class="signoff">
-    <img src="images/logo-dark.svg" alt="Amanorsac Studio">
+  <div class="base">
+    <span>© Amanorsac Studio</span>
+    <a href="/privacy">Privacy</a>
+    <a href="/legal.html">Licence and terms</a>
+    <span>Stephen Amanor Sackey · Virginia, United States</span>
   </div>
-
-</div></main>
-
-<footer>
-  <span><a href="index.html">← Back to the hub</a></span>
-  <span>Stephen Amanor Sackey · Virginia, United States</span>
-  <span><a href="/privacy">Privacy</a> · <a href="legal.html">Licence &amp; terms</a></span>
 </footer>
+
 
 <script>
 /* ===========================================================
@@ -1474,7 +610,7 @@ var CONFIG = {
     spotify:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.42a.75.75 0 0 1-1.03.25c-2.82-1.72-6.36-2.11-10.54-1.16a.75.75 0 1 1-.33-1.46c4.57-1.04 8.5-.59 11.65 1.34.35.22.46.7.25 1.03Zm1.23-2.73a.94.94 0 0 1-1.29.31c-3.23-1.98-8.15-2.56-11.97-1.4a.94.94 0 1 1-.54-1.8c4.37-1.32 9.8-.68 13.5 1.6.44.27.58.85.3 1.29Zm.1-2.84C14.2 8.63 8.02 8.4 4.54 9.46a1.12 1.12 0 1 1-.65-2.15C7.9 6.1 14.72 6.37 18.9 8.85a1.12 1.12 0 1 1-1.16 1.92Z"/></svg>',
     x:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.53 3h3.02l-6.6 7.54L21.75 21h-6.06l-4.75-6.2L5.5 21H2.47l7.06-8.07L2.25 3h6.21l4.29 5.67L17.53 3Zm-1.06 16.2h1.67L7.6 4.7H5.8l10.67 14.5Z"/></svg>'
   };
-  var head=$('#head-social');
+  [$('#head-social'), $('#social-icons')].forEach(function(head){
   if(head){
     var order=['instagram','facebook','tiktok','youtube','spotify','x'];
     order.concat(Object.keys(CONFIG.social).filter(function(k){return order.indexOf(k)<0;}))
@@ -1485,6 +621,7 @@ var CONFIG = {
         a.innerHTML=ICON[k]; head.appendChild(a);
       });
   }
+  });
 
   var soc=$('#social');
   if(soc){
@@ -1549,6 +686,7 @@ var CONFIG = {
 <script src="assets/hub-download.js" defer></script>
 <script src="assets/store-state.js" defer></script>
 <script src="assets/promo.js" defer></script>
+<script src="/assets/product.js" defer></script>
 <script>
 /* A tile says "coming soon" when the catalog says the app is not on
    sale on this site. The badge is added here rather than typed into
