@@ -57,6 +57,15 @@
   "_news16": "something to say beyond \"this exists\".",
   "news": [
     {
+      "id": "stemsorter-0-8",
+      "date": "2026-10-03",
+      "tag": "New",
+      "app": "stemsorter",
+      "title": "Stem Sorter: your files on the right tracks of your template, in your DAW",
+      "body": "Stem Sorter reads the names of your recorded files, works out what each one is, and puts every one on the right track of your template. It builds a session for Studio One and REAPER, an AAF for Logic, Pro Tools, Cubase and Digital Performer, and a numbered folder with a track sheet for Ableton, FL Studio, Bitwig and Reason. The few doubtful matches go to the top in amber; fix them in a click. Normalize by peak, RMS or LUFS while you sort. $35 launch price, normally $70. One licence, two computers.",
+      "url": "stemsorter.html"
+    },
+    {
       "id": "chordlight88-2-0-1",
       "date": "2026-10-01",
       "tag": "Update",
@@ -554,20 +563,20 @@
       }
     },
     "stemsorter": {
-      "name": "Something big coming",
+      "name": "Stem Sorter",
       "vendor": "Amanorsac Studio",
       "kind": "app",
-      "status": "hidden",
-      "tagline": "More when it is ready.",
+      "status": "available",
+      "tagline": "Your files. Your template. Your DAW.",
       "icon": "images/apps/stemsorter-logo.svg",
-      "art": "images/apps/stemsorter/02-analyzed.webp",
-      "page": "apps.html",
+      "art": "images/apps/stemsorter/17-light.webp",
+      "page": "stemsorter.html",
       "color": "#2ad2e8",
       "free": false,
-      "price_cents": 1900,
-      "list_price_cents": 3800,
+      "price_cents": 3500,
+      "list_price_cents": 7000,
       "licensed": true,
-      "version": "0.6.0",
+      "version": "0.8.1",
       "installers": {
         "windows": {
           "key": "stemsorter/StemSorter-Windows.zip",
@@ -587,6 +596,11 @@
           "type": "application/zip",
           "size": "12 MB"
         }
+      },
+      "promo": {
+        "_": "Launch price. Same shape as the site-wide promo; add an ends date for a real countdown, remove the block (and put price_cents back up to list_price_cents) when launch is over.",
+        "percent": 50,
+        "note": "Launch price"
       }
     },
     "ambanalog": {
