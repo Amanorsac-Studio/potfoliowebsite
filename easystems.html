@@ -315,7 +315,7 @@
     <div><h4>Input</h4><p>MP3, WAV, M4A, FLAC, OGG, AAC, and the audio track of MP4 or MOV.</p></div>
     <div><h4>Output</h4><p>WAV, 44.1 or 48 kHz, 16 or 24 bit. Stems as separate files or one mix.</p></div>
     <div><h4>Windows</h4><p>Windows 10 or 11, 64-bit. Any x64 processor, 8 cores or more recommended. Graphics card optional, through DirectML.</p></div>
-    <div><h4>Mac</h4><p>macOS 12 or later. Separate builds for Apple silicon and Intel; the Hub picks the right one.</p></div>
+    <div><h4>Mac</h4><p>macOS 12 or later. Separate builds for Apple silicon and Intel. The Intel build is in My Apps.</p></div>
     <div><h4>Memory</h4><p>8 GB minimum, 16 GB recommended.</p></div>
     <div><h4>Disk</h4><p>300 MB for the app and models, plus about 300 MB for each song kept in the library.</p></div>
     <div><h4>Privacy</h4><p>Audio never leaves the computer. The only network use is downloading the models once.</p></div>
@@ -333,6 +333,16 @@
     <div>It's a best guess from a neural network, not the original multitrack. Dense layered vocals, distorted guitars and thick synths can bleed between stems, and pads and organs often land in Aux rather than Keys.</div></details>
   <details><summary>Can I get just one part?</summary>
     <div>Yes. Solo a stem and export it alone, or switch one off and export everything else as one file.</div></details>
+  <details id="intel"><summary>I have an Intel Mac. Where is my version?</summary>
+    <div>
+      <p>Easy Stems has two Mac builds, one for Apple silicon and one for Intel. Amanorsac Hub installs the Apple silicon one on every Mac for now, so on an Intel Mac get yours from the website instead:</p>
+      <ol>
+        <li>Buy Easy Stems, then open <a href="/my-apps.html">My Apps</a> and sign in with the same account.</li>
+        <li>Find Easy Stems and click <b>Mac (Intel)</b>, under the Install in Amanorsac Hub button.</li>
+        <li>Open the .dmg that downloads and drag Easy Stems into Applications.</li>
+      </ol>
+      <p>Not sure which Mac you have? Open the Apple menu and choose <b>About This Mac</b>. If it says <b>Chip: Apple M1</b> (or M2, M3, M4), you have Apple silicon and the Hub's install is the right one. If it says <b>Processor: Intel</b>, use the Intel build.</p>
+    </div></details>
   <details><summary>Is it a subscription?</summary>
     <div>No. $21 once, for Windows and Mac. It installs and updates through Amanorsac Hub.</div></details>
 </section>
@@ -355,7 +365,8 @@
     <div>
       <h2>Easy Stems</h2>
       <p class="price" data-price>$21</p>
-      <p class="terms">Bought once, for Windows and Mac. It installs through Amanorsac Hub, which picks the right build for your computer, and updates arrive there too.</p>
+      <p class="terms">Bought once, for Windows and Mac. It installs through Amanorsac Hub, and updates arrive there too.</p>
+      <p class="terms"><b>On an Intel Mac?</b> The Hub installs the Apple silicon build on every Mac for now. After you buy, open <a href="/my-apps.html">My Apps</a>, find Easy Stems and click <b>Mac (Intel)</b>. <a href="#intel">How to tell which Mac you have</a>.</p>
       <div class="ctas">
         <button class="btn" data-buy type="button">Buy — $21</button>
         <a class="more" href="#specs">Check the specs</a>
@@ -532,6 +543,10 @@
   }
   lean();
   if (!box) addEventListener('scroll', function(){ requestAnimationFrame(lean); }, { passive: true });
+
+  /* ---- a link to #intel opens that answer ---- */
+  function openIntel(){ if (location.hash === '#intel') { var d = document.getElementById('intel'); if (d) d.open = true; } }
+  openIntel(); addEventListener('hashchange', openIntel);
 
   /* ---- try it: the real screens, switched ---- */
   var SAY = [

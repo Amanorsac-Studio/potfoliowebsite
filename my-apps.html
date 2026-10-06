@@ -148,6 +148,8 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);lin
 .fallback p{margin:0 0 10px}
 .fallback .btn{font-size:13.5px;padding:9px 15px}
 .dlnote{flex-basis:100%;font-size:13px;color:var(--muted);margin:0}
+.intel{flex-basis:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:2px 0 0}
+.intel .btn{font-size:13.5px;padding:9px 15px}
 
 /* the Hub itself, at the top: the one download that needs no account */
 .hubcard{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px 40px;align-items:center;
@@ -429,6 +431,13 @@ footer a:hover{color:var(--accent)}
                   a.platforms.map(platform =>
                     '<button class="btn ghost dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(PLATFORM_LABEL[platform] || platform)+'</button>').join(' ')+
                   '</details>'
+                : '')+
+              /* An app with a separate Intel Mac build: the Hub hands every
+                 Mac the Apple silicon one for now, so say where the Intel
+                 one is instead of leaving it inside "Trouble with the Hub?". */
+              (a.platforms.indexOf('mac-x64') >= 0
+                ? '<p class="intel">On an Intel Mac? The Hub installs the Apple silicon build, so download the Intel one here instead.'+
+                  '<button class="btn ghost dl" type="button" data-app="'+esc(r.app)+'" data-platform="mac-x64">'+DL+'Mac (Intel)</button></p>'
                 : '')+
               '<p class="dlnote"></p></div>'
           : '')+
