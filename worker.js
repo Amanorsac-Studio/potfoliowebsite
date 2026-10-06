@@ -1982,6 +1982,7 @@ const PAGES = [
   ['/about',       'monthly', '0.8'],
   ['/nebulatide2', 'monthly', '0.7'],
   ['/studiobundle','monthly', '0.7'],
+  ['/easystems',  'monthly', '0.7'],
   ['/secondout',   'monthly', '0.7'],
   ['/ambanalog',   'monthly', '0.7'],
   ['/alignpro',    'monthly', '0.7'],

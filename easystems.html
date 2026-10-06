@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Easy Stems | Split any song into its instruments, on your own computer | Amanorsac Studio</title>
+<meta name="description" content="Easy Stems splits any song into drums, bass, guitar, keys, lead vocals, backing vocals and everything else, on your own computer, in one click. Nothing is uploaded. Windows and Mac. Free test build.">
+<link rel="icon" href="/images/logo.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/inter-latin.woff2">
+<link rel="stylesheet" href="/assets/product.css">
+<link rel="stylesheet" href="/assets/shell.css">
+<link rel="stylesheet" href="/assets/site-auth.css">
+<link rel="canonical" href="https://amanorsac.studio/easystems">
+<meta property="og:title" content="Easy Stems">
+<meta property="og:description" content="Any song. Every instrument. Your computer. Six instruments plus lead and backing vocals, split on your own machine.">
+<meta property="og:image" content="https://amanorsac.studio/images/apps/easystems/stems.webp">
+<meta property="og:url" content="https://amanorsac.studio/easystems">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Easy Stems",
+  "url": "https://amanorsac.studio/easystems",
+  "description": "A desktop app that splits a song into drums, bass, guitar, keys, lead vocals, backing vocals and everything else, on the user's own computer.",
+  "operatingSystem": "Windows 10, Windows 11, macOS 12",
+  "applicationCategory": "MultimediaApplication",
+  "softwareVersion": "0.1.7",
+  "image": "https://amanorsac.studio/images/apps/easystems/stems.webp",
+  "author": { "@id": "https://amanorsac.studio/#studio" },
+  "publisher": { "@id": "https://amanorsac.studio/#studio" }
+}
+</script>
+<style>
+:root{--accent:#3d8bff;--accent-ink:#00142e;
+  --s-drums:#e5484d;--s-bass:#e08a2c;--s-guitar:#2fbf5b;--s-keys:#3b82f6;--s-lead:#8b5cf6;--s-back:#e0479e;--s-aux:#8a8f98}
+
+/* the stem mark: seven bars in the stems' own colours */
+.esmark{display:inline-flex;gap:2px;align-items:center;height:20px}
+.esmark i{width:3px;border-radius:2px;display:block}
+.esmark i:nth-child(1){height:9px;background:var(--s-drums)} .esmark i:nth-child(2){height:15px;background:var(--s-bass)}
+.esmark i:nth-child(3){height:20px;background:var(--s-guitar)} .esmark i:nth-child(4){height:13px;background:var(--s-keys)}
+.esmark i:nth-child(5){height:18px;background:var(--s-lead)} .esmark i:nth-child(6){height:11px;background:var(--s-back)}
+.esmark i:nth-child(7){height:7px;background:var(--s-aux)}
+.pbar .pname{display:flex;align-items:center;gap:10px}
+.pbar .pprice{font-weight:500}
+
+/* HERO: the film on a screen that leans back, and stands up as you scroll to it */
+.es-stage{perspective:1600px;padding:clamp(8px,2vh,20px) var(--gut) 0;max-width:1240px;margin:0 auto;position:relative}
+.es-screen{position:relative;transform-origin:50% 100%;
+  transform:rotateX(calc(var(--lean,1) * 24deg)) scale(calc(1 - var(--lean,1) * .12));
+  border-radius:16px;overflow:hidden;background:#05070d;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08),0 50px 120px rgba(0,0,0,.7);will-change:transform}
+.es-screen video,.es-screen img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#05070d}
+.es-glow{position:absolute;left:8%;right:8%;bottom:-6%;height:34%;z-index:-1;filter:blur(60px);opacity:.55;
+  background:linear-gradient(90deg,var(--s-drums),var(--s-bass),var(--s-guitar),var(--s-keys),var(--s-lead),var(--s-back),var(--s-aux))}
+.es-play{position:absolute;right:14px;bottom:14px;z-index:2;font:500 13px/1 var(--body,inherit);color:#fff;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 14px;cursor:pointer}
+.es-play[hidden]{display:none}
+
+/* THE SPLIT: one mix pulls apart into seven lanes */
+.es-split{position:relative;height:230vh}
+.es-split .pin{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;
+  max-width:1180px;margin:0 auto;padding:0 var(--gut)}
+.es-split .copy{text-align:center;margin:0 auto clamp(18px,4vh,40px)}
+.es-split .copy .kick{font-size:15px;font-weight:500;color:var(--accent);margin:0 auto 10px}
+.es-split .copy h2{font-weight:300;font-size:clamp(32px,4.6vw,60px);line-height:1.05;letter-spacing:-.03em;margin:0 0 12px}
+.es-split .copy p{color:var(--muted);margin:0 auto;max-width:52ch;font-size:17px}
+.lanes{position:relative;height:clamp(320px,52vh,520px)}
+.lane{position:absolute;left:0;right:0;top:50%;height:calc(100% / 7 - 6px);display:grid;grid-template-columns:150px 1fr;align-items:center;gap:14px;
+  transform:translateY(calc(-50% + var(--p,0) * var(--off) * 1px));transition:none}
+.lane .nm{font-size:14px;font-weight:500;color:#e8e8ed;display:flex;align-items:center;gap:8px;opacity:var(--p,0)}
+.lane .nm i{width:10px;height:10px;border-radius:3px;background:var(--c);display:block}
+.lane svg{width:100%;height:100%;display:block}
+.lane svg rect{fill:color-mix(in srgb,var(--c) calc(var(--p,0) * 100%),#8d9099)}
+.lane svg{opacity:calc(.28 + var(--p,0) * .72)}
+@media (max-width:640px){ .lane{grid-template-columns:96px 1fr;gap:8px} .lane .nm{font-size:12px} .es-split{height:200vh} }
+
+/* TRY IT: real screenshots, switched like the app switches */
+.es-try{max-width:1240px;margin:0 auto;padding:0 var(--gut)}
+.es-try .tabs2{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin:0 0 22px}
+.es-try .tabs2 button{font:500 14.5px/1 inherit;font-family:inherit;color:var(--muted);background:#121216;border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;padding:11px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.es-try .tabs2 button i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--accent))}
+.es-try .tabs2 button[aria-pressed="true"]{color:#fff;border-color:var(--c,var(--accent));background:color-mix(in srgb,var(--c,var(--accent)) 16%,#121216)}
+.es-try .view{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 30px 90px rgba(0,0,0,.6);aspect-ratio:16/10;background:#05070d}
+.es-try .view img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .45s ease}
+.es-try .view img.on{opacity:1}
+.es-try .say{text-align:center;color:var(--muted);font-size:15.5px;margin:16px auto 0;max-width:62ch;min-height:2.6em}
+
+/* the three proof points, as numbers */
+.facts.three{grid-template-columns:repeat(3,1fr)}
+@media (max-width:760px){ .facts.three{grid-template-columns:1fr} }
+
+/* steps */
+.es-steps{counter-reset:s}
+.es-steps .item h3::before{counter-increment:s;content:counter(s);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;
+  margin-right:10px;font-size:14px;color:var(--accent-ink);background:var(--accent);vertical-align:2px}
+
+@media (prefers-reduced-motion:reduce){
+  .es-screen{transform:none!important}
+  .es-split{height:auto} .es-split .pin{position:static;height:auto;padding-top:64px;padding-bottom:64px}
+  .lane{--p:1!important}
+}
+</style>
+</head>
+<body data-page="easystems">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="gnav">
+  <a class="logo" href="/index.html"><img src="/images/logo-onDark.svg" alt="Amanorsac Studio"></a>
+  <nav aria-label="Site">
+    <a href="/apps.html" aria-current="page">Apps</a>
+    <a href="/mixing.html">Mixing</a>
+    <a href="/store/">Store</a>
+    <a href="/blog.html">Blog</a>
+    <a href="/about.html">About</a>
+    <a href="/client">Clients</a>
+  </nav>
+  <span class="social" id="head-social"></span>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client">Sign in</a></span>
+</header>
+<nav class="gnav-rooms" aria-label="Rooms">
+  <a href="/apps.html" aria-current="page">Apps</a><a href="/mixing.html">Mixing</a><a href="/store/">Store</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/client">Clients</a>
+</nav>
+
+<div class="pbar">
+  <a class="pname" href="#main"><span class="esmark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>Easy Stems</a>
+  <nav class="tabs" aria-label="On this page">
+    <a href="#overview">Overview</a>
+    <a href="#split">The Split</a>
+    <a href="#try">Try It</a>
+    <a href="#features">Features</a>
+    <a href="#compare">Compare</a>
+    <a href="#specs">Tech Specs</a>
+  </nav>
+  <span class="pprice">Free test build</span>
+  <a class="btn bbtn" href="#join">Join the Test</a>
+</div>
+
+<main id="main">
+
+<section class="hero" style="padding-bottom:0">
+  <div class="wrap">
+    <p class="kick">New · Windows and Mac · Free test build</p>
+    <h1>Easy Stems</h1>
+    <p class="tag">Any song. Every instrument. Your computer.</p>
+    <p class="intro">Drop a track and Easy Stems hands you the drums, bass, guitar, keys, lead vocals, backing vocals and everything else as separate tracks. Nothing is uploaded. Nothing to learn.</p>
+    <div class="ctas">
+      <a class="btn" href="#join">Join the Test</a>
+      <a class="more" href="#split">See how it splits</a>
+    </div>
+  </div>
+  <div class="es-stage">
+    <div class="es-glow" aria-hidden="true"></div>
+    <div class="es-screen" id="es-screen">
+      <video id="es-film" muted loop playsinline autoplay preload="metadata" disablepictureinpicture disableremoteplayback
+             poster="images/apps/easystems/stems.webp"
+             aria-label="Easy Stems at work: a song is dropped in, splits into seven stems, the lead vocal is switched off, the bass is soloed and the mix is exported">
+        <source src="video/easystems-promo.mp4" type="video/mp4">
+      </video>
+      <button class="es-play" id="es-play" type="button" hidden>Play the film</button>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="overview">
+  <div class="wrap">
+    <h2>Every Song Is a Band</h2>
+    <p>Stems are the raw material of music work, and almost nobody has them. Labels rarely release them, and when they do it's years late and for a handful of hits. So everyone who wants the vocal, the drums or the bass out of a finished record has had three bad options: upload it to a stem website, buy a repair suite that costs hundreds, or learn to drive a command-line tool.</p>
+    <p><b>Easy Stems puts the best open models behind one button on your desktop.</b> The audio stays on your machine, and it goes further than the usual four stems: six instruments, with the lead vocal lifted off the backing vocals.</p>
+  </div>
+</section>
+
+<div class="facts three rise">
+  <div><b>6</b><span>instruments, not four. Guitar and keys come out on their own.</span></div>
+  <div><b>2</b><span>vocals, apart. Keep the harmonies, lose the singer.</span></div>
+  <div><b>0</b><span>bytes uploaded. Unreleased material never leaves the room.</span></div>
+</div>
+
+<section class="es-split" id="split" aria-label="One mix, pulled apart into seven stems">
+  <div class="pin">
+    <div class="copy">
+      <p class="kick">The Split</p>
+      <h2>One File In. Seven Tracks Out.</h2>
+      <p>Keep scrolling and pull the mix apart, the way Easy Stems does.</p>
+    </div>
+    <div class="lanes" id="lanes"></div>
+  </div>
+</section>
+
+<section class="block" id="try">
+  <div class="wrap">
+    <p class="kick">Try It</p>
+    <h2>Hear It as You Build It</h2>
+    <p>Every stem plays live. Switch one off, solo another or ride a level while the song runs, with no waiting and no re-render. These are the real screens.</p>
+  </div>
+</section>
+
+<div class="es-try rise">
+  <div class="tabs2" role="group" aria-label="Show the mixer">
+    <button type="button" data-v="0" aria-pressed="true" style="--c:var(--accent)"><i></i>Full band</button>
+    <button type="button" data-v="1" aria-pressed="false" style="--c:var(--s-lead)"><i></i>Lead vocal off</button>
+    <button type="button" data-v="2" aria-pressed="false" style="--c:var(--s-bass)"><i></i>Bass solo</button>
+  </div>
+  <div class="view">
+    <img class="on" src="images/apps/easystems/stems-800.webp" srcset="images/apps/easystems/stems-800.webp 800w, images/apps/easystems/stems.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" width="1600" height="1000" loading="lazy" alt="Easy Stems playing a song with all seven stems on: drums, bass, guitar, keys, lead vocals, backing vocals and aux">
+    <img src="images/apps/easystems/no-lead-800.webp" srcset="images/apps/easystems/no-lead-800.webp 800w, images/apps/easystems/no-lead.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" width="1600" height="1000" loading="lazy" alt="The same song with the lead vocal switched off, drums up 3 dB and aux down 6 dB">
+    <img src="images/apps/easystems/solo-bass-800.webp" srcset="images/apps/easystems/solo-bass-800.webp 800w, images/apps/easystems/solo-bass.webp 1600w" sizes="(max-width:1240px) 100vw, 1200px" width="1600" height="1000" loading="lazy" alt="The same song with only the bass playing">
+  </div>
+  <p class="say" id="es-say" aria-live="polite">Seven stems, each with its own switch, level, solo and headphone button.</p>
+</div>
+
+<section class="block" id="features">
+  <div class="wrap">
+    <p class="kick">Features</p>
+    <h2>Drop a Song, Get the Band</h2>
+    <p>Everything here is in the test build today.</p>
+  </div>
+</section>
+
+<div class="split rise">
+  <div class="media"><img src="images/apps/easystems/quick-800.webp" srcset="images/apps/easystems/quick-800.webp 800w, images/apps/easystems/quick.webp 1600w" sizes="(max-width:900px) 100vw, 640px" width="1600" height="1000" loading="lazy" alt="The Easy Stems home screen with a drop zone, the Quick and Full cards, and the library of songs already split"></div>
+  <div>
+    <p class="kick">Quick or Full</p>
+    <h3>Quick When You're in a Hurry</h3>
+    <p>Quick runs a lighter model that knows vocals and everything else, several times faster. Pick it for an acapella or a backing track.</p>
+    <p>Full runs the six-instrument model when you want the whole band. Either way, the song starts playing the moment you drop it and carries on from the same spot when the stems arrive.</p>
+  </div>
+</div>
+
+<div class="split flip rise">
+  <div class="media"><img src="images/apps/easystems/stem-menu-800.webp" srcset="images/apps/easystems/stem-menu-800.webp 800w, images/apps/easystems/stem-menu.webp 1600w" sizes="(max-width:900px) 100vw, 640px" width="1600" height="1000" loading="lazy" alt="A stem's menu open: save this stem, export only lead vocals, export everything but lead vocals, reset level"></div>
+  <div>
+    <p class="kick">Just One Part, or All but One</p>
+    <h3>The Part You Came For</h3>
+    <p>Solo a stem and export it alone. Switch one off and export everything else as one file. An instrumental with no lead vocal, a drumless practice mix or a bass-only track is two clicks.</p>
+  </div>
+</div>
+
+<div class="grid rise">
+  <div class="item">
+    <img src="images/apps/easystems/export-800.webp" width="800" height="500" loading="lazy" alt="The export panel: selected stems or one mix, WAV, sample rate, bit depth and output folder">
+    <h3>Studio-Grade Files</h3>
+    <p>Selected stems as separate files, or everything you can hear as one mix. WAV at 44.1 or 48 kHz, 16 or 24 bit, named and foldered, ready to drag into any DAW.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/easystems/batch-800.webp" width="800" height="500" loading="lazy" alt="Batch processing: a queue of songs, one done, one separating, two waiting">
+    <h3>A Folder at a Time</h3>
+    <p>Queue a whole set in Batch, walk away, and come back to stems for every song.</p>
+  </div>
+  <div class="item">
+    <img src="images/apps/easystems/settings-800.webp" width="800" height="500" loading="lazy" alt="Settings: output folder, sample rate, bit depth, separation mode, lead and backing split, graphics card, models and storage">
+    <h3>Separate Once</h3>
+    <p>Every song you split stays in your library and reopens instantly. On Windows, a graphics card makes it faster, and it falls back to the processor on its own.</p>
+  </div>
+</div>
+
+<section class="block" id="compare">
+  <div class="wrap">
+    <p class="kick">How It Compares</p>
+    <h2>Local, Six Stems, and the Vocals Apart</h2>
+    <p>Repair suites are repair tools with a separator in them. Stem websites are a separator with your audio on their servers. Easy Stems is a separator built for musicians, on your own machine, with the whole band in it.</p>
+  </div>
+</section>
+
+<div class="compare rise">
+  <table>
+    <thead><tr><th></th><th class="us">Easy Stems</th><th>Stem websites</th><th>Repair suites</th></tr></thead>
+    <tbody>
+      <tr><th>Where your audio goes</th><td class="us">Stays on your computer</td><td>Uploaded to their servers</td><td>Stays on your computer</td></tr>
+      <tr><th>Stems</th><td class="us">Six: drums, bass, guitar, keys, vocals, aux</td><td>Usually four</td><td>Usually four</td></tr>
+      <tr><th>Lead and backing vocals apart</th><td class="us">Yes</td><td>Rarely</td><td>No</td></tr>
+      <tr><th>Live mixer while it plays</th><td class="us">Mute, solo and level on every stem</td><td>Preview only</td><td>Inside the suite</td></tr>
+      <tr><th>Quick vocals-and-instrumental mode</th><td class="us">Yes</td><td>Yes</td><td>No</td></tr>
+      <tr><th>Batch</th><td class="us">Yes</td><td>On paid tiers</td><td>Through the host app</td></tr>
+      <tr><th>Price</th><td class="us">Free while testing, then one payment</td><td>Monthly, or per minute of audio</td><td>Part of a suite, hundreds of dollars</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<section class="block">
+  <div class="wrap">
+    <p class="kick">How It Works</p>
+    <h2>Three Steps</h2>
+  </div>
+</section>
+
+<div class="grid es-steps rise" style="padding-top:0">
+  <div class="item"><h3>Drop a song</h3><p>MP3, WAV, M4A, FLAC, OGG, AAC, or the sound from an MP4 or MOV video. It starts playing straight away.</p></div>
+  <div class="item"><h3>Pick Quick or Full</h3><p>Vocals and the rest in a hurry, or the whole band taken apart.</p></div>
+  <div class="item"><h3>Mute, solo, level, export</h3><p>Build the mix you need while it plays, then save the stems or one file.</p></div>
+</div>
+
+<section class="paper specs" id="specs">
+  <h2 class="sec-h">Tech Specs</h2>
+  <div class="spec">
+    <div><h4>Version</h4><p>0.1.7, test build.</p></div>
+    <div><h4>Stems</h4><p>Drums, bass, guitar, keys, lead vocals, backing vocals and aux (everything else).</p></div>
+    <div><h4>Models</h4><p>Meta's HT-Demucs for Full. Ultimate Vocal Remover's MDX-Net models for Quick and for the lead and backing split.</p></div>
+    <div><h4>Model Downloads</h4><p>Once: 136 MB for Full, 53 MB for Quick, 53 MB for the vocal split.</p></div>
+    <div><h4>Input</h4><p>MP3, WAV, M4A, FLAC, OGG, AAC, and the audio track of MP4 or MOV.</p></div>
+    <div><h4>Output</h4><p>WAV, 44.1 or 48 kHz, 16 or 24 bit. Stems as separate files or one mix.</p></div>
+    <div><h4>Windows</h4><p>Windows 10 or 11, 64-bit. Any x64 processor, 8 cores or more recommended. Graphics card optional, through DirectML.</p></div>
+    <div><h4>Mac</h4><p>macOS 12 or later. Apple silicon (native) or Intel.</p></div>
+    <div><h4>Memory</h4><p>8 GB minimum, 16 GB recommended.</p></div>
+    <div><h4>Disk</h4><p>300 MB for the app and models, plus about 300 MB for each song kept in the library.</p></div>
+    <div><h4>Privacy</h4><p>Audio never leaves the computer. The only network use is downloading the models once.</p></div>
+    <div><h4>Files</h4><p>Documents / Amanorsac Studio / Easy Stems, a folder per song, unless you pick somewhere else.</p></div>
+  </div>
+</section>
+
+<section class="faq">
+  <h2 class="sec-h">Questions</h2>
+  <details><summary>Does my audio go anywhere?</summary>
+    <div>No. Separation runs on your computer. The only network use is downloading the models once.</div></details>
+  <details><summary>How long does a song take?</summary>
+    <div>Full mode is a few minutes per song on a processor, and less with a graphics card. Quick mode is several times faster. A song you've split before opens instantly.</div></details>
+  <details><summary>How clean is the split?</summary>
+    <div>It's a best guess from a neural network, not the original multitrack. Dense layered vocals, distorted guitars and thick synths can bleed between stems, and pads and organs often land in Aux rather than Keys.</div></details>
+  <details><summary>Can I get just one part?</summary>
+    <div>Yes. Solo a stem and export it alone, or switch one off and export everything else as one file.</div></details>
+  <details><summary>Is it a subscription?</summary>
+    <div>No. It's free while the test build runs. After that it will be a one-time licence, announced here first.</div></details>
+</section>
+
+<section class="band top rise" id="join">
+  <img src="images/gen/producer-desk-1200.webp" srcset="images/gen/producer-desk-1200.webp 1200w, images/gen/producer-desk.webp 2400w" sizes="100vw" width="2400" height="1340" loading="lazy"
+       alt="A producer at a studio desk with headphones on, working through a session">
+  <div class="in"><div class="copy">
+    <p class="kick">Free Test Build</p>
+    <h2>Take Your Favourite Record Apart Tonight</h2>
+    <p>Easy Stems is in testing on Windows and Mac. Message the studio and you'll get the build, free, in exchange for telling us what breaks and what you'd change.</p>
+    <div class="ctas">
+      <a class="btn" href="https://wa.me/233246858947?text=I%27d%20like%20to%20test%20Easy%20Stems" target="_blank" rel="noopener">Join the Test on WhatsApp</a>
+      <a class="more" href="mailto:hello@amanorsac.studio?subject=Easy%20Stems%20test%20build">Or email the studio</a>
+    </div>
+    <p class="fine" style="margin-top:18px">Made by Amanorsac Studio. Runs on open models from Meta and the Ultimate Vocal Remover project.</p>
+  </div></div>
+</section>
+
+</main>
+
+<footer class="sfoot">
+  <div class="cols">
+    <div class="sf-brand">
+      <img src="/images/logo-onDark.svg" alt="Amanorsac Studio">
+      <p>Amanorsac Studio. Mixing, mastering and music software from a working studio.</p>
+      <p>Charlottesville, Virginia, and remote worldwide.</p>
+      <div class="social" id="social-icons"></div>
+    </div>
+    <div><h4>Apps</h4><ul>
+      <li><a href="/chordlight88.html">Chordlight 88</a></li>
+      <li><a href="/stemsorter.html">Stem Sorter</a></li>
+      <li><a href="/nebulatide2.html">Nebula Tide 2</a></li>
+      <li><a href="/performlive.html">PerformLive</a></li>
+      <li><a href="/apps.html">All apps</a></li>
+    </ul></div>
+    <div><h4>Plug-ins</h4><ul>
+      <li><a href="/ambanalog.html">AMB Analog</a></li>
+      <li><a href="/ambdigital.html">AMB Digital</a></li>
+      <li><a href="/afdgate.html">AFD Gate</a></li>
+      <li><a href="/secondout.html">SecondOut</a></li>
+      <li><a href="/studiobundle.html">Studio Bundle</a></li>
+    </ul></div>
+    <div><h4>Studio</h4><ul>
+      <li><a href="/mixing.html">Mixing and Mastering</a></li>
+      <li><a href="/store/">Store</a></li>
+      <li><a href="/blog.html">Blog</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/about.html#contact">Contact</a></li>
+    </ul></div>
+    <div><h4>Your Account</h4><ul>
+      <li><a href="/client">Sign in</a></li>
+      <li><a href="/my-apps.html">My Apps</a></li>
+      <li><a href="/hub.html">Amanorsac Hub</a></li>
+      <li><a href="/redeem.html">Redeem a code</a></li>
+    </ul></div>
+  </div>
+  <div class="base">
+    <span>© Amanorsac Studio</span>
+    <a href="/privacy">Privacy</a>
+    <a href="/legal.html">Licence and terms</a>
+    <span>Stephen Amanor Sackey · Virginia, United States</span>
+  </div>
+</footer>
+
+<script src="assets/vendor/supabase-2.116.0.js"></script>
+<script src="assets/supabase-client.js"></script>
+<script src="assets/site-auth.js" defer></script>
+<script src="assets/track.js" defer></script>
+<script src="/assets/product.js" defer></script>
+<script src="/assets/shell.js" defer></script>
+<script>
+(function(){
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- the film: always muted, no controls, plays only while on screen ---- */
+  var film = document.getElementById('es-film'), screen = document.getElementById('es-screen'),
+      playBtn = document.getElementById('es-play');
+  if (film) {
+    film.muted = true; film.defaultMuted = true; film.volume = 0;
+    film.addEventListener('volumechange', function(){ if (!film.muted) film.muted = true; });
+    if (still) { film.removeAttribute('autoplay'); film.pause(); playBtn.hidden = false; }
+    playBtn.addEventListener('click', function(){
+      if (film.paused) { film.play(); playBtn.textContent = 'Pause the film'; }
+      else { film.pause(); playBtn.textContent = 'Play the film'; }
+    });
+    if ('IntersectionObserver' in window && !still) {
+      new IntersectionObserver(function(es){
+        es.forEach(function(e){ if (e.isIntersecting) { var p = film.play(); if (p && p.catch) p.catch(function(){}); } else film.pause(); });
+      }, { threshold: .15 }).observe(film);
+    }
+  }
+
+  /* ---- the seven lanes, drawn once ---- */
+  var LANES = [
+    ['Drums', 'var(--s-drums)', function(i){ return (i % 8 === 0 ? .95 : i % 4 === 0 ? .7 : .25) + Math.sin(i*1.7)*.05; }],
+    ['Bass', 'var(--s-bass)', function(i){ return .55 + .2*Math.sin(i/6); }],
+    ['Guitar', 'var(--s-guitar)', function(i){ return (Math.floor(i/5) % 2 ? .85 : .35) + .08*Math.sin(i*2.3); }],
+    ['Keys', 'var(--s-keys)', function(i){ return .45 + .3*Math.abs(Math.sin(i*.9)); }],
+    ['Lead vocals', 'var(--s-lead)', function(i){ return (i % 22 < 15) ? .55 + .35*Math.abs(Math.sin(i*.45)) : .05; }],
+    ['Backing vocals', 'var(--s-back)', function(i){ return (i % 26 > 12 && i % 26 < 22) ? .6 + .2*Math.sin(i) : .05; }],
+    ['Everything else', 'var(--s-aux)', function(i){ return .3 + .1*Math.sin(i*.3); }]
+  ];
+  var box = document.getElementById('lanes');
+  if (box) {
+    var N = 120, html = '';
+    LANES.forEach(function(L, k){
+      var bars = '';
+      for (var i = 0; i < N; i++) {
+        var h = Math.max(.04, Math.min(1, L[2](i)));
+        bars += '<rect x="' + (i*10+1) + '" y="' + (50 - h*48).toFixed(1) + '" width="7" height="' + (h*96).toFixed(1) + '" rx="2"/>';
+      }
+      html += '<div class="lane" style="--c:' + L[1] + ';--off:0" data-k="' + k + '">' +
+        '<span class="nm"><i></i>' + L[0] + '</span>' +
+        '<svg viewBox="0 0 ' + (N*10) + ' 100" preserveAspectRatio="none" aria-hidden="true">' + bars + '</svg></div>';
+    });
+    box.innerHTML = html;
+    var lanes = box.querySelectorAll('.lane'), sec = document.getElementById('split');
+    function layout(){
+      var H = box.clientHeight, step = H / 7;
+      lanes.forEach(function(el, k){ el.style.setProperty('--off', ((k - 3) * step).toFixed(1)); });
+    }
+    function progress(){
+      if (still) { box.style.setProperty('--p', 1); lanes.forEach(function(el){ el.style.setProperty('--p', 1); }); return; }
+      var r = sec.getBoundingClientRect(), vh = innerHeight;
+      var p = (-r.top + vh * .15) / (r.height - vh * 1.1);
+      p = Math.max(0, Math.min(1, p));
+      var e = p < .5 ? 2*p*p : 1 - Math.pow(-2*p + 2, 2) / 2;   // ease in-out
+      lanes.forEach(function(el){ el.style.setProperty('--p', e.toFixed(3)); });
+    }
+    layout(); progress();
+    addEventListener('resize', function(){ layout(); progress(); });
+    var ticking = false;
+    addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(function(){ progress(); lean(); ticking = false; }); } }, { passive: true });
+  }
+
+  /* ---- the screen stands up as it comes into view ---- */
+  function lean(){
+    if (!screen || still) return;
+    var r = screen.getBoundingClientRect(), vh = innerHeight;
+    var p = (vh - r.top) / (vh * .75);
+    p = Math.max(0, Math.min(1, p));
+    screen.style.setProperty('--lean', (1 - p).toFixed(3));
+  }
+  lean();
+  if (!box) addEventListener('scroll', function(){ requestAnimationFrame(lean); }, { passive: true });
+
+  /* ---- try it: the real screens, switched ---- */
+  var SAY = [
+    'Seven stems, each with its own switch, level, solo and headphone button.',
+    'Lead vocal switched off. The harmonies stay, the drums are up 3 dB and the aux is down 6.',
+    'Bass soloed while the song plays. Export it alone, or switch it back in.'
+  ];
+  var btns = document.querySelectorAll('.es-try [data-v]'), imgs = document.querySelectorAll('.es-try .view img'),
+      say = document.getElementById('es-say');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = +b.getAttribute('data-v');
+      btns.forEach(function(x){ x.setAttribute('aria-pressed', String(x === b)); });
+      imgs.forEach(function(im, i){ im.classList.toggle('on', i === v); if (i === v) im.loading = 'eager'; });
+      if (say) say.textContent = SAY[v];
+    });
+  });
+})();
+</script>
+</body>
+</html>
