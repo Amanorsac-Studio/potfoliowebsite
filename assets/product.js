@@ -48,7 +48,9 @@
     var a = c && c.apps && c.apps[app];
     if (!a) return;
     var html;
-    if (a.free) html = 'Free';
+    var st = window.StoreState.stateOf ? window.StoreState.stateOf(a) : 'available';
+    if (st !== 'available') html = 'Coming soon';
+    else if (a.free) html = 'Free';
     else if (a.pay_what_you_want) html = 'Name your price';
     else if (typeof a.price_cents === 'number' && a.price_cents > 0) {
       var promo = a.promo || c.promo;

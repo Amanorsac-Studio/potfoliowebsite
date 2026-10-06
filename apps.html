@@ -796,6 +796,13 @@ var CONFIG = {
            not out yet is one somebody may come back for, and "will it
            work on my machine" is the question they are coming back with. */
         platforms(tile, app);
+        /* soon_link: the page is worth seeing before it is on sale, so
+           the tile stays a door with the badge on it. */
+        if(app.soon_link){
+          tile.classList.remove('nolink');
+          if(!tile.hasAttribute('href') && tile.dataset.href) tile.setAttribute('href', tile.dataset.href);
+          return;
+        }
         tile.classList.add('nolink');
         if(tile.hasAttribute('href')){
           tile.dataset.href = tile.getAttribute('href');
