@@ -106,6 +106,10 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     stripe_price: "price_1UEF1E06LBP0UxjsM9VMPGux",
     label: "Nebula Tide 2 — lifetime license for two machines, one year of updates included",
   },
+  easystems: {
+    amount_cents: 2100,
+    label: "Easy Stems — lifetime licence, Windows and Mac",
+  },
 };
 
 /** What to say when a code will not work. The same sentences the redeem
