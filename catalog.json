@@ -432,7 +432,7 @@
       "price_min_cents": 500,
       "pay_what_you_want": true,
       "licensed": true,
-      "version": "2.0.1",
+      "version": "2.0.2",
       "notice": {
         "_": "Emailed once to everyone who owns this app, by the daily job.",
         "_2": "Delete this block and nothing more goes out. Change the wording",
@@ -441,20 +441,19 @@
         "_5": "which is the behaviour you want from something that must not",
         "_6": "surprise anyone. Nobody is emailed twice for the same id, ever.",
         "_7": "",
-        "_8": "The iPhone build is not mentioned. It goes through the App",
-        "_9": "Store, and nothing should be promised in writing to a paying",
-        "_10": "customer before Apple has actually approved it. When it is",
-        "_11": "live, that is a new notice with a new id.",
-        "id": "2026-09-android",
-        "subject": "Nebula Tide 2 is on Android, and the desktop build is new",
-        "line": "Nebula Tide 2 now runs on Android — and there is a new build for Windows and Mac.",
-        "body": "The same twelve keys and the same pads, on your phone. Your licence already covers it: sign in with the account you bought it with and it is there. On the desktop, Amanorsac Hub will offer you version 2.1 next time you open it.",
-        "cta": "Get the Android build"
+        "_8": "2.0.2 is desktop only (Windows and Mac). The Android build is",
+        "_9": "unchanged, so the letter does not mention it.",
+        "id": "2026-10-v2.0.2",
+        "subject": "Nebula Tide 2.0.2: easier MIDI learn, and a volume for textures and FX",
+        "line": "Nebula Tide 2.0.2 is out. MIDI learn is easier, and textures and FX have their own volume.",
+        "body": "It is a free update for everyone who owns Nebula Tide 2. Open Amanorsac Hub on your Windows or Mac computer and it will offer you 2.0.2. Nothing to pay: the licence you already have covers it.",
+        "cta": "See what is new"
       },
       "installers": {
         "windows": {
-          "key": "nebulatide2/NebulaTide-Windows-2.0.1.zip",
+          "key": "nebulatide2/NebulaTide-Windows-2.0.2.zip",
           "alt_keys": [
+            "nebulatide2/NebulaTide-Windows-2.0.1.zip",
             "nebulatide2/NebulaTide-Windows.zip",
             "Nebula Tide V2/NebulaTide-Windows.zip",
             "nebulatide2/NebulaTide-Windows_2.zip"
@@ -464,8 +463,9 @@
           "size": "278 MB"
         },
         "mac": {
-          "key": "nebulatide2/NebulaTide-macOS-2.0.1.zip",
+          "key": "nebulatide2/NebulaTide-macOS-2.0.2.zip",
           "alt_keys": [
+            "nebulatide2/NebulaTide-macOS-2.0.1.zip",
             "nebulatide2/NebulaTide-macOS.zip",
             "Nebula Tide V2/NebulaTide-macOS.zip",
             "nebulatide2/NebulaTide-macOS_2.zip"
