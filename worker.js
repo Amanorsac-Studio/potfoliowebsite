@@ -168,8 +168,14 @@ export default {
      waiting on this, so a slow run costs nothing but does not need to
      be fast either. See sendReviewInvites for what it actually does. */
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(sendReviewInvites(env));
-    ctx.waitUntil(sendUpdateNotices(env));
+    /* Two triggers in wrangler.jsonc. The daily jobs keep their old
+       slot (15:00 UTC); the studio news letter is checked on both, and
+       sends nothing until the time written in the catalog has passed. */
+    if (!event || !event.cron || event.cron === '0 15 * * *') {
+      ctx.waitUntil(sendReviewInvites(env));
+      ctx.waitUntil(sendUpdateNotices(env));
+    }
+    ctx.waitUntil(sendAnnouncement(env));
   }
 };
 
@@ -1426,6 +1432,129 @@ async function sendUpdateNotice(env, email, title, app, n) {
   } catch (e) { return false; }
 }
 
+/* ---------------------------------------------------------------------
+   studio news, to everyone with an account
+
+   catalog.json carries at most one "studio_news" block (not the
+   "announcement" block - that one is the Hub's in-app banner):
+
+     "studio_news": {
+       "id": "2026-10-studio-news",
+       "send_after": "2026-10-07T09:59:00Z",
+       "per_run": 100,
+       "subject": "...", "intro": "...",
+       "items": [ { "title": "...", "text": "...", "link": "/apps" } ],
+       "signoff": "Stephen"
+     }
+
+   Nothing goes before send_after. After it, each cron run sends up to
+   per_run letters to confirmed accounts that have not had this id and
+   have not said stop (supabase-announcements.sql), until everyone has
+   one. Delete the block, or set "paused": true, and nothing more goes.
+   A new id is a new letter to everybody, so the id only changes when
+   there is genuinely something new to say.
+
+   Each person is marked before their letter leaves, exactly like the
+   update notices: a run that dies or fires twice cannot send twice.
+   --------------------------------------------------------------------- */
+async function sendAnnouncement(env) {
+  const catalog = await getCatalog(env);
+  const a = catalog.studio_news;
+  if (!a || a.paused || !a.id || !a.subject || !a.send_after) return;
+  const when = Date.parse(a.send_after);
+  if (!when || Date.now() < when) return;
+  if (!env.SUPABASE_SERVICE_KEY || !env.RESEND_API_KEY || !env.DOWNLOAD_SECRET) {
+    console.error('announcement: SUPABASE_SERVICE_KEY, RESEND_API_KEY or DOWNLOAD_SECRET not set, skipping');
+    return;
+  }
+  const db = (fn, body) => fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json',
+               apikey: env.SUPABASE_SERVICE_KEY, Authorization: 'Bearer ' + env.SUPABASE_SERVICE_KEY },
+    body: JSON.stringify(body)
+  });
+
+  const limit = Math.max(1, Math.min(Number(a.per_run) || 100, 400));
+  let people = [];
+  try {
+    const r = await db('announcement_candidates', { p_id: String(a.id), p_limit: limit });
+    if (r.ok) people = await r.json();
+    else { console.error('announcement_candidates refused:', r.status, await r.text()); return; }
+  } catch (e) { console.error('announcement_candidates unreachable:', e && e.message); return; }
+
+  let sent = 0;
+  for (const row of people) {
+    const email = String(row.email || '').toLowerCase();
+    if (!looksLikeEmail(email)) continue;
+    let mine = false;
+    try {
+      const r = await db('mark_announcement_sent', { p_id: String(a.id), p_email: email });
+      if (r.ok) mine = (await r.json()) === true;
+      else console.error('mark_announcement_sent refused:', email, r.status, await r.text());
+    } catch (e) { console.error('mark_announcement_sent unreachable:', email, e && e.message); }
+    if (!mine) continue;
+
+    const sig = await sign(env.DOWNLOAD_SECRET, 'optout:' + email);
+    const stop = SITE + '/notices/stop?e=' + encodeURIComponent(email) + '&s=' + sig;
+    const mail = announcementEmail(a, stop);
+    try {
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + env.RESEND_API_KEY },
+        body: JSON.stringify({
+          from: env.NOTIFY_FROM || 'Amanorsac Studio <hello@amanorsac.studio>',
+          to: [email], subject: a.subject, text: mail.text, html: mail.html,
+          headers: { 'List-Unsubscribe': '<' + stop + '>' }
+        })
+      });
+      if (r.ok) sent++;
+      else console.error('announcement failed to send:', email, r.status, await r.text());
+    } catch (e) { console.error('announcement failed to send:', email, e && e.message); }
+  }
+  if (people.length) console.log('announcement', a.id, 'sent', sent, 'of', people.length);
+}
+
+/* The letter itself. Kept apart from the sending so it can be rendered
+   on its own for a preview. Links in the catalog are site paths; they
+   are made absolute here and nowhere else. */
+function announcementEmail(a, stop) {
+  const abs = l => !l ? '' : /^https:\/\//.test(l) ? l : SITE + (l.charAt(0) === '/' ? l : '/' + l);
+  const items = Array.isArray(a.items) ? a.items : [];
+
+  const text =
+    (a.intro ? a.intro + '\n\n' : '') +
+    items.map(it => (it.title || '') + '\n' + (it.text || '') + (it.link ? '\n' + abs(it.link) : '')).join('\n\n') +
+    '\n\n' + (a.signoff ? a.signoff + '\n\n' : '') +
+    'You are getting this because you have an account at amanorsac.studio. ' +
+    'It is not a newsletter: the studio writes when there is something to say.\n' +
+    'Rather not hear from the studio about news and updates? ' + stop + '\n\n' +
+    'Amanorsac Studio\n' + SITE + '\n';
+
+  const html =
+    '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;' +
+      'margin:0 auto;padding:32px 24px;color:#1C1916;line-height:1.6">' +
+    '<p style="margin:0 0 6px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#6B655C">' +
+      'Amanorsac Studio</p>' +
+    '<p style="margin:0 0 14px;font-size:23px;font-weight:600;line-height:1.3">' + esc(a.heading || a.subject) + '</p>' +
+    (a.intro ? '<p style="margin:0 0 26px">' + esc(a.intro) + '</p>' : '') +
+    items.map(it =>
+      '<div style="margin:0 0 22px;padding:0 0 22px;border-bottom:1px solid #E7E2DA">' +
+        '<p style="margin:0 0 4px;font-size:17px;font-weight:600">' + esc(it.title || '') + '</p>' +
+        '<p style="margin:0 0 8px;color:#3B362F">' + esc(it.text || '') + '</p>' +
+        (it.link ? '<p style="margin:0"><a href="' + esc(abs(it.link)) + '" style="color:#1C1916;font-weight:600">' +
+          esc(it.link_label || 'Have a look') + ' &rsaquo;</a></p>' : '') +
+      '</div>').join('') +
+    (a.signoff ? '<p style="margin:4px 0 26px">' + esc(a.signoff) + '</p>' : '') +
+    '<p style="margin:0 0 8px;color:#6B655C;font-size:13.5px">You are getting this because you have an account at ' +
+      'amanorsac.studio. It is not a newsletter: the studio writes when there is something to say.</p>' +
+    '<p style="margin:0 0 18px;color:#6B655C;font-size:13.5px">' +
+      '<a href="' + esc(stop) + '" style="color:#6B655C">Rather not hear from the studio about news and updates?</a></p>' +
+    '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+
+  return { text, html };
+}
+
 /* GET /notices/stop?e=...&s=...  -  the link at the bottom of a notice.
    A plain page, no account needed: somebody who wants out should not
    have to sign in to say so. */
@@ -1453,7 +1582,7 @@ async function noticeStop(url, env) {
   } catch (e) { console.error('notice_optout unreachable:', e && e.message); }
 
   return confirmPage('That is done',
-    'No more emails about app updates will go to ' + email + '. Anything about a ' +
+    'No more emails about app updates or studio news will go to ' + email + '. Anything about a ' +
     'purchase you make, or a password you reset, still will - those are not ' +
     'something to be opted out of.', null, 200);
 }

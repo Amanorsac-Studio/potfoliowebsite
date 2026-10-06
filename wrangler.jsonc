@@ -79,7 +79,7 @@
      real science to it beyond not being the middle of the night
      anywhere Nebula Tide has actually been downloaded so far. */
   "triggers": {
-    "crons": ["0 15 * * *"]
+    "crons": ["0 10 * * *", "0 15 * * *"]
   },
 
   "assets": {

@@ -194,6 +194,30 @@
     ],
     "wallet_note": "Mobile money, bank transfer or a local card."
   },
+  "studio_news": {
+    "_": "Studio news to everyone with a confirmed account (worker.js sendAnnouncement,",
+    "_2": "supabase-announcements.sql). Nothing goes before send_after; then each cron",
+    "_3": "run (10:00 and 15:00 UTC) sends up to per_run until everyone has one.",
+    "_4": "send_after 09:59 UTC is 6:00am in Virginia (EDT). Set paused to true, or",
+    "_5": "delete the block, to stop. A new id is a new letter to everybody.",
+    "id": "2026-10-studio-news",
+    "send_after": "2026-10-07T09:59:00Z",
+    "per_run": 100,
+    "paused": false,
+    "subject": "What's new at Amanorsac Studio",
+    "heading": "What's new at the studio",
+    "intro": "A short note from the studio. A lot has changed over the last few weeks, so here it all is in one place.",
+    "items": [
+      { "title": "A new website", "text": "The whole site has a new look, and every app has a proper page now: what it does, what it costs and how to get it.", "link": "/", "link_label": "Take a look" },
+      { "title": "Chordlight 88 2.0", "text": "See every chord you play, then record it and make the lesson video in one step. Early-bird price on 2.0: $24, normally $48.", "link": "/chordlight88", "link_label": "See Chordlight 88" },
+      { "title": "Stem Sorter, new", "text": "Quickly import session files into your mix template, so the session is laid out before you start mixing.", "link": "/stemsorter", "link_label": "See Stem Sorter" },
+      { "title": "Nebula Tide 2.0.2", "text": "MIDI learn is easier, and textures and FX have their own volume. It runs on Windows, Mac and Android.", "link": "/nebulatide2", "link_label": "See what is new" },
+      { "title": "The Studio Bundle", "text": "A Fender Studio Pro template built for your church, four of the studio's plug-ins, and a setup session where we put it all on your machine with you. $250.", "link": "/studiobundle", "link_label": "See the bundle" },
+      { "title": "Creators wanted", "text": "The store is looking for producers and musicians to sell multitracks, stems, pads and loops for worship teams. Apply, or message the studio on WhatsApp first.", "link": "/store/creators", "link_label": "Apply to sell" },
+      { "title": "Paying from Ghana?", "text": "Every app can be paid for with MTN MoMo now. Scan the code on the app's page, send the screenshot on WhatsApp, and your code comes back the same day.", "link": "/apps", "link_label": "Browse the apps" }
+    ],
+    "signoff": "Thanks for being here. Stephen"
+  },
   "momo": {
     "_": "MTN MoMo by hand. Shown on every paid app page to everyone (countries empty = everywhere), labelled as the Ghana option. The buyer pays at the studio's own",
     "_2": "request link (or scans the code), then sends the screenshot to the",
