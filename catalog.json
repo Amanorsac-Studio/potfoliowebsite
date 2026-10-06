@@ -441,6 +441,45 @@
         }
       }
     },
+    "easystems": {
+      "name": "Easy Stems",
+      "vendor": "Amanorsac Studio",
+      "kind": "app",
+      "status": "available",
+      "tagline": "Any song. Every instrument. Your computer.",
+      "icon": "images/apps/easystems-icon.svg",
+      "art": "images/apps/easystems/stems-800.webp",
+      "page": "easystems.html",
+      "color": "#3d8bff",
+      "free": false,
+      "price_cents": 2100,
+      "licensed": false,
+      "_licensed": "0.1.8 has no licence check (its About card says so). Buyers get it through the Hub on purchase; switch licensed on when the app starts asking for a key.",
+      "version": "0.1.8",
+      "installers": {
+        "windows": {
+          "key": "easystems/EasyStems-0.1.8-Windows.exe",
+          "as": "EasyStems-0.1.8-Windows.exe",
+          "type": "application/octet-stream",
+          "label": "Windows 10/11",
+          "size": "130 MB"
+        },
+        "mac-arm64": {
+          "key": "easystems/EasyStems-0.1.8-macOS-arm64.dmg",
+          "as": "EasyStems-0.1.8-macOS-arm64.dmg",
+          "type": "application/x-apple-diskimage",
+          "label": "Mac (Apple silicon)",
+          "size": "114 MB"
+        },
+        "mac-x64": {
+          "key": "easystems/EasyStems-0.1.8-macOS-x64.dmg",
+          "as": "EasyStems-0.1.8-macOS-x64.dmg",
+          "type": "application/x-apple-diskimage",
+          "label": "Mac (Intel)",
+          "size": "119 MB"
+        }
+      }
+    },
     "nebulatide2": {
       "name": "Nebula Tide 2",
       "vendor": "Amanorsac Studio",

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Easy Stems">
+  <rect width="64" height="64" rx="14" fill="#0b1224"/>
+  <g stroke-linecap="round" stroke-width="5">
+    <line x1="11" y1="27" x2="11" y2="37" stroke="#e5484d"/>
+    <line x1="18" y1="21" x2="18" y2="43" stroke="#e08a2c"/>
+    <line x1="25" y1="15" x2="25" y2="49" stroke="#2fbf5b"/>
+    <line x1="32" y1="22" x2="32" y2="42" stroke="#3b82f6"/>
+    <line x1="39" y1="17" x2="39" y2="47" stroke="#8b5cf6"/>
+    <line x1="46" y1="24" x2="46" y2="40" stroke="#e0479e"/>
+    <line x1="53" y1="28" x2="53" y2="36" stroke="#8a8f98"/>
+  </g>
+</svg>

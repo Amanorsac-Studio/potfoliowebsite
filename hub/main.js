@@ -317,7 +317,7 @@ ipcMain.handle('hub:download', async (event, { app: appId, platform, token, titl
   // Ownership is decided by the Worker with this session's token, exactly
   // as the website does it; the Hub only asks.
   progress({ app: appId, state: 'preparing', received: 0, total: 0, percent: 0 });
-  const ticket = await siteRequest('/api/app-download', { method: 'POST', token, body: { app: appId, platform } });
+  const ticket = await siteRequest('/api/app-download', { method: 'POST', token, body: { app: appId, platform, arch: process.arch } });
   if (!ticket.ok || !ticket.json || !ticket.json.url) {
     progress({ app: appId, state: 'error' });
     const j = ticket.json || {};

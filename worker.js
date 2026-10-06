@@ -693,8 +693,21 @@ async function appDownload(request, env, ctx) {
   let body = {};
   try { body = await request.json(); } catch (e) {}
   const app      = String(body.app || '').toLowerCase().slice(0, 40);
-  const platform = String(body.platform || '').toLowerCase().slice(0, 20);
+  let platform = String(body.platform || '').toLowerCase().slice(0, 20);
   const catalog = await getCatalog(env);
+  /* An app with separate Apple silicon and Intel builds has no plain
+     "mac" installer, but the Hub asks for "mac". It may say which chip
+     (arch, from the next Hub build on); without that, Apple silicon is
+     the better guess for any Mac sold since 2020 - the same call the
+     Hub's own installer makes - and My Apps on the site offers the
+     Intel build by name. */
+  if (platform === 'mac') {
+    const inst = (catalog.apps && catalog.apps[app] && catalog.apps[app].installers) || {};
+    if (!inst.mac) {
+      const arch = String(body.arch || '').toLowerCase();
+      platform = (arch === 'x64' && inst['mac-x64']) ? 'mac-x64' : (inst['mac-arm64'] ? 'mac-arm64' : 'mac');
+    }
+  }
   const item = installerFor(catalog, app, platform);
   if (!item) return say({ error: 'no_such_download', message: 'No such download.' }, 404);
 
