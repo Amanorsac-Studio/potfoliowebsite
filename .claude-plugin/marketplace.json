@@ -1,0 +1,8 @@
+{
+  "name": "amanorsac-studio",
+  "owner": { "name": "Amanorsac Studio" },
+  "plugins": [
+    { "name": "app-release", "source": "./mods/app-release", "description": "/release for an Amanorsac app repo: installers, recording, brag video, notes, R2 upload, hand-off to the website chat" },
+    { "name": "release-receiver", "source": "./mods/release-receiver", "description": "/receive for the website repo: picks a release package up from R2 and hands its notes to the model" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "name": "release-receiver",
+  "version": "0.1.0",
+  "description": "Receives app release packages from R2 (releases/<app>/<version>/) into the website: checks them against docs/release-standard.md, pulls them down, and hands the hand-off notes to the model. Nothing goes live without the person's go-ahead and price.",
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "remote": {
+      "type": "string",
+      "default": "r2",
+      "description": "The rclone remote that holds amanorsac-downloads",
+      "title": "rclone remote"
+    },
+    "bucket": {
+      "type": "string",
+      "default": "amanorsac-downloads",
+      "description": "The R2 bucket",
+      "title": "R2 bucket"
+    }
+  }
+}

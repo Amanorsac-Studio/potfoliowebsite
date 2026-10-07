@@ -1,0 +1,13 @@
+{
+  "name": "app-release",
+  "version": "0.1.0",
+  "description": "The /release command for an Amanorsac app repo: checks the GitHub build, fetches the installers, records the app, runs /brag, writes handoff.md, uploads the package to R2 under releases/<app>/<version>/ and tells the website chat. Follows docs/release-standard.md in the website repo.",
+  "author": { "name": "Amanorsac Studio" },
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "app": { "type": "string", "title": "Catalog id", "default": "", "description": "The app's id in the website's catalog.json (chordlight88, nebulatide2, ...)" },
+    "remote": { "type": "string", "title": "rclone remote", "default": "r2", "description": "The rclone remote that holds amanorsac-downloads" },
+    "bucket": { "type": "string", "title": "R2 bucket", "default": "amanorsac-downloads", "description": "The R2 bucket" },
+    "website_session": { "type": "string", "title": "Website chat", "default": "", "description": "The name or id of the website's Claude Code chat, for the hand-off message (SendMessage). Empty: the model is told to find it with ListAgents." }
+  }
+}
