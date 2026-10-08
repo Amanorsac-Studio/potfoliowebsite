@@ -29,6 +29,12 @@
   var main = $('.ab');
   if (!main) return;
 
+  /* CTSD's address. Change this one line when the domain is ready; every
+     link marked data-ctsd on the page follows it (data-ctsd="demo/" adds
+     a path). */
+  var CTSD_URL = 'https://custom-technology-software-development.amanorsac.workers.dev/';
+  $$('[data-ctsd]').forEach(function (a) { a.href = CTSD_URL + (a.getAttribute('data-ctsd') || ''); });
+
   /* ---- the hero arrives ---- */
   requestAnimationFrame(function () {
     requestAnimationFrame(function () {
@@ -36,6 +42,20 @@
       setTimeout(function () { main.classList.add('ready'); }, 1700);
     });
   });
+
+  /* ---- the title turns through the four jobs ---- */
+  var rot = $$('.ab-rot span');
+  if (rot.length > 1 && !still) {
+    var ri = 0;
+    setInterval(function () {
+      if (document.hidden) return;
+      var cur = rot[ri], next = rot[(ri + 1) % rot.length];
+      cur.classList.remove('on'); cur.classList.add('out');
+      next.classList.remove('out'); next.classList.add('on');
+      setTimeout(function () { cur.classList.remove('out'); }, 850);
+      ri = (ri + 1) % rot.length;
+    }, 2600);
+  }
 
   /* ---- arrivals: everything marked data-in, data-drop rises or drops once ---- */
   var arrived = [];
@@ -169,7 +189,8 @@
     { s: 'Kb', n: 'Keys', f: 'stage', d: 'Keyboard for churches and a live band, from Accra on.' },
     { s: 'Md', n: 'Music direction', f: 'stage', d: 'Music director, from churches in Accra to a multicultural congregation in Virginia.' },
     { s: 'Wr', n: 'Worship records', f: 'stage', d: 'Worship records and live album productions.' },
-    { s: 'Ar', n: 'Artists', f: 'stage', d: 'Helping young, independent artists get their songs out of their heads and into the world.' }
+    { s: 'Ar', n: 'Artists', f: 'stage', d: 'Helping young, independent artists get their songs out of their heads and into the world.' },
+    { s: 'Cs', n: 'Custom software', f: 'apps', d: 'Websites, mobile apps and business systems built around the way an organization works, through CTSD.', href: CTSD_URL }
   ];
   var SYM = { chordlight88: 'Cl', stemsorter: 'Ss', easystems: 'Es', nebulatide2: 'N2', nebulatide: 'Nt', performlive: 'Pl',
     pulseroom: 'Pu', harmoniemd: 'Hm', secondout: 'So', ambanalog: 'An', ambdigital: 'Dg', afdgate: 'Ag', aether: 'Ae', alignpro: 'Ap' };
