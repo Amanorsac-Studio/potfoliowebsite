@@ -37,7 +37,7 @@
   "description": "A chord and Nashville-number display for any MIDI keyboard that lights all 88 keys as you play, records MIDI, WAV and shareable takes, and draws its own 1080p lesson clip. It opens no MIDI port exclusively.",
   "operatingSystem": "Windows 10, macOS 11",
   "applicationCategory": "MultimediaApplication",
-  "softwareVersion": "2.0.1",
+  "softwareVersion": "2.0.5",
   "image": "https://amanorsac.studio/images/photos/chordlight-pianist.webp",
   "offers": { "@type": "Offer", "price": "24", "priceCurrency": "USD" },
   "author": { "@id": "https://amanorsac.studio/#studio" },
@@ -92,7 +92,7 @@
       <a class="more" href="#record">Watch it in 42 seconds</a>
     </div>
     <p class="plat-row" data-platforms hidden></p>
-    <p class="fine">$24 early bird price on 2.0, full price $48 · Version 2.0.1 · Windows and macOS · one licence for two computers</p>
+    <p class="fine">$24 early bird price on 2.0, full price $48 · Version 2.0.5 · Windows and macOS · one licence for two computers</p>
     <div class="slots">
       <p class="promo-line" data-promo hidden></p>
       <p class="buy-status" data-buy-status hidden></p>
@@ -112,6 +112,29 @@
          alt="A pianist plays a digital piano while Chordlight 88 on the monitor above names the chord F major 9 and lights the keys he is holding">
   </div>
 </section>
+
+<section class="block" id="new">
+  <div class="wrap">
+    <p class="kick">New in 2.0.5</p>
+    <h2>Three Instruments, Built&nbsp;In</h2>
+    <p>A free update for everyone who owns Chordlight 88. Open Amanorsac Hub on Windows or Mac and it will offer it to you.</p>
+  </div>
+</section>
+
+<div class="grid rise" style="padding-top:0">
+  <div class="item">
+    <h3>Grand 1, SP Natural and Soft EP 1</h3>
+    <p>Amanorsac Studio's own sampled instruments, under Setup › Sound. They play from your keyboard and go into every clip, WAV and Chordlight file, with the pedal, 96 voices and a limiter so big chords never distort. On a Mac the Grand is on from the first run. On Windows the sound starts off, because a DAW is usually making the sound there.</p>
+  </div>
+  <div class="item">
+    <h3>Mac: Video No Longer Blanks the Window</h3>
+    <p>Pressing Video on a Mac could take the window down. The Mac build no longer asks to record the display at all. Recording what the computer is playing is paused on the Mac in this version and returns in a later update. Windows is unchanged.</p>
+  </div>
+  <div class="item">
+    <h3>If the Window Fails, It Comes Back</h3>
+    <p>Should the recorder or the encoder ever fail, the window reloads itself with a message instead of staying blank, and writes a small log you can send in from About › Logs.</p>
+  </div>
+</div>
 
 <section class="block" id="overview">
   <div class="wrap">
@@ -169,7 +192,7 @@
     <p class="kick">Video</p>
     <h3>A Lesson Video Drawn by the App</h3>
     <p>Chordlight does not record your screen. It renders every frame itself at 1080p, or 4K at Best quality, so the clip looks clean no matter what else is open on your computer. Your lesson title sits at the top, the readout plates keep the chord readable, and the last four chords climb away from the keys as you play.</p>
-    <p>System audio and your microphone are mixed in. You get an MP4 where your system supports it and WebM where it does not, and the app tells you which.</p>
+    <p>Your microphone and the built-in instrument are mixed in, and on Windows the sound your computer is playing too. You get an MP4 where your system supports it and WebM where it does not, and the app tells you which.</p>
   </div>
 </div>
 
@@ -320,13 +343,14 @@
   <h2 class="sec-h">Tech Specs</h2>
   <div class="spec">
     <div><h4>Platforms</h4><p>Windows 10 and 11 (x64).</p><p>macOS 12 and later, Apple silicon and Intel.</p></div>
-    <div><h4>Format</h4><p>Standalone desktop application. Windows: a zip, unzip and run. macOS: disk image. Not a plug-in.</p></div>
+    <div><h4>Format</h4><p>Standalone desktop application. Windows: a zip with the installer inside. macOS: a zip with the disk image inside. Not a plug-in.</p></div>
     <div><h4>Range</h4><p>88 keys, A0 to C8, with velocity sensitive lighting and sustain shown.</p></div>
     <div><h4>MIDI Input</h4><p>Non-exclusive input on every port including virtual cables. One input or all at once, per channel or omni, hot plug.</p></div>
     <div><h4>Readouts</h4><p>Chord name, Nashville number, Roman numeral, sol-fa, note list and chord quality.</p></div>
     <div><h4>Key Centre</h4><p>Set once and numbers and spelling follow. Auto spelling from the key, or force sharps or flats.</p></div>
     <div><h4>Recording</h4><p>MIDI (.mid), 24 bit 48 kHz WAV and .chordlight takes. Keep rescues the last five minutes.</p></div>
     <div><h4>Video</h4><p>1080p drawn by the app, 4K at Best. Title, font, size and colour. Keys top, middle or bottom. Readout plate, chord trail, picture or looping video backdrop, chroma green or blue. MP4 where available, otherwise WebM.</p></div>
+    <div><h4>Sound</h4><p>Three built-in sampled instruments: Grand 1, SP Natural and Soft EP 1. Sustain pedal, 96 voices, limiter, Sound level. Adds about 110 MB.</p></div>
     <div><h4>Mix</h4><p>Keyboard and vocal inputs with meters, automatic ducking, and an audio offset for Bluetooth or USB latency.</p></div>
     <div><h4>Windows</h4><p>Main window plus three detachable always on top pop-outs.</p></div>
     <div><h4>Appearance</h4><p>Light and dark, six accents, your own tint over a backdrop, adjustable key height.</p></div>
@@ -341,13 +365,13 @@
   <details><summary>Does it work with my keyboard?</summary>
     <div>Any keyboard or controller that sends MIDI over USB or Bluetooth will work, including digital pianos. Chordlight listens to all inputs by default.</div></details>
   <details><summary>Does it make sound?</summary>
-    <div>No. Your keyboard or your DAW makes the sound. Chordlight shows and records what you play. It does not include a piano sound.</div></details>
+    <div>Yes, since 2.0.5. It has three instruments of its own: Grand 1, SP Natural and Soft EP 1, under Setup › Sound, with a Sound level control. You can also leave the sound off and let your keyboard or your DAW make it, which is how it starts on Windows.</div></details>
   <details><summary>Does it listen to audio to work out the chords?</summary>
     <div>No, it reads MIDI. The microphone input is for your voice-over, not for chord detection.</div></details>
   <details><summary>What is a .chordlight file?</summary>
     <div>A single file that holds a take: the MIDI, the audio and the lesson title. Anyone with Chordlight can open it and see the lights and hear the audio together.</div></details>
   <details><summary>Does it record my screen?</summary>
-    <div>No. Chordlight draws the video itself at 1080p, or 4K at Best quality, so it looks the same whatever your other windows are doing. System audio and your microphone are mixed in.</div></details>
+    <div>No. Chordlight draws the video itself at 1080p, or 4K at Best quality, so it looks the same whatever your other windows are doing. Your microphone and the built-in instrument are mixed in. On Windows the sound your computer is playing can be mixed in too; on the Mac that returns in a later update.</div></details>
   <details><summary>Can I use it on two computers?</summary>
     <div>Yes. One licence key covers two computers. Deactivate this device in the About screen frees a seat so you can move it yourself.</div></details>
   <details><summary>Does it need the internet?</summary>

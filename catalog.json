@@ -57,6 +57,15 @@
   "_news16": "something to say beyond \"this exists\".",
   "news": [
     {
+      "id": "chordlight88-2-0-5",
+      "date": "2026-10-08",
+      "tag": "Update",
+      "app": "chordlight88",
+      "title": "Chordlight 88 2.0.5: three built-in instruments",
+      "body": "Chordlight 88 now makes its own sound. Grand 1, SP Natural and Soft EP 1 are Amanorsac Studio's own sampled instruments, with the pedal, 96 voices and a limiter so big chords never distort. They play from your keyboard and go into every clip, WAV and Chordlight file. On a Mac, pressing Video no longer blanks the window, and if the window ever fails it reloads itself and writes a small log. Free for everyone who owns Chordlight 88, through Amanorsac Hub.",
+      "url": "chordlight88.html#new"
+    },
+    {
       "id": "stemsorter-0-8",
       "date": "2026-10-03",
       "tag": "New",
@@ -355,7 +364,7 @@
   },
   "apps": {
     "chordlight88": {
-      "_cl": "2.0.1 is up: a zip for Windows and a dmg for the Mac, uploaded 1 Oct 2026.",
+      "_cl": "2.0.5 is up: the GitHub build zips for Windows and Mac, uploaded 8 Oct 2026 and confirmed with rclone lsl (162241419 and 265533001 bytes). 2.0.1 stays first in alt_keys.",
       "_cl7": "These keys live on the APP, not inside installers: this file reads",
       "_cl8": "Object.keys(installers) as the platform list, so a comment in",
       "_cl9": "there becomes an app that runs on \"_2\". I did it again writing",
@@ -373,35 +382,47 @@
       "price_cents": 2400,
       "list_price_cents": 4800,
       "licensed": true,
-      "version": "2.0.1",
+      "version": "2.0.5",
       "installers": {
         "windows": {
-          "key": "chordlight88/chordlight-Windows2.0.1.zip",
+          "key": "chordlight88/chordlight-Windows-2.0.5.zip",
           "alt_keys": [
+            "chordlight88/chordlight-Windows2.0.1.zip",
             "ChordLight/chordlight-Windows2.0.1.zip",
             "chordlight-Windows2.0.1.zip"
           ],
-          "as": "Chordlight-88-2.0.1-Windows.zip",
+          "as": "Chordlight-88-2.0.5-Windows.zip",
           "type": "application/zip",
-          "label": "Windows 10/11 · zip, unzip and run",
-          "size": "82 MB"
+          "label": "Windows 10/11 · zip, unzip and run the installer",
+          "size": "155 MB"
         },
         "mac": {
-          "key": "chordlight88/Chordlight88-2.0.1-macOS.dmg",
+          "key": "chordlight88/chordlight-macOS-2.0.5.zip",
           "alt_keys": [
+            "chordlight88/Chordlight88-2.0.1-macOS.dmg",
             "ChordLight/Chordlight88-2.0.1-macOS.dmg",
             "Chordlight88-2.0.1-macOS.dmg"
           ],
-          "as": "Chordlight-88-2.0.1.dmg",
-          "type": "application/x-apple-diskimage",
-          "label": "macOS 11+",
-          "size": "181 MB"
+          "as": "Chordlight-88-2.0.5-macOS.zip",
+          "type": "application/zip",
+          "label": "macOS 12+ · zip, unzip and open the disk image",
+          "size": "253 MB"
         }
       },
       "promo": {
         "_": "This app's own sale, read instead of the site-wide promo block. Same shape: percent, note, and an optional ends that is a real deadline. Remove it when the early bird is over, and put price_cents up to list_price_cents.",
         "percent": 50,
         "note": "Early bird on 2.0"
+      },
+      "notice": {
+        "_": "Emailed once to everyone who owns Chordlight 88, by the daily job.",
+        "_2": "Change id and EVERY owner gets a second letter; change only the",
+        "_3": "wording and nothing more goes out. Nobody gets the same id twice.",
+        "id": "2026-10-v2.0.5",
+        "subject": "Chordlight 88 2.0.5: three built-in instruments, and a Mac video fix",
+        "line": "Chordlight 88 2.0.5 is out. It now has three instruments of its own: Grand 1, SP Natural and Soft EP 1.",
+        "body": "Choose one under Setup, Sound and it plays from your keyboard and goes into every clip and recording. On a Mac, pressing Video no longer blanks the window, and if the window ever fails it now comes back by itself. It is a free update for everyone who owns Chordlight 88: open Amanorsac Hub and it will offer you 2.0.5. The licence you already have covers it.",
+        "cta": "See what is new"
       }
     },
     "stemsorter": {
