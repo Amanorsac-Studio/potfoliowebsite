@@ -43,6 +43,70 @@
     });
   });
 
+  /* ---- the figure comes alive ----
+     The video is an ordinary MP4 holding two pictures side by side: the
+     cut-out on the left, its transparency as grey on the right. WebGL puts
+     them back together into a figure with no background, which every
+     browser can play (a transparent WebM would leave Safari with a black
+     box). The still photograph stays underneath until the first frame is
+     drawn, and comes back if anything here fails. */
+  var figBox = $('.ab-figure[data-live]');
+  if (figBox && !still) (function () {
+    var cv = document.createElement('canvas');
+    var gl = cv.getContext('webgl', { premultipliedAlpha: true, alpha: true, antialias: false });
+    if (!gl) return;
+    var vid = document.createElement('video');
+    vid.muted = true; vid.loop = true; vid.playsInline = true; vid.setAttribute('playsinline', '');
+    vid.preload = 'auto'; vid.crossOrigin = 'anonymous';
+    var sh = function (type, src) { var o = gl.createShader(type); gl.shaderSource(o, src); gl.compileShader(o); return o; };
+    var prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, 'attribute vec2 p;varying vec2 v;void main(){v=vec2(p.x*.5+.5,.5-p.y*.5);gl_Position=vec4(p,0.,1.);}'));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, 'precision mediump float;varying vec2 v;uniform sampler2D t;' +
+      'void main(){vec3 c=texture2D(t,vec2(v.x*.5,v.y)).rgb;float a=texture2D(t,vec2(v.x*.5+.5,v.y)).r;' +
+      'a=clamp((a-.06)/.9,0.,1.);gl_FragColor=vec4(c*a,a);}'));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+    gl.useProgram(prog);
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    var tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.clearColor(0, 0, 0, 0);
+    var on = false, shown = false, raf = 0, failed = false;
+    var draw = function () {
+      raf = 0;
+      if (!on || failed) return;
+      if (vid.readyState >= 2) {
+        if (cv.width !== vid.videoWidth / 2 || cv.height !== vid.videoHeight) {
+          cv.width = vid.videoWidth / 2; cv.height = vid.videoHeight; gl.viewport(0, 0, cv.width, cv.height);
+        }
+        try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, vid); }
+        catch (e) { failed = true; figBox.classList.remove('live'); return; }
+        gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        if (!shown) { shown = true; figBox.classList.add('live'); }
+      }
+      raf = requestAnimationFrame(draw);
+    };
+    var play = function () {
+      if (on || failed) return; on = true;
+      var pr = vid.play(); if (pr && pr.catch) pr.catch(function () { on = false; });
+      if (!raf) raf = requestAnimationFrame(draw);
+    };
+    var pause = function () { on = false; vid.pause(); };
+    vid.addEventListener('error', function () { failed = true; figBox.classList.remove('live'); });
+    cv.className = 'ab-live'; cv.setAttribute('aria-hidden', 'true');
+    figBox.appendChild(cv);
+    vid.src = figBox.getAttribute('data-live');
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !document.hidden) play(); else pause(); }); }).observe(figBox);
+    } else play();
+    document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
+  })();
+
   /* ---- the title turns through the four jobs ---- */
   var rot = $$('.ab-rot span');
   if (rot.length > 1 && !still) {
