@@ -1,24 +1,31 @@
 -- =====================================================================
---  STUDIO NEWS TO EVERYONE WITH AN ACCOUNT
+--  STUDIO NEWS TO THE PEOPLE WHO ASKED FOR IT
 --
 --  The update notices (supabase-update-notices.sql) go to the owners of
 --  one app about that app. This is the other kind: a short "what's new
---  at the studio" letter to everyone who has made an account on
---  amanorsac.studio. Rare, and written by hand each time.
+--  at the studio" letter. Rare, and written by hand each time.
+--
+--  Who gets it: ONLY people who ticked the "tell me first" box, either
+--  when they made their account or when they took a free download. That
+--  is the public.subscribers table (supabase-downloads.sql) with
+--  consented = true. Having an account is not consent to marketing, so
+--  an account alone is not enough; the letter is a marketing email and
+--  the law (CAN-SPAM in the US, GDPR/PECR in Europe) wants a yes first.
 --
 --  Same rules as the notices, because they were the right rules:
 --    - one row per (announcement, person), inserted before the letter
 --      leaves, so a cron that runs twice or a retry cannot send twice
---    - anyone in notice_optouts is skipped; the link at the bottom of
---      every letter puts them there, once, for good
---    - confirmed addresses only. An address that never clicked its
---      confirmation link may not be theirs, and sending to it is how a
---      domain ends up in spam folders.
+--    - anyone in notice_optouts, or with unsubscribed_at set, is skipped;
+--      the link at the bottom of every letter puts them there, for good
+--    - confirmed addresses only: the subscriber row was confirmed by a
+--      download link, or the same address has a confirmed account. An
+--      address that never clicked anything may not be theirs.
 --
---  Needs supabase-update-notices.sql to have been run first (it makes
---  notice_optouts). Run this whole file in the Supabase SQL editor.
---  Safe to run twice. The last query shows how many people the next
---  letter would reach.
+--  Needs supabase-downloads.sql and supabase-update-notices.sql to have
+--  been run first. Run this whole file in the Supabase SQL editor. Safe
+--  to run twice; running it again after an earlier version switches the
+--  recipients to the opted-in list. The last query shows how many people
+--  the next letter would reach.
 -- =====================================================================
 
 
@@ -46,24 +53,29 @@ create policy announcements_sent_admin on public.announcements_sent
 --  2 · THE DOORS THE WORKER USES
 -- =====================================================================
 
-/* Everyone with a confirmed account who has not had this announcement
- * and has not said stop. Oldest accounts first, so if a run is cut short
- * the people who have been around longest hear first. */
+/* Everyone who said yes to hearing from the studio, whose address is
+ * confirmed, who has not had this announcement and has not said stop.
+ * Earliest consent first, so if a run is cut short the people who have
+ * been waiting longest hear first. */
 create or replace function public.announcement_candidates(
   p_id text, p_limit int default 100
 ) returns table (email text)
 language sql security definer stable set search_path = '' as $$
-  select lower(u.email)
-  from auth.users u
-  where u.email is not null
-    and u.email_confirmed_at is not null
-    and u.deleted_at is null
+  select lower(s.email)
+  from public.subscribers s
+  where s.consented
+    and s.unsubscribed_at is null
+    and (s.confirmed_at is not null
+         or exists (select 1 from auth.users u
+                    where lower(u.email) = lower(s.email)
+                      and u.email_confirmed_at is not null
+                      and u.deleted_at is null))
     and not exists (
-      select 1 from public.announcements_sent s
-      where s.announcement_id = p_id and s.email = lower(u.email))
+      select 1 from public.announcements_sent t
+      where t.announcement_id = p_id and t.email = lower(s.email))
     and not exists (
-      select 1 from public.notice_optouts o where o.email = lower(u.email))
-  order by u.created_at asc
+      select 1 from public.notice_optouts o where o.email = lower(s.email))
+  order by coalesce(s.consented_at, s.created_at) asc
   limit greatest(1, least(p_limit, 500));
 $$;
 
@@ -117,14 +129,13 @@ $$;
 --  4 · WHO THE NEXT ONE WOULD REACH
 -- =====================================================================
 
-select 'confirmed accounts' as thing, count(*) as n
+select 'confirmed accounts (not all of them get news)' as thing, count(*) as n
   from auth.users where email is not null and email_confirmed_at is not null and deleted_at is null
+union all
+select 'said yes to studio news', count(*)
+  from public.subscribers where consented and unsubscribed_at is null
 union all
 select 'said stop', count(*) from public.notice_optouts
 union all
 select 'will get 2026-10-studio-news', count(*)
-  from auth.users u
-  where u.email is not null and u.email_confirmed_at is not null and u.deleted_at is null
-    and not exists (select 1 from public.announcements_sent s
-                    where s.announcement_id = '2026-10-studio-news' and s.email = lower(u.email))
-    and not exists (select 1 from public.notice_optouts o where o.email = lower(u.email));
+  from public.announcement_candidates('2026-10-studio-news', 500);

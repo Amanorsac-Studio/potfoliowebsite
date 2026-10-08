@@ -1,6 +1,6 @@
 # Amanorsac Studio — Release Standard
 
-**Version 1.0 · October 2026 · Applies to every Amanorsac app, plug-in and plug-in bundle, paid or free.**
+**Version 1.1 · October 2026 · Applies to every Amanorsac app, plug-in and plug-in bundle, paid or free.**
 
 This is how a build becomes a release on amanorsac.studio. It sits beside
 the License Integration Standard (`license-integration-for-developers.md`)
@@ -198,3 +198,32 @@ without those answers.
 - [ ] package in `releases/<app>/<version>/`, listed back, bytes match
 - [ ] website chat told
 - [ ] website chat's report read; price given; go-ahead given
+- [ ] launch compliance (§8) checked for anything the release adds: a new
+      email, a new third-party script, a new way to pay, a new upload path
+
+---
+
+## 8. Launch compliance
+
+Six things that get small studios sued or fined, and the studio's answer
+to each. They are checked once for the website and again whenever a
+release touches the thing in question. The website chat MUST NOT push
+`main` with any of these broken.
+
+| # | The risk | The rule | Where it lives |
+|---|---|---|---|
+| 1 | **Fonts loaded from a third-party CDN** send every visitor's IP address to that company without consent (the German Google Fonts rulings). | Fonts are self-hosted under `/fonts/` and declared in the site's own CSS. No page links to fonts.googleapis.com or any font CDN. | `assets/site.css`, `assets/fonts.css` |
+| 2 | **Session replay and keystroke recording** (Hotjar, FullStory, LogRocket and the like) record what people type before they press send. | None is used. The website's own first-party traffic record is what the privacy policy §2.4 describes and nothing more; a new third-party script of any kind MUST be named in privacy policy §5 before it ships. | `privacy.html` §2.4, §5 |
+| 3 | **Marketing email without consent, without a stop link, or without a postal address** breaks CAN-SPAM in the US and GDPR/PECR in Europe. | Studio news goes only to `public.subscribers` rows with `consented = true` and no `unsubscribed_at`; an account alone is not consent. Every email the Worker sends carries a one-click stop link where it is not a transactional email, a `List-Unsubscribe` header, and the postal address line (`POSTAL` in `worker.js`). The sign-up box for news is unticked by default and never required. | `worker.js`, `supabase-announcements.sql`, `client.html` |
+| 4 | **Subscriptions that are easy to start and hard to stop** (the FTC's click-to-cancel rule and the state auto-renewal laws). | The studio sells lifetime licences and no subscriptions. If one is ever added, cancelling MUST be one click from My Apps, as easy as signing up, with the renewal date and price shown before every charge. | `legal.html` §2.5 |
+| 5 | **Hosting other people's uploads without a copyright agent** loses the DMCA safe harbour for the store's creator packs. | Terms §2.7 names the designated agent, the address and what a notice must contain; the same agent is registered with the US Copyright Office DMCA directory (renewed every three years). A complete notice is acted on promptly and the uploader told; repeat infringers lose their store account. | `legal.html` §2.7 |
+| 6 | **Children's data** (COPPA): an account made by someone under 13 without parental consent. | Sign-up has a required "I am 13 or older and agree to the terms" box, checked in the page's own code, not left to the browser. The privacy policy says accounts are not made for anyone under 13 and how to have a child's data removed. | `client.html`, `privacy.html` §9 |
+
+Two more that are not in that list but belong with it:
+
+- **The privacy policy names every company that touches data.** Adding a
+  payment provider, an email service, a host or an analytics tool means
+  adding a line to `privacy.html` §5 in the same commit.
+- **Prices and claims on a page are the product's own.** A release
+  that renames or removes a feature changes the page in the same commit,
+  per §6 step 4, so the page never promises what the build no longer does.

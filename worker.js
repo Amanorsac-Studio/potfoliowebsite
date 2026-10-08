@@ -31,6 +31,10 @@
 const SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PlVBmRgFdhTkVMurXLiBFQ_NjiVssQp';
 const SITE = 'https://amanorsac.studio';
+/* The studio's postal address. Every email the Worker sends carries it,
+   because a commercial email without a physical address is unlawful in
+   the US (CAN-SPAM) and looks like spam everywhere else. */
+const POSTAL = 'Amanorsac Studio, 212 Copeley Road, Charlottesville, VA 22903, United States';
 
 export default {
   async fetch(request, env, ctx) {
@@ -446,7 +450,7 @@ async function sendConfirmation(env, email, item, link) {
     link + '\n\n' +
     'The link works for 24 hours. If you did not ask for this, ignore it - ' +
     'nothing is sent to an address that is never confirmed.\n\n' +
-    'Amanorsac Studio\n' + SITE + '\n';
+    POSTAL + '\n' + SITE + '\n';
 
   const html =
     '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:16px;' +
@@ -460,7 +464,7 @@ async function sendConfirmation(env, email, item, link) {
       'The link works for 24 hours. If you did not ask for this, ignore it &mdash; ' +
       'nothing is ever sent to an address that is not confirmed.</p>' +
     '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
-      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a><br>' + POSTAL + '</p></div>';
 
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -1411,7 +1415,7 @@ async function sendUpdateNotice(env, email, title, app, n) {
     'You are getting this because you own ' + title + '. It is not a ' +
     'newsletter and there is nothing else coming.\n' +
     'Rather not hear about updates at all? ' + stop + '\n\n' +
-    'Amanorsac Studio\n' + SITE + '\n';
+    POSTAL + '\n' + SITE + '\n';
 
   const html =
     '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;' +
@@ -1430,7 +1434,7 @@ async function sendUpdateNotice(env, email, title, app, n) {
     '<p style="margin:0 0 18px;color:#6B655C;font-size:13.5px">' +
       '<a href="' + esc(stop) + '" style="color:#6B655C">Rather not hear about updates at all?</a></p>' +
     '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
-      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a><br>' + POSTAL + '</p></div>';
 
   try {
     const r = await fetch('https://api.resend.com/emails', {
@@ -1538,10 +1542,10 @@ function announcementEmail(a, stop) {
     (a.intro ? a.intro + '\n\n' : '') +
     items.map(it => (it.title || '') + '\n' + (it.text || '') + (it.link ? '\n' + abs(it.link) : '')).join('\n\n') +
     '\n\n' + (a.signoff ? a.signoff + '\n\n' : '') +
-    'You are getting this because you have an account at amanorsac.studio. ' +
-    'It is not a newsletter: the studio writes when there is something to say.\n' +
+    'You are getting this because you ticked the box to hear from the studio when you ' +
+    'signed up at amanorsac.studio. The studio writes only when there is something to say.\n' +
     'Rather not hear from the studio about news and updates? ' + stop + '\n\n' +
-    'Amanorsac Studio\n' + SITE + '\n';
+    POSTAL + '\n' + SITE + '\n';
 
   const html =
     '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:560px;' +
@@ -1558,12 +1562,12 @@ function announcementEmail(a, stop) {
           esc(it.link_label || 'Have a look') + ' &rsaquo;</a></p>' : '') +
       '</div>').join('') +
     (a.signoff ? '<p style="margin:4px 0 26px">' + esc(a.signoff) + '</p>' : '') +
-    '<p style="margin:0 0 8px;color:#6B655C;font-size:13.5px">You are getting this because you have an account at ' +
-      'amanorsac.studio. It is not a newsletter: the studio writes when there is something to say.</p>' +
+    '<p style="margin:0 0 8px;color:#6B655C;font-size:13.5px">You are getting this because you ticked the box to hear ' +
+      'from the studio when you signed up at amanorsac.studio. The studio writes only when there is something to say.</p>' +
     '<p style="margin:0 0 18px;color:#6B655C;font-size:13.5px">' +
       '<a href="' + esc(stop) + '" style="color:#6B655C">Rather not hear from the studio about news and updates?</a></p>' +
     '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
-      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a><br>' + POSTAL + '</p></div>';
 
   return { text, html };
 }
@@ -1655,7 +1659,7 @@ async function sendReviewInvite(env, email, appTitle, link) {
     link + '\n\n' +
     'That link is yours alone and works for 30 days. If you would rather ' +
     'not, ignore this - you will not be asked again about this download.\n\n' +
-    'Amanorsac Studio\n' + SITE + '\n';
+    POSTAL + '\n' + SITE + '\n';
 
   const html =
     '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;font-size:16px;' +
@@ -1670,7 +1674,7 @@ async function sendReviewInvite(env, email, appTitle, link) {
       'That link is yours alone and works for 30 days. If you would rather not, ' +
       'ignore this &mdash; you will not be asked again about this download.</p>' +
     '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
-      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a></p></div>';
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a><br>' + POSTAL + '</p></div>';
 
   try {
     const r = await fetch('https://api.resend.com/emails', {
