@@ -11,10 +11,23 @@ buyers, and what it must bring with it.
 The words **MUST** and **MUST NOT** mark requirements. Everything else is
 explanation.
 
-**The one rule.** An app is not released until its repo has run
-`/release` and the website chat has received the release package. Nothing
-is pushed to R2 by hand, no page is written from memory, and no version
-number is typed into `catalog.json` by anyone but the website's receiver.
+**The one rule.** An app is not released until its repo has run the
+release steps in §4 and the website chat has received the release
+package. Nothing is pushed to R2 by hand, no page is written from memory,
+and no version number is typed into `catalog.json` by anyone but the
+website's receiver.
+
+**How to put this in an app repo.** Save this file as
+`docs/release-standard.md` in the repo and add one line to the repo's
+`CLAUDE.md`:
+
+```
+Releases follow docs/release-standard.md. When asked to release a version, do §4 of it, in order, and stop where it says stop.
+```
+
+That is the whole setup. It works the same in a Claude Code chat on the
+studio's computer and in a cloud chat on the repo; no plugin is needed.
+The website repo carries the receiver's side (§6) the same way.
 
 ---
 
@@ -27,11 +40,12 @@ number is typed into `catalog.json` by anyone but the website's receiver.
    installers** (the signed Windows installer, the notarized Mac disk
    images). Mobile apps get their screenshots from the repo's own store
    assets instead of a recording.
-3. In the repo's Claude Code chat, `/release <version>` gathers the
+3. In the repo's Claude Code chat, "release <version>" gathers the
    installers, the screenshots, the recording, the product video and the
-   hand-off notes into one **release package**, uploads it to the studio's
-   R2 bucket under `releases/<app>/<version>/`, and tells the website chat.
-4. The website chat's receiver picks the package up. It puts the
+   hand-off notes into one **release package** and uploads it to the
+   studio's R2 bucket under `releases/<app>/<version>/`.
+4. The person tells the website chat `receive <app> <version>`, and it
+   picks the package up. It puts the
    installers under the catalog's exact names and confirms they are in the
    bucket, converts the screenshots for the web, places the video on the
    app's page, updates the catalog version and the page's "What's new" from
@@ -110,10 +124,11 @@ would and turns into the page.
 
 ---
 
-## 4. The `/release` command (in every app repo)
+## 4. The release steps (in every app repo)
 
-The repo's Claude Code mod registers `/release`. Given `/release 2.0.4`
-it MUST, in order:
+Told "release 2.0.4" (or `/release 2.0.4` where the studio's mod is
+installed), the repo's chat MUST do these, in order, and MUST stop at the
+first one that fails rather than carry on:
 
 1. **Check the build.** Confirm the version in the code matches, the
    GitHub build for that tag succeeded, and the installers exist. Stop and
@@ -130,12 +145,15 @@ it MUST, in order:
    the real screens, never a mock-up.
 5. **Write `handoff.md`** (§3) from the commit log since the last release
    and the repo's own README, then show it to the person for a read before
-   it goes anywhere.
+   it goes anywhere. A cloud chat that cannot launch the app says so here
+   and asks for the screenshots and recording to be dropped into
+   `release/<version>/` from the studio's computer, then continues.
 6. **Upload** the package to `r2:amanorsac-downloads/releases/<app>/<version>/`
    with rclone, then list the folder back and compare bytes to what was
    sent. Stop if anything differs.
-7. **Tell the website chat**: send one message naming the app, the
-   version and the R2 path. That message is the hand-off.
+7. **Tell the website chat**: the person pastes one line into the website
+   repo's chat, `receive <app> <version>`. That line is the hand-off; the
+   website chat then does §6.
 
 It MUST NOT upload anything under `<app>/` (the folder the catalog serves
 from). That folder is the receiver's alone.
@@ -196,7 +214,7 @@ without those answers.
 - [ ] `/brag` run from the repo; video, poster and caption in `brag/`
 - [ ] `handoff.md` written and read through
 - [ ] package in `releases/<app>/<version>/`, listed back, bytes match
-- [ ] website chat told
+- [ ] website chat told: `receive <app> <version>`
 - [ ] website chat's report read; price given; go-ahead given
 - [ ] launch compliance (§8) checked for anything the release adds: a new
       email, a new third-party script, a new way to pay, a new upload path
