@@ -80,12 +80,15 @@
 </nav>
 
 <main id="main" class="ab">
+<script>/* the hero starts hidden only when it can arrive, and never stays hidden */
+(function(m){if(!window.matchMedia||!matchMedia('(prefers-reduced-motion: reduce)').matches){m.classList.add('boot');setTimeout(function(){m.classList.remove('boot')},3000)}})(document.currentScript.parentNode);</script>
 
 <nav class="ab-nav" aria-label="On this page">
   <ul>
     <li><a href="#about">About</a></li>
     <li><a href="#craft">Craft</a></li>
     <li><a href="#work">Work</a></li>
+    <li><a href="#services">Services</a></li>
     <li><a href="#journey">Journey</a></li>
     <li><a href="#moments">Moments</a></li>
     <li><a href="#gallery-sec">Gallery</a></li>
@@ -132,11 +135,11 @@
       </div>
     </div>
 
-    <div class="ab-lanyard" aria-label="Studio pass">
+    <div class="ab-lanyard" aria-label="Studio pass" data-drop>
       <div class="ab-strap" aria-hidden="true"></div>
       <div class="ab-swing" id="ab-swing">
         <div class="ab-clip" aria-hidden="true"></div>
-        <article class="ab-pass">
+        <article class="ab-pass" id="ab-pass"><span class="glare" aria-hidden="true"></span>
           <header><img src="images/logo.svg" alt=""><div><b>STUDIO PASS</b><small>Amanorsac Studio</small></div></header>
           <div class="hole" aria-hidden="true"></div>
           <div class="photo"><img src="images/about/stephen-badge.webp" width="600" height="720" loading="lazy" alt="Stephen Amanor Sackey"></div>
@@ -176,7 +179,7 @@
     </div>
   </div>
   <div class="ab-fams" role="group" aria-label="Families" id="ab-fams"></div>
-  <div class="ab-pt" data-in>
+  <div class="ab-pt" data-in data-cascade>
     <div class="ab-grid" id="pt-table"></div>
     <aside class="ab-detail" id="ab-detail" aria-live="polite"></aside>
   </div>
@@ -188,25 +191,44 @@
     <h2 class="ab-h">Things I&rsquo;ve <em>built.</em></h2>
     <p class="ab-lead">The records first, then the software that came out of making them.</p>
   </div>
-  <div class="ab-work" id="ab-work" data-in>
-    <a class="ab-card feat" href="mixing.html">
-      <img src="images/gen/control-room-1200.webp" width="1200" height="670" loading="lazy" alt="">
-      <span class="kind">Records</span>
-      <div class="body">
-        <h3>Mixing, mastering and production</h3>
-        <p>Vocal-forward mixing and mastering. Close harmony, gospel, highlife and live worship records.</p>
+  <div class="ab-acc" id="ab-work" data-in>
+    <a class="ab-panel open" href="mixing.html" style="--art:url('/images/gen/control-room-1200.webp')">
+      <span class="vt"><b>01</b>Records</span>
+      <span class="pc">
+        <span class="kind">Records</span>
+        <span class="h">Mixing, mastering and production</span>
+        <span class="t">Vocal-forward mixing and mastering. Close harmony, gospel, highlife and live worship records.</span>
         <span class="go">Hear the before and after &rarr;</span>
-      </div>
+      </span>
+      <span class="art"></span>
     </a>
   </div>
 </section>
 
+<section class="ab-sec ab-svc" id="services">
+  <div class="ab-svc-l" data-in>
+    <p class="ab-kick"><b>04</b> Services</p>
+    <h2 class="ab-h">Ways to <em>work together.</em></h2>
+    <p class="ab-lead">Seven ways in. Pick one and the form at the bottom of the page is ready for it.</p>
+  </div>
+  <ol class="ab-list" id="ab-list">
+    <li><a href="#contact" data-svc="Mixing"><span class="ix">01</span><span class="nm">Mixing<small>Vocal-forward mixes for close harmony, gospel, highlife and live worship records.</small></span><span class="ar">&#8599;</span></a></li>
+    <li><a href="#contact" data-svc="Mastering"><span class="ix">02</span><span class="nm">Mastering<small>Mastering on its own, or after the mix.</small></span><span class="ar">&#8599;</span></a></li>
+    <li><a href="#contact" data-svc="Mixing and mastering"><span class="ix">03</span><span class="nm">Mixing and mastering<small>The whole finish, mix to master, in one place.</small></span><span class="ar">&#8599;</span></a></li>
+    <li><a href="#contact" data-svc="Production"><span class="ix">04</span><span class="nm">Production<small>Worship records, live albums and first releases, from the idea to the finished song.</small></span><span class="ar">&#8599;</span></a></li>
+    <li><a href="#contact" data-svc="Session piano"><span class="ix">05</span><span class="nm">Session piano<small>Keys for records and for services.</small></span><span class="ar">&#8599;</span></a></li>
+    <li><a href="#contact" data-svc="Music direction"><span class="ix">06</span><span class="nm">Music direction<small>Directing a band and singers for services, events and live albums.</small></span><span class="ar">&#8599;</span></a></li>
+    <li><a href="#contact" data-svc="Live or broadcast audio"><span class="ix">07</span><span class="nm">Live or broadcast audio<small>The broadcast mix every Sunday, and live sound for events.</small></span><span class="ar">&#8599;</span></a></li>
+  </ol>
+</section>
+
 <section class="ab-sec" id="journey">
   <div data-in>
-    <p class="ab-kick"><b>04</b> Journey</p>
+    <p class="ab-kick"><b>05</b> Journey</p>
     <h2 class="ab-h">Education <em>&amp; experience.</em></h2>
   </div>
-  <div class="ab-time">
+  <div class="ab-time" id="ab-time">
+    <span class="ab-line" aria-hidden="true"><i></i></span>
     <div class="ab-step" data-in>
       <div class="when">Accra<small>Where it started</small></div>
       <div class="what"><h3>Keys and music direction</h3>
@@ -239,37 +261,37 @@
 <section class="ab-sec" id="moments">
   <div class="ab-mo-head" data-in>
     <div>
-      <p class="ab-kick"><b>05</b> Moments</p>
+      <p class="ab-kick"><b>06</b> Moments</p>
       <h2 class="ab-h">Proud <em>moments.</em></h2>
     </div>
     <a class="ab-more" href="apps.html">and counting <span>&rarr;</span></a>
   </div>
-  <div class="ab-moments" data-in>
+  <div class="ab-moments" data-in data-deal>
     <div class="ab-mo">
       <span class="ix">01 / 04</span>
       <span class="badge"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h6v6H9z"/></svg></span>
-      <div class="num" id="ab-count">9</div>
+      <div class="num"><span id="ab-count" data-count="9">9</span></div>
       <h3>Apps and plug-ins released</h3>
       <p>Built for rehearsals, services and the mix, and sold on this site.</p>
     </div>
     <div class="ab-mo">
       <span class="ix">02 / 04</span>
       <span class="badge"><svg viewBox="0 0 24 24"><path d="M4 18V9l8-5 8 5v9"/><path d="M9 18v-5h6v5"/></svg></span>
-      <div class="num">52<small>a year</small></div>
+      <div class="num"><span data-count="52">52</span><small>a year</small></div>
       <h3>Sundays at the desk and the keys</h3>
       <p>Music director and broadcast mix for a multicultural congregation in Virginia.</p>
     </div>
     <div class="ab-mo">
       <span class="ix">03 / 04</span>
       <span class="badge"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c2.5 2.5 2.5 13.5 0 16M12 4c-2.5 2.5-2.5 13.5 0 16"/></svg></span>
-      <div class="num">2<small>continents</small></div>
+      <div class="num"><span data-count="2">2</span><small>continents</small></div>
       <h3>Accra to Virginia</h3>
       <p>The same work in two rooms, and remote sessions anywhere in between.</p>
     </div>
     <div class="ab-mo">
       <span class="ix">04 / 04</span>
       <span class="badge"><svg viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/></svg></span>
-      <div class="num">1st<small>releases</small></div>
+      <div class="num"><span data-count="1" data-suffix="st">1st</span><small>releases</small></div>
       <h3>With independent artists</h3>
       <p>First releases with artists like Kingsley Anyenor, and live album productions.</p>
     </div>
@@ -278,7 +300,7 @@
 
 <section class="ab-sec" id="gallery-sec">
   <div data-in>
-    <p class="ab-kick"><b>06</b> Gallery</p>
+    <p class="ab-kick"><b>07</b> Gallery</p>
     <h2 class="ab-h">Sessions, services <em>and the rooms.</em></h2>
   </div>
   <div class="gallery" id="gallery" data-set="about"></div>
@@ -287,7 +309,7 @@
 
 <section class="ab-sec" id="contact">
   <div data-in>
-    <p class="ab-kick"><b>07</b> Contact</p>
+    <p class="ab-kick"><b>08</b> Contact</p>
     <h2 class="ab-h">Start a <em>project.</em></h2>
     <p class="ab-lead" style="margin-bottom:34px">Tell me what it should feel like and I will tell you what it needs.</p>
   </div>
