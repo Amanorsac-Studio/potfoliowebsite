@@ -364,7 +364,7 @@
   },
   "apps": {
     "chordlight88": {
-      "_cl": "2.0.6 is up: the GitHub build zips, the first with the licence key back on, uploaded 8 Oct 2026 and confirmed with rclone lsl (162241948 and 265545514 bytes). 2.0.5 is unlicensed; it stays in alt_keys only as a fallback.",
+      "_cl": "2.0.6 rebuilt 8 Oct 2026 (setup in tabs, attack and release): chordlight-Windows_2.0.6.zip and chordlight-macOS_2.0.6.zip, uploaded 14:55 EDT through the R2 dashboard (162.24 MB and 265.57 MB there). The earlier 2.0.6 and older names stay in alt_keys as fallbacks only.",
       "_cl7": "These keys live on the APP, not inside installers: this file reads",
       "_cl8": "Object.keys(installers) as the platform list, so a comment in",
       "_cl9": "there becomes an app that runs on \"_2\". I did it again writing",
@@ -385,8 +385,9 @@
       "version": "2.0.6",
       "installers": {
         "windows": {
-          "key": "chordlight88/chordlight-Windows-2.0.6.zip",
+          "key": "chordlight88/chordlight-Windows_2.0.6.zip",
           "alt_keys": [
+            "chordlight88/chordlight-Windows-2.0.6.zip",
             "chordlight88/chordlight-Windows-2.0.5.zip",
             "chordlight88/chordlight-Windows2.0.1.zip",
             "ChordLight/chordlight-Windows2.0.1.zip",
@@ -395,11 +396,12 @@
           "as": "Chordlight-88-2.0.6-Windows.zip",
           "type": "application/zip",
           "label": "Windows 10/11 · zip, unzip and run the installer",
-          "size": "155 MB"
+          "size": "162 MB"
         },
         "mac": {
-          "key": "chordlight88/chordlight-macOS-2.0.6.zip",
+          "key": "chordlight88/chordlight-macOS_2.0.6.zip",
           "alt_keys": [
+            "chordlight88/chordlight-macOS-2.0.6.zip",
             "chordlight88/chordlight-macOS-2.0.5.zip",
             "chordlight88/Chordlight88-2.0.1-macOS.dmg",
             "ChordLight/Chordlight88-2.0.1-macOS.dmg",
@@ -408,7 +410,7 @@
           "as": "Chordlight-88-2.0.6-macOS.zip",
           "type": "application/zip",
           "label": "macOS 12+ · zip, unzip and open the disk image",
-          "size": "253 MB"
+          "size": "266 MB"
         }
       },
       "promo": {
