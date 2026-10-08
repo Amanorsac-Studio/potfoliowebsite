@@ -414,16 +414,7 @@
         "percent": 50,
         "note": "Early bird on 2.0"
       },
-      "notice": {
-        "_": "Emailed once to everyone who owns Chordlight 88, by the daily job.",
-        "_2": "Change id and EVERY owner gets a second letter; change only the",
-        "_3": "wording and nothing more goes out. Nobody gets the same id twice.",
-        "id": "2026-10-v2.0.5",
-        "subject": "Chordlight 88 2.0.5: three built-in instruments, and a Mac video fix",
-        "line": "Chordlight 88 2.0.5 is out. It now has three instruments of its own: Grand 1, SP Natural and Soft EP 1.",
-        "body": "Choose one under Setup, Sound and it plays from your keyboard and goes into every clip and recording. On a Mac, pressing Video no longer blanks the window, and if the window ever fails it now comes back by itself. It is a free update for everyone who owns Chordlight 88: open Amanorsac Hub and it will offer you 2.0.5. The licence you already have covers it.",
-        "cta": "See what is new"
-      }
+      "_notice_held": "The owner email is held until 2.0.6 is live: the 2.0.5 files on the site are the build without the licence check, and owners should get one email, about 2.0.6. When 2.0.6 is in, put a notice block back here with id 2026-10-v2.0.6."
     },
     "stemsorter": {
       "name": "Stem Sorter",
