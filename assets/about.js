@@ -100,9 +100,7 @@
     vid.addEventListener('error', function () { failed = true; figBox.classList.remove('live'); });
     cv.className = 'ab-live'; cv.setAttribute('aria-hidden', 'true');
     figBox.appendChild(cv);
-    // WebM where it plays (Chrome, Edge, Firefox, Android), the MP4 everywhere else (Safari)
-    var src = figBox.getAttribute('data-live');
-    vid.src = (vid.canPlayType('video/webm; codecs="vp9"') ? src.replace(/\.mp4$/, '.webm') : src);
+    vid.src = figBox.getAttribute('data-live');
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting && !document.hidden) play(); else pause(); }); }).observe(figBox);
     } else play();
