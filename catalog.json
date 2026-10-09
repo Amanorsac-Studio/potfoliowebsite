@@ -57,6 +57,15 @@
   "_news16": "something to say beyond \"this exists\".",
   "news": [
     {
+      "id": "chordlight88-2-0-7",
+      "date": "2026-10-09",
+      "tag": "Update",
+      "app": "chordlight88",
+      "title": "Chordlight 88 2.0.7: a Windows Video fix",
+      "body": "On some Windows graphics drivers, pressing Video took the window down and reloaded it. Chordlight now asks for the screen again when it records the computer's sound, as it did before 2.0.4, and if a computer ever does it again it happens only once: the clip switches to Inputs and Chordlight tells you. Free for everyone who owns Chordlight 88, through Amanorsac Hub.",
+      "url": "chordlight88.html#new"
+    },
+    {
       "id": "secondout-1-3-3",
       "date": "2026-10-08",
       "tag": "Update",
@@ -373,7 +382,7 @@
   },
   "apps": {
     "chordlight88": {
-      "_cl": "2.0.6 rebuilt 8 Oct 2026 (setup in tabs, attack and release): chordlight-Windows_2.0.6.zip and chordlight-macOS_2.0.6.zip, uploaded 14:55 EDT through the R2 dashboard (162.24 MB and 265.57 MB there). The earlier 2.0.6 and older names stay in alt_keys as fallbacks only.",
+      "_cl": "2.0.7, 9 Oct 2026 (Windows: Video no longer restarts the window): chordlight-Windows_2.0.7.zip and chordlight-macOS_2.0.7.zip. The 2.0.6 and older names stay in alt_keys as fallbacks only.",
       "_cl7": "These keys live on the APP, not inside installers: this file reads",
       "_cl8": "Object.keys(installers) as the platform list, so a comment in",
       "_cl9": "there becomes an app that runs on \"_2\". I did it again writing",
@@ -391,32 +400,34 @@
       "price_cents": 2400,
       "list_price_cents": 4800,
       "licensed": true,
-      "version": "2.0.6",
+      "version": "2.0.7",
       "installers": {
         "windows": {
-          "key": "chordlight88/chordlight-Windows_2.0.6.zip",
+          "key": "chordlight88/chordlight-Windows_2.0.7.zip",
           "alt_keys": [
+            "chordlight88/chordlight-Windows_2.0.6.zip",
             "chordlight88/chordlight-Windows-2.0.6.zip",
             "chordlight88/chordlight-Windows-2.0.5.zip",
             "chordlight88/chordlight-Windows2.0.1.zip",
             "ChordLight/chordlight-Windows2.0.1.zip",
             "chordlight-Windows2.0.1.zip"
           ],
-          "as": "Chordlight-88-2.0.6-Windows.zip",
+          "as": "Chordlight-88-2.0.7-Windows.zip",
           "type": "application/zip",
           "label": "Windows 10/11 · zip, unzip and run the installer",
           "size": "162 MB"
         },
         "mac": {
-          "key": "chordlight88/chordlight-macOS_2.0.6.zip",
+          "key": "chordlight88/chordlight-macOS_2.0.7.zip",
           "alt_keys": [
+            "chordlight88/chordlight-macOS_2.0.6.zip",
             "chordlight88/chordlight-macOS-2.0.6.zip",
             "chordlight88/chordlight-macOS-2.0.5.zip",
             "chordlight88/Chordlight88-2.0.1-macOS.dmg",
             "ChordLight/Chordlight88-2.0.1-macOS.dmg",
             "Chordlight88-2.0.1-macOS.dmg"
           ],
-          "as": "Chordlight-88-2.0.6-macOS.zip",
+          "as": "Chordlight-88-2.0.7-macOS.zip",
           "type": "application/zip",
           "label": "macOS 12+ · zip, unzip and open the disk image",
           "size": "266 MB"
