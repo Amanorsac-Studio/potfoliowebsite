@@ -300,7 +300,9 @@ begin
 
   select jsonb_build_object(
     'last_30', coalesce(sum(clicks) filter (where day > current_date - 30), 0),
-    'all',     coalesce(sum(clicks), 0))
+    'all',     coalesce(sum(clicks), 0),
+    'days',    coalesce((select jsonb_agg(jsonb_build_object('day', day, 'clicks', clicks) order by day)
+                         from public.affiliate_clicks where code = a.code and day > current_date - 30), '[]'::jsonb))
   into v_clicks from public.affiliate_clicks where code = a.code;
 
   return jsonb_build_object(
