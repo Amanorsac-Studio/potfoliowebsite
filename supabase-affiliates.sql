@@ -54,6 +54,12 @@ create table if not exists public.affiliates (
   audience       text,                       -- "worship keys players, ~12k on YouTube"
   message        text,
 
+  -- the one thing every application must carry: a video they made of
+  -- one of the studio's existing products, so the studio can see how
+  -- they would show it before handing them a code
+  video_url      text not null,
+  video_app      text not null,
+
   -- how they are paid. PayPal takes an email, MoMo a number.
   payout_method  text not null check (payout_method in ('paypal', 'momo')),
   payout_to      text not null,
@@ -209,9 +215,11 @@ create trigger purchases_affiliate_credit
 /* Apply. One row per account; a declined person may apply again and
    the row is simply refreshed. Approved and disabled rows are not
    touched from here. */
+drop function if exists public.apply_affiliate(text, text, text, text, text, text);
 create or replace function public.apply_affiliate(
   p_name text, p_links text, p_audience text, p_message text,
-  p_payout_method text, p_payout_to text)
+  p_payout_method text, p_payout_to text,
+  p_video_url text, p_video_app text)
 returns jsonb
 language plpgsql security definer set search_path = '' as $$
 declare
@@ -222,23 +230,25 @@ begin
   if length(trim(coalesce(p_name, ''))) < 2 then raise exception 'name'; end if;
   if p_payout_method not in ('paypal', 'momo') then raise exception 'payout_method'; end if;
   if length(trim(coalesce(p_payout_to, ''))) < 5 then raise exception 'payout_to'; end if;
+  if coalesce(p_video_url, '') !~* '^https?://[^\s]{6,}$' then raise exception 'video_url'; end if;
+  if length(trim(coalesce(p_video_app, ''))) < 2 then raise exception 'video_app'; end if;
 
   select * into cur from public.affiliates where user_id = v_uid;
   if found and cur.status in ('approved', 'disabled') then
     return jsonb_build_object('ok', false, 'status', cur.status);
   end if;
 
-  insert into public.affiliates (user_id, name, links, audience, message, payout_method, payout_to)
+  insert into public.affiliates (user_id, name, links, audience, message, payout_method, payout_to, video_url, video_app)
   values (v_uid, left(trim(p_name), 80), left(p_links, 600), left(p_audience, 400), left(p_message, 1200),
-          p_payout_method, left(trim(p_payout_to), 120))
+          p_payout_method, left(trim(p_payout_to), 120), left(trim(p_video_url), 400), lower(left(trim(p_video_app), 40)))
   on conflict (user_id) do update
     set name = excluded.name, links = excluded.links, audience = excluded.audience,
         message = excluded.message, payout_method = excluded.payout_method,
-        payout_to = excluded.payout_to, status = 'pending', note = null,
-        created_at = now(), decided_at = null;
+        payout_to = excluded.payout_to, video_url = excluded.video_url, video_app = excluded.video_app,
+        status = 'pending', note = null, created_at = now(), decided_at = null;
   return jsonb_build_object('ok', true, 'status', 'pending');
 end $$;
-grant execute on function public.apply_affiliate(text, text, text, text, text, text) to authenticated;
+grant execute on function public.apply_affiliate(text, text, text, text, text, text, text, text) to authenticated;
 
 /* Change where the money goes. The only field they edit after approval. */
 create or replace function public.set_affiliate_payout(p_method text, p_to text)
@@ -396,7 +406,7 @@ begin
       case t.status when 'pending' then 0 when 'approved' then 1 when 'disabled' then 2 else 3 end,
       t.created_at desc), '[]'::jsonb)
   into out from (
-    select a.id, a.user_id, p.email, a.name, a.links, a.audience, a.message, a.payout_method, a.payout_to,
+    select a.id, a.user_id, p.email, a.name, a.links, a.audience, a.message, a.video_url, a.video_app, a.payout_method, a.payout_to,
            a.code, a.commission_pct, a.status, a.note, a.created_at, a.decided_at,
            c.percent_off,
            (select coalesce(sum(clicks), 0) from public.affiliate_clicks k where k.code = a.code) as clicks,

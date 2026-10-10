@@ -36,13 +36,15 @@ async function affiliateRoutes(request, env, ctx) {
   if (path === '/api/affiliate/apply') {
     const r = await asUser(user, 'rpc/apply_affiliate', { method: 'POST', body: JSON.stringify({
       p_name: str(body.name, 80), p_links: str(body.links, 600), p_audience: str(body.audience, 400),
-      p_message: str(body.message, 1200), p_payout_method: str(body.payout_method, 10), p_payout_to: str(body.payout_to, 120)
+      p_message: str(body.message, 1200), p_payout_method: str(body.payout_method, 10), p_payout_to: str(body.payout_to, 120),
+      p_video_url: str(body.video_url, 400), p_video_app: str(body.video_app, 40)
     }) });
     if (!r.ok) return storeSay({ error: 'refused', message: applyWords(r.body) }, 400);
     if (r.body && r.body.ok) {
       waitOn(ctx, mail(env, env.NOTIFY_TO || 'hello@amanorsac.studio',
         'Affiliate application: ' + str(body.name, 80),
         str(body.name, 80) + ' (' + user.email + ') applied to the affiliate programme.\n\n' +
+        'Their video of ' + str(body.video_app, 40) + ': ' + str(body.video_url, 400) + '\n' +
         'Where they post: ' + str(body.links, 600) + '\n' +
         'Audience: ' + str(body.audience, 400) + '\n' +
         'Paid by: ' + str(body.payout_method, 10) + ' ' + str(body.payout_to, 120) + '\n\n' +
@@ -101,6 +103,8 @@ function applyWords(body) {
   if (/name/.test(m)) return 'Tell us what to call you.';
   if (/payout_method/.test(m)) return 'Pick PayPal or MoMo.';
   if (/payout_to/.test(m)) return 'Where should the money go? A PayPal email or a MoMo number.';
+  if (/video_url/.test(m)) return 'A link to your video, starting with https://.';
+  if (/video_app/.test(m)) return 'Which product is the video about?';
   if (/sign in/.test(m)) return 'Sign in first.';
   return m || 'That did not go through.';
 }

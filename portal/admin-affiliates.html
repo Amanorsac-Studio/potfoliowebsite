@@ -75,7 +75,7 @@
   <p class="msg" id="m" role="status" aria-live="polite"></p>
 
   <section data-tab="applications">
-    <p class="why">Approving makes their code: a word they will say out loud, 4 to 16 letters or digits, upper-cased. The buyer's discount and their cut are set here per person and default to 10% and 20%. An approval emails them the code, the link and the rules; a decline is quiet.</p>
+    <p class="why">Every application carries a video of one of the products: watch it first. Approving makes their code: a word they will say out loud, 4 to 16 letters or digits, upper-cased. The buyer's discount and their cut are set here per person and default to 10% and 20%. An approval emails them the code, the link and the rules; a decline is quiet.</p>
     <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
     <p class="sec" style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px">Declined</p>
     <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="declined"></tbody></table></div></div>
@@ -136,7 +136,9 @@
   }
 
   const who = r => '<div class="who"><b>' + esc(r.name) + '</b><span>' + esc(r.email||'') + '</span></div>';
-  const links = r => '<small>' + esc(r.links||'') + (r.audience ? '\n' + esc(r.audience) : '') + (r.message ? '\n\n' + esc(r.message) : '') + '</small>';
+  const safe = u => /^https?:\/\//i.test(String(u||'')) ? String(u) : '';
+  const video = r => safe(r.video_url) ? '<a href="' + esc(safe(r.video_url)) + '" target="_blank" rel="noopener noreferrer">Watch: ' + esc(appName(r.video_app)) + ' ↗</a>' : '<span class="dim">no video</span>';
+  const links = r => '<div>' + video(r) + '</div><small>' + esc(r.links||'') + (r.audience ? '\n' + esc(r.audience) : '') + (r.message ? '\n\n' + esc(r.message) : '') + '</small>';
   const paid = r => esc(r.payout_method==='momo' ? 'MoMo' : 'PayPal') + ' <span class="dim">' + esc(r.payout_to||'') + '</span>';
 
   function drawApps(pend, dec){

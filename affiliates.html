@@ -303,6 +303,9 @@ footer a:hover{color:var(--accent)}
     <div><b>30 days</b><span><em>of memory.</em> Your link is remembered for a month, so a sale next week still counts.</span></div>
   </div>
 
+  <h2>What the application needs</h2>
+  <p>One video of an existing product. Pick any app or plug-in in the store, show it the way you would to your audience, and send the link. It does not have to be polished and it does not have to be long. It is how the studio sees that you have used the thing and how you talk about it, and it is the one piece of the application that cannot be skipped. If you are approved, that video is also your first post.</p>
+
   <h2>How it works</h2>
   <p>You get a code that is a word, like <b>NENE10</b>, and a link that carries it: <b>amanorsac.studio/chordlight88?ref=NENE10</b>. Share either. The code is typed in at checkout for anyone who came through the link, and the buyer sees the discount before they pay.</p>
   <p>Your dashboard shows clicks, sales and what you are owed. An earning clears <b>fourteen days</b> after the sale, which is the refund window, and the cleared total is paid <b>once a month by PayPal or MTN MoMo</b> once it reaches $25. Sales in cedis through Paystack earn in cedis and are paid in cedis.</p>
@@ -320,11 +323,13 @@ footer a:hover{color:var(--accent)}
 
   <div id="slot"><div class="apply" id="apply">
     <h2>Apply</h2>
-    <p class="sub">Takes a minute. The studio reads every application and answers by email, usually within a few days.</p>
+    <p class="sub">One thing is required: a video you made of one of the studio's existing apps or plug-ins, shown the way you would show it to your audience. Any length, any platform; a link is enough. The studio watches every one and answers by email, usually within a few days.</p>
     <form id="form" novalidate>
       <label>What should we call you <input id="f-name" type="text" maxlength="80" autocomplete="name" required></label>
       <label>Where you post <input id="f-links" type="text" maxlength="600" placeholder="YouTube channel, Instagram, a website…" required></label>
       <label class="wide">Who follows you <input id="f-audience" type="text" maxlength="400" placeholder="Worship keys players, about 4,000 on YouTube…"></label>
+      <label>Your video is about <select id="f-app"><option value="">Pick a product…</option></select></label>
+      <label>Link to the video <input id="f-video" type="url" maxlength="400" placeholder="https://youtube.com/… or a Drive link" required></label>
       <label>Pay me by <select id="f-method"><option value="paypal">PayPal</option><option value="momo">MTN MoMo (Ghana)</option></select></label>
       <label>To <input id="f-to" type="text" maxlength="120" placeholder="PayPal email or MoMo number" required></label>
       <label class="wide">Anything else <textarea id="f-message" maxlength="1200" placeholder="How you would share it, which apps you use yourself…"></textarea></label>
@@ -393,6 +398,15 @@ footer a:hover{color:var(--accent)}
   var SIGN_IN = '/client.html?next=' + encodeURIComponent('/affiliates.html#apply');
   function say(t, bad) { var el = $('#say'); el.innerHTML = t || ''; el.className = 'say' + (bad ? ' bad' : ''); }
 
+  /* The products, from the same catalog the store draws from. */
+  fetch('/catalog.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (c) {
+    var sel = $('#f-app');
+    Object.keys(c.apps || {}).forEach(function (id) {
+      var a = c.apps[id]; if (!a || (a.status && a.status !== 'available')) return;
+      var o = document.createElement('option'); o.value = id; o.textContent = a.name || id; sel.appendChild(o);
+    });
+  }).catch(function () {});
+
   /* Someone who already applied, or is already in, sees where they
      stand instead of the form. */
   function state(html) { $('#slot').innerHTML = '<div class="state">' + html + '</div>'; }
@@ -414,6 +428,9 @@ footer a:hover{color:var(--accent)}
     if (name.length < 2) return say('Tell us what to call you.', true);
     if (links.length < 4) return say('Where do you post? A channel, a page, a site.', true);
     if (to.length < 5) return say('Where should the money go? A PayPal email or a MoMo number.', true);
+    var vapp = $('#f-app').value, video = $('#f-video').value.trim();
+    if (!vapp) return say('Which product is your video about?', true);
+    if (!/^https?:\/\/\S{6,}$/.test(video)) return say('A link to your video, starting with https://.', true);
     if (!$('#f-agree').checked) return say('Tick the box to agree to the affiliate terms.', true);
     sb.auth.getSession().then(function (s) {
       var session = s && s.data && s.data.session;
@@ -423,7 +440,7 @@ footer a:hover{color:var(--accent)}
         method: 'POST',
         headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + session.access_token },
         body: JSON.stringify({ name: name, links: links, audience: $('#f-audience').value.trim(), message: $('#f-message').value.trim(),
-                               payout_method: $('#f-method').value, payout_to: to })
+                               payout_method: $('#f-method').value, payout_to: to, video_url: video, video_app: vapp })
       }).then(function (r) { return r.json(); }).then(function (j) {
         $('#go').disabled = false;
         if (j && j.ok) { state('<h2>Thank you \u2014 your application is in.</h2><p>The studio reads every one and answers by email, usually within a few days.</p>'); return; }
