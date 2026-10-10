@@ -4,25 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>My Apps · Amanorsac App Store</title>
+<title>Affiliate dashboard · Amanorsac Studio</title>
 
-<!-- =====================================================================
-     MY APPS — every app tied to this account, its license key, which
-     devices are using it, and the download for each.
-
-     Lives on the store side of the site, next to apps.html, because
-     that is what it is: the shelf behind the counter. It wears the App
-     Store's own dark palette and type so buying an app and opening it
-     afterwards look like the same place. A client of the studio also
-     gets a door back to their projects from here; an app user does not
-     see one, because there is nothing behind it for them.
-
-     Nothing here decides who owns what. The list is what Row Level
-     Security lets this account read from purchases, the free apps are
-     claimed through claim_license, a download goes through
-     /api/app-download which checks ownership again with this session's
-     token, and a device is removed through revoke_device.
-     ===================================================================== -->
 
 <link rel="icon" href="images/logo.svg" type="image/svg+xml">
 <meta name="theme-color" content="#07050F">
@@ -148,8 +131,6 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,7vw,68px);lin
 .fallback p{margin:0 0 10px}
 .fallback .btn{font-size:13.5px;padding:9px 15px}
 .dlnote{flex-basis:100%;font-size:13px;color:var(--muted);margin:0}
-.intel{flex-basis:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted);margin:2px 0 0}
-.intel .btn{font-size:13.5px;padding:9px 15px}
 
 /* the Hub itself, at the top: the one download that needs no account */
 .hubcard{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px 40px;align-items:center;
@@ -212,12 +193,84 @@ footer a:hover{color:var(--accent)}
   .section{flex-direction:column;align-items:flex-start;gap:2px}
 }
 @media (prefers-reduced-motion:reduce){.card,.skeleton{animation:none}}
+
+/* ---------- the redeem page's own few pieces ---------- */
+.rd{max-width:560px;margin:0 auto;padding:clamp(60px,12vh,120px) clamp(18px,5vw,28px) 80px}
+.rd h1{font-family:var(--display);font-weight:800;letter-spacing:-.035em;
+  font-size:clamp(34px,6vw,52px);line-height:1.04;margin:0 0 14px}
+.rd .lede{color:var(--muted);font-size:17px;line-height:1.65;margin:0 0 34px;max-width:46ch}
+.rd form{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px}
+.rd input{flex:1 1 260px;min-width:0;font-family:var(--mono);font-size:19px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text);background:var(--panel);
+  border:1px solid var(--line-lit);border-radius:var(--r-sm);padding:16px 18px}
+.rd input::placeholder{color:var(--dim);letter-spacing:.06em}
+.rd input:focus{outline:none;border-color:var(--accent)}
+.rd button{font-family:var(--body);font-size:16px;font-weight:600;cursor:pointer;
+  color:#0B0A14;background:var(--accent);border:0;border-radius:var(--r-sm);padding:16px 28px}
+.rd button:disabled{opacity:.55;cursor:default}
+.rd .say{font-size:15px;line-height:1.65;margin:0 0 10px;min-height:24px}
+.rd .say.bad{color:var(--warn)}
+.rd .say a{color:var(--signal)}
+
+.won{border:1px solid var(--line-lit);border-radius:var(--r);background:var(--panel);
+  padding:24px 26px;margin:24px 0 0}
+.won h2{font-family:var(--display);font-size:22px;margin:0 0 8px;letter-spacing:-.02em}
+.won p{color:var(--muted);font-size:14.5px;margin:0 0 16px}
+.won .key{font-family:var(--mono);font-size:15px;letter-spacing:.06em;color:var(--text);
+  background:var(--panel-2);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:12px 14px;margin:0 0 16px;word-break:break-all}
+.won .go{display:inline-block;text-decoration:none;font-weight:600;font-size:15px;
+  color:#0B0A14;background:var(--accent);border-radius:var(--r-pill);padding:12px 24px}
+.pick{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.pick button{font-size:14px;font-weight:500;color:var(--text);background:var(--panel);
+  border:1px solid var(--line-lit);border-radius:var(--r-pill);padding:9px 16px}
+.rd .fine{color:var(--dim);font-size:13.5px;line-height:1.7;margin:30px 0 0}
+.rd .fine a{color:var(--muted)}
+
+/* ---------- the affiliate's dashboard ---------- */
+.ad{max-width:880px;margin:0 auto;padding:clamp(44px,8vh,80px) clamp(18px,5vw,28px) 80px}
+.ad h1{font-family:var(--display);font-weight:800;letter-spacing:-.03em;font-size:clamp(32px,5.5vw,48px);line-height:1.04;margin:0 0 10px}
+.ad .lede{color:var(--muted);font-size:16px;line-height:1.65;margin:0 0 28px;max-width:56ch}
+.ad h2{font-family:var(--display);font-weight:700;font-size:19px;letter-spacing:-.015em;margin:34px 0 12px}
+.share{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 8px}
+.share .box{background:var(--panel);border:1px solid var(--line-lit);border-radius:var(--r);padding:18px 20px}
+.share .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin:0 0 10px}
+.share .v{display:flex;align-items:center;gap:12px}
+.share code{font-family:var(--mono);font-size:15px;letter-spacing:.04em;color:var(--text);flex:1;min-width:0;overflow-wrap:anywhere}
+.share .big{font-size:26px;letter-spacing:.08em}
+.share .hint{font-size:13px;color:var(--muted);margin:12px 0 0;line-height:1.55}
+.share select{font-family:var(--body);font-size:13px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin:0 0 8px}
+@media (max-width:640px){.share{grid-template-columns:1fr}}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.fig{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.fig .k{font-size:12.5px;color:var(--muted);margin:0 0 6px}
+.fig .v{font-family:var(--display);font-size:26px;font-weight:700;letter-spacing:-.03em;line-height:1.05;margin:0}
+.fig .d{display:block;font-size:12.5px;color:var(--dim);margin:6px 0 0}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:10px 10px 10px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl th{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:400;white-space:nowrap}
+.tbl td.n,.tbl th.n{text-align:right;padding-right:0;padding-left:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tbl tr:last-child td{border-bottom:0}
+.tbl .dim{color:var(--muted)}
+.tblwrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:6px 18px}
+.pill{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:999px;padding:2px 8px}
+.pill.owed{color:var(--signal)} .pill.pending{color:var(--muted)} .pill.paid{color:var(--ok)} .pill.refunded{color:var(--warn)}
+.empty{color:var(--muted);font-size:14px;padding:14px 0}
+.payout{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 0}
+.payout select,.payout input{font-family:var(--body);font-size:14px;color:var(--text);background:var(--bg);border:1px solid var(--line-lit);border-radius:var(--r-sm);padding:10px 12px}
+.payout input{flex:1 1 220px;min-width:0}
+.payout button{font-family:var(--body);font-size:14px;font-weight:600;cursor:pointer;color:var(--text);background:transparent;border:1px solid var(--line-lit);border-radius:var(--r-pill);padding:10px 18px}
+.payout button:hover{border-color:var(--text)}
+.say{font-size:14px;color:var(--muted);margin:8px 0 0;min-height:20px}
+.say.bad{color:var(--warn)} .say.ok{color:var(--ok)}
+.rule{font-size:13.5px;color:var(--dim);line-height:1.7;margin:30px 0 0}
+.rule a{color:var(--muted)}
+.fine{color:var(--dim);font-size:13.5px;line-height:1.7;margin:26px 0 0}
+.fine a{color:var(--muted)}
 </style>
 <link rel="stylesheet" href="/assets/shell.css">
 </head>
-<body>
-<span class="aurora" aria-hidden="true"></span>
-
+<body data-room="apps">
 <header class="gnav">
   <a class="logo" href="/index.html"><img src="/images/logo-onDark.svg" alt="Amanorsac Studio"></a>
   <nav aria-label="Site">
@@ -229,33 +282,21 @@ footer a:hover{color:var(--accent)}
     <a href="/client">Clients</a>
   </nav>
   <span class="social" id="head-social"></span>
-  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html?next=/my-apps.html">Sign in</a></span>
+  <span class="sa-slot" data-auth-slot><a class="sa-in" href="/client.html?next=/affiliate.html">Sign in</a></span>
 </header>
 <nav class="gnav-rooms" aria-label="Rooms">
   <a href="/apps.html">Apps</a><a href="/mixing.html">Mixing</a><a href="/store/">Store</a><a href="/blog.html">Blog</a><a href="/about.html">About</a><a href="/client">Clients</a>
 </nav>
 
-<main class="wrap">
-  <div class="head">
-    <p class="eyebrow">Your software</p>
-    <h1>My Apps</h1>
-    <p>Every app tied to this account, installed and kept up to date through Amanorsac Hub. A paid app comes with a license key that works on up to two devices at once — remove a device here to free the slot.</p>
-    <div class="also" id="also"></div>
-  </div>
 
-  <section class="hubcard" aria-label="Amanorsac Hub">
-    <div>
-      <p class="eyebrow">Amanorsac Hub</p>
-      <h2>Install and update everything from one place.</h2>
-      <p>Sign in to the Hub with this same account and it installs, activates and updates every app you own. Free apps, bought apps, plugins — one door.</p>
-    </div>
-    <div data-hub-get></div>
-  </section>
 
-  <div id="note"></div>
-  <div class="shelf" id="shelf"><div class="skeleton"></div><div class="skeleton" style="animation-delay:.2s"></div></div>
+<main class="ad" id="main">
+  <p class="eyebrow">Affiliate dashboard</p>
+  <h1 id="h1">Your code, your link, your numbers.</h1>
+  <p class="lede" id="lede">Share either one. The buyer gets the discount at checkout; you earn a share of what they pay.</p>
+  <div id="body"><p class="empty">Loading…</p></div>
+  <p class="fine">Earnings clear fourteen days after the sale and are paid once a month by PayPal or MoMo once they reach $25. The agreement is in the <a href="/legal.html#affiliates">terms, section 2.8</a>. Questions: <a href="mailto:hello@amanorsac.studio">hello@amanorsac.studio</a>.</p>
 </main>
-
 <footer class="sfoot">
   <div class="cols">
     <div class="sf-brand">
@@ -301,223 +342,90 @@ footer a:hover{color:var(--accent)}
   </div>
 </footer>
 
+
+
 <script src="assets/vendor/supabase-2.116.0.js"></script>
 <script src="assets/supabase-client.js"></script>
 <script src="assets/site-auth.js"></script>
-<script src="assets/hub-download.js"></script>
 <script>
 (async () => {
   const SUPABASE_URL = 'https://kdxckigyhpnwhwgjdgqq.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_PlVBmRgFdhTkVMurXLiBFQ_NjiVssQp';
-  const sb = window.amanorsacClient ? window.amanorsacClient()
-                                    : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const $ = (s, r) => (r || document).querySelector(s);
-  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  const sb = window.amanorsacClient ? window.amanorsacClient() : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const when = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+  const money = (c, cur) => (cur || 'usd').toUpperCase().replace('USD','$').replace('GHS','GH₵') + (Number(c||0)/100).toFixed(2);
+  const SITE = 'https://amanorsac.studio';
 
   const { data:{ session } } = await sb.auth.getSession();
-  if(!session){ location.replace('/client.html?next=' + encodeURIComponent('/my-apps.html')); return; }
+  if(!session){ location.replace('/client.html?next=' + encodeURIComponent('/affiliate.html')); return; }
 
-  // What each app looks like on this shelf. The Worker's INSTALLERS map
-  // (worker.js) is the real list of downloadable files; this only
-  // decides what to draw.
-  // Everything about each app - name, colour, icon, whether it asks for
-  // a key, which platforms it ships on - comes from catalog.json, the
-  // same file the Worker and Amanorsac Hub read. This page only draws.
-  const catalog = await fetch('/catalog.json', { cache: 'no-cache' })
-    .then(r => r.ok ? r.json() : null).catch(() => null) || { apps: {}, hub: {} };
-  const APPS = {};
-  Object.keys(catalog.apps || {}).forEach(id => {
-    const a = catalog.apps[id];
-    APPS[id] = { name: a.name, say: a.tagline || '', icon: a.icon || '', k: a.color || '#8B7BFF', page: a.page || 'apps.html',
-                 licensed: !!a.licensed, free: !!a.free, platforms: Object.keys(a.installers || {}), version: a.version || null };
+  const catalog = await fetch('/catalog.json', { cache:'no-cache' }).then(r => r.ok ? r.json() : null).catch(() => null) || { apps:{} };
+  const appName = id => (catalog.apps[id] && catalog.apps[id].name) || id;
+  const pages = Object.keys(catalog.apps).filter(id => catalog.apps[id].status === 'available' && catalog.apps[id].page);
+
+  const { data: a, error } = await sb.rpc('my_affiliate');
+  const body = $('#body');
+  if (error) { body.innerHTML = '<p class="empty">Could not load your dashboard: ' + esc(error.message) + '</p>'; return; }
+  if (!a || a.status === 'none') { location.replace('/affiliates.html'); return; }
+  if (a.status === 'pending') { $('#h1').textContent = 'Your application is in.'; $('#lede').textContent = 'Sent ' + when(a.applied_at) + '. The studio answers by email, usually within a few days.'; body.innerHTML = ''; return; }
+  if (a.status === 'declined') { $('#h1').textContent = 'Not this time.'; $('#lede').innerHTML = 'The studio did not take this application. You can <a href="/affiliates.html" style="color:var(--signal)">apply again</a> later.'; body.innerHTML = ''; return; }
+  if (a.status === 'disabled') { $('#h1').textContent = 'This code is switched off.'; $('#lede').innerHTML = 'Your earnings to date are still paid. Write to <a href="mailto:hello@amanorsac.studio" style="color:var(--signal)">hello@amanorsac.studio</a> if you think this is a mistake.'; }
+
+  const link = app => SITE + '/' + app + '?ref=' + a.code;
+  const totals = a.totals || [];
+  const sum = k => totals.map(t => money(t[k], t.currency)).filter(x => !/[\d.]*0\.00$/.test(x) || totals.length === 1).join(' + ') || '$0.00';
+  const sales = totals.reduce((n, t) => n + Number(t.sales || 0), 0);
+
+  body.innerHTML =
+    '<h2>Share</h2>' +
+    '<div class="share">' +
+      '<div class="box"><p class="k">Your code</p><div class="v"><code class="big">' + esc(a.code) + '</code><button class="copy" data-copy="' + esc(a.code) + '">Copy</button></div>' +
+        '<p class="hint">Typed at checkout, it takes ' + esc(a.percent_off || 0) + '% off for them and earns you ' + esc(a.commission_pct) + '% of what they pay.</p></div>' +
+      '<div class="box"><p class="k">Your link</p>' +
+        '<select id="pick" aria-label="Which app page">' + pages.map(id => '<option value="' + esc(id) + '"' + (id === 'chordlight88' ? ' selected' : '') + '>' + esc(appName(id)) + '</option>').join('') + '<option value="apps">All apps</option></select>' +
+        '<div class="v"><code id="link">' + esc(link('chordlight88')) + '</code><button class="copy" id="copylink">Copy</button></div>' +
+        '<p class="hint">Remembered in their browser for thirty days; the code is typed in for them. The last link they clicked wins.</p></div>' +
+    '</div>' +
+    '<h2>Numbers</h2>' +
+    '<div class="figs">' +
+      '<div class="fig"><p class="k">Link clicks</p><p class="v">' + esc(a.clicks ? a.clicks.last_30 : 0) + '</p><span class="d">last 30 days · ' + esc(a.clicks ? a.clicks.all : 0) + ' all time</span></div>' +
+      '<div class="fig"><p class="k">Sales</p><p class="v">' + sales + '</p><span class="d">through your code</span></div>' +
+      '<div class="fig"><p class="k">Clearing</p><p class="v">' + sum('pending_cents') + '</p><span class="d">inside the 14-day window</span></div>' +
+      '<div class="fig"><p class="k">Owed to you</p><p class="v">' + sum('owed_cents') + '</p><span class="d">paid monthly from $25</span></div>' +
+      '<div class="fig"><p class="k">Paid so far</p><p class="v">' + sum('paid_cents') + '</p><span class="d">' + (a.payouts || []).length + ' payout' + ((a.payouts||[]).length === 1 ? '' : 's') + '</span></div>' +
+    '</div>' +
+    '<h2>Sales</h2>' +
+    '<div class="tblwrap">' + ((a.recent || []).length
+      ? '<table class="tbl"><tr><th>When</th><th>App</th><th class="n">They paid</th><th class="n">Your cut</th><th></th></tr>' +
+        a.recent.map(e => '<tr><td class="dim">' + when(e.created_at) + '</td><td>' + esc(appName(e.app)) + '</td>' +
+          '<td class="n">' + money(e.sale_cents, e.currency) + '</td><td class="n">' + money(e.commission_cents, e.currency) + '</td>' +
+          '<td><span class="pill ' + esc(e.state) + '">' + esc(e.state === 'pending' ? 'clearing' : e.state) + '</span></td></tr>').join('') + '</table>'
+      : '<p class="empty">No sales yet. Share the link and they land here the moment someone pays.</p>') + '</div>' +
+    '<h2>Payouts</h2>' +
+    '<div class="tblwrap">' + ((a.payouts || []).length
+      ? '<table class="tbl"><tr><th>When</th><th>How</th><th>Reference</th><th class="n">Amount</th></tr>' +
+        a.payouts.map(p => '<tr><td class="dim">' + when(p.paid_at) + '</td><td>' + esc(p.method === 'momo' ? 'MoMo' : 'PayPal') + '</td><td class="dim">' + esc(p.reference || '—') + '</td><td class="n">' + money(p.amount_cents, p.currency) + '</td></tr>').join('') + '</table>'
+      : '<p class="empty">Nothing paid out yet.</p>') + '</div>' +
+    '<h2>Where the money goes</h2>' +
+    '<div class="payout"><select id="pm"><option value="paypal"' + (a.payout_method === 'paypal' ? ' selected' : '') + '>PayPal</option><option value="momo"' + (a.payout_method === 'momo' ? ' selected' : '') + '>MTN MoMo</option></select>' +
+      '<input id="pt" type="text" maxlength="120" value="' + esc(a.payout_to || '') + '" aria-label="PayPal email or MoMo number"><button id="psave" type="button">Save</button></div>' +
+    '<p class="say" id="psay"></p>' +
+    '<p class="rule">Wherever you share the code or the link, say it is an affiliate link. One line is enough.</p>';
+
+  $('#pick').addEventListener('change', e => { $('#link').textContent = e.target.value === 'apps' ? SITE + '/apps?ref=' + a.code : link(e.target.value); });
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.copy'); if (!b) return;
+    const text = b.id === 'copylink' ? $('#link').textContent : b.getAttribute('data-copy');
+    navigator.clipboard.writeText(text).then(() => { b.classList.add('done'); b.textContent = 'Copied'; setTimeout(() => { b.classList.remove('done'); b.textContent = 'Copy'; }, 1600); });
   });
-  const FREE_APPS = Object.keys(APPS).filter(id => APPS[id].free && APPS[id].platforms.length);
-  const ORDER = Object.keys(APPS);   // the catalog's own order
-  const FALLBACK = !!catalog.direct_download_fallback;
-  const PROTO = (catalog.hub && catalog.hub.protocol) || 'amanorsac';
-  const PLATFORM_LABEL = { windows: 'Windows', mac: 'Mac', 'mac-arm64': 'Mac (Apple silicon)', 'mac-x64': 'Mac (Intel)', 'windows-portable': 'Windows (portable)' };
-  const DL  = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M6 9l6 6 6-6M4 21h16"/></svg>';
-  const HUB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg>';
-
-  // A client of the studio gets a door back to their projects.
-  sb.from('profiles').select('is_admin,is_client').eq('id', session.user.id).maybeSingle().then(r => {
-    const p = r && r.data; const also = $('#also');
-    if(p && p.is_admin){ also.innerHTML = '<span>You run the place — the <b>studio dashboard</b> is over there.</span><a href="portal/admin.html">Open the dashboard →</a>'; also.classList.add('on'); }
-    else if(p && p.is_client){ also.innerHTML = '<span>You’re also a <b>studio client</b> — your mixing projects live in the portal.</span><a href="portal/dashboard.html">Open my projects →</a>'; also.classList.add('on'); }
+  $('#psave').addEventListener('click', async () => {
+    const say = $('#psay'); say.className = 'say'; say.textContent = 'Saving…';
+    const { error } = await sb.rpc('set_affiliate_payout', { p_method: $('#pm').value, p_to: $('#pt').value.trim() });
+    say.className = 'say ' + (error ? 'bad' : 'ok');
+    say.textContent = error ? (/payout_to/.test(error.message) ? 'A PayPal email or a MoMo number, please.' : error.message) : 'Saved.';
   });
-
-  const shelf = $('#shelf'), note = $('#note');
-  let claimed = false, claimError = '';
-
-  async function load(){
-    const { data: owned, error } = await sb.from('purchases')
-      .select('id, app, license_key, max_devices, purchased_at, update_eligible_until, expires_at')
-      .order('purchased_at', { ascending: true });
-    if(error){ shelf.innerHTML = '<p class="note">Could not load your apps: '+esc(error.message)+'</p>'; return; }
-
-    // Free apps carry no charge, but the same key-and-device system as a
-    // paid one - claimed the first time this page is ever opened. Once
-    // per load, not until it works: a claim that fails must say so.
-    const have = new Set((owned||[]).map(r => r.app));
-    const toClaim = FREE_APPS.filter(a => !have.has(a));
-    if(toClaim.length && !claimed){
-      claimed = true;
-      const results = await Promise.all(toClaim.map(a =>
-        sb.rpc('claim_license', { p_app: a }).then(r => r.error ? r.error.message : '', e => e.message || 'failed')));
-      claimError = results.filter(Boolean)[0] || '';
-      return load();
-    }
-    if(claimError) note.innerHTML = '<p class="note">The free apps could not be added to this account: '+esc(claimError)+'</p>';
-
-    if(!owned || !owned.length){
-      shelf.innerHTML = '<p class="empty">Nothing here yet.</p>' + moreCard();
-      return;
-    }
-
-    const { data: devices } = await sb.from('device_activations')
-      .select('id, license_id, device_name, device_id, first_seen, last_seen, revoked_at')
-      .is('revoked_at', null).order('last_seen', { ascending: false });
-    const byLicense = {};
-    (devices||[]).forEach(d => { (byLicense[d.license_id] = byLicense[d.license_id] || []).push(d); });
-
-    /* One card per app, whatever the database hands back.
-       (user_id, app) is supposed to be unique on purchases, so a second
-       row for the same app is a fault rather than a second licence -
-       and until that fault is cleaned up this page must not multiply
-       it into a wall of identical cards. The oldest row wins, because
-       that is the licence the key was minted on, and any devices sitting
-       against the duplicates are folded into it so nobody's machine
-       disappears from the list while the rows are being sorted out. */
-    const oneEach = new Map();
-    (owned || []).forEach(r => {
-      const kept = oneEach.get(r.app);
-      if (!kept) { oneEach.set(r.app, r); return; }
-      const older = (kept.purchased_at || '') <= (r.purchased_at || '') ? kept : r;
-      const spare = older === kept ? r : kept;
-      older.alsoLicenses = (older.alsoLicenses || []).concat(spare.id, spare.alsoLicenses || []);
-      oneEach.set(r.app, older);
-    });
-    const rows = [...oneEach.values()];
-
-    rows.sort((a,b) => (ORDER.indexOf(a.app) + 99) % 99 - (ORDER.indexOf(b.app) + 99) % 99);
-
-    shelf.innerHTML = rows.map(r => {
-      const a = APPS[r.app] || { name: r.app, say: '', icon: '', k: '#8B7BFF', page: 'apps.html', platforms: [], licensed: false };
-      const devs = [r.id].concat(r.alsoLicenses || [])
-        .reduce((all, id) => all.concat(byLicense[id] || []), []);
-      const forever = !r.update_eligible_until || r.update_eligible_until.slice(0,4) > '9000';
-      /* A beta licence has an end. Saying "Yours since" and nothing else
-         would be true and useless; the number of days left is the only
-         thing the person actually wants to know. */
-      const ends = r.expires_at ? new Date(r.expires_at) : null;
-      const daysLeft = ends ? Math.ceil((ends - Date.now()) / 86400000) : null;
-      const over = ends && daysLeft <= 0;
-      return '<article class="card" style="--k:'+esc(a.k)+'" data-id="'+esc(r.id)+'">'+
-        '<div class="id">'+
-          '<span class="mark">'+(a.icon ? '<img src="'+esc(a.icon)+'" alt="">' : '')+'</span>'+
-          '<div><h2><a href="'+esc(a.page)+'">'+esc(a.name)+'</a></h2><p class="say">'+esc(a.say)+'</p></div>'+
-          '<p class="since">'+(ends
-              ? (over ? '<span class="beta over">Beta ended<b>'+when(r.expires_at)+'</b></span>'
-                      : '<span class="beta">Beta<b>'+daysLeft+(daysLeft===1?' day left':' days left')+'</b></span>')
-              : (r.purchased_at ? 'Yours since<b>'+when(r.purchased_at)+'</b>' : ''))+
-            ((forever || ends) ? '' : '<span style="display:block;margin-top:4px">Updates until<b>'+when(r.update_eligible_until)+'</b></span>')+'</p>'+
-        '</div>'+
-        (a.platforms.length
-          ? '<div class="dlrow">'+
-              '<a class="btn main hubopen" href="'+esc(PROTO+'://install/'+r.app)+'" data-app="'+esc(r.app)+'">'+HUB+'Install in Amanorsac Hub</a>'+
-              (FALLBACK
-                ? '<details class="fallback"><summary>Trouble with the Hub?</summary>'+
-                  '<p>Download the installer directly and run it yourself:</p>'+
-                  a.platforms.map(platform =>
-                    '<button class="btn ghost dl" type="button" data-app="'+esc(r.app)+'" data-platform="'+esc(platform)+'">'+DL+esc(PLATFORM_LABEL[platform] || platform)+'</button>').join(' ')+
-                  '</details>'
-                : '')+
-              /* An app with a separate Intel Mac build: the Hub hands every
-                 Mac the Apple silicon one for now, so say where the Intel
-                 one is instead of leaving it inside "Trouble with the Hub?". */
-              (a.platforms.indexOf('mac-x64') >= 0
-                ? '<p class="intel">On an Intel Mac? The Hub installs the Apple silicon build, so download the Intel one here instead.'+
-                  '<button class="btn ghost dl" type="button" data-app="'+esc(r.app)+'" data-platform="mac-x64">'+DL+'Mac (Intel)</button></p>'
-                : '')+
-              '<p class="dlnote"></p></div>'
-          : '')+
-        (a.licensed
-          ? '<p class="section">License key <b>paste it into the app when it asks</b></p>'+
-            '<div class="keybox"><code>'+esc(r.license_key || '—')+'</code>'+
-              '<button class="copy" type="button" data-key="'+esc(r.license_key || '')+'">Copy</button></div>'+
-            '<p class="section">Devices <b>'+devs.length+' of '+esc(r.max_devices)+' in use</b></p>'+
-            (devs.length
-              ? devs.map(d =>
-                  '<div class="device" data-row="'+esc(d.id)+'">'+
-                    '<span class="dn"><i aria-hidden="true"></i>'+esc(d.device_name || d.device_id)+'</span>'+
-                    '<span class="seen">last seen '+when(d.last_seen)+
-                      ' <button class="revoke" type="button" data-id="'+esc(d.id)+'">Remove</button></span>'+
-                  '</div>').join('')
-              : '<p class="nodev">No device has activated this key yet — it’s ready whenever the app asks for it.</p>')
-          : '<p class="free"><i aria-hidden="true"></i>'+(a.free
-              ? 'Free — no key needed. Install it and go.'
-              : 'No key needed — this one has no activation at all. Install it and go.')+'</p>')+
-      '</article>';
-    }).join('') + moreCard();
-
-    shelf.querySelectorAll('.dl').forEach(b => b.addEventListener('click', () => download(b)));
-    // The protocol link opens the Hub if it is installed and does nothing
-    // visible if it isn't - so say which of the two just happened.
-    shelf.querySelectorAll('.hubopen').forEach(b => b.addEventListener('click', () => {
-      const noteEl = b.closest('.dlrow').querySelector('.dlnote');
-      noteEl.className = 'dlnote';
-      noteEl.textContent = 'Opening in Amanorsac Hub… If nothing happens, you don’t have the Hub yet — get it at the top of this page.';
-      if(window.track) window.track('hub_open', b.dataset.app);
-    }));
-    shelf.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(b.dataset.key); b.textContent = 'Copied'; b.classList.add('done'); }
-      catch(e) { b.textContent = b.dataset.key; }
-      setTimeout(() => { b.textContent = 'Copy'; b.classList.remove('done'); }, 1600);
-    }));
-    shelf.querySelectorAll('.revoke').forEach(b => b.addEventListener('click', async () => {
-      b.disabled = true; b.textContent = 'Removing';
-      const { error } = await sb.rpc('revoke_device', { p_device_activation_id: Number(b.dataset.id) });
-      if(error){ b.disabled = false; b.textContent = 'Remove'; return; }
-      load();
-    }));
-  }
-
-  function moreCard(){
-    return '<div class="more"><div><b>Looking for something new?</b>PerformLive and HarmonieMD are on the way.</div>'+
-      '<a href="apps.html">Browse the App Store →</a></div>';
-  }
-
-  /* Ownership is checked again on the Worker with this session's token;
-     the button is a request, not a permission. */
-  async function download(btn){
-    const noteEl = btn.closest('.dlrow').querySelector('.dlnote');
-    const label = btn.innerHTML;
-    btn.disabled = true; btn.textContent = 'Preparing…';
-    noteEl.textContent = ''; noteEl.className = 'dlnote';
-    try {
-      const r = await fetch('/api/app-download', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + session.access_token },
-        body: JSON.stringify({ app: btn.dataset.app, platform: btn.dataset.platform })
-      });
-      const j = await r.json().catch(() => ({}));
-      if(!r.ok || !j.url){
-        noteEl.textContent = j.message || 'Could not start the download. Try again in a moment.';
-        noteEl.className = 'dlnote err';
-      } else {
-        noteEl.textContent = 'Downloading ' + (j.file || '') + (j.version ? ' — version ' + j.version : '') + '. If nothing happens, click again.';
-        if(window.track) window.track('download_requested', btn.dataset.app + ' / ' + btn.dataset.platform);
-        location.href = j.url;
-      }
-    } catch(e) {
-      noteEl.textContent = 'Could not reach the studio. Check your connection and try again.';
-      noteEl.className = 'dlnote err';
-    }
-    btn.disabled = false; btn.innerHTML = label;
-  }
-
-  load();
 })();
 </script>
 <script src="/assets/shell.js" defer></script>

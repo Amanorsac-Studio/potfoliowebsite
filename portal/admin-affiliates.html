@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Affiliates · Studio admin</title>
+<script>
+(function(){ var t='light'; try{ t=localStorage.getItem('portal-theme')||'light'; }catch(e){}
+  document.documentElement.setAttribute('data-theme',t); })();
+</script>
+<link rel="icon" href="../images/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F5F5F7">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AMANORSAC">
+<link rel="stylesheet" href="../assets/portal.css">
+<style>
+  main{max-width:1180px}
+  .headrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+  .seg{display:inline-flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:22px;max-width:100%;overflow-x:auto}
+  .seg a{font-size:14px;font-weight:500;color:var(--muted);text-decoration:none;border-radius:999px;padding:8px 16px;white-space:nowrap;display:inline-flex;gap:6px;align-items:center}
+  .seg a.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .seg a b{font-size:11px;font-weight:600;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:1px 7px}
+  .seg a b:empty{display:none}
+  section[data-tab]{display:none} section[data-tab].on{display:block}
+  .figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 14px}
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);min-width:0}
+  .fig .k{font-size:12.5px;font-weight:500;color:var(--muted);margin:0 0 6px}
+  .fig .v{font-size:28px;font-weight:700;line-height:1.05;margin:0;letter-spacing:-.03em}
+  .fig .d{display:block;font-size:12.5px;margin:6px 0 0;color:var(--muted)}
+  .card{margin-bottom:14px}
+  .why{font-size:12.5px;color:var(--muted);margin:-2px 0 12px;max-width:72ch;line-height:1.6}
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl th,.tbl td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl td.n,.tbl th.n{text-align:right;padding-right:0;padding-left:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .tbl td small{display:block;color:var(--muted);font-size:12px;line-height:1.5;white-space:pre-line}
+  .tbl .dim{color:var(--muted)}
+  .tbl td.code{font-family:var(--mono,monospace);font-size:12.5px;white-space:nowrap}
+  .tblwrap{overflow-x:auto}
+  .pill{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.wait{background:var(--surface-2);color:var(--muted)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.soon{background:var(--accent-soft);color:var(--accent)}
+  .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .acts input,.acts select{font:inherit;font-size:13px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:6px 10px}
+  .acts input{width:120px}
+  .acts input.w{width:200px}
+  .b{font:inherit;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+  .b.go{background:var(--accent);color:#fff;border-color:transparent}
+  .b.bad{color:var(--warn);border-color:var(--warn)}
+  .b:disabled{opacity:.5;cursor:default}
+  .empty{color:var(--muted);font-size:13px;padding:10px 0}
+  .msg:empty{display:none}
+  .who b{display:block;font-weight:600}
+  .who span{color:var(--muted);font-size:12.5px}
+  .sales{margin:8px 0 0;padding:12px 14px;background:var(--surface-2);border-radius:12px}
+</style>
+</head>
+<body>
+<header class="top" id="topbar"></header>
+<main>
+  <div class="headrow">
+    <div>
+      <p class="eyebrow">Studio admin</p>
+      <h1>Affiliates</h1>
+      <p class="sub">Who sends people, what they are owed, and the monthly payout.</p>
+    </div>
+    <div class="acts"><a class="b" href="/affiliates.html" target="_blank">The programme page ↗</a></div>
+  </div>
+  <nav class="seg" id="seg" aria-label="Sections">
+    <a href="#applications">Applications <b id="n-apps"></b></a><a href="#affiliates">Affiliates <b id="n-aff"></b></a><a href="#payouts">Payouts <b id="n-owed"></b></a>
+  </nav>
+  <p class="msg" id="m" role="status" aria-live="polite"></p>
+
+  <section data-tab="applications">
+    <p class="why">Approving makes their code: a word they will say out loud, 4 to 16 letters or digits, upper-cased. The buyer's discount and their cut are set here per person and default to 10% and 20%. An approval emails them the code, the link and the rules; a decline is quiet.</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="apps"></tbody></table></div></div>
+    <p class="sec" style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:26px 0 8px">Declined</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="declined"></tbody></table></div></div>
+  </section>
+
+  <section data-tab="affiliates">
+    <div class="figs" id="figs"></div>
+    <p class="why">Owed is what the next payout would be: sales past the 14-day hold, less anything paid and then refunded. Switching someone off also stops their code the same minute; what they are owed stays owed. Open a row to see every sale with the buyer's email, and to reverse one after a refund that did not come through Stripe (Paystack refunds are by hand).</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="aff"></tbody></table></div></div>
+  </section>
+
+  <section data-tab="payouts">
+    <p class="why">The monthly run. Pay each line from PayPal or MoMo yourself, then record it here with the transaction reference: that marks the earnings paid and emails the affiliate. Nothing under $25 is listed, and each currency is its own line.</p>
+    <div class="card"><div class="tblwrap"><table class="tbl"><tbody id="owed"></tbody></table></div></div>
+  </section>
+</main>
+
+<script src="../assets/vendor/supabase-2.116.0.js"></script>
+<script src="../assets/supabase-client.js"></script>
+<script src="../assets/portal.js"></script>
+<script>
+(async function(){
+  const me = await requireAdmin(); if(!me) return;
+  await mountChrome('admin-affiliates');
+  const sb = window.amanorsacClient();
+  const m = $('#m');
+  const esc = t => { const d=document.createElement('div'); d.textContent = t==null?'':t; return d.innerHTML; };
+  const when = t => t ? new Date(t).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}) : '—';
+  const money = (c, cur) => (cur||'usd').toUpperCase().replace('USD','$').replace('GHS','GH₵') + (Number(c||0)/100).toFixed(2);
+  const MIN_CENTS = 2500;
+  async function token(){ const r = await sb.auth.getSession(); return r.data.session && r.data.session.access_token; }
+  async function post(path, body){
+    const r = await fetch(path, { method:'POST', headers:{ 'content-type':'application/json', Authorization:'Bearer ' + await token() }, body: JSON.stringify(body) });
+    const j = await r.json().catch(()=>({}));
+    if(!r.ok || j.error) throw new Error(j.message || j.error || ('HTTP ' + r.status));
+    return j;
+  }
+  const NAMES = {};
+  fetch('/catalog.json',{cache:'no-cache'}).then(r=>r.json()).then(c=>{ Object.keys(c.apps||{}).forEach(id=>{ NAMES[id]=c.apps[id].name||id; }); }).catch(()=>{});
+  const appName = id => NAMES[id] || id;
+
+  let ROWS = [];
+  async function load(){
+    const { data, error } = await sb.rpc('affiliates_list');
+    if(error){
+      const hint = /does not exist|schema cache/i.test(error.message) ? 'Not installed yet — run supabase-affiliates.sql in the SQL editor.' : 'Could not load: ' + error.message;
+      m.textContent = hint; m.className = 'msg err'; return;
+    }
+    ROWS = data || [];
+    const pend = ROWS.filter(r=>r.status==='pending'), live = ROWS.filter(r=>r.status==='approved'||r.status==='disabled');
+    $('#n-apps').textContent = pend.length || '';
+    $('#n-aff').textContent = live.length || '';
+    const owedLines = owedList();
+    $('#n-owed').textContent = owedLines.length || '';
+    drawApps(pend, ROWS.filter(r=>r.status==='declined'));
+    drawAff(live);
+    drawOwed(owedLines);
+  }
+
+  const who = r => '<div class="who"><b>' + esc(r.name) + '</b><span>' + esc(r.email||'') + '</span></div>';
+  const links = r => '<small>' + esc(r.links||'') + (r.audience ? '\n' + esc(r.audience) : '') + (r.message ? '\n\n' + esc(r.message) : '') + '</small>';
+  const paid = r => esc(r.payout_method==='momo' ? 'MoMo' : 'PayPal') + ' <span class="dim">' + esc(r.payout_to||'') + '</span>';
+
+  function drawApps(pend, dec){
+    $('#apps').innerHTML = pend.length
+      ? '<tr><th>Who</th><th>Where</th><th>Paid by</th><th>Code and terms</th><th></th></tr>' + pend.map(r =>
+        '<tr><td>' + who(r) + '<small>' + when(r.created_at) + '</small></td><td>' + links(r) + '</td><td>' + paid(r) + '</td>' +
+        '<td><div class="acts"><input type="text" placeholder="CODE" maxlength="16" data-code="' + r.id + '" value="' + esc(suggest(r.name)) + '" style="text-transform:uppercase">' +
+        '<input type="number" min="0" max="50" value="10" data-off="' + r.id + '" title="% off for the buyer" style="width:64px">% off' +
+        '<input type="number" min="1" max="90" value="20" data-cut="' + r.id + '" title="their commission" style="width:64px">% cut</div></td>' +
+        '<td><div class="acts"><button class="b go" data-approve="' + r.id + '">Approve</button><button class="b bad" data-decline="' + r.id + '">Decline</button></div></td></tr>').join('')
+      : '<tr><td class="empty">Nobody waiting.</td></tr>';
+    $('#declined').innerHTML = dec.length
+      ? '<tr><th>Who</th><th>Where</th><th>Note</th><th>When</th></tr>' + dec.map(r => '<tr><td>' + who(r) + '</td><td>' + links(r) + '</td><td class="dim">' + esc(r.note||'') + '</td><td class="dim">' + when(r.decided_at) + '</td></tr>').join('')
+      : '<tr><td class="empty">None.</td></tr>';
+  }
+  /* A first guess at the word: their first name plus the discount. */
+  function suggest(name){ return (String(name||'').split(/\s+/)[0]||'').replace(/[^A-Za-z0-9]/g,'').toUpperCase().slice(0,10) + '10'; }
+
+  const sumBy = (r, k) => (r.money||[]).map(t => money(t[k], t.currency)).join(' + ') || '$0.00';
+  function drawAff(live){
+    const totals = { sales:0, owed:0, paid:0, clicks:0 };
+    live.forEach(r => { totals.clicks += Number(r.clicks||0); (r.money||[]).forEach(t => { totals.sales += Number(t.sales||0); if(t.currency==='usd'){ totals.owed += Number(t.owed_cents||0); totals.paid += Number(t.paid_cents||0); } }); });
+    $('#figs').innerHTML =
+      '<div class="fig"><p class="k">Affiliates</p><p class="v">' + live.filter(r=>r.status==='approved').length + '</p><span class="d">' + live.filter(r=>r.status==='disabled').length + ' switched off</span></div>' +
+      '<div class="fig"><p class="k">Link clicks</p><p class="v">' + totals.clicks + '</p><span class="d">all time</span></div>' +
+      '<div class="fig"><p class="k">Sales through codes</p><p class="v">' + totals.sales + '</p><span class="d">every currency</span></div>' +
+      '<div class="fig"><p class="k">Owed, USD</p><p class="v">' + money(totals.owed) + '</p><span class="d">past the hold</span></div>' +
+      '<div class="fig"><p class="k">Paid out, USD</p><p class="v">' + money(totals.paid) + '</p><span class="d">all time</span></div>';
+    $('#aff').innerHTML = live.length
+      ? '<tr><th>Who</th><th>Code</th><th>Terms</th><th class="n">Clicks</th><th class="n">Sales</th><th class="n">Clearing</th><th class="n">Owed</th><th class="n">Paid</th><th></th></tr>' + live.map(r =>
+        '<tr data-row="' + r.id + '"><td>' + who(r) + '<small>' + paid(r) + '</small></td><td class="code">' + esc(r.code||'') + '</td>' +
+        '<td class="dim">' + esc(r.percent_off||0) + '% off · ' + esc(r.commission_pct) + '% cut</td>' +
+        '<td class="n">' + esc(r.clicks||0) + '</td><td class="n">' + (r.money||[]).reduce((n,t)=>n+Number(t.sales||0),0) + '</td>' +
+        '<td class="n">' + sumBy(r,'pending_cents') + '</td><td class="n">' + sumBy(r,'owed_cents') + '</td><td class="n">' + sumBy(r,'paid_cents') + '</td>' +
+        '<td><div class="acts"><button class="b" data-open="' + r.id + '">Sales</button>' +
+        (r.status==='approved' ? '<button class="b bad" data-off="' + r.id + '" data-to="1">Switch off</button>' : '<span class="pill warn">off</span><button class="b" data-off="' + r.id + '" data-to="0">Switch on</button>') +
+        '</div></td></tr><tr class="detail" data-detail="' + r.id + '" hidden><td colspan="9"></td></tr>').join('')
+      : '<tr><td class="empty">No affiliates yet. Approve an application and they appear here.</td></tr>';
+  }
+
+  function owedList(){
+    const out = [];
+    ROWS.filter(r=>r.status==='approved'||r.status==='disabled').forEach(r => (r.money||[]).forEach(t => {
+      const cents = Number(t.owed_cents||0);
+      if(cents >= MIN_CENTS || (t.currency !== 'usd' && cents > 0)) out.push({ r, currency: t.currency, cents });
+    }));
+    return out;
+  }
+  function drawOwed(lines){
+    $('#owed').innerHTML = lines.length
+      ? '<tr><th>Who</th><th>Pay by</th><th class="n">Amount</th><th>Reference</th><th></th></tr>' + lines.map(l =>
+        '<tr><td>' + who(l.r) + '</td><td>' + paid(l.r) + '</td><td class="n"><b>' + money(l.cents, l.currency) + '</b></td>' +
+        '<td><div class="acts"><input type="text" class="w" placeholder="PayPal transaction id / MoMo ref" data-ref="' + l.r.id + '-' + l.currency + '"></div></td>' +
+        '<td><button class="b go" data-pay="' + l.r.id + '" data-cur="' + esc(l.currency) + '" data-method="' + esc(l.r.payout_method) + '">Record payout</button></td></tr>').join('')
+      : '<tr><td class="empty">Nothing has reached the $25 minimum.</td></tr>';
+  }
+
+  async function openSales(id, cell){
+    cell.innerHTML = '<p class="empty">Loading…</p>';
+    const { data, error } = await sb.rpc('affiliate_earnings_admin', { p_id: id, p_limit: 200 });
+    if(error){ cell.innerHTML = '<p class="empty">' + esc(error.message) + '</p>'; return; }
+    const rows = data || [];
+    const state = e => e.reversed_at ? '<span class="pill warn">refunded' + (e.status==='paid' && !e.clawed_back ? ' · to claw back' : '') + '</span>'
+                     : e.status==='paid' ? '<span class="pill ok">paid ' + when(e.paid_at) + '</span>'
+                     : new Date(e.payable_at) <= new Date() ? '<span class="pill soon">owed</span>' : '<span class="pill wait">clears ' + when(e.payable_at) + '</span>';
+    cell.innerHTML = '<div class="sales">' + (rows.length
+      ? '<table class="tbl"><tr><th>When</th><th>App</th><th>Buyer</th><th class="n">Paid</th><th class="n">Cut</th><th>State</th><th></th></tr>' + rows.map(e =>
+        '<tr><td class="dim">' + when(e.created_at) + '</td><td>' + esc(appName(e.app)) + '</td><td class="dim">' + esc(e.buyer||'') + '<small>' + esc(e.session||'') + '</small></td>' +
+        '<td class="n">' + money(e.sale_cents, e.currency) + '</td><td class="n">' + money(e.commission_cents, e.currency) + '</td><td>' + state(e) + '</td>' +
+        '<td>' + (e.reversed_at ? '' : '<button class="b bad" data-reverse="' + e.purchase_id + '" data-aff="' + id + '">Refunded</button>') + '</td></tr>').join('') + '</table>'
+      : '<p class="empty" style="margin:0">No sales yet.</p>') + '</div>';
+  }
+
+  document.addEventListener('click', async (e) => {
+    const t = e.target.closest('button'); if(!t) return;
+    try {
+      if(t.dataset.approve){
+        const id = t.dataset.approve;
+        const code = ($('[data-code="'+id+'"]').value||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+        if(code.length < 4) throw new Error('The code needs 4 to 16 letters or digits.');
+        t.disabled = true; m.textContent = 'Approving…'; m.className = 'msg';
+        const j = await post('/api/affiliate/decide', { id, decision:'approve', code, percent_off: Number($('[data-off="'+id+'"]').value), commission_pct: Number($('[data-cut="'+id+'"]').value) });
+        m.textContent = 'Approved. Code ' + j.affiliate.code + (j.emailed ? ', and they have been emailed.' : '. (No email went out — no address on the account.)'); m.className = 'msg ok';
+        await load();
+      }
+      if(t.dataset.decline){
+        const note = prompt('A line for your own notes (not sent to them):') ;
+        if(note === null) return;
+        await post('/api/affiliate/decide', { id: t.dataset.decline, decision:'decline', note });
+        m.textContent = 'Declined.'; m.className = 'msg'; await load();
+      }
+      if(t.dataset.off){
+        const off = t.dataset.to === '1';
+        if(off && !confirm('Switch this affiliate off? Their code stops working now; what they are owed stays owed.')) return;
+        const { error } = await sb.rpc('set_affiliate_disabled', { p_id: Number(t.dataset.off), p_off: off });
+        if(error) throw error;
+        await load();
+      }
+      if(t.dataset.open){
+        const row = $('[data-detail="'+t.dataset.open+'"]');
+        row.hidden = !row.hidden;
+        if(!row.hidden) await openSales(Number(t.dataset.open), row.firstElementChild);
+      }
+      if(t.dataset.reverse){
+        if(!confirm('Mark this sale refunded? The commission stops being owed, or comes off the next payout if it was already paid.')) return;
+        const { error } = await sb.rpc('reverse_affiliate_earning', { p_purchase: Number(t.dataset.reverse) });
+        if(error) throw error;
+        await load();
+        const row = $('[data-detail="'+t.dataset.aff+'"]'); if(row){ row.hidden = false; await openSales(Number(t.dataset.aff), row.firstElementChild); }
+      }
+      if(t.dataset.pay){
+        const ref = ($('[data-ref="'+t.dataset.pay+'-'+t.dataset.cur+'"]').value||'').trim();
+        if(!confirm('Record this payout as sent' + (ref ? ' (ref ' + ref + ')' : ' with no reference') + '? The earnings are marked paid and the affiliate is emailed.')) return;
+        t.disabled = true;
+        const j = await post('/api/affiliate/payout', { id: t.dataset.pay, currency: t.dataset.cur, method: t.dataset.method, reference: ref });
+        m.textContent = 'Recorded ' + money(j.payout.amount_cents, j.payout.currency) + (j.emailed ? ' and emailed them.' : '.'); m.className = 'msg ok';
+        await load();
+      }
+    } catch(err){ t.disabled = false; m.textContent = 'Could not: ' + (err.message || err); m.className = 'msg err'; }
+  });
+
+  function showTab(){
+    const t = (location.hash||'#applications').slice(1);
+    const name = ['applications','affiliates','payouts'].indexOf(t)>=0 ? t : 'applications';
+    $$('section[data-tab]').forEach(s => s.classList.toggle('on', s.dataset.tab===name));
+    $$('#seg a').forEach(a => a.classList.toggle('on', a.getAttribute('href')==='#'+name));
+  }
+  addEventListener('hashchange', showTab);
+  showTab();
+  await load();
+})();
+</script>
+</body>
+</html>

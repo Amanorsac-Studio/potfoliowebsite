@@ -87,6 +87,32 @@ Deno.serve(async (req) => {
 
   // Everything else Stripe might send is acknowledged and ignored —
   // a webhook that errors on unknown events just gets retried forever.
+  /* A refund takes the affiliate's commission back with it. Stripe
+     names the payment, not the checkout session the purchase was
+     recorded under, so the session is looked up first. Nothing else
+     about the sale changes here: the licence is the studio's call,
+     made on the admin page. */
+  if (event.type === "charge.refunded") {
+    const pi = event.data?.object?.payment_intent;
+    const key = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
+    if (!pi || !key) return json({ ignored: "refund without payment_intent or key" });
+    try {
+      const r = await fetch("https://api.stripe.com/v1/checkout/sessions?payment_intent=" + encodeURIComponent(String(pi)),
+        { headers: { Authorization: "Bearer " + key } });
+      const list = r.ok ? await r.json() : null;
+      const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+        { auth: { autoRefreshToken: false, persistSession: false } });
+      let reversed = 0;
+      for (const cs of (list?.data ?? [])) {
+        const { data } = await db.rpc("reverse_affiliate_earning_by_session", { p_session: String(cs.id) });
+        if (data === true) reversed++;
+      }
+      return json({ ok: true, refunded: String(pi), reversed });
+    } catch (e) {
+      return json({ error: (e as Error).message }, 500);
+    }
+  }
+
   if (event.type !== "checkout.session.completed") return json({ ignored: event.type });
 
   const session = event.data?.object ?? {};

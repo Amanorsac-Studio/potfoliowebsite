@@ -70,6 +70,11 @@ create table if not exists public.codes (
   expires_at   timestamptz,          -- when the CODE stops working
   note         text,                 -- "October worship conference"
   disabled     boolean not null default false,
+
+  -- An affiliate's code (supabase-affiliates.sql): the same person may
+  -- use it again for another app, so it is not written to
+  -- code_redemptions and "already used by you" never applies.
+  reusable     boolean not null default false,
   created_at   timestamptz not null default now(),
   created_by   uuid references public.profiles(id) on delete set null,
 
@@ -80,6 +85,7 @@ create table if not exists public.codes (
 );
 
 create index if not exists codes_kind_idx on public.codes (kind, created_at desc);
+alter table public.codes add column if not exists reusable boolean not null default false;
 
 alter table public.codes enable row level security;
 
@@ -317,7 +323,7 @@ begin
     return jsonb_build_object('ok', false, 'error', 'all_used'); end if;
   if not (c.apps @> array['*'] or c.apps @> array[v_app]) then
     return jsonb_build_object('ok', false, 'error', 'wrong_app'); end if;
-  if p_user is not null and exists (
+  if p_user is not null and not c.reusable and exists (
        select 1 from public.code_redemptions r where r.code = v_code and r.user_id = p_user) then
     return jsonb_build_object('ok', false, 'error', 'already_used_by_you'); end if;
 
@@ -341,19 +347,23 @@ returns boolean
 language plpgsql security definer set search_path = '' as $$
 declare
   v_code text := upper(regexp_replace(coalesce(p_code, ''), '[^A-Za-z0-9-]', '', 'g'));
-  v_rows int;
+  v_reusable boolean;
 begin
   update public.codes set uses = uses + 1
    where code = v_code
      and not disabled
      and (expires_at is null or expires_at > now())
-     and (max_uses is null or uses < max_uses);
-  get diagnostics v_rows = row_count;
-  if v_rows = 0 then return false; end if;
+     and (max_uses is null or uses < max_uses)
+  returning reusable into v_reusable;
+  if v_reusable is null then return false; end if;
 
-  insert into public.code_redemptions (code, user_id, app)
-  values (v_code, p_user, lower(p_app))
-  on conflict (code, user_id) do nothing;
+  -- a reusable code is not written here: the purchases row carries it,
+  -- and that is where its owner's commission is counted from
+  if not v_reusable then
+    insert into public.code_redemptions (code, user_id, app)
+    values (v_code, p_user, lower(p_app))
+    on conflict (code, user_id) do nothing;
+  end if;
   return true;
 end $$;
 

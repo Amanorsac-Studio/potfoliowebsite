@@ -1,4 +1,187 @@
 /* =====================================================================
+   The affiliate programme  (supabase-affiliates.sql, affiliates.html,
+   affiliate.html, portal/admin-affiliates.html)
+
+   Everything that decides anything lives in the database functions;
+   this is the part that needs the Worker's hands: it sends the email
+   that each step deserves. Every call is made AS THE PERSON (their
+   token, their RLS, the function's own admin check), so a route here
+   cannot do anything the person could not do from the browser - it
+   only adds the letter.
+
+     POST /api/affiliate/apply    { name, links, audience, message,
+                                    payout_method, payout_to }
+                                  -> apply_affiliate; tells the studio
+     POST /api/affiliate/decide   { id, decision: approve|decline,
+                                    code, percent_off, commission_pct, note }
+                                  -> approve_affiliate / decline_affiliate;
+                                     tells the applicant       (admin)
+     POST /api/affiliate/payout   { id, currency, method, reference, note }
+                                  -> record_affiliate_payout; tells the
+                                     affiliate                 (admin)
+   ===================================================================== */
+async function affiliateRoutes(request, env, ctx) {
+  const path = new URL(request.url).pathname;
+  if (!path.startsWith('/api/affiliate/')) return null;
+  if (request.method === 'OPTIONS') return storeSay({}, 204);
+  if (request.method !== 'POST') return storeSay({ error: 'method' }, 405);
+
+  const user = await storeUser(request);
+  if (!user) return storeSay({ error: 'sign_in', message: 'Sign in first.' }, 401);
+  let body = {};
+  try { body = await request.json(); } catch (e) {}
+  const str = (v, n) => String(v == null ? '' : v).trim().slice(0, n || 200);
+
+  // ---- apply ----
+  if (path === '/api/affiliate/apply') {
+    const r = await asUser(user, 'rpc/apply_affiliate', { method: 'POST', body: JSON.stringify({
+      p_name: str(body.name, 80), p_links: str(body.links, 600), p_audience: str(body.audience, 400),
+      p_message: str(body.message, 1200), p_payout_method: str(body.payout_method, 10), p_payout_to: str(body.payout_to, 120)
+    }) });
+    if (!r.ok) return storeSay({ error: 'refused', message: applyWords(r.body) }, 400);
+    if (r.body && r.body.ok) {
+      waitOn(ctx, mail(env, env.NOTIFY_TO || 'hello@amanorsac.studio',
+        'Affiliate application: ' + str(body.name, 80),
+        str(body.name, 80) + ' (' + user.email + ') applied to the affiliate programme.\n\n' +
+        'Where they post: ' + str(body.links, 600) + '\n' +
+        'Audience: ' + str(body.audience, 400) + '\n' +
+        'Paid by: ' + str(body.payout_method, 10) + ' ' + str(body.payout_to, 120) + '\n\n' +
+        (str(body.message, 1200) ? str(body.message, 1200) + '\n\n' : '') +
+        'Decide at ' + SITE + '/portal/admin-affiliates.html\n'));
+    }
+    return storeSay(r.body || { ok: false });
+  }
+
+  // ---- the studio decides ----
+  if (path === '/api/affiliate/decide') {
+    const id = Number(body.id);
+    if (!id) return storeSay({ error: 'bad_request', message: 'Which application?' }, 400);
+    if (body.decision === 'approve') {
+      const r = await asUser(user, 'rpc/approve_affiliate', { method: 'POST', body: JSON.stringify({
+        p_id: id, p_code: str(body.code, 16),
+        p_percent_off: Number.isFinite(Number(body.percent_off)) ? Number(body.percent_off) : 10,
+        p_commission_pct: Number.isFinite(Number(body.commission_pct)) ? Number(body.commission_pct) : 20
+      }) });
+      if (!r.ok) return storeSay({ error: 'refused', message: dbWords(r.body) }, r.status === 401 ? 401 : 400);
+      const a = r.body || {};
+      const to = await emailOf(env, a.user_id);
+      if (to) waitOn(ctx, sendAffiliateWelcome(env, to, a, Number(body.percent_off) || 10));
+      return storeSay({ ok: true, affiliate: a, emailed: !!to });
+    }
+    if (body.decision === 'decline') {
+      const r = await asUser(user, 'rpc/decline_affiliate', { method: 'POST', body: JSON.stringify({ p_id: id, p_note: str(body.note, 400) || null }) });
+      if (!r.ok) return storeSay({ error: 'refused', message: dbWords(r.body) }, 400);
+      return storeSay({ ok: true });
+    }
+    return storeSay({ error: 'bad_request', message: 'approve or decline.' }, 400);
+  }
+
+  // ---- money went out ----
+  if (path === '/api/affiliate/payout') {
+    const id = Number(body.id);
+    if (!id) return storeSay({ error: 'bad_request', message: 'Which affiliate?' }, 400);
+    const r = await asUser(user, 'rpc/record_affiliate_payout', { method: 'POST', body: JSON.stringify({
+      p_id: id, p_currency: str(body.currency, 3).toLowerCase() || 'usd', p_method: str(body.method, 10),
+      p_reference: str(body.reference, 120) || null, p_note: str(body.note, 400) || null
+    }) });
+    if (!r.ok) return storeSay({ error: 'refused', message: dbWords(r.body) }, 400);
+    const pay = r.body || {};
+    const who = await asService(env, 'affiliates?id=eq.' + id + '&select=user_id,name');
+    const a = who.ok && who.body && who.body[0];
+    const to = a ? await emailOf(env, a.user_id) : null;
+    if (to) waitOn(ctx, sendAffiliatePayout(env, to, a.name, pay));
+    return storeSay({ ok: true, payout: pay, emailed: !!to });
+  }
+
+  return storeSay({ error: 'not_found' }, 404);
+}
+
+function applyWords(body) {
+  const m = String((body && body.message) || '');
+  if (/name/.test(m)) return 'Tell us what to call you.';
+  if (/payout_method/.test(m)) return 'Pick PayPal or MoMo.';
+  if (/payout_to/.test(m)) return 'Where should the money go? A PayPal email or a MoMo number.';
+  if (/sign in/.test(m)) return 'Sign in first.';
+  return m || 'That did not go through.';
+}
+function dbWords(body) {
+  const m = String((body && (body.message || body.error)) || '');
+  return m.replace(/^.*?: /, '') || 'The database refused it.';
+}
+
+/* The email on an account, looked up as the Worker because an admin's
+   token cannot read another person's auth row. */
+async function emailOf(env, userId) {
+  if (!isUuid(userId)) return null;
+  const r = await asService(env, 'profiles?id=eq.' + userId + '&select=email');
+  const e = r.ok && r.body && r.body[0] && r.body[0].email;
+  return (e && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) ? e : null;
+}
+
+/* One plain letter, text and the same text in a quiet HTML wrapper.
+   Every transactional letter the programme sends goes through here so
+   the footer, the postal line and the from-address are in one place. */
+async function mail(env, to, subject, text, cta) {
+  if (!env.RESEND_API_KEY || !to) return false;
+  const paras = text.trim().split(/\n\n+/).map(p =>
+    '<p style="margin:0 0 16px;white-space:pre-line">' + esc(p) + '</p>').join('');
+  const html =
+    '<div style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:520px;' +
+      'margin:0 auto;padding:32px 24px;color:#1C1916;line-height:1.6;font-size:16px">' +
+    paras +
+    (cta ? '<p style="margin:4px 0 24px"><a href="' + esc(cta.href) + '" ' +
+      'style="display:inline-block;background:#1C1916;color:#fff;text-decoration:none;' +
+      'padding:13px 22px;border-radius:9px;font-weight:600">' + esc(cta.label) + '</a></p>' : '') +
+    '<p style="margin:0;color:#6B655C;font-size:13px">Amanorsac Studio &middot; ' +
+      '<a href="' + SITE + '" style="color:#6B655C">amanorsac.studio</a><br>' + POSTAL + '</p></div>';
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', Authorization: 'Bearer ' + env.RESEND_API_KEY },
+      body: JSON.stringify({
+        from: env.NOTIFY_FROM || 'Amanorsac Studio <hello@amanorsac.studio>',
+        to: [to], subject: subject,
+        text: text.trim() + '\n\n' + (cta ? cta.href + '\n\n' : '') + POSTAL + '\n' + SITE + '\n',
+        html: html
+      })
+    });
+    return r.ok;
+  } catch (e) { return false; }
+}
+
+async function sendAffiliateWelcome(env, to, a, percentOff) {
+  const code = a.code, pct = a.commission_pct || 20;
+  const text =
+    'Hi ' + (a.name || '') + ',\n\n' +
+    'You are in. Your code is ' + code + '.\n\n' +
+    'Anyone who types it at checkout gets ' + percentOff + '% off, and you earn ' + pct + '% of what they pay. ' +
+    'The same code works as a link: add ?ref=' + code + ' to any app page, for example ' +
+    SITE + '/chordlight88?ref=' + code + ' - the code is remembered for thirty days and applied for them.\n\n' +
+    'Your dashboard shows clicks, sales and what you are owed. Earnings clear fourteen days after the sale ' +
+    '(the refund window) and are paid once a month by ' + (a.payout_method === 'momo' ? 'MoMo' : 'PayPal') +
+    ' once they reach $25.\n\n' +
+    'Two rules that matter: say that it is an affiliate link wherever you share it (a line like ' +
+    '"affiliate link, I earn a commission" is enough - the FTC and the platforms require it), and never ' +
+    'post the code on coupon sites or bid on the studio’s name in ads. The full terms are at ' +
+    SITE + '/legal.html#affiliates.\n\n' +
+    'Thank you for sending people our way.\n\nStephen';
+  return mail(env, to, 'Welcome to the Amanorsac affiliate programme - your code is ' + code, text,
+    { href: SITE + '/affiliate.html', label: 'Open your dashboard' });
+}
+
+async function sendAffiliatePayout(env, to, name, pay) {
+  const amt = (pay.currency || 'usd').toUpperCase() + ' ' + (Number(pay.amount_cents || 0) / 100).toFixed(2);
+  const text =
+    'Hi ' + (name || '') + ',\n\n' +
+    'Your affiliate payout of ' + amt + ' went out today by ' + (pay.method === 'momo' ? 'MoMo' : 'PayPal') +
+    (pay.reference ? ' (reference ' + pay.reference + ')' : '') + '.\n\n' +
+    'The sales it covers are marked paid on your dashboard. If it has not arrived in a few days, reply to this email.\n\n' +
+    'Stephen';
+  return mail(env, to, 'Your Amanorsac affiliate payout: ' + amt, text,
+    { href: SITE + '/affiliate.html', label: 'See your dashboard' });
+}
+
+/* =====================================================================
    The only code on this site that runs on a server.
 
    It answers two addresses and nothing else:
@@ -45,6 +228,12 @@ export default {
          wanders into the asset layer. */
       const store = await storeRoutes(request, env, ctx);
       if (store) return store;
+
+      /* The affiliate programme: an application, the studio's decision,
+         a payout. Three doors, each a database call made as the person
+         plus the email the call deserves. */
+      const aff = await affiliateRoutes(request, env, ctx);
+      if (aff) return aff;
 
       if (request.method === 'GET' || request.method === 'HEAD') {
         const path = new URL(request.url).pathname;
@@ -635,7 +824,7 @@ async function checkCode(request, env) {
   try { body = await request.json(); } catch (e) {}
   const app  = String(body.app || '').toLowerCase().slice(0, 40);
   const code = String(body.code || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 40);
-  if (!app || code.length < 6) return say({ ok: false, error: 'not_a_code' });
+  if (!app || code.length < 4) return say({ ok: false, error: 'not_a_code' });
 
   const c = await getCatalog(env);
   const entry = (c.apps || {})[app];
@@ -2007,6 +2196,7 @@ const PAGES = [
   ['/aether',      'monthly', '0.7'],
   ['/pulseroom',   'monthly', '0.7'],
   ['/nebulatide',  'monthly', '0.7'],
+  ['/affiliates',  'monthly', '0.6'],
   ['/legal',       'yearly',  '0.3'],
   ['/privacy',     'yearly',  '0.3']
 ];

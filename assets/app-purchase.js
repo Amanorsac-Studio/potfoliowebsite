@@ -283,12 +283,39 @@
     slot.innerHTML =
       '<button type="button" class="code-open" data-code-open>Have a code?</button>' +
       '<span class="code-form" hidden>' +
-        '<input type="text" class="code-in" data-code-input placeholder="AMAN-XXXX-XXXX-XXXX" ' +
+        '<input type="text" class="code-in" data-code-input placeholder="Your code" ' +
                'autocomplete="off" spellcheck="false" aria-label="Discount code">' +
         '<button type="button" class="code-go" data-code-go>Apply</button>' +
       '</span>' +
       '<span class="code-say" data-code-say></span>';
     slot.hidden = false;
+    applyLinkCode();
+  }
+
+  /* ---------- a code that came in a link ----------
+     assets/track.js keeps the ?ref= code of an affiliate's link in the
+     browser for thirty days. It is typed into the box here and checked
+     the same way a typed one is - nothing about it is trusted - and a
+     code the visitor types by hand replaces it. Signed out, the box
+     just says what will happen, because /api/check-code needs the
+     account to say whether the code is still good for it. */
+  var linkCodeTried = false;
+  function applyLinkCode() {
+    if (linkCodeTried) return;
+    linkCodeTried = true;
+    var saved = null;
+    try { saved = JSON.parse(localStorage.getItem('as-ref') || 'null'); } catch (e) {}
+    if (!saved || !saved.code || !(saved.until > Date.now())) return;
+    var clean = String(saved.code).toUpperCase().replace(/[^A-Z0-9-]/g, '');
+    if (clean.length < 4) return;
+    var f = document.querySelector('.code-form'), o = document.querySelector('[data-code-open]');
+    var i = document.querySelector('[data-code-input]');
+    if (f && o && i) { f.hidden = false; o.hidden = true; i.value = clean; }
+    sb.auth.getSession().then(function (s) {
+      var session = s && s.data && s.data.session;
+      if (!session) { codeSay('The code <b>' + esc(clean) + '</b> from your link is applied once you sign in.'); return; }
+      applyCode(clean);
+    });
   }
 
   function codeSay(text, bad) {
@@ -300,7 +327,7 @@
 
   function applyCode(typed) {
     var clean = String(typed || '').toUpperCase().replace(/[^A-Z0-9-]/g, '');
-    if (clean.length < 6) { codeSay('That does not look like a code.', true); return; }
+    if (clean.length < 4) { codeSay('That does not look like a code.', true); return; }
     codeSay('Checking\u2026');
     sb.auth.getSession().then(function (s) {
       var session = s && s.data && s.data.session;

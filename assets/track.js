@@ -26,6 +26,24 @@
   /* a no-op stand-in, so pages can call track() even if we bail out */
   window.track = function () {};
 
+  /* ---------- an affiliate's link ----------
+     amanorsac.studio/chordlight88?ref=NENE10 is a discount code carried
+     in the address. It is kept in the browser for thirty days so the
+     checkout can type it in (assets/app-purchase.js), the way a coupon
+     in a pocket is kept. This is not tracking - it records nothing
+     about the visitor anywhere - so it runs even under Do Not Track;
+     only the click COUNT below respects that signal. Last link wins. */
+  var refCode = '';
+  try {
+    var rq = new URLSearchParams(location.search).get('ref');
+    if (rq) {
+      refCode = String(rq).toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 16);
+      if (refCode.length >= 4) {
+        localStorage.setItem('as-ref', JSON.stringify({ code: refCode, until: Date.now() + 30 * 86400000 }));
+      } else refCode = '';
+    }
+  } catch (e) { refCode = ''; }
+
   try {
     if (navigator.doNotTrack === '1' || window.doNotTrack === '1') return;
     var host = location.hostname;
@@ -129,6 +147,9 @@
           .catch(function () { return null; });
       } catch (e) { return Promise.resolve(null); }
     }
+
+    // ---------- the affiliate's click, one counter per code per day ----
+    if (refCode) call('affiliate_click', { p_code: refCode });
 
     // ---------- named events ------------------------------------------
     window.track = function (name, label) {
