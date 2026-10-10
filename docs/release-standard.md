@@ -1,10 +1,12 @@
 # Amanorsac Studio — Release Standard
 
-**Version 1.1 · October 2026 · Applies to every Amanorsac app, plug-in and plug-in bundle, paid or free.**
+**Version 1.2 · October 2026 · Applies to every Amanorsac app, plug-in and plug-in bundle, paid or free.**
 
 This is how a build becomes a release on amanorsac.studio. It sits beside
-the License Integration Standard (`license-integration-for-developers.md`)
-and the Hub notes (`hub-integration.md`). Those say what a build must do;
+the License Integration Standard (`license-integration-for-developers.md`),
+the Hub notes (`hub-integration.md`) and, for anything that goes to Apple's
+App Store or Google Play, the Store Submission Standard
+(`store-submission-standard.md`). Those say what a build must do;
 this says how a finished build reaches the website, the Hub and the
 buyers, and what it must bring with it.
 
@@ -218,6 +220,9 @@ without those answers.
 - [ ] website chat's report read; price given; go-ahead given
 - [ ] launch compliance (§8) checked for anything the release adds: a new
       email, a new third-party script, a new way to pay, a new upload path
+- [ ] a store build (App Store or Google Play): the Store Submission
+      Standard's checklist (`store-submission-standard.md` §5) reported line
+      by line in `handoff.md`
 
 ---
 
