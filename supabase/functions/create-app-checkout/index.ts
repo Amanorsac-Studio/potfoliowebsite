@@ -65,7 +65,7 @@ function returnOrigin(req: Request): string {
  *  with amount_cents the number is here, and with stripe_price the
  *  bounds are on the Price. stripe-webhook records what was actually
  *  paid, so a purchase row is always the real amount. */
-const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string; label: string }> = {
+const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string; label: string; sale?: { amount_cents: number; until: string } }> = {
   secondout: {
     amount_cents: 1900,
     label: "SecondOut — lifetime license, one year of updates included",
@@ -100,11 +100,21 @@ const APP_CATALOG: Record<string, { amount_cents?: number; stripe_price?: string
     label: "Chordlight 88 — lifetime licence, no activation",
   },
   nebulatide2: {
-    // Pay what you want. The figures live on the Price in Stripe -
-    // $5 minimum, $100 maximum, $29 suggested - so changing what people
-    // may pay is done there and needs no deploy here.
-    stripe_price: "price_1UEF1E06LBP0UxjsM9VMPGux",
+    // Fixed at $29 since 11 Oct 2026 (it was pay what you want before,
+    // on Stripe Price price_1UEF1E06LBP0UxjsM9VMPGux). The 24-hour
+    // launch price is resolved per request against its deadline, the
+    // same deadline catalog.json's promo block carries, so the price
+    // goes back up by itself at the hour and nobody has to redeploy.
+    amount_cents: 2900,
+    sale: { amount_cents: 1900, until: "2026-10-12T10:00:00Z" },
     label: "Nebula Tide 2 — lifetime license for two machines, one year of updates included",
+  },
+  nebulatide: {
+    // Free until 11 Oct 2026; $5 for 24 hours, then $9. Anyone who had
+    // it free keeps it (supabase-nebulatide-paid.sql).
+    amount_cents: 900,
+    sale: { amount_cents: 500, until: "2026-10-12T10:00:00Z" },
+    label: "Nebula Tide — lifetime licence for two computers",
   },
   easystems: {
     amount_cents: 2100,
@@ -189,7 +199,9 @@ Deno.serve(async (req) => {
      rather than quietly ignored, because somebody who typed one is
      expecting it to count. */
   let discount: { percent_off?: number; amount_off_cents?: number } | null = null;
-  let amount = item.amount_cents;
+  // a sale with a deadline: the lower figure until the hour, then the full one
+  const listCents = (item.sale && Date.now() < Date.parse(item.sale.until)) ? item.sale.amount_cents : item.amount_cents;
+  let amount = listCents;
   if (code) {
     if (item.stripe_price) {
       // A name-your-price app already lets the buyer choose; a code on
@@ -231,7 +243,7 @@ Deno.serve(async (req) => {
       // records - the price before and after are both known here and
       // nowhere else, so the difference travels with the payment.
       "metadata[code]": code || "",
-      "metadata[discount_cents]": String(Math.max(0, (item.amount_cents ?? 0) - (amount ?? 0))),
+      "metadata[discount_cents]": String(Math.max(0, (listCents ?? 0) - (amount ?? 0))),
       // Back to the app's own page, not the portal - there is no "My
       // Apps" section there yet for this to land in usefully.
       /* The session id comes back with them. Stripe substitutes

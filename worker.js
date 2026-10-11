@@ -655,7 +655,7 @@ async function checkCode(request, env) {
 
   if (!d || !d.ok) return say({ ok: false, error: (d && d.error) || 'no_such_code' });
 
-  const usdBefore = entry.price_cents || 0;
+  const usdBefore = effectiveCents(entry, c);
   const usdAfter  = applyDiscount(usdBefore, d);
 
   /* And the same discount in the local currency, when Paystack is the
@@ -665,7 +665,7 @@ async function checkCode(request, env) {
   const country = (request.headers.get('cf-ipcountry') || '').toUpperCase();
   let local = null;
   if (pay && pay.live && (pay.countries || []).includes(country)) {
-    const before = paystackAmount(pay, entry);
+    const before = paystackAmount(pay, { price_cents: usdBefore });
     const after  = paystackAmount(pay, { price_cents: usdAfter });
     if (before && after) {
       local = { currency: pay.currency, before: before, after: after,
@@ -967,6 +967,18 @@ const CURRENCY_SYMBOL = { GHS: '\u20b5', NGN: '\u20a6', ZAR: 'R', KES: 'KSh', US
    account's currency - pesewas, kobo, cents. Either the app names its
    own local figure, or the dollar price is converted at the one rate in
    the catalog and rounded up to something that reads like a price. */
+/* The price right now. price_cents is the price while the app's promo
+   (or the site's) is live; after its deadline list_price_cents is the
+   price again, with no edit at the stroke of the hour. The same rule
+   lives in assets/store-state.js (priceOf) and the checkout functions. */
+function effectiveCents(entry, catalog) {
+  if (!entry || entry.free) return 0;
+  const promo = entry.promo || (catalog && catalog.promo);
+  const over = !!(promo && promo.ends && Date.parse(promo.ends) <= Date.now());
+  if (over && entry.list_price_cents > entry.price_cents) return entry.list_price_cents;
+  return entry.price_cents || 0;
+}
+
 function paystackAmount(pay, app) {
   if (!pay || !app) return null;
   if (typeof app.paystack_price === 'number') return app.paystack_price;
@@ -997,7 +1009,7 @@ async function payOptions(request, env) {
   const pay = c.paystack || null;
   const country = (request.headers.get('cf-ipcountry') || '').toUpperCase();
 
-  const local = (pay && pay.live) ? paystackAmount(pay, app) : null;
+  const local = (pay && pay.live) ? paystackAmount(pay, app && !app.pay_what_you_want ? Object.assign({}, app, { price_cents: effectiveCents(app, c) }) : app) : null;
   const known = !!country && country !== 'XX' && country !== 'T1';
   const here = !!(pay && pay.live && known && (pay.countries || []).includes(country));
   /* Paystack is offered where Paystack's rails actually reach. Outside

@@ -61,17 +61,23 @@
   if (window.StoreState && window.StoreState.catalog) {
     window.StoreState.catalog().then(function (c) {
       var apps = (c && c.apps) || {};
-      Object.keys(apps).forEach(function (id) {
-        if (apps[id].name) APP_NAMES[id] = apps[id].name;
-        if (apps[id].free) { PRICES[id] = 'Download free'; return; }
-        var cents = apps[id].price_cents;
-        if (typeof cents === 'number' && cents > 0) {
-          PRICES[id] = apps[id].pay_what_you_want ? 'Name your price'
-            : 'Buy \u2014 $' + (cents % 100 ? (cents / 100).toFixed(2) : String(cents / 100));
-        }
-      });
-      /* Anything already drawn with a seeded name is redrawn now. */
-      if (typeof render === 'function') render();
+      function label() {
+        Object.keys(apps).forEach(function (id) {
+          if (apps[id].name) APP_NAMES[id] = apps[id].name;
+          if (apps[id].free) { PRICES[id] = 'Download free'; return; }
+          var cents = window.StoreState.priceOf ? window.StoreState.priceOf(apps[id], c) : apps[id].price_cents;
+          if (typeof cents === 'number' && cents > 0) {
+            PRICES[id] = apps[id].pay_what_you_want ? 'Name your price'
+              : 'Buy \u2014 $' + (cents % 100 ? (cents / 100).toFixed(2) : String(cents / 100));
+          }
+        });
+        /* Anything already drawn with a seeded name is redrawn now. */
+        if (typeof render === 'function') render();
+      }
+      label();
+      /* A sale ending while the page is open: the button goes back to
+         the full price, the same moment promo.js takes the badge down. */
+      addEventListener('sale:over', label);
     }).catch(function () {});
   }
 

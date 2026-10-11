@@ -79,7 +79,7 @@ create or replace function public.has_app_access(p_app text)
 returns boolean
 language sql security definer stable set search_path = '' as $$
   select case
-    when lower(trim(coalesce(p_app,''))) in ('pulseroom', 'nebulatide') then true
+    when lower(trim(coalesce(p_app,''))) in ('pulseroom') then true   -- nebulatide left this list on 11 Oct 2026 (supabase-nebulatide-paid.sql)
     else exists (
       select 1 from public.purchases
       where user_id = auth.uid()
