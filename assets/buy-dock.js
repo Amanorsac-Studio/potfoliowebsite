@@ -40,7 +40,7 @@
     /* Pay what you want has no price to put here, and a floor figure
        reads like one. It says what the button says instead. */
     var pwyw = !!a.pay_what_you_want;
-    var now = a.free ? 'Free' : pwyw ? 'Name your price' : money(a.price_cents);
+    var now = a.free ? 'Free' : pwyw ? 'Name your price' : money(window.StoreState.priceOf ? window.StoreState.priceOf(a, c) : a.price_cents);
     var promo = a.promo || c.promo;
     var sale = promo && !a.free && !pwyw &&
                a.list_price_cents > a.price_cents &&
@@ -50,6 +50,10 @@
       if (isFinite(t) && t <= Date.now()) sale = false;
     }
     var pct = sale ? Math.round((1 - a.price_cents / a.list_price_cents) * 100) : 0;
+    addEventListener('sale:over', function () {
+      var b = document.querySelector('.sale-dock .cost b');
+      if (b && a.list_price_cents > a.price_cents) b.textContent = money(a.list_price_cents);
+    });
 
     var dock = document.createElement('div');
     dock.className = 'sale-dock';

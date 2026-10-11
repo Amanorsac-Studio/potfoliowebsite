@@ -57,6 +57,15 @@
   "_news16": "something to say beyond \"this exists\".",
   "news": [
     {
+      "id": "nebula-24h-2026-10-11",
+      "date": "2026-10-11",
+      "tag": "Offer",
+      "app": "nebulatide2",
+      "title": "24 hours: Nebula Tide 2 for $19, Nebula Tide for $5",
+      "body": "Until 10:00 UTC on Monday 12 October, Nebula Tide 2 is $19 instead of $29, and Nebula Tide (version 1), free until now, is $5 before it settles at $9. Everyone who already has version 1 keeps it. The clock on each page is real: when it reaches zero the prices go up.",
+      "url": "nebulatide2.html"
+    },
+    {
       "id": "performlive-0-5-0",
       "date": "2026-10-08",
       "tag": "Update",
@@ -236,21 +245,32 @@
     "_3": "run (10:00 and 15:00 UTC) sends up to per_run until everyone has one.",
     "_4": "send_after 14:55 UTC on Oct 6 means the 15:00 UTC run, 11:00am in Virginia (EDT). Set paused to true, or",
     "_5": "delete the block, to stop. A new id is a new letter to everybody.",
-    "id": "2026-10-studio-news",
-    "send_after": "2026-10-06T14:55:00Z",
-    "per_run": 100,
+    "id": "2026-10-11-nebula-24h",
+    "send_after": "2026-10-11T09:55:00Z",
+    "per_run": 400,
     "paused": false,
-    "subject": "What's new at Amanorsac Studio",
-    "heading": "What's new at the studio",
-    "intro": "A short note from the studio. A lot has changed over the last few weeks, so here it all is in one place.",
+    "subject": "24 hours: Nebula Tide 2 for $19, Nebula Tide for $5",
+    "heading": "Twenty-four hours on the pads",
+    "intro": "Two prices, for one day. From 10:00 UTC on Sunday 11 October (6 am in Virginia, 10 am in Accra) until the same time on Monday 12 October, Nebula Tide 2 is $19 instead of $29, and Nebula Tide, which has been free until now, is $5 before it settles at $9. The clock on each page is the real one: when it reaches zero the prices go up.",
     "items": [
-      { "title": "A new website", "text": "The whole site has a new look, and every app has a proper page now: what it does, what it costs and how to get it.", "link": "/", "link_label": "Take a look" },
-      { "title": "Chordlight 88 2.0", "text": "See every chord you play, then record it and make the lesson video in one step. Early-bird price on 2.0: $24, normally $48.", "link": "/chordlight88", "link_label": "See Chordlight 88" },
-      { "title": "Stem Sorter, new", "text": "Quickly import session files into your mix template, so the session is laid out before you start mixing.", "link": "/stemsorter", "link_label": "See Stem Sorter" },
-      { "title": "Nebula Tide 2.0.2", "text": "MIDI learn is easier, and textures and FX have their own volume. It runs on Windows, Mac and Android.", "link": "/nebulatide2", "link_label": "See what is new" },
-      { "title": "The Studio Bundle", "text": "A Fender Studio Pro template built for your church, four of the studio's plug-ins, and a setup session where we put it all on your machine with you. $250.", "link": "/studiobundle", "link_label": "See the bundle" },
-      { "title": "Creators wanted", "text": "The store is looking for producers and musicians to sell multitracks, stems, pads and loops for worship teams. Apply, or message the studio on WhatsApp first.", "link": "/store/creators", "link_label": "Apply to sell" },
-      { "title": "Paying from Ghana?", "text": "Every app can be paid for with MTN MoMo now. Scan the code on the app's page, send the screenshot on WhatsApp, and your code comes back the same day.", "link": "/apps", "link_label": "Browse the apps" }
+      {
+        "title": "Nebula Tide 2 - $19, then $29",
+        "text": "Endless ambient pads in all twelve keys, recorded for real and never pitch shifted, with the shimmer, presets built from your own recordings and the drag that puts a MIDI clip on your timeline. One licence covers two machines, on Windows, Mac and Android. It is no longer pay what you want: $19 for these 24 hours, $29 after.",
+        "link": "/nebulatide2",
+        "link_label": "Get Nebula Tide 2 for $19"
+      },
+      {
+        "title": "Nebula Tide - $5, then $9",
+        "text": "Version 1, the drone pads that started it: twelve real recordings per preset, seamless loops, Room, Plate and Hall. It has been free since it shipped and from today it is sold. If you already have it, nothing changes: it stays yours, in My Apps and in the Hub, and you will not be asked to pay.",
+        "link": "/nebulatide",
+        "link_label": "Get Nebula Tide for $5"
+      },
+      {
+        "title": "Paying from Ghana?",
+        "text": "Both can be paid for with MTN MoMo or a local card through Paystack, at the same discount, on the app's page.",
+        "link": "/apps",
+        "link_label": "See every app"
+      }
     ],
     "signoff": "Thanks for being here. Stephen"
   },
@@ -546,10 +566,15 @@
       "art": "images/apps/nt2/stage.webp",
       "page": "nebulatide2.html",
       "color": "#4FE3FF",
+      "_sale": "11 Oct 2026: a fixed price now, $29, no longer pay what you want (the Stripe Price is retired in create-app-checkout). $19 until the promo's ends; then list_price_cents is the price again by itself. After the hour, put price_cents to 2900 and delete the promo block.",
       "free": false,
-      "price_cents": 2900,
-      "price_min_cents": 500,
-      "pay_what_you_want": true,
+      "price_cents": 1900,
+      "list_price_cents": 2900,
+      "promo": {
+        "percent": 34,
+        "note": "$19 for 24 hours, then $29",
+        "ends": "2026-10-12T10:00:00Z"
+      },
       "licensed": true,
       "version": "2.0.2",
       "notice": {
@@ -938,7 +963,15 @@
       "art": "images/apps/nt-idle.webp",
       "page": "nebulatide.html",
       "color": "#4FE3FF",
-      "free": true,
+      "_sale": "11 Oct 2026: sold, not free any more. $5 until the promo's ends, $9 after; the site, the Worker and both checkouts read list_price_cents once ends has passed, so the price goes up by itself at the hour. Everyone who had it free keeps it (supabase-nebulatide-paid.sql). After the hour, put price_cents to 900 and delete the promo block.",
+      "free": false,
+      "price_cents": 500,
+      "list_price_cents": 900,
+      "promo": {
+        "percent": 44,
+        "note": "Launch price for 24 hours",
+        "ends": "2026-10-12T10:00:00Z"
+      },
       "licensed": false,
       "version": "1.2.2",
       "installers": {

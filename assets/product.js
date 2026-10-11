@@ -56,9 +56,11 @@
       var promo = a.promo || c.promo;
       var live = promo && !(promo.ends && Date.parse(promo.ends) <= Date.now());
       var was = live && a.list_price_cents > a.price_cents;
-      html = money(a.price_cents) + (was ? ' <s>' + money(a.list_price_cents) + '</s>' : '');
+      var cents = window.StoreState.priceOf ? window.StoreState.priceOf(a, c) : a.price_cents;
+      html = money(cents) + (was ? ' <s>' + money(a.list_price_cents) + '</s>' : '');
     }
     if (!html) return;
+    addEventListener('sale:over', function () { slots.forEach(function (s) { s.innerHTML = money(a.list_price_cents > a.price_cents ? a.list_price_cents : a.price_cents); }); });
     slots.forEach(function (s) {
       var flip = s.hasAttribute('data-price-flip');
       s.innerHTML = flip && html.indexOf('<s>') > 0

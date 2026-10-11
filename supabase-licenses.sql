@@ -166,7 +166,7 @@ declare
   v_app text := lower(trim(coalesce(p_app,'')));
   v_key text;
 begin
-  if v_app not in ('pulseroom', 'nebulatide') then
+  if v_app not in ('pulseroom') then   -- nebulatide is sold since 11 Oct 2026 (supabase-nebulatide-paid.sql)
     raise exception 'claim_license is for free apps only';
   end if;
 

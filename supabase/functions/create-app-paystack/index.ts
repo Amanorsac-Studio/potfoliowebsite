@@ -71,6 +71,8 @@ type App = {
   free?: boolean;
   status?: string;
   price_cents?: number;
+  list_price_cents?: number;
+  promo?: { ends?: string };
   price_min_cents?: number;
   pay_what_you_want?: boolean;
   paystack_price?: number;
@@ -86,7 +88,18 @@ type Pay = {
  *  needs no key - and reading it rather than keeping a second price
  *  list in this file is the point: one place decides what an app
  *  costs, and it is the same place the shelf reads. */
-async function catalog(): Promise<{ apps: Record<string, App>; paystack?: Pay }> {
+/** The dollar price right now: price_cents while the app's promo (or
+ *  the site's) is live, list_price_cents once its deadline has passed.
+ *  Same rule as worker.js effectiveCents and store-state.js priceOf. */
+function effectiveCents(app: App, c: { promo?: { ends?: string } }): number {
+  if (app.free) return 0;
+  const promo = app.promo ?? c.promo;
+  const over = !!(promo?.ends && Date.parse(promo.ends) <= Date.now());
+  if (over && (app.list_price_cents ?? 0) > (app.price_cents ?? 0)) return app.list_price_cents ?? 0;
+  return app.price_cents ?? 0;
+}
+
+async function catalog(): Promise<{ apps: Record<string, App>; paystack?: Pay; promo?: { ends?: string } }> {
   const res = await fetch(SITE + "/catalog.json", { cache: "no-store" });
   if (!res.ok) throw new Error("The catalog could not be read.");
   return await res.json();
@@ -197,7 +210,7 @@ Deno.serve(async (req) => {
     const suggested = amountFor(pay, item) ?? 0;
     amount = Math.min(Math.max(Math.round(body.amount), floor), suggested * 100 || Number.MAX_SAFE_INTEGER);
   } else {
-    amount = amountFor(pay, item);
+    amount = amountFor(pay, item, effectiveCents(item, c));
   }
   if (!amount || amount < 1) return json({ error: "That app has no Paystack price set up yet." }, 500);
 

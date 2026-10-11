@@ -44,5 +44,17 @@
     });
   }
 
-  window.StoreState = { preview: PREVIEW, state: state, catalog: catalog, stateOf: stateOf };
+  /* The price to charge and show right now. price_cents is the price
+     while an app's promo (or the site's) is live; the moment its
+     deadline passes, list_price_cents is the price again - without
+     anyone editing the catalog at the stroke of the hour. The same rule
+     is in worker.js (effectiveCents) and the checkout functions. */
+  function priceOf(a, c) {
+    if (!a || a.free) return null;
+    var promo = a.promo || (c && c.promo);
+    var over = !!(promo && promo.ends && Date.parse(promo.ends) <= Date.now());
+    if (over && a.list_price_cents > a.price_cents) return a.list_price_cents;
+    return a.price_cents;
+  }
+  window.StoreState = { preview: PREVIEW, state: state, catalog: catalog, stateOf: stateOf, priceOf: priceOf };
 })();
