@@ -423,7 +423,7 @@
           ],
           "as": "Chordlight-88-2.0.7-Windows.zip",
           "type": "application/zip",
-          "label": "Windows 10/11 · zip, unzip and run the installer",
+          "label": "Windows 10/11 · zip",
           "size": "162 MB"
         },
         "mac": {
@@ -625,10 +625,7 @@
       "licensed": true,
       "beta_days": 30,
       "version": "0.5.0",
-      "_inst": "Both are installers now - a Windows .exe and a Mac .pkg - so",
-      "_inst2": "the Hub hands each to the system and cannot launch either one",
-      "_inst3": "afterwards: neither installer reports back where it put the app.",
-      "_inst4": "Windows used to be a .zip the Hub unpacked itself, which is why",
+      "_inst": "0.5.0, 8 Oct 2026: both builds are zips again (PerformLive-0.5.0-Windows.zip 5.86 MB, -macOS.zip 10.02 MB, seen in the R2 dashboard). The Hub unpacks a zip itself. The 0.4.0 .exe and .pkg names stay in alt_keys as fallbacks only.",
       "_inst4b": "it could offer an Open button before and cannot now. The Hub says",
       "_inst4c": "so honestly rather than failing silently - it names the installer",
       "_inst4d": "it downloaded and offers to run it again - but that needs Hub",
@@ -665,7 +662,7 @@
           ],
           "as": "PerformLive-0.5.0-Windows.zip",
           "type": "application/zip",
-          "label": "Windows 10/11 · zip, unzip and run the installer",
+          "label": "Windows 10/11 · zip",
           "size": "5.9 MB"
         },
         "mac": {
@@ -676,7 +673,7 @@
           ],
           "as": "PerformLive-0.5.0-macOS.zip",
           "type": "application/zip",
-          "label": "macOS · Apple silicon and Intel · zip, unzip and run the installer",
+          "label": "macOS · Apple silicon and Intel · zip",
           "size": "10 MB"
         }
       }
